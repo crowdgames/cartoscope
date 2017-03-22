@@ -1,0 +1,48 @@
+{
+  "name": "converge_backend",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "async": "^2.0.1",
+    "bcrypt": "^0.8.7",
+    "bluebird": "^3.4.6",
+    "body-parser": "*",
+    "child_process": "^1.0.2",
+    "compression": "*",
+    "cookie-parser": "~1.4.3",
+    "crypto": "0.0.3",
+    "debug": "~2.2.0",
+    "downloader": "*",
+    "exif": "^0.6.0",
+    "express": "~4.13.4",
+    "express-session": "^1.14.0",
+    "jade": "~1.11.0",
+    "jimp": "^0.2.27",
+    "less": "^2.7.1",
+    "less-middleware": "^1.0.4",
+    "lodash": "^4.15.0",
+    "mmmagic": "^0.4.5",
+    "morgan": "~1.7.0",
+    "multer": "^1.2.0",
+    "mysql": "^2.11.1",
+    "ncp": "^2.0.0",
+    "nodemailer": "^2.5.0",
+    "passport": "^0.2.2",
+    "passport-http": "^0.3.0",
+    "passport-local": "^1.0.0",
+    "q-": "0.0.0",
+    "randomstring": "^1.1.5",
+    "seededshuffle": "^0.1.1",
+    "serve-favicon": "~2.3.0",
+    "tar-fs": "*",
+    "validator": "^5.5.0",
+    "validators": "^0.3.1"
+  },
+  "devDependencies": {
+    "node-minizip": "^0.3.0",
+    "unzip": "^0.1.11"
+  }
+}

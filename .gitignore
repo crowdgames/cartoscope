@@ -1,0 +1,9 @@
+.idea/
+node_modules/
+frontend/
+profile_photos/
+temp/
+dataset/
+uploads/
+bower_components/
+*.log
