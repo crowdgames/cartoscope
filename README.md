@@ -1,7 +1,7 @@
-# Cartoscope-backend
+# cartoscope-backend
 
 
-1.  git clone https://github.com/crowdgames/Cartoscope-backend.git
+1.  git clone https://github.com/crowdgames/cartoscope-backend.git
 
 2.  #### Windows installation
 		Windows users follow the link: http://blog.teamtreehouse.com/install-node-js-npm-windows
@@ -28,11 +28,11 @@
 		ALTER USER 'root'@'localhost' IDENTIFIED BY 'MyNew 
 
 7. #### Unpack mysql database dump
-		Go to Cartoscope-backend directory and run to create mysql database.
+		Go to cartoscope-backend directory and run to create mysql database.
 			mysql -u converge -p convergeDB < database_migrations/dump.sql
 
 8. #### Create temp and dataset directories
-		Go to Cartoscope-backend directory and run
+		Go to cartoscope-backend directory and run
         	mkdir temp
 			mkdir dataset
 
@@ -81,6 +81,6 @@
 		5. Sudo ngnix -s reload to reload with a new conf when ngnix is already running
 
 12. #### Start Project
-		1. Go to Cartoscope-backend directory and run npm start
+		1. Go to cartoscope-backend directory and run npm start
 		2. Login to http://localhost:8081 to start
 
