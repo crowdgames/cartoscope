@@ -3,21 +3,22 @@
 
 1.  git clone https://github.com/crowdgames/cartoscope-backend.git
 
-2.  #### Windows installation
-		Windows users follow the link: http://blog.teamtreehouse.com/install-node-js-npm-windows
+2.  Install Node, MySQL and Wget:
+	1. ##### Windows installation
+		Windows users follow the link to install Node: http://blog.teamtreehouse.com/install-node-js-npm-windows
 	
 		 
-3. #### OSX installation
-		osx users need to follow the given steps :
-		 a) Install brew.
-		 b) brew install node
-		 c) Install nginx using brew.
-		 d) brew install mysql
-		 e) Install wget using homebrew: http://stackoverflow.com/questions/33886917/how-to-install-wget-in-macos-capitan-sierra 
+	2. #### OSX installation
+		OSX users need to follow the given steps:
+		 1. Install brew.
+		 2. brew install node
+		 3. Install nginx using brew.
+		 4. brew install mysql
+		 5. Install wget using homebrew: http://stackoverflow.com/questions/33886917/how-to-install-wget-in-macos-capitan-sierra 
 	
-3. start mysql: mysql.server start
+3. Start mysql: mysql.server start
 
-4. open mysql console using sudo mysql
+4. Open mysql console using sudo mysql
 
 5.  #### Run the following sql commands on the mysql shell
 		CREATE USER 'converge'@'localhost' IDENTIFIED BY 'PassWord';
@@ -25,7 +26,7 @@
 		CREATE DATABASE convergeDB;
 		
 6. #### Run the following command to reset the password of any user (if required).
-		ALTER USER 'root'@'localhost' IDENTIFIED BY 'MyNew 
+		ALTER USER 'root'@'localhost' IDENTIFIED BY 'MyNewPassword'; 
 
 7. #### Unpack mysql database dump
 		Go to cartoscope-backend directory and run to create mysql database.
@@ -81,6 +82,7 @@
 		5. Sudo ngnix -s reload to reload with a new conf when ngnix is already running
 
 12. #### Start Project
-		1. Go to cartoscope-backend directory and run npm start
-		2. Login to http://localhost:8081 to start
+		1. Go to cartoscope-backend directory and do: npm install
+		2. Do: npm start
+		3. Login to http://localhost:8081 to start.
 
