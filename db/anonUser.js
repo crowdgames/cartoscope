@@ -87,7 +87,7 @@ exports.addMTurkWorker = function(anonUser, projectID, siteID, consented) {
       '(`workerID`, `projectID`,`assignmentID`,`hitID`,`submitTo`,`siteID`,`consented`) VALUES ' +
       '(?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `consented`=?',
       [bcrypt.hashSync(anonUser.workerId, salt), projectID, bcrypt.hashSync(anonUser.assignmentId, salt),
-        bcrypt.hashSync(anonUser.hitId, salt), anonUser.submitTo, siteID, consented, consented]).then(
+        anonUser.hitId, anonUser.submitTo, siteID, consented, consented]).then(
       function(data) {
         if (data.insertId) {
           resolve(data.insertId);

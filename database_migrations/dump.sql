@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.7.17, for osx10.12 (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.10, for osx10.10 (x86_64)
 --
 -- Host: localhost    Database: convergeDB
 -- ------------------------------------------------------
--- Server version	5.7.17
+-- Server version	5.7.10
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -14,6 +14,7 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
 
 --
 -- Table structure for table `downloadStatus`
@@ -41,10 +42,32 @@ CREATE TABLE `kiosk_workers` (
   `workerID` varchar(128) NOT NULL,
   `projectID` varchar(128) DEFAULT NULL,
   `consented` int(1) DEFAULT '1',
-  `cookieID` varchar(128) DEFAULT NULL,
+  `cookieID` varchar(120) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_index` (`workerID`,`projectID`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=350 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `mturk_workers`
+--
+
+DROP TABLE IF EXISTS `mturk_workers`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `mturk_workers` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `workerID` varchar(128) NOT NULL,
+  `projectID` varchar(128) DEFAULT NULL,
+  `assignmentID` varchar(128) DEFAULT NULL,
+  `hitID` varchar(128) DEFAULT NULL,
+  `submitTo` varchar(128) DEFAULT NULL,
+  `siteID` varchar(128) DEFAULT '1',
+  `consented` int(1) DEFAULT '1',
+  `hit_code` varchar(128) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_index` (`workerID`,`projectID`,`hitID`)
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -80,7 +103,7 @@ CREATE TABLE `progress` (
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`progress_id`),
   UNIQUE KEY `Unique` (`id`,`project_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=291 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -123,7 +146,7 @@ CREATE TABLE `projects` (
   UNIQUE KEY `unique_code_UNIQUE` (`unique_code`),
   KEY `Creator_idx` (`creatorID`),
   CONSTRAINT `Creator` FOREIGN KEY (`creatorID`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -141,8 +164,10 @@ CREATE TABLE `response` (
   `site_id` int(11) DEFAULT '1',
   `response` int(11) NOT NULL,
   `timestamp` datetime DEFAULT CURRENT_TIMESTAMP,
+  `center_lat` varchar(50) DEFAULT NULL,
+  `center_lon` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=165 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=677 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -156,15 +181,10 @@ CREATE TABLE `survey` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` varchar(128) DEFAULT NULL,
   `project_id` int(11) DEFAULT NULL,
-  `why_text` text,
-  `why_more` varchar(128) DEFAULT NULL,
-  `tech_diff` int(11) DEFAULT NULL,
-  `tech_diff_text` text,
-  `additional_feedback` text,
   `response` varchar(1024) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique` (`user_id`,`project_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=212 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -191,7 +211,7 @@ CREATE TABLE `users` (
   UNIQUE KEY `idusers_UNIQUE` (`id`),
   UNIQUE KEY `email_UNIQUE` (`email`),
   UNIQUE KEY `username_UNIQUE` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=220 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=225 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -203,4 +223,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-03-22 14:17:03
+-- Dump completed on 2017-06-12 14:11:46
