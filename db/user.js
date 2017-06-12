@@ -61,6 +61,19 @@ exports.getUsers = function(username, done) {
     });
 };
 
+
+exports.getProjectOwner = function(id) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT * FROM users where id = ?', [id]).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
 exports.checkEmail = function(email, done) {
   var connection = db.get();
   connection.query('SELECT 1 FROM users where email = ?', email,
@@ -72,10 +85,10 @@ exports.checkEmail = function(email, done) {
     });
 };
 
-exports.addUser = function(name, email, password, agreeMail, agreeNewProject, profilePhotoId, done) {
+exports.addUser = function(name, email, password, agreeMail, agreeNewProject, profilePhotoId, bio, done) {
   var connection = db.get();
   connection.query('INSERT INTO users (username,email,agree_mail,agree_help,profile_photo,short_bio) ' +
-    'VALUES(?, ?, ?, ?, ?, \'\')', [name, email, agreeMail ? 1 : 0, agreeNewProject ? 1 : 0, profilePhotoId, ''],
+    'VALUES(?, ?, ?, ?, ?, ?)', [name, email, agreeMail ? 1 : 0, agreeNewProject ? 1 : 0, profilePhotoId, bio],
     function(err, result) {
       if (err) {
         return done(err);
@@ -93,6 +106,66 @@ exports.addUser = function(name, email, password, agreeMail, agreeNewProject, pr
           done(null, result.insertId);
         });
     });
+};
+
+exports.updateUser = function(userId, username, email, password, profilePhotoId, bio, done) {
+    var connection = db.get();
+    console.log(userId, username, email, password, bio, profilePhotoId);
+    var query='';
+    if(profilePhotoId != 'default'){
+        connection.queryAsync('UPDATE users SET email=?,profile_photo=?, short_bio=? WHERE username=?',
+            [email, profilePhotoId,bio, username]).then(
+            function(data) {
+                var salt = bcrypt.genSaltSync(saltRounds);
+                var hash = bcrypt.hashSync(password, salt);
+
+                if(password!==" "){
+                    console.log('password setting', password);
+                    connection.query('UPDATE password SET salt=?, password=? WHERE id=?',
+                        [salt, hash, userId],
+                        function(err, res) {
+                            if (err) {
+                                console.log('in update password error');
+                                return done(err);
+                            }
+                            done(null, userId);
+                        });
+                } else{
+                    done(null, userId);
+                }
+
+            }, function(err) {
+                console.log('in update email error');
+                return done(err);
+            });
+    } else {
+        connection.queryAsync('UPDATE users SET email=?, short_bio=? WHERE username=?',
+            [email,bio, username]).then(
+            function(data) {
+                var salt = bcrypt.genSaltSync(saltRounds);
+                var hash = bcrypt.hashSync(password, salt);
+
+                if(password!==" "){
+                    console.log('password  setting', password);
+                    connection.query('UPDATE password SET salt=?, password=? WHERE id=?',
+                        [salt, hash, userId],
+                        function(err, res) {
+                            if (err) {
+                                console.log('in update password error');
+                                return done(err);
+                            }
+                            done(null, userId);
+                        });
+                } else{
+                    done(null, userId);
+                }
+
+            }, function(err) {
+                console.log('in update email error');
+                return done(err);
+            });
+    }
+
 };
 
 exports.deleteUser = function(id, done) {

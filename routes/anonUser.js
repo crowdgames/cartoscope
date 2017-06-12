@@ -15,6 +15,7 @@ var randomString = require('randomstring');
 router.get('/startAnon/:pCode',
   [filters.requiredParamHandler(['workerId', 'assignmentId', 'hitId', 'submitTo'])],
   function(req, res, next) {
+  //console.log('req.query ', req.query);
     var workerId = req.query.workerId;
     var projectID = req.params.pCode;
 
@@ -22,10 +23,11 @@ router.get('/startAnon/:pCode',
       req.logout();
       anonUserDB.findConsentedMTurkWorker(workerId, projectID).then(function(user) {
         if (user.id) {
+          //console.log('user object ', user)
             loginAnonUser(req, user).then(function(data) {
             res.redirect('/api/tasks/startProject/' + req.params.pCode);
           });
-
+          
         } else {
           res.redirect('/consentForm.html#/consent?project=' + req.params.pCode + '&' +
             querystring.stringify(req.query));
@@ -33,7 +35,7 @@ router.get('/startAnon/:pCode',
       }, function(error) {
         res.status(500).send({error: error.code});
       });
-
+      
     }, function(err) {
       res.status(500).send({error: err.code || 'Invalid project code'});
     });
@@ -49,10 +51,19 @@ router.get('/startKiosk/',
         var projectID;
         console.log('workerId ', workerId);
         //select a project list from all public projects
-        projectDB.getAllPublicProjects().then(function(projects){            
+        projectDB.getAllPublicProjects().then(function(projects){
+            // projects = ["TyGxf0Jo1cno", "TyGxf0Jo1cno", "TyGxf0Jo1cno"];
+            projects = ["ASNWK1dZEY1z", "RPoFzDjhHLdV"];
             randomProjectIndex = Math.floor(Math.random() * (projects.length));
-            selectedProject = projects[randomProjectIndex];
-            projectID = selectedProject.unique_code;
+           // console.log(randomProjectIndex);
+            projectID = projects[randomProjectIndex];
+            //console.log("ProjectID", projectID);
+
+            //randomProjectIndex = Math.floor(Math.random() * (projects.length - 0 + 1)) + min;
+            //projectID = projects[randomProjectIndex].unique_code;
+            //projectID="fGEYOud7NX8z";
+            //projectID="HD7xtmjClIyK";
+
             projectDB.getSingleProjectFromCode(projectID).then(function(project) {
                 req.logout();
                 anonUserDB.findConsentedKioskWorker(workerId, projectID).then(function(user) {
@@ -64,7 +75,7 @@ router.get('/startKiosk/',
 
                     } else {
                         console.log('user object ', user)
-                        res.status(200).send({projectID: projectID, workerID : workerId});
+                        res.status(200).send({projectID: projectID, workerID : workerId, project: project});
                     }
                 }, function(error) {
                     console.log('error ', error)
@@ -136,12 +147,13 @@ router.get('/consentKiosk/:pCode',
 router.get('/consent/:pCode',
   [filters.requiredParamHandler(['workerId', 'assignmentId', 'hitId', 'submitTo'])],
   function(req, res, next) {
+    var selectedProject={};
     projectDB.getSingleProjectFromCode(req.params.pCode).then(function(project) {
-     // console.log('req.query', req.query)
+        selectedProject = project;
       return anonUserDB.addMTurkWorker(req.query, req.params.pCode, 1, 1);
     }).then(function(userID) {
       if (userID != null) {
-        res.status(200).send({});
+        res.status(200).send({project: selectedProject});
       }
     }).catch(function(err) {
       res.status(500).send({error: err.code});

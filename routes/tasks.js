@@ -227,8 +227,9 @@ function processItems(dataSetId, dataSetSize, progressItem, userID, userType) {
       }
       all(promises).then(function(values) {
         var ids = values.reduce(function(acc, value) {
-          if (value.length > 0 && value[0].name) {
-            acc.push(value[0].name);
+          if (value.length > 0 && value[0]) {
+            //console.log(value[0]);
+            acc.push(value[0]);
           }
           return acc;
         }, []);
@@ -308,16 +309,22 @@ function checkDataSetReady(project) {
 
 router.post('/submit', [filters.requireLogin, filters.requiredParamHandler(['taskID', 'option', 'projectID'])],
   function(req, res, next) {
-
     console.log('in submit');
-    var taskID = req.body.taskID;
+    //var taskID = req.body.taskID;
+
+    var taskID = req.body.taskID.name;
+    console.log('req ', req);
+
     var response = req.body.option;
     var projectID = req.body.projectID;
     var userID = req.session.passport.user.id;
+    var centerLat = req.body.mapCenterLat;
+    var centerLon = req.body.mapCenterLon;
 
-    console.log(taskID, response, projectID, userID);
+    console.log(userID, projectID, taskID, response, centerLat, centerLon);
     
-    projectDB.addResponse(userID, projectID, taskID, response).then(projectDB.increaseProgress(userID, projectID))
+    projectDB.addResponse(userID, projectID, taskID, response,centerLat, centerLon)
+        .then(projectDB.increaseProgress(userID, projectID))
       .then(function(data) {
         console.log('data inserted', data);
         res.send({});

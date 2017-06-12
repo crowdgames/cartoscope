@@ -5,15 +5,13 @@ var db = require('../db/db');
 var bcrypt = require('bcrypt');
 var Promise = require('bluebird');
 var salt = process.env.SALT;
-
 var randomString = require('randomstring');
-
 var databaseName = process.env.DB_NAME;
 
 exports.findMTurkWorker = function(workerID, projectID) {
   return new Promise(function(resolve, reject) {
     var connection = db.get();
-
+    
     connection.queryAsync('SELECT * from `mturk_workers` where workerID=? and projectID=?',
       [bcrypt.hashSync(workerID, salt), projectID]).then(
       function(data) {
@@ -31,7 +29,7 @@ exports.findMTurkWorker = function(workerID, projectID) {
 exports.findMTurkWorker = function(workerID, projectID) {
   return new Promise(function(resolve, reject) {
     var connection = db.get();
-
+    
     connection.queryAsync('SELECT * from `mturk_workers` where workerID=? and projectID=?',
       [bcrypt.hashSync(workerID, salt), projectID]).then(
       function(data) {
@@ -66,7 +64,7 @@ exports.findConsentedMTurkWorker = function(workerID, projectID) {
 exports.findConsentedMTurkWorkerFromHash = function(workerID, projectID) {
   return new Promise(function(resolve, reject) {
     var connection = db.get();
-
+    
     connection.queryAsync('SELECT * from `mturk_workers` where `workerID`=? and `projectID`=? and `consented`=1',
       [workerID, projectID]).then(
       function(data) {
@@ -84,7 +82,7 @@ exports.findConsentedMTurkWorkerFromHash = function(workerID, projectID) {
 exports.addMTurkWorker = function(anonUser, projectID, siteID, consented) {
   return new Promise(function(resolve, reject) {
     var connection = db.get();
-
+    
     connection.queryAsync('INSERT INTO `mturk_workers` ' +
       '(`workerID`, `projectID`,`assignmentID`,`hitID`,`submitTo`,`siteID`,`consented`) VALUES ' +
       '(?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `consented`=?',
@@ -160,7 +158,7 @@ function generateHitCode(user) {
       var connection = db.get();
       generateUniqueCode().then(function(code) {
         code='PAUYDVMJ';
-        connection.queryAsync('UPDATE `' + databaseName + '`.`mturk_workers` SET' +
+          connection.queryAsync('UPDATE `' + databaseName + '`.`mturk_workers` SET' +
           ' `hit_code`=? WHERE `id`=?', [code, user.id]).then(
           function(data) {
             if (data.affectedRows == 1) {

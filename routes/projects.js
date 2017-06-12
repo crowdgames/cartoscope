@@ -1,6 +1,3 @@
-/**
- * Created by kiprasad on 03/08/16.
- */
 var express = require('express');
 var router = express.Router();
 var multer = require('multer');
@@ -15,6 +12,7 @@ var randomString = require('randomstring');
 var downloadStatus = require('../db/downloadStatus');
 var exec = require('child_process').exec;
 var spawn = require('child_process').spawn;
+
 var projectDB = require('../db/project');
 var anonUserDB = require('../db/anonUser');
 var userDB = require('../db/user');
@@ -41,36 +39,61 @@ router.get('/:code', [filters.requireLogin], function(req, res, next) {
   });
 });
 
+
+
+router.get('/getProjects/public', [filters.requireLogin], function(req, res, next) {
+    projectDB.getAllPublicProjects().then(function(project) {
+        res.send(project);
+    }, function(err) {
+        res.status(400).send(err.code);
+    });
+});
+
+
+router.get('/getProjectOwner/:userId', [filters.requireLogin], function(req, res, next) {
+    var id = req.params.userId;
+    userDB.getProjectOwner(id).then(function(user) {
+        res.json(user);
+    }, function(err) {
+        res.status(400).send(err.code);
+    });
+});
+
 router.post('/add', [upload.any(), filters.requireLogin, filters.requiredParamHandler(['name', 'description'])],
   function(req, res, next) {
     var body = req.body;
     var filename = 'default';
-
+    console.log('body ', body);
+    
     if (req.files && req.files.length > 0) {
       filename = req.files[0].filename;
+        console.log('file '+ filename);
+
       magic.detectFile(req.files[0].path, function(err, result) {
         if (err) {
+            console.log('result err'+ err);
           res.status(500).send({error: 'problem with the uploaded image, please try again'});
           fs.unlink(req.files[0].path);
         }
-
+        
         if (isValidImage(result)) {
           fs.renameSync(req.files[0].path, 'profile_photos/' + filename);
           generateUniqueProjectCode().then(function(projectCode) {
             projectDB.addProject(body.name, req.session.passport.user.id, body.description, filename, projectCode).then(
               function(result) {
+                console.log('result '+ result);
                 res.send({id: result.insertId, code: projectCode});
               }, function(err) {
                 res.status(500).send({error: err.code});
               });
           });
-
+          
         } else {
           res.status(500).send({error: 'problem with the uploaded image, please try again'});
           fs.unlink(req.files[0].path);
         }
       });
-
+      
     } else {
       generateUniqueProjectCode().then(function(projectCode) {
         projectDB.addProject(body.name, req.session.passport.user.id, body.description, filename, projectCode).then(
@@ -101,9 +124,9 @@ router.post('/changePrivacy',
 router.get('/admins/:id', filters.requireLogin,
   function(req, res, next) {
     projectDB.getAdmins(req.params.id).then(function(data) {
-
+      
       var users = [];
-
+      
       for (var i in data) {
         users.push(userDB.getUserByID(data[i]['user_id']));
       }
@@ -184,7 +207,7 @@ router.get('/upload/status/:id', function(req, res, next) {
           res.status(404).send({error: 'Not found'});
         }
       }
-
+      
     });
   } else {
     res.status(400).send({error: 'ID missing'});
@@ -232,8 +255,9 @@ router.post('/:id/survey', [filters.requireLogin], function(req, res, next) {
           res.status(500).send({error: err.code});
         }
       );
-
+      
     }, function(err) {
+      console.log("error here")
       res.status(500).send({error: err.code});
     });
   } else {
@@ -253,9 +277,9 @@ router.post('/upload', [filters.requireLogin, filters.requiredParamHandler(['fil
         path: parsedURl.path,
         method: 'head'
       };
-
+      
       assignDownloadID(function(downloadID) {
-
+        
         var rq = http.request(options, function(rr) {
           var contentType = rr.headers['content-type'];
           if (rr.statusCode != 200) {
@@ -270,9 +294,9 @@ router.post('/upload', [filters.requireLogin, filters.requiredParamHandler(['fil
             // status queued
             downloadStatus.setStatus(downloadID, 0, function(err, res) {
             });
-
+            
             download(body.file, downloadID, req.body.projectID);
-
+            
           } else {
             res.status(500).send({
               error: 'Not a zip file'
@@ -306,14 +330,14 @@ function download(loc, downloadID, projectID) {
   // Status starting Download
   projectDB.addDataSetID(projectID, downloadID).then(function() {
     downloadStatus.setStatus(downloadID, 1, function(err, res) {
-
+      
     });
-
+    
     var downloadDir = 'temp/';
     var wget = 'wget ' + '-O ' + downloadDir + downloadID + ' ' + loc;
-
+    
     exec(wget, {maxBuffer: 1024 * 10000000}, function(err) {
-
+      
       if (err) {
         mailer.mailer(email, 'done', '<b> Error downloading file </b>');
         // status error with file
@@ -325,28 +349,28 @@ function download(loc, downloadID, projectID) {
         });
         var filename = url.parse(loc).pathname;
         var parsedFilename = path.parse(filename);
-
+        
         var type = parsedFilename.ext;
-
+        
         var dirName = 'dataset/' + downloadID;
         if (!fs.existsSync(dirName)) {
           fs.mkdirSync(dirName);
         }
-
+        
         if (type == '.gz' || type == '.tar') {
           console.log('TAR FILE');
-
+          
           var tarFile = 'temp/' + downloadID;
-
+          
           // status started unzipping
           downloadStatus.setStatus(downloadID, 3, function(err, res) {
           });
-
+          
           var untar = spawn('tar', ['-xvf', tarFile, '-C', dirName + '/.']);
-
+          
           untar.stdout.on('data', function(data) {
           });
-
+          
           untar.on('close', function(code) {
             if (code == 0) {
               readDataSetFiles(dirName, downloadID).then(imageCompressionLib.processData).then(function(data) {
@@ -362,22 +386,22 @@ function download(loc, downloadID, projectID) {
                     });
                     pArr.push(p);
                   }
-
+                  
                   Promise.all(pArr).then(function(data) {
-                    mailer.mailer(email, 'done', '<b> Done downloading file ' + filename + ' </b>');
+                      mailer.mailer(email, 'done', '<b> Done downloading file ' + filename + ' </b>');
                     downloadStatus.setStatus(downloadID, 4, function(err, res) {
                     });
                   });
-
+                  
                 });
               }).catch(function(err) {
-                mailer.mailer(email, 'done', '<b> Error downloading file ' + filename + ' </b>');
+                  mailer.mailer(email, 'done', '<b> Error downloading file ' + filename + ' </b>');
                 downloadStatus.setStatus(downloadID, 4, function(err, res) {
                 });
               });
             }
           });
-
+          
         } else if (type == '.zip') {
           console.log('ZIP FILE');
         }

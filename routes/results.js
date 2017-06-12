@@ -19,3 +19,18 @@ router.get('/:projectCode', function(req, res, next) {
     }, function(err) {
       res.status(400).send('project not found!!!');
     })});
+
+
+router.get('/all/:projectCode', function(req, res, next) {
+    var projectCode = req.params.projectCode;
+    var project = projectDB.getSingleProjectFromCode(projectCode);
+    project.then(function(project) {
+        var datasetId = project.dataset_id;
+        resultDB.heatMapDataAll(projectCode, datasetId).then(function(results) {
+            res.send(results);
+        }, function(err) {
+            res.status(400).send('heatmap results could not be generated!!!');
+        });
+    }, function(err) {
+        res.status(400).send('project not found!!!');
+    })});

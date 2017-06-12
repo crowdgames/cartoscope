@@ -11,7 +11,17 @@ var Magic = mmm.Magic;
 var magic = new Magic(mmm.MAGIC_MIME_TYPE);
 var path = require('path');
 var filters = require('../constants/filters');
-var upload = multer({dest: 'uploads/'});
+
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/')
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname);
+    }
+})
+
+var upload = multer({ storage: storage });
 
 router.get('/checkid/:id', function(req, res, next) {
   if ('id' in req.params) {
@@ -100,6 +110,8 @@ router.get('/', filters.requireLogin, function(req, res, next) {
 
 router.post('/add', upload.any(), function(req, res, next) {
   var body = req.body;
+  console.log('body info', body);
+
   if (!body.username || !body.password || !body.email) {
     res.status(400).send({error: 'Missing one of required parameters: username, password and email'});
     return;
@@ -110,19 +122,22 @@ router.post('/add', upload.any(), function(req, res, next) {
   var filename = 'default';
   if (req.files && req.files.length > 0) {
     filename = req.files[0].filename;
+      console.log('filename ', filename);
+
     magic.detectFile(req.files[0].path, function(err, result) {
       if (err) {
         res.status(500).send({error: 'problem with the uploaded image, please try again'});
         fs.unlink(req.files[0].path);
       }
+
       if (isValidImage(result)) {
+        console.log('result ', result);
         fs.renameSync(req.files[0].path, 'profile_photos/' + filename);
         addToDB(body, filename, res);
       } else {
         res.status(500).send({error: 'problem with the uploaded image, please try again'});
         fs.unlink(req.files[0].path);
       }
-      
     });
   } else {
     addToDB(body, filename, res);
@@ -130,7 +145,8 @@ router.post('/add', upload.any(), function(req, res, next) {
 });
 
 var addToDB = function(body, filename, res) {
-  userDB.addUser(body.username, body.email, body.password, body.agreeMail, body.agreeNewProject, filename,
+  console.log('body details ', body);
+  userDB.addUser(body.username, body.email, body.password, body.agreeMail, body.agreeNewProject, filename, body.bio,
     function(err, id) {
       if (!err) {
         res.setHeader('Content-Type', 'application/json');
@@ -160,13 +176,63 @@ router.delete('/delete/:id', function(req, res, next) {
   }
 });
 
-router.put('/update/:id', filters.requireLogin, function(req, res, next) {
-  if ('id' in req.params) {
-    res.send('respond with a resource');
-  } else {
-    res.status(404).send({error: 'Missing ID'});
-  }
+router.post('/editUser', upload.any(), filters.requireLogin, function(req, res, next) {
+    var body = req.body;
+    console.log('body info', body);
+
+    if (!body.username || !body.email) {
+        res.status(400).send({error: 'Missing one of required parameters: username, password and email'});
+        return;
+    } else if (!validator.isEmail(body.email)) {
+        res.status(400).send({error: 'malformed email'});
+    }
+
+    var filename = 'default';
+
+    //filename = body.profilePic || filename;
+
+    if (req.files && req.files.length > 0) {
+        filename = req.files[0].filename;
+        console.log('filename ', filename);
+
+        magic.detectFile(req.files[0].path, function(err, result) {
+            if (err) {
+                res.status(500).send({error: 'problem with the uploaded image, please try again'});
+                fs.unlink(req.files[0].path);
+            }
+
+            if (isValidImage(result)) {
+                console.log('result ', result);
+                fs.renameSync(req.files[0].path, 'profile_photos/' + filename);
+                updateToDB(body, filename, res);
+            } else {
+                res.status(500).send({error: 'problem with the uploaded image, please try again'});
+                fs.unlink(req.files[0].path);
+            }
+        });
+    } else {
+        updateToDB(body, filename, res);
+    }
 });
+
+var updateToDB = function(body, filename, res) {
+    console.log('body update details ', body);
+    if (body.profilePic == undefined){
+        filename = filename;
+    }
+    if(body.password === undefined){
+        body.password = " ";
+    }
+    userDB.updateUser(body.userId, body.username, body.email, body.password, filename, body.bio,
+        function(err, id) {
+            if (!err) {
+                res.setHeader('Content-Type', 'application/json');
+                res.send(JSON.stringify({'id': id}));
+            } else {
+                res.status(500).send({error: err.code});
+            }
+        });
+};
 
 router.put('/resetPassword', function(req, res, next) {
   var params = req.params;

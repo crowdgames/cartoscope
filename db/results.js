@@ -20,3 +20,26 @@ exports.heatMapData = function(projectCode, datasetId) {
       });
   });
 };
+
+
+
+exports.heatMapDataAll = function(projectCode, datasetId) {
+    var connection = db.get();
+    return new promise(function(resolve, error) {
+        var heatMapQuery = "SELECT DISTINCT r.task_id, d.x, d.y, \
+     r.timestamp, r.user_id ,r.project_id,\
+     JSON_EXTRACT(p.template, CONCAT('$.options[', r.response, '].text')) as answer,\
+     JSON_EXTRACT(p.template, CONCAT('$.options[', r.response, '].color')) as color, \
+     JSON_EXTRACT(p.template, '$.question') as question \
+     FROM response as r, projects as p, dataset_" + datasetId + " as d \
+     WHERE r.project_id=p.id && \
+      d.name=r.task_id && p.unique_code='" + projectCode + "'";
+        connection.queryAsync(heatMapQuery).then(
+            function(data) {
+
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};
