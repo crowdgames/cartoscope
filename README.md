@@ -3,6 +3,8 @@
 
 1.  git clone https://github.com/crowdgames/cartoscope-backend.git
 
+2. git clone https://github.com/crowdgames/cartoscope-frontend.git
+
 2.  Install Node, MySQL and Wget:
 	1. ##### Windows installation
 		Windows users follow the link to install Node: http://blog.teamtreehouse.com/install-node-js-npm-windows
@@ -32,12 +34,18 @@
 		Go to cartoscope-backend directory and run to create mysql database.
 			mysql -u converge -p convergeDB < database_migrations/dump.sql
 
-8. #### Create temp and dataset directories
+8. #### Create directories
 		Go to cartoscope-backend directory and run
         	mkdir temp
 			mkdir dataset
+			mkdir profile_photos
 
-9. #### Set environment variables in bashrc
+8. #### Permissions for client_body_temp
+		Find the client_body_temp directory for nginx
+		sudo chown -Rv username client_body_temp/
+		(Replace username accordingly)
+
+9. #### Set environment variables in bashrc (replace with your values)
 		export DB_USER=converge                                                         
 		export DB_PASSWORD=database_password                                                     
 		export DB_NAME=convergeDB                                                       
@@ -60,7 +68,8 @@
 				  include  mime.types;                                               
 				  gzip  on;                                                               
 				  server {                                                                    
-					listen 8081;                                                    
+					listen 8081;
+					client_max_body_size    100M;
 					location / {                                                    
 					  root /XXXXX/converge-frontend;
 					}                                                               
@@ -75,13 +84,14 @@
 					}                                                               
 				 }                                                                           
 			} 
-			/XXXXX/converge-frontend is the absolute path to the front end repository for the project
+			/XXXXX/cartoscope-frontend is the absolute path to the front end repository for the project
 			
 		3. Sudo ngnix -s quit to stop
 		4. Sudo ngnix to start with new conf file.
 		5. Sudo ngnix -s reload to reload with a new conf when ngnix is already running
 
 12. #### Start Project
+		1. Go to cartoscope-frontend directory and do: bower install
 		1. Go to cartoscope-backend directory and do: npm install
 		2. Do: npm start
 		3. Login to http://localhost:8081 to start.
