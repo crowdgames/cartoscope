@@ -202,7 +202,7 @@ exports.getNumberOfContributers = function(project) {
 exports.getDataSetItem = function(datasetId, offset) {
   return new Promise(function(resolve, error) {
     var connection = db.get();
-    connection.queryAsync('SELECT * FROM '+databaseName+'.dataset_' + datasetId + ' limit 1 offset ?',
+    connection.queryAsync('SELECT * FROM '+databaseName+'.dataset_' + datasetId + ' ORDER BY name ASC LIMIT 1 OFFSET ?',
       [offset - 1]).then(
       function(data) {
         resolve(data);
@@ -262,6 +262,19 @@ exports.getDataSetSize = function(datasetId) {
         error(err);
       });
   });
+};
+
+exports.getDataSetPoints = function(datasetId) {
+    var tableName = 'dataset_' + datasetId;
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT * FROM ' + tableName).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
 };
 
 exports.startNewProgress = function(userId, projectId, userType) {

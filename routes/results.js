@@ -34,3 +34,29 @@ router.get('/all/:projectCode', function(req, res, next) {
     }, function(err) {
         res.status(400).send('project not found!!!');
     })});
+
+router.get('/all/:projectCode/:userId', function(req, res, next) {
+    var projectCode = req.params.projectCode;
+    var userId = req.params.userId;
+    console.log(userId)
+    var project = projectDB.getSingleProjectFromCode(projectCode);
+    project.then(function(project) {
+        var datasetId = project.dataset_id;
+        resultDB.heatMapDataAllUser(projectCode, datasetId,userId).then(function(results) {
+            res.send(results);
+        }, function(err) {
+            res.status(400).send('results could not be generated!!!');
+        });
+    }, function(err) {
+        res.status(400).send('project not found!!!');
+    })});
+
+
+router.get('/getUserStats/:userId', function(req, res, next) {
+    var userId = req.params.userId;
+    resultDB.getUserStats(userId).then(function(results) {
+        res.send(results);
+    }, function(err) {
+        res.status(400).send('results could not be generated!!!');
+    });
+});
