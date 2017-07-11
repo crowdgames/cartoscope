@@ -56,7 +56,6 @@ exports.heatMapDataAllUser = function(projectCode, datasetId,userId) {
      WHERE r.project_id=p.id && \
       d.name=r.task_id && r.user_id='" + userId + "' && p.unique_code='" + projectCode + "'";
 
-        console.log(heatMapQuery)
         connection.queryAsync(heatMapQuery).then(
             function(data) {
 

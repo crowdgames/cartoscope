@@ -7,6 +7,7 @@ var Promise = require('bluebird');
 var salt = process.env.SALT;
 var randomString = require('randomstring');
 var databaseName = process.env.DB_NAME;
+var hitCode = process.env.hitCode;
 
 exports.findMTurkWorker = function(workerID, projectID) {
   return new Promise(function(resolve, reject) {
@@ -44,11 +45,11 @@ exports.findMTurkWorker = function(workerID, projectID) {
   });
 };
 
-exports.findConsentedMTurkWorker = function(workerID, projectID) {
+exports.findConsentedMTurkWorker = function(workerID, projectID,hitId) {
   return new Promise(function(resolve, reject) {
     var connection = db.get();
-    connection.queryAsync('SELECT * from `mturk_workers` where workerID=? and projectID=? and consented=1',
-      [bcrypt.hashSync(workerID, salt), projectID]).then(
+    connection.queryAsync('SELECT * from `mturk_workers` where workerID=? and hitId=? and projectID=? and consented=1',
+      [bcrypt.hashSync(workerID, salt),hitId, projectID]).then(
       function(data) {
         if (data.length == 1) {
           resolve(data[0]);
@@ -157,7 +158,8 @@ function generateHitCode(user) {
     if (user.id) {
       var connection = db.get();
       generateUniqueCode().then(function(code) {
-        code='PAUYDVMJ';
+          console.log("Hitcode",hitCode);
+        code=hitCode;
           connection.queryAsync('UPDATE `' + databaseName + '`.`mturk_workers` SET' +
           ' `hit_code`=? WHERE `id`=?', [code, user.id]).then(
           function(data) {
@@ -167,6 +169,7 @@ function generateHitCode(user) {
               reject({error: 'Couldn\'t find the user'});
             }
           }, function(error) {
+              console.log("stuck here")
             reject(error);
           });
       });

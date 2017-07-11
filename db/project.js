@@ -419,6 +419,23 @@ exports.getAllPublicProjects = function() {
     });
 };
 
+exports.getRandomProjectMturk  = function() {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+        connection.queryAsync('select unique_code from selection_mturk;').then(
+            function(data) {
+
+                var random_pick = data[Math.floor(Math.random() * data.length)];
+                var projectId = random_pick.unique_code;
+                resolve(projectId);
+
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
 exports.getProgress = function(projectID, user) {
   return new Promise(function(resolve, error) {
     var connection = db.get();
