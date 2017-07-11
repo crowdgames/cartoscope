@@ -43,3 +43,38 @@ exports.heatMapDataAll = function(projectCode, datasetId) {
             });
     });
 };
+
+exports.heatMapDataAllUser = function(projectCode, datasetId,userId) {
+    var connection = db.get();
+    return new promise(function(resolve, error) {
+        var heatMapQuery = "SELECT DISTINCT r.task_id, d.x, d.y, \
+     r.timestamp, r.user_id ,r.project_id,\
+     JSON_EXTRACT(p.template, CONCAT('$.options[', r.response, '].text')) as answer,\
+     JSON_EXTRACT(p.template, CONCAT('$.options[', r.response, '].color')) as color, \
+     JSON_EXTRACT(p.template, '$.question') as question \
+     FROM response as r, projects as p, dataset_" + datasetId + " as d \
+     WHERE r.project_id=p.id && \
+      d.name=r.task_id && r.user_id='" + userId + "' && p.unique_code='" + projectCode + "'";
+
+        connection.queryAsync(heatMapQuery).then(
+            function(data) {
+
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
+exports.getUserStats = function(userId) {
+    var connection = db.get();
+    return new promise(function(resolve, error) {
+        var heatMapQuery = "SELECT project_id,COUNT(*) as count FROM response where user_id= " + userId + " GROUP BY project_id;";
+        connection.queryAsync(heatMapQuery).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};

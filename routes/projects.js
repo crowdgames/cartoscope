@@ -59,6 +59,21 @@ router.get('/getProjectOwner/:userId', [filters.requireLogin], function(req, res
     });
 });
 
+
+router.get('/getProjectPoints/:projectCode', function(req, res, next) {
+    var projectCode = req.params.projectCode;
+    var project = projectDB.getSingleProjectFromCode(projectCode);
+    project.then(function(project) {
+        var datasetId = project.dataset_id;
+        projectDB.getDataSetPoints(datasetId).then(function(results) {
+            res.send(results);
+        }, function(err) {
+            res.status(400).send('results could not be generated!!!');
+        });
+    }, function(err) {
+        res.status(400).send('Project not found!!!');
+    })});
+
 router.post('/add', [upload.any(), filters.requireLogin, filters.requiredParamHandler(['name', 'description'])],
   function(req, res, next) {
     var body = req.body;

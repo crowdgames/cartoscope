@@ -17,7 +17,7 @@ var dsDB = require('../db/downloadStatus');
 
 router.get('/getInfo/:code', [filters.requireLogin], function(req, res, next) {
   checkUserAllowedAccess(req.session.passport.user, req.params.code).then(function(data) {
-    console.log('In CheckUserAllowed Acess', data);
+    //console.log('In CheckUserAllowed Acess', data);
     var getProject = projectDB.getProjectFromCode(req.params.code);
     getProject.then(function(project) {
       if (project.length > 0) {
@@ -98,7 +98,7 @@ router.get('/getInfoId/:id', [filters.requireRegularLogin], function(req, res, n
 function checkUserAllowedAccess(user, projectCode) {
   return new Promise(function(resolve, error) {
     if (user.anonymous) {
-        console.log('before findConsentedMTurkWorkerFromHash');
+        //console.log('before findConsentedMTurkWorkerFromHash');
       var mturk = anonUserDB.findConsentedMTurkWorkerFromHash(user.id, projectCode).then(function(userData) {
         if (userData.consented) {
           resolve(true);
@@ -108,9 +108,9 @@ function checkUserAllowedAccess(user, projectCode) {
       });
 
       var kiosk = anonUserDB.findConsentedKioskWorker(user.id, projectCode).then(function(userData) {
-          console.log('before findConsentedKioskWorker');
+          //console.log('before findConsentedKioskWorker');
           if (userData.consented) {
-            console.log('userData ', userData);
+            //console.log('userData ', userData);
               resolve(true);
           } else {
               error(false);
@@ -133,7 +133,8 @@ function checkUserAllowedAccess(user, projectCode) {
 
 router.get('/gettask/:code', [filters.requireLogin], function(req, res, next) {
   projectDB.getSingleProjectFromCode(req.params.code).then(function(project) {
-    console.log("IN Task get task "+ project);
+    // console.log("IN Task get task "+ project);
+      var showFlightPath = project.flight_path;
       var user = req.session.passport.user;
     var dataSetId = project['dataset_id'];
     if (!dataSetId) {
@@ -156,7 +157,7 @@ router.get('/gettask/:code', [filters.requireLogin], function(req, res, next) {
         if (dataSetSize == -1 || !progressItem) {
           res.status(500).send({error: 'Data set not found or Progress not created.'});
         } else {
-          processItems(dataSetId, dataSetSize, progressItem, userID, user.type).then(function(data) {
+          processItems(dataSetId, dataSetSize, progressItem, userID, user.type,showFlightPath).then(function(data) {
             if (data) {
               res.send({
                 items: data,
@@ -181,9 +182,9 @@ router.get('/gettask/:code', [filters.requireLogin], function(req, res, next) {
   });
 });
 
-function processItems(dataSetId, dataSetSize, progressItem, userID, userType) {
-    console.log('Data Set Size', dataSetSize);
-    console.log('processs data', progressItem);
+function processItems(dataSetId, dataSetSize, progressItem, userID, userType,showFlightPath) {
+    //console.log('Data Set Size', dataSetSize);
+    //console.log('processs data', progressItem);
 
   return new Promise(function(resolve, reject) {
       var order = [];
@@ -199,21 +200,22 @@ function processItems(dataSetId, dataSetSize, progressItem, userID, userType) {
         for (var i = 1; i <= dataSetSize; i++) {
             order.push(i);
         }
-        console.log(' in datasetsize equals progress ', order, dataSetSize);
+       // console.log(' in datasetsize equals progress ', order, dataSetSize);
         order = ss.shuffle(order, userIDStr.substr(userIDStr.length - 8));
         order = order.slice(progressD - 1, progressD + 4);
-        console.log('new orders'+ order);
+        //console.log('new orders'+ order);
     } else{
         progressD = progressItem.progress;
-        order = ss.shuffle(order, userIDStr.substr(userIDStr.length - 8));
+        if (!showFlightPath) {
+            order = ss.shuffle(order, userIDStr.substr(userIDStr.length - 8));
+        }
         order = order.slice(progressD - 1, progressD + 4);
     }
 
-    console.log('Progress  ', progressItem.progress);
 
    // var userIDStr = userID + '';
     //order = ss.shuffle(order, userIDStr.substr(userIDStr.length - 8));
-    console.log('order ', order);
+    // console.log('order ', order);
 
 
     if (order.length > 0) {
@@ -258,14 +260,12 @@ router.get('/getImage/:dataset/:name', [filters.requireLogin], function(req, res
 
 router.get('/startProject/:project', [filters.requireLogin], function(req, res, next) {
   var user = req.session.passport.user;
-  console.log('user', user);
   projectDB.getSingleProjectFromCode(req.params.project).then(checkDataSetReady).then(function(project) {
     if (user.anonymous) {
       if (user.consented) {
-        console.log("User Consented");
         projectDB.findProgress(project, user.id, 1).then(function(data) {
           if ('progress' in data) {
-            res.redirect('/task.html#/?code=' + req.params.project+ '&type='+req.session.passport.user.type);
+            res.redirect('/task.html#/?code=' + req.params.project+ '&type='+req.session.passport.user.type + '&workerID=' + user.workerID + '&hitID=' + user.hitID);
           } else {
             res.status(500).send({error: 'No progress could be found'});
           }
@@ -274,7 +274,7 @@ router.get('/startProject/:project', [filters.requireLogin], function(req, res, 
           res.status(500).send({error: err.code});
         });
       } else {
-        res.redirect('api/anon/startAnon/' + req.params.project);
+        res.redirect('api/anon/startAnon/' + req.params.project + '&workerID=' + user.workerID + '&hitID=' + user.hitID);
       }
     } else {
       projectDB.findProgress(project, user.id, 0).then(function(data) {
@@ -309,11 +309,9 @@ function checkDataSetReady(project) {
 
 router.post('/submit', [filters.requireLogin, filters.requiredParamHandler(['taskID', 'option', 'projectID'])],
   function(req, res, next) {
-    console.log('in submit');
     //var taskID = req.body.taskID;
 
     var taskID = req.body.taskID.name;
-    console.log('req ', req);
 
     var response = req.body.option;
     var projectID = req.body.projectID;
@@ -321,12 +319,12 @@ router.post('/submit', [filters.requireLogin, filters.requiredParamHandler(['tas
     var centerLat = req.body.mapCenterLat;
     var centerLon = req.body.mapCenterLon;
 
-    console.log(userID, projectID, taskID, response, centerLat, centerLon);
+    // console.log(userID, projectID, taskID, response, centerLat, centerLon);
     
     projectDB.addResponse(userID, projectID, taskID, response,centerLat, centerLon)
         .then(projectDB.increaseProgress(userID, projectID))
       .then(function(data) {
-        console.log('data inserted', data);
+        // console.log('data inserted', data);
         res.send({});
       }).catch(function(err) {
       res.status(500).send({err: err.code || 'Could not submit response'});

@@ -18,10 +18,11 @@ router.get('/startAnon/:pCode',
   //console.log('req.query ', req.query);
     var workerId = req.query.workerId;
     var projectID = req.params.pCode;
+    var hitId = req.query.hitId;
 
     projectDB.getSingleProjectFromCode(projectID).then(function(project) {
       req.logout();
-      anonUserDB.findConsentedMTurkWorker(workerId, projectID).then(function(user) {
+      anonUserDB.findConsentedMTurkWorker(workerId, projectID,hitId).then(function(user) {
         if (user.id) {
           //console.log('user object ', user)
             loginAnonUser(req, user).then(function(data) {
@@ -40,6 +41,38 @@ router.get('/startAnon/:pCode',
       res.status(500).send({error: err.code || 'Invalid project code'});
     });
   });
+
+
+
+router.get('/startMturkRandom/',
+    [filters.requiredParamHandler(['workerId', 'assignmentId', 'hitId', 'submitTo'])],
+    function(req, res, next) {
+        //console.log('req.query ', req.query);
+        var workerId = req.query.workerId;
+        var hitId = req.query.hitId;
+
+        projectDB.getRandomProjectMturk().then(function(projectID) {
+            req.logout();
+            anonUserDB.findConsentedMTurkWorker(workerId, projectID,hitId).then(function(user) {
+                if (user.id) {
+                    //console.log('user object ', user)
+                    loginAnonUser(req, user).then(function(data) {
+                        res.redirect('/api/tasks/startProject/' + projectID);
+                    });
+
+                } else {
+                    res.redirect('/consentForm.html#/consent?project=' + projectID + '&' +
+                        querystring.stringify(req.query));
+                }
+            }, function(error) {
+                res.status(500).send({error: error.code});
+            });
+
+        }, function(err) {
+            res.status(500).send({error: err.code || 'Invalid project code'});
+        });
+    });
+
 
 router.get('/startKiosk/',
     [filters.requiredParamHandler([])],
