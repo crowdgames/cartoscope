@@ -13,6 +13,7 @@ var taskApi = require('./routes/tasks');
 var session = require('express-session');
 var anonApi = require('./routes/anonUser');
 var results = require('./routes/results');
+var d3 = require('d3');
 
 var app = express();
 

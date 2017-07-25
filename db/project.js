@@ -113,6 +113,19 @@ exports.updateTemplate = function(projectId, template) {
   });
 };
 
+exports.updateDescription = function(projectId, description) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('UPDATE projects SET description=? WHERE id=?',
+            [description, projectId]).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
 exports.publish = function(projectId) {
   return new Promise(function(resolve, error) {
     var connection = db.get();
@@ -185,6 +198,27 @@ exports.getSingleProjectFromCode = function(uniqueCode) {
       });
   });
 };
+
+
+exports.getTutorialFromCode = function(uniqueCode) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        console.log("I got " + uniqueCode)
+        var queryString = 'SELECT * from tutorial WHERE unique_code = \'' + uniqueCode + '\'';
+        console.log(queryString)
+        connection.queryAsync(queryString).then(
+            function(data) {
+                if (data.length > 0) {
+                    resolve(data);
+                } else {
+                    error({code: 'No project found'});
+                }
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
 
 exports.getNumberOfContributers = function(project) {
   return new Promise(function(resolve, error) {

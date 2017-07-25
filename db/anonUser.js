@@ -157,9 +157,9 @@ function generateHitCode(user) {
   return new Promise(function(resolve, reject) {
     if (user.id) {
       var connection = db.get();
-      generateUniqueCode().then(function(code) {
+      generateUniqueCode().then(function(dcode) {
           console.log("Hitcode",hitCode);
-        code=hitCode;
+        var code=hitCode;
           connection.queryAsync('UPDATE `' + databaseName + '`.`mturk_workers` SET' +
           ' `hit_code`=? WHERE `id`=?', [code, user.id]).then(
           function(data) {

@@ -142,11 +142,14 @@ CREATE TABLE `projects` (
   `archived` int(1) DEFAULT '0',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `last_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `flight_path` int(11) DEFAULT '0',
+  `point_selection` int(11) DEFAULT '0',
+  `points_file` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_code_UNIQUE` (`unique_code`),
   KEY `Creator_idx` (`creatorID`),
   CONSTRAINT `Creator` FOREIGN KEY (`creatorID`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -186,6 +189,35 @@ CREATE TABLE `survey` (
   UNIQUE KEY `unique` (`user_id`,`project_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=212 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+
+
+
+--
+-- Table structure for table `tutorial`
+--
+
+DROP TABLE IF EXISTS `tutorial`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tutorial` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `unique_code` varchar(255) DEFAULT NULL,
+  `point_selection` int(11) DEFAULT '0',
+  `points_file` varchar(255) DEFAULT NULL,
+  `poi_name` varchar(255) DEFAULT NULL,
+  `template` text,
+  `image_name` varchar(255) DEFAULT NULL,
+  `answer` varchar(255) DEFAULT NULL,
+  `explanation` text,
+  `x` varchar(45) DEFAULT NULL,
+  `y` varchar(45) DEFAULT NULL,
+  `zoom` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
 
 --
 -- Table structure for table `users`
