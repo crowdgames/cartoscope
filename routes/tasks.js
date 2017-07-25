@@ -206,10 +206,13 @@ function processItems(dataSetId, dataSetSize, progressItem, userID, userType,sho
         //console.log('new orders'+ order);
     } else{
         progressD = progressItem.progress;
+
         if (!showFlightPath) {
             order = ss.shuffle(order, userIDStr.substr(userIDStr.length - 8));
         }
         order = order.slice(progressD - 1, progressD + 4);
+        console.log("Order is" ,order)
+
     }
 
 
@@ -318,15 +321,42 @@ router.post('/submit', [filters.requireLogin, filters.requiredParamHandler(['tas
     var userID = req.session.passport.user.id;
     var centerLat = req.body.mapCenterLat;
     var centerLon = req.body.mapCenterLon;
+    var multiple = req.body.multiple || 0;
 
-    // console.log(userID, projectID, taskID, response, centerLat, centerLon);
-    
-    projectDB.addResponse(userID, projectID, taskID, response,centerLat, centerLon)
-        .then(projectDB.increaseProgress(userID, projectID))
-      .then(function(data) {
-        // console.log('data inserted', data);
-        res.send({});
-      }).catch(function(err) {
-      res.status(500).send({err: err.code || 'Could not submit response'});
-    });
+    //If markers task, don't increase the progress as long as the multiple flag is up
+    if (multiple) {
+
+        projectDB.addResponse(userID, projectID, taskID, response,centerLat, centerLon)
+            .then(function(data) {
+                // console.log('data inserted', data);
+                res.send({});
+            }).catch(function(err) {
+            res.status(500).send({err: err.code || 'Could not submit response'});
+        });
+
+    } else {
+
+        projectDB.increaseProgress(userID, projectID)
+            .then(function(data) {
+                // console.log('data inserted', data);
+                res.send({});
+            }).catch(function(err) {
+            res.status(500).send({err: err.code || 'Could not submit response'});
+        });
+    }
   });
+
+
+router.post('/updateProgress', [filters.requireLogin, filters.requiredParamHandler(['taskID', 'projectID'])],
+    function(req, res, next) {
+        var projectID = req.body.projectID;
+        var userID = req.session.passport.user.id;
+
+          projectDB.increaseProgress(userID, projectID)
+                .then(function(data) {
+                    // console.log('data inserted', data);
+                    res.send({});
+                }).catch(function(err) {
+                res.status(500).send({err: err.code || 'Could not update progress'});
+            });
+    });

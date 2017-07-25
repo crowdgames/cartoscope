@@ -74,6 +74,18 @@ router.get('/getProjectPoints/:projectCode', function(req, res, next) {
         res.status(400).send('Project not found!!!');
     })});
 
+
+router.get('/getTutorial/:projectCode', function(req, res, next) {
+    var projectCode = req.params.projectCode;
+    projectDB.getTutorialFromCode(projectCode).then(function(results) {
+            res.send(results);
+        }, function(err) {
+            res.status(400).send('results could not be generated!!!');
+        });
+    });
+
+
+
 router.post('/add', [upload.any(), filters.requireLogin, filters.requiredParamHandler(['name', 'description'])],
   function(req, res, next) {
     var body = req.body;
@@ -135,6 +147,21 @@ router.post('/changePrivacy',
       res.status(500).send({'error': err.code});
     });
   });
+
+router.post('/updateDescription',
+    [filters.requireLogin, filters.requiredParamHandler(['projectID', 'description']), upload.any()],
+    function(req, res, next) {
+        projectDB.updateDescription(req.body.projectID, req.body.description).then(function(data) {
+            if (data.affectedRows == 1) {
+                res.send({'status': 'done'});
+            } else {
+                res.status(500).send({error: 'Project not found'});
+            }
+        }, function(err) {
+            console.log(err);
+            res.status(500).send({'error': err.code});
+        });
+    });
 
 router.get('/admins/:id', filters.requireLogin,
   function(req, res, next) {
@@ -199,6 +226,22 @@ router.post('/updateTemplate',
         res.status(500).send({error: err.code});
       });
   });
+
+router.post('/updateDescription',
+    [filters.requireLogin, filters.requiredParamHandler(['projectID', 'template']), upload.any()],
+    function(req, res, next) {
+        var body = req.body;
+        projectDB.updateDescription(body.projectID, body.template).then(
+            function(data) {
+                if (data.affectedRows == 1) {
+                    res.send({'status': 'done'});
+                } else {
+                    res.status(500).send({error: 'Project not found'});
+                }
+            }, function(err) {
+                res.status(500).send({error: err.code});
+            });
+    });
 
 function generateUniqueProjectCode() {
   return new Promise(function(resolve) {
