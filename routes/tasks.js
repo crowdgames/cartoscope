@@ -336,7 +336,8 @@ router.post('/submit', [filters.requireLogin, filters.requiredParamHandler(['tas
 
     } else {
 
-        projectDB.increaseProgress(userID, projectID)
+        projectDB.addResponse(userID, projectID, taskID, response,centerLat, centerLon)
+            .then(projectDB.increaseProgress(userID, projectID))
             .then(function(data) {
                 // console.log('data inserted', data);
                 res.send({});
