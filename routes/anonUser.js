@@ -19,6 +19,9 @@ router.get('/startAnon/:pCode',
     var workerId = req.query.workerId;
     var projectID = req.params.pCode;
     var hitId = req.query.hitId;
+    var assignmentId = req.query.assignmentId;
+    var chain = req.query.chain;
+    var fromChain = req.query.fromChain;
 
     projectDB.getSingleProjectFromCode(projectID).then(function(project) {
       req.logout();
@@ -26,12 +29,50 @@ router.get('/startAnon/:pCode',
         if (user.id) {
           //console.log('user object ', user)
             loginAnonUser(req, user).then(function(data) {
-            res.redirect('/api/tasks/startProject/' + req.params.pCode);
+            res.redirect('/api/tasks/startProject/' + req.params.pCode + '?chain=' + chain);
           });
           
         } else {
-          res.redirect('/consentForm.html#/consent?project=' + req.params.pCode + '&' +
-            querystring.stringify(req.query));
+
+            //if coming from chain, loginUser without hashing,create the progress then continue
+            //ONLY AT MTURK!
+            if (fromChain) {
+
+                console.log("Will add without hash");
+
+                //add user without hash
+                anonUserDB.addMTurkWorkerNoHash(req.query, req.params.pCode, 1, 1).then(function(usernohash){
+                    req.logout();
+                    //add progress
+                    projectDB.startNewProgress(workerId, project.id, 1).then(
+                        function(newProgress) {
+                            //find user
+                            anonUserDB.findConsentedMTurkWorkerFromHash(workerId, projectID).then(function(user) {
+                                if (user.id) {
+                                    //console.log('user object ', user)
+                                    loginAnonUser(req, user).then(function(data) {
+                                        res.redirect('/api/tasks/startProject/' + req.params.pCode + '?chain=' + chain);
+                                    });
+
+                                } else {
+                                    res.redirect('/consentForm.html#/consent?project=' + req.params.pCode + '&' +
+                                        querystring.stringify(req.query));
+                                }
+                            }, function(error) {
+                                res.status(500).send({error: error.code});
+                            });
+                        }, function(err) {
+                            error(err);
+                        });
+
+                });
+
+            } else {
+
+                res.redirect('/consentForm.html#/consent?project=' + req.params.pCode + '&' +
+                    querystring.stringify(req.query));
+            }
+
         }
       }, function(error) {
         res.status(500).send({error: error.code});
@@ -50,6 +91,10 @@ router.get('/startMturkRandom/',
         //console.log('req.query ', req.query);
         var workerId = req.query.workerId;
         var hitId = req.query.hitId;
+        //check if we must chain tasks for mturk
+        var chain_tasks = req.query.chain || -1;
+        //add it back to query if not existing
+        req.query.chain = chain_tasks;
 
         projectDB.getRandomProjectMturk().then(function(projectID) {
             req.logout();
@@ -216,6 +261,28 @@ function loginAnonUser(req, user) {
   });
 }
 
+function loginAnonUserNoHash(req, user) {
+    return new Promise(function(resolve, error) {
+        user.anonymous = 1;
+        user.type='mTurk';
+        delete user.id;
+        delete user.projectID;
+        delete user.assignmentId;
+        delete user.hitId;
+        delete user.siteID;
+        user.id = user.workerID;
+        delete user.workerId;
+        //console.log(user);
+        req.logIn(user, function(err) {
+            if (err) {
+                // console.log('in error logIn');
+                return error(err);
+            }
+            console.log("Successful login");
+            resolve(user);
+        });
+    });
+}
 
 function loginAnonKioskUser(req, user) {
     return new Promise(function(resolve, error) {

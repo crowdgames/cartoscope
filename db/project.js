@@ -470,6 +470,33 @@ exports.getRandomProjectMturk  = function() {
     });
 };
 
+exports.getNextProjectChain  = function(workerID) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+        var queryString = "SELECT  s.unique_code FROM selection_mturk s WHERE s.project_id  NOT IN( SELECT t.project_id FROM progress t WHERE t.id = '"
+            +  workerID  +"');"
+
+
+        connection.queryAsync(queryString).then(
+            function(data) {
+
+                if (data.length !=0){
+                    // //pick the next at random
+                    // var random_pick = data[Math.floor(Math.random() * data.length)];
+                    // var projectId = random_pick.unique_code;
+                    resolve(data);
+                } else {
+                    resolve([])
+                }
+
+
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
 exports.getProgress = function(projectID, user) {
   return new Promise(function(resolve, error) {
     var connection = db.get();

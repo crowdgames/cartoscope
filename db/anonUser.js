@@ -87,7 +87,7 @@ exports.addMTurkWorker = function(anonUser, projectID, siteID, consented) {
     connection.queryAsync('INSERT INTO `mturk_workers` ' +
       '(`workerID`, `projectID`,`assignmentID`,`hitID`,`submitTo`,`siteID`,`consented`) VALUES ' +
       '(?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `consented`=?',
-      [bcrypt.hashSync(anonUser.workerId, salt), projectID, bcrypt.hashSync(anonUser.assignmentId, salt),
+      [bcrypt.hashSync(anonUser.workerId, salt), projectID, anonUser.assignmentId,
         anonUser.hitId, anonUser.submitTo, siteID, consented, consented]).then(
       function(data) {
         if (data.insertId) {
@@ -101,6 +101,30 @@ exports.addMTurkWorker = function(anonUser, projectID, siteID, consented) {
         reject(err);
       });
   });
+};
+
+
+exports.addMTurkWorkerNoHash = function(anonUser, projectID, siteID, consented) {
+    return new Promise(function(resolve, reject) {
+        var connection = db.get();
+
+        connection.queryAsync('INSERT INTO `mturk_workers` ' +
+            '(`workerID`, `projectID`,`assignmentID`,`hitID`,`submitTo`,`siteID`,`consented`) VALUES ' +
+            '(?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `consented`=?',
+            [anonUser.workerId, projectID, anonUser.assignmentId,
+                anonUser.hitId, anonUser.submitTo, siteID, consented, consented]).then(
+            function(data) {
+                if (data.insertId) {
+                    resolve(data.insertId);
+                } else if (data.affectedRows > 0) {
+                    resolve(0);
+                } else {
+                    reject({code: 'Problem with insertion'});
+                }
+            }, function(err) {
+                reject(err);
+            });
+    });
 };
 
 exports.addKioskWorker = function(anonUser, projectID, cookie, consented) {

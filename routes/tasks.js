@@ -59,6 +59,22 @@ router.get('/getInfo/:code', [filters.requireLogin], function(req, res, next) {
   });
 });
 
+
+router.get('/getInfoFree/:code', function(req, res, next) {
+        //console.log('In CheckUserAllowed Acess', data);
+        var getProject = projectDB.getProjectFromCode(req.params.code);
+        getProject.then(function(project) {
+            if (project.length > 0) {
+                res.send(project)
+            } else {
+                res.status(500).send({error: 'Project not found'});
+            }
+        }).catch(function(error) {
+            res.status(500).send({error: error.code || 'Project not found'});
+        });
+
+});
+
 router.get('/getInfoId/:id', [filters.requireRegularLogin], function(req, res, next) {
   var getProject = projectDB.getProjectFromId(req.params.id);
   getProject.then(function(project) {
@@ -263,12 +279,16 @@ router.get('/getImage/:dataset/:name', [filters.requireLogin], function(req, res
 
 router.get('/startProject/:project', [filters.requireLogin], function(req, res, next) {
   var user = req.session.passport.user;
+  var chain = req.query.chain;
   projectDB.getSingleProjectFromCode(req.params.project).then(checkDataSetReady).then(function(project) {
     if (user.anonymous) {
       if (user.consented) {
         projectDB.findProgress(project, user.id, 1).then(function(data) {
           if ('progress' in data) {
-            res.redirect('/task.html#/?code=' + req.params.project+ '&type='+req.session.passport.user.type + '&workerID=' + user.workerID + '&hitID=' + user.hitID);
+
+
+            res.redirect('/task.html#/?code=' + req.params.project+ '&type='+req.session.passport.user.type +
+                '&workerID=' + user.workerID + '&hitID=' + user.hitID + '&assignmentID='+ user.assignmentID +'&chain=' + chain);
           } else {
             res.status(500).send({error: 'No progress could be found'});
           }
