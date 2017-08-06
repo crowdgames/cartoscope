@@ -75,9 +75,9 @@ router.get('/getProjectPoints/:projectCode', function(req, res, next) {
     })});
 
 
-router.get('/getTutorial/:projectCode', function(req, res, next) {
-    var projectCode = req.params.projectCode;
-    projectDB.getTutorialFromCode(projectCode).then(function(results) {
+router.get('/getNextProjectChain/:workerID', function(req, res, next) {
+    var workerID = req.params.workerID;
+    projectDB.getNextProjectChain(workerID).then(function(results) {
             res.send(results);
         }, function(err) {
             res.status(400).send('results could not be generated!!!');
@@ -85,16 +85,26 @@ router.get('/getTutorial/:projectCode', function(req, res, next) {
     });
 
 
+router.get('/getTutorial/:projectCode', function(req, res, next) {
+    var projectCode = req.params.projectCode;
+    projectDB.getTutorialFromCode(projectCode).then(function(results) {
+        res.send(results);
+    }, function(err) {
+        res.status(400).send('results could not be generated!!!');
+    });
+});
+
+
 
 router.post('/add', [upload.any(), filters.requireLogin, filters.requiredParamHandler(['name', 'description'])],
   function(req, res, next) {
     var body = req.body;
     var filename = 'default';
-    console.log('body ', body);
+    // console.log('body ', body);
     
     if (req.files && req.files.length > 0) {
       filename = req.files[0].filename;
-        console.log('file '+ filename);
+        // console.log('file '+ filename);
 
       magic.detectFile(req.files[0].path, function(err, result) {
         if (err) {

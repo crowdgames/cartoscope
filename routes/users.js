@@ -82,7 +82,7 @@ router.get('/checkemail/:email', function(req, res, next) {
 });
 
 router.get('/', filters.requireLogin, function(req, res, next) {
-  console.log('router user', req.session.passport.user);
+  // console.log('router user', req.session.passport.user);
   if (req.session.passport.user.id) {
     console.log('id of user exists.....');
     userDB.getUser(req.session.passport.user.id, true, function(err, result) {
