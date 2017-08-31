@@ -150,7 +150,7 @@ function checkUserAllowedAccess(user, projectCode) {
 router.get('/gettask/:code', [filters.requireLogin], function(req, res, next) {
   projectDB.getSingleProjectFromCode(req.params.code).then(function(project) {
     // console.log("IN Task get task "+ project);
-      var showFlightPath = project.flight_path;
+      var showInOrder = project.inorder;
       var user = req.session.passport.user;
     var dataSetId = project['dataset_id'];
     if (!dataSetId) {
@@ -173,7 +173,7 @@ router.get('/gettask/:code', [filters.requireLogin], function(req, res, next) {
         if (dataSetSize == -1 || !progressItem) {
           res.status(500).send({error: 'Data set not found or Progress not created.'});
         } else {
-          processItems(dataSetId, dataSetSize, progressItem, userID, user.type,showFlightPath).then(function(data) {
+          processItems(dataSetId, dataSetSize, progressItem, userID, user.type,showInOrder).then(function(data) {
             if (data) {
               res.send({
                 items: data,
@@ -198,7 +198,7 @@ router.get('/gettask/:code', [filters.requireLogin], function(req, res, next) {
   });
 });
 
-function processItems(dataSetId, dataSetSize, progressItem, userID, userType,showFlightPath) {
+function processItems(dataSetId, dataSetSize, progressItem, userID, userType,inorder) {
     //console.log('Data Set Size', dataSetSize);
     //console.log('processs data', progressItem);
 
@@ -223,7 +223,7 @@ function processItems(dataSetId, dataSetSize, progressItem, userID, userType,sho
     } else{
         progressD = progressItem.progress;
 
-        if (!showFlightPath) {
+        if (!inorder) {
             order = ss.shuffle(order, userIDStr.substr(userIDStr.length - 8));
         }
         order = order.slice(progressD - 1, progressD + 4);
