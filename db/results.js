@@ -78,3 +78,23 @@ exports.getUserStats = function(userId) {
             });
     });
 };
+
+exports.getTutorialResults = function(pID,userId) {
+
+    var connection = db.get();
+    return new promise(function(resolve, error) {
+
+        var heatMapQuery = "select u.image_name,u.answer,u.response,u.user_id, JSON_EXTRACT(p.template, CONCAT('$.options[', u.response, '].text')) as vote \
+        from projects as p, (select image_name,response,answer,user_id,project_id from  response \
+        INNER JOIN tutorial ON substr(tutorial.image_name, 1, length(tutorial.image_name)-4) = response.task_id \
+        where  response.user_id='" + userId + "' and response.project_id="+ pID + ") as u where p.id="+ pID + " ;";
+
+        connection.queryAsync(heatMapQuery).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+
+}

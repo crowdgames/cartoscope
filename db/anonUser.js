@@ -9,30 +9,14 @@ var randomString = require('randomstring');
 var databaseName = process.env.DB_NAME;
 var hitCode = process.env.hitCode;
 
-exports.findMTurkWorker = function(workerID, projectID) {
-  return new Promise(function(resolve, reject) {
-    var connection = db.get();
-    
-    connection.queryAsync('SELECT * from `mturk_workers` where workerID=? and projectID=?',
-      [bcrypt.hashSync(workerID, salt), projectID]).then(
-      function(data) {
-        if (data.length == 1) {
-          resolve(data[0]);
-        } else {
-          reject({error: 'User not found'});
-        }
-      }, function(err) {
-        reject(err);
-      });
-  });
-};
 
-exports.findMTurkWorker = function(workerID, projectID) {
+
+exports.findMTurkWorker = function(workerID, projectID,hitID) {
   return new Promise(function(resolve, reject) {
     var connection = db.get();
-    
+
     connection.queryAsync('SELECT * from `mturk_workers` where workerID=? and projectID=?',
-      [bcrypt.hashSync(workerID, salt), projectID]).then(
+      [bcrypt.hashSync(workerID + hitID, salt), projectID]).then(
       function(data) {
         if (data.length == 1) {
           resolve(data[0]);
@@ -49,7 +33,7 @@ exports.findConsentedMTurkWorker = function(workerID, projectID,hitId) {
   return new Promise(function(resolve, reject) {
     var connection = db.get();
     connection.queryAsync('SELECT * from `mturk_workers` where workerID=? and hitId=? and projectID=? and consented=1',
-      [bcrypt.hashSync(workerID, salt),hitId, projectID]).then(
+      [bcrypt.hashSync(workerID+hitId, salt),hitId, projectID]).then(
       function(data) {
         if (data.length == 1) {
           resolve(data[0]);
@@ -87,7 +71,7 @@ exports.addMTurkWorker = function(anonUser, projectID, siteID, consented) {
     connection.queryAsync('INSERT INTO `mturk_workers` ' +
       '(`workerID`, `projectID`,`assignmentID`,`hitID`,`submitTo`,`siteID`,`consented`) VALUES ' +
       '(?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `consented`=?',
-      [bcrypt.hashSync(anonUser.workerId, salt), projectID, anonUser.assignmentId,
+      [bcrypt.hashSync(anonUser.workerId + anonUser.hitId, salt), projectID, anonUser.assignmentId,
         anonUser.hitId, anonUser.submitTo, siteID, consented, consented]).then(
       function(data) {
         if (data.insertId) {
