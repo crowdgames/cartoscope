@@ -8,9 +8,13 @@ var filters = require('../constants/filters');
 var Promise = require('bluebird');
 var projectDB = require('../db/project');
 var anonUserDB = require('../db/anonUser');
+var resultDB = require('../db/results');
 var querystring = require('querystring');
 var path = require('path');
 var randomString = require('randomstring');
+var bcrypt = require('bcrypt');
+var salt = process.env.SALT;
+
 
 router.get('/startAnon/:pCode',
   [filters.requiredParamHandler(['workerId', 'assignmentId', 'hitId', 'submitTo'])],
@@ -237,6 +241,56 @@ router.get('/consent/:pCode',
       res.status(500).send({error: err.code});
     });
   });
+
+
+router.get('/awardBonusTutorial/:pCode/:hitId/:workerid',function(req,res,next) {
+
+
+    var wID = req.params.workerid;
+    var hit_id = req.params.hitId;
+
+   var resHash = bcrypt.hashSync(wID + hit_id, salt);
+
+    //get the project details
+    projectDB.getSingleProjectFromCode(req.params.pCode).then(function(project) {
+        //get the votes on the tutorial
+        resultDB.getTutorialResults(project.id,resHash).then(function(votes) {
+
+            var mistakes = 0;
+            if(votes){
+                //check for mistakes
+                votes.forEach(function(item){
+                    var ans = item.vote;
+                    ans = ans.toString().replace(/"/g, "");
+                    var ans2 = item.answer;
+                    ans2 = ans2.toString();
+                    if( ans != ans2) {
+                        mistakes++;
+                    }
+                });
+                res.status(200).send({workerid: wID, mistakes: mistakes, voted: votes.length });
+
+            } else {
+                res.status(500).send("Data not found");
+            }
+
+
+
+
+        }).catch(function(err) {
+            console.log(err)
+
+            res.status(500).send({error: err.code});
+        });
+
+    }).catch(function(err) {
+        res.status(500).send({error: err.code});
+    });
+
+
+
+
+});
 
 function loginAnonUser(req, user) {
   return new Promise(function(resolve, error) {
