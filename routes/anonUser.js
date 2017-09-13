@@ -251,7 +251,7 @@ router.get('/awardBonusTutorial/:pCode/:hitId/:workerid',function(req,res,next) 
     //get the project details
     projectDB.getSingleProjectFromCode(req.params.pCode).then(function(project) {
         //get the votes on the tutorial
-        resultDB.getTutorialResults(project.id,resHash).then(function(votes) {
+        resultDB.getTutorialResults(project,resHash).then(function(votes) {
             var mistakes = 0;
             if(votes){
                 //check for mistakes
@@ -288,7 +288,7 @@ router.get('/awardBonusTutorialOld/:pCode/:hitId/:workerid',function(req,res,nex
     //get the project details
     projectDB.getSingleProjectFromCode(req.params.pCode).then(function(project) {
         //get the votes on the tutorial
-        resultDB.getTutorialResults(project.id,resHash).then(function(votes) {
+        resultDB.getTutorialResults(project,resHash).then(function(votes) {
             var mistakes = 0;
             if(votes){
                 //check for mistakes
