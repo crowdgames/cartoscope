@@ -123,6 +123,7 @@ router.get('/startMturkRandom/',
     });
 
 
+
 router.get('/startKiosk/',
     [filters.requiredParamHandler([])],
     function(req, res, next) {
@@ -172,6 +173,42 @@ router.get('/startKiosk/',
         });
 
     });
+
+router.get('/startKioskProject/:pCode',
+    [filters.requiredParamHandler([])],
+    function(req, res, next) {
+        // generate a worker id
+        req.logout();
+        var workerId = generateUniqueWorkerId();
+        var projectID = req.params.pCode;
+        console.log('workerId ', workerId);
+        //select a project list from all public projects
+
+        projectDB.getSingleProjectFromCode(projectID).then(function(project) {
+                req.logout();
+                anonUserDB.findConsentedKioskWorker(workerId, projectID).then(function(user) {
+                    if (user.id) {
+                        console.log('user object ', user);
+                        loginAnonKioskUser(req, user).then(function(data) {
+                            res.redirect('/api/tasks/startProject/' + projectID);
+                        });
+
+                    } else {
+                        console.log('user object ', user)
+                        res.status(200).send({projectID: projectID, workerID : workerId, project: project});
+                    }
+                }, function(error) {
+                    console.log('error ', error)
+                    res.status(500).send({error: error.code});
+                });
+
+            }, function(err) {
+                console.log('err ', err);
+                res.status(500).send({error: err.code || 'Invalid project code'});
+            });
+
+    });
+
 
 
 router.get('/startKiosk/:pCode',
@@ -317,6 +354,9 @@ router.get('/awardBonusTutorialOld/:pCode/:hitId/:workerid',function(req,res,nex
     });
 });
 
+
+
+
 function loginAnonUser(req, user) {
   return new Promise(function(resolve, error) {
     user.anonymous = 1;
@@ -384,13 +424,13 @@ function loginAnonKioskUser(req, user) {
 
 function generateUniqueWorkerId() {
     //return new Promise(function(resolve) {
-        var projectCode = randomString.generate({
-            length: 8,
-            charset: 'numeric'
+        var worker_id = randomString.generate({
+            length: 12,
+            charset: 'alphanumeric'
         });
     //    resolve(projectCode);
    // });
-    return projectCode;
+    return worker_id;
 }
 
 //http://localhost:8080/api/anon/startAnon/MdGhLYDYgvWR?workerID=fwaHQhUllf&assignmentID=g43tKBDPfs&hitID=LJ6ljgAjFC&submitTo=www.submit.com
