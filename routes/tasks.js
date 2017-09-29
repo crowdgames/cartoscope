@@ -210,26 +210,34 @@ function processItems(dataSetId, dataSetSize, progressItem, userID, userType,ino
       }
       var userIDStr = userID + '';
 
-    if(dataSetSize <= progressItem.progress && userType == "kiosk" ){
-        progressD=1;
-        order = [];
-        for (var i = 1; i <= dataSetSize; i++) {
-            order.push(i);
-        }
-       // console.log(' in datasetsize equals progress ', order, dataSetSize);
-        order = ss.shuffle(order, userIDStr.substr(userIDStr.length - 8));
-        order = order.slice(progressD - 1, progressD + 4);
-        //console.log('new orders'+ order);
-    } else{
-        progressD = progressItem.progress;
+    // if(dataSetSize <= progressItem.progress && userType == "kiosk" ){
+    //     progressD=1;
+    //     order = [];
+    //     for (var i = 1; i <= dataSetSize; i++) {
+    //         order.push(i);
+    //     }
+    //    // console.log(' in datasetsize equals progress ', order, dataSetSize);
+    //     order = ss.shuffle(order, userIDStr.substr(userIDStr.length - 8));
+    //     order = order.slice(progressD - 1, progressD + 4);
+    //     //console.log('new orders'+ order);
+    // } else{
+    //     progressD = progressItem.progress;
+    //
+    //     if (!inorder) {
+    //         order = ss.shuffle(order, userIDStr.substr(userIDStr.length - 8));
+    //     }
+    //     order = order.slice(progressD - 1, progressD + 4);
+    //     console.log("Order is" ,order)
+    //
+    // }
 
-        if (!inorder) {
-            order = ss.shuffle(order, userIDStr.substr(userIDStr.length - 8));
-        }
-        order = order.slice(progressD - 1, progressD + 4);
-        console.log("Order is" ,order)
+      progressD = progressItem.progress;
 
-    }
+      if (!inorder) {
+          order = ss.shuffle(order, userIDStr.substr(userIDStr.length - 8));
+      }
+      order = order.slice(progressD - 1, progressD + 4);
+      console.log("Order is" ,order)
 
 
    // var userIDStr = userID + '';
