@@ -311,6 +311,19 @@ exports.getDataSetPoints = function(datasetId) {
     });
 };
 
+exports.getDataSetNames = function(datasetId) {
+    var tableName = 'dataset_' + datasetId;
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT GROUP_CONCAT(name) AS image_list FROM ' + tableName).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
 exports.startNewProgress = function(userId, projectId, userType) {
   return new Promise(function(resolve, error) {
     var connection = db.get();
