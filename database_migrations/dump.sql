@@ -149,7 +149,6 @@ CREATE TABLE `projects` (
   `req_count` int(11) DEFAULT '0',
   `image_source` text,
   `tutorial_link` text,
-
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_code_UNIQUE` (`unique_code`),
   KEY `Creator_idx` (`creatorID`),
