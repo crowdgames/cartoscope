@@ -210,3 +210,32 @@ exports.setLastLogin = function(id) {
   var connection = db.get();
   connection.query('UPDATE users SET last_login=CURRENT_TIMESTAMP WHERE id=? and is_active=1', id);
 };
+
+
+exports.getAboutInfo = function(project_code) {
+    var connection = db.get();
+    return new Promise(function(resolve, error) {
+        var query = "SELECT * from about_info where unique_code=\"" + project_code + "\" ;";
+        connection.queryAsync(query).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
+exports.getAboutInfoCreator = function(project_code) {
+    var connection = db.get();
+    return new Promise(function(resolve, error) {
+        var query = "SELECT * from about_info where unique_code=\"" + project_code + "\" and creator = 1;";
+        connection.queryAsync(query).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
+

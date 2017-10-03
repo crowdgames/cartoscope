@@ -16,6 +16,26 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 
+
+--
+-- Table structure for table `about_info`
+--
+
+DROP TABLE IF EXISTS `about_info`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+ CREATE TABLE `about_info` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `unique_code` varchar(255) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `creator` int(11) DEFAULT '0',
+  `description` text,
+  `link` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
 --
 -- Table structure for table `downloadStatus`
 --
