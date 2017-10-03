@@ -83,7 +83,13 @@ router.get('/csv/:projectCode', function(req, res, next) {
             });
             fields.push('majority_answer');
             fields.push('question');
-            fields.push('source');
+            fields.push('crowd_source');
+            fields.push('image_source');
+
+            var im_source = 'Not Available';
+            if (project.image_source) {
+                im_source = project.image_source;
+            }
 
             //array with results:
             var csv_results =[];
@@ -101,7 +107,7 @@ router.get('/csv/:projectCode', function(req, res, next) {
                     var max_name = '';
 
                     //Make object for image
-                    var counters = {image_name: img, question: template.question, source: 'Cartoscope' };
+                    var counters = {image_name: img, question: template.question, crowd_source: 'Cartoscope', image_source: im_source };
 
                     ans.forEach(function(ans){
                         //parse the ans:
