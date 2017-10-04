@@ -111,6 +111,7 @@ router.get('/csv/:projectCode', function(req, res, next) {
 
                         var max_value = -1;
                         var max_name = '';
+                        var o_name = img
 
                         //if a renaming guide exists, rename appropriately:
                         if (csv_data !=undefined) {
@@ -121,12 +122,12 @@ router.get('/csv/:projectCode', function(req, res, next) {
                             var renamed = rinfo[0].image_name;
                             //if renaming exists, rename it
                             if (renamed) {
-                                img = renamed;
+                                o_name = renamed;
                             }
                         }
 
                         //Make object for image
-                        var counters = {image_name: img, question: template.question, crowd_source: 'Cartoscope', image_source: im_source };
+                        var counters = {image_name: o_name, question: template.question, crowd_source: 'Cartoscope', image_source: im_source };
 
                         ans.forEach(function(ans){
                             //parse the ans:
