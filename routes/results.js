@@ -5,6 +5,7 @@ var express = require('express');
 var router = express.Router();
 var fs = require('fs');
 var json2csv = require('json2csv');
+var d3 = require('d3');
 
 module.exports = router;
 
@@ -94,46 +95,68 @@ router.get('/csv/:projectCode', function(req, res, next) {
             //array with results:
             var csv_results =[];
 
-            //get all the images from the dataset_id
-            projectDB.getDataSetNames(datasetId).then(function(raw_im_list) {
-                //parse images
-                var im_list_r = raw_im_list[0];
-                var im_list = im_list_r.image_list;
-                var im_array = im_list.split(',');
-                //get all votes for each image
-                im_array.forEach(function(img){
 
-                    var max_value = -1;
-                    var max_name = '';
+            //Get file with renaming convensions from backend:
+            d3.csv('http://localhost:3000/files/'+projectCode + '_renamed.csv', function(csv_data) {
 
-                    //Make object for image
-                    var counters = {image_name: img, question: template.question, crowd_source: 'Cartoscope', image_source: im_source };
 
-                    ans.forEach(function(ans){
-                        //parse the ans:
-                        var p_ans = '"' + ans + '"';
-                        //filter results for image and answer
-                        var answer_results = filterResponses(
-                            results, {task_id: img,answer:p_ans });
-                        //add to object
-                        counters[ans] = answer_results.length;
-                        if (answer_results.length > max_value) {
-                            max_value = answer_results.length;
-                            max_name = ans;
+                //get all the images from the dataset_id
+                projectDB.getDataSetNames(datasetId).then(function(raw_im_list) {
+                    //parse images
+                    var im_list_r = raw_im_list[0];
+                    var im_list = im_list_r.image_list;
+                    var im_array = im_list.split(',');
+                    //get all votes for each image
+                    im_array.forEach(function(img){
+
+                        var max_value = -1;
+                        var max_name = '';
+
+                        //if a renaming guide exists, rename appropriately:
+                        if (csv_data !=undefined) {
+
+                           //find image
+                            var rinfo = filterResponses(
+                                csv_data, {renamed_value: img + '.jpg' });
+                            var renamed = rinfo[0].image_name;
+                            //if renaming exists, rename it
+                            if (renamed) {
+                                img = renamed;
+                            }
                         }
+
+                        //Make object for image
+                        var counters = {image_name: img, question: template.question, crowd_source: 'Cartoscope', image_source: im_source };
+
+                        ans.forEach(function(ans){
+                            //parse the ans:
+                            var p_ans = '"' + ans + '"';
+                            //filter results for image and answer
+                            var answer_results = filterResponses(
+                                results, {task_id: img,answer:p_ans });
+                            //add to object
+                            counters[ans] = answer_results.length;
+                            if (answer_results.length > max_value) {
+                                max_value = answer_results.length;
+                                max_name = ans;
+                            }
+                        });
+                        counters.majority_answer = max_name;
+                        //add to result
+                        csv_results.push(counters);
                     });
-                    counters.majority_answer = max_name;
-                    //add to result
-                    csv_results.push(counters);
+                    //Array of objects to CSV
+                    var csv = json2csv({ data: csv_results, fields: fields });
+                    //Send back CSV file:
+                    res.attachment('results_'+projectCode +'.csv');
+                    res.status(200).send(csv);
+                }, function(err) {
+                    res.status(400).send('results could not be generated!!!');
                 });
-                //Array of objects to CSV
-                var csv = json2csv({ data: csv_results, fields: fields });
-                //Send back CSV file:
-                res.attachment('results_'+projectCode +'.csv');
-                res.status(200).send(csv);
-            }, function(err) {
-                res.status(400).send('results could not be generated!!!');
+
             });
+
+
 
         }, function(err) {
             res.status(400).send('Results could not be generated!!!');
