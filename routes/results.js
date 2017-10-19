@@ -83,6 +83,7 @@ router.get('/csv/:projectCode', function(req, res, next) {
                 fields.push(item.text);
             });
             fields.push('majority_answer');
+            fields.push('majority_confidence');
             fields.push('question');
             fields.push('crowd_source');
             fields.push('image_source');
@@ -128,7 +129,7 @@ router.get('/csv/:projectCode', function(req, res, next) {
 
                         //Make object for image
                         var counters = {image_name: o_name, question: template.question, crowd_source: 'Cartoscope', image_source: im_source };
-
+                        var tot_vot = 0
                         ans.forEach(function(ans){
                             //parse the ans:
                             var p_ans = '"' + ans + '"';
@@ -137,12 +138,14 @@ router.get('/csv/:projectCode', function(req, res, next) {
                                 results, {task_id: img,answer:p_ans });
                             //add to object
                             counters[ans] = answer_results.length;
+                            tot_vot = tot_vot + answer_results.length;
                             if (answer_results.length > max_value) {
                                 max_value = answer_results.length;
                                 max_name = ans;
                             }
                         });
                         counters.majority_answer = max_name;
+                        counters.majority_confidence = ((max_value/tot_vot)*100).toFixed(2).toString() + '%';
                         //add to result
                         csv_results.push(counters);
                     });
