@@ -13,6 +13,8 @@ var taskApi = require('./routes/tasks');
 var session = require('express-session');
 var anonApi = require('./routes/anonUser');
 var results = require('./routes/results');
+
+var featured = require('./routes/featured');
 var d3 = require('d3');
 
 var app = express();
@@ -60,6 +62,8 @@ app.use('/api/project', projectsApi);
 app.use('/api/', login);
 app.use('/api/tasks', taskApi);
 app.use('/api/anon', anonApi);
+
+app.use('/api/featured', featured);
 
 app.use('/api/test', require('./routes/test'));
 

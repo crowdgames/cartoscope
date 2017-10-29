@@ -41,7 +41,7 @@ router.get('/:code', [filters.requireLogin], function(req, res, next) {
 
 
 
-router.get('/getProjects/public', [filters.requireLogin], function(req, res, next) {
+router.get('/getProjects/public', function(req, res, next) {
     projectDB.getAllPublicProjects().then(function(project) {
         res.send(project);
     }, function(err) {
