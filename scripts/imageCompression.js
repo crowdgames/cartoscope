@@ -5,6 +5,8 @@ var fs = require('fs');
 var Promise = require('bluebird');
 var spawn = require('child_process').spawn;
 var path = require('path');
+var resizeSize = 640;
+
 
 exports.processData = function(files) {
   return new Promise(function(resolve, error) {
@@ -65,7 +67,7 @@ exports.processData = function(files) {
 function reduceImage(baseDir, fileName, target) {
   return new Promise(function(resolve, reject) {
     var testCall = spawn('python', [path.resolve(__dirname + '/../scripts/imagecompression.py'),
-      baseDir, fileName, target]);
+      baseDir, fileName, target, resizeSize]);
     testCall.stdout.on('data', function(data) {
     });
     testCall.on('close', function(code) {

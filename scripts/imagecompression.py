@@ -7,7 +7,8 @@ for arg in sys.argv:
 baseDir = sys.argv[1]
 fileName = sys.argv[2]
 target = sys.argv[3]
+size = sys.argv[4]
 
 img = Image.open(baseDir+'/'+fileName)
-img.thumbnail((512,512), Image.ANTIALIAS)
+img.thumbnail((size,size), Image.ANTIALIAS)
 img.save(target+'/'+fileName, 'JPEG')
