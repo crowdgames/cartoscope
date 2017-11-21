@@ -298,7 +298,7 @@ router.get('/:id/unarchive', function(req, res, next) {
       result: 'ok'
     });
   }).catch(function(error) {
-    res.status(400).send({error: error.body || 'Project couldn\'t be un-archived rite now'});
+    res.status(400).send({error: error.body || 'Project couldn\'t be un-archived right now'});
   });
 });
 
