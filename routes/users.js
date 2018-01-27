@@ -252,4 +252,27 @@ router.get('/projects', filters.requireRegularLogin, function(req, res, next) {
   });
 });
 
+
+router.get('/getAboutInfo/:projectCode', function(req, res, next) {
+    var projectCode = req.params.projectCode;
+    userDB.getAboutInfo(projectCode).then(function(results) {
+        res.send(results);
+    }, function(err) {
+        res.status(400).send('Info not found');
+    });
+});
+
+
+
+router.get('/getAboutInfoCreator/:projectCode', function(req, res, next) {
+    var projectCode = req.params.projectCode;
+    userDB.getAboutInfoCreator(projectCode).then(function(results) {
+        res.send(results);
+    }, function(err) {
+        res.status(400).send('Info not found');
+    });
+});
+
+
+
 module.exports = router;
