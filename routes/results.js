@@ -40,7 +40,23 @@ router.get('/all/:projectCode', function(req, res, next) {
         res.status(400).send('project not found!!!');
     })});
 
+router.get('/allMarkers/:projectCode', function(req, res, next) {
+    var projectCode = req.params.projectCode;
+    console.log(projectCode)
+    var project = projectDB.getSingleProjectFromCode(projectCode).then(function(project) {
+        var datasetId = project.dataset_id;
+        console.log(project.id)
+        resultDB.heatMapDataAllMarkers(project.id).then(function(results) {
+            res.send(results);
+        }, function(err) {
+            res.status(400).send('heatmap results could not be generated!!!');
+        });
+    }, function(err) {
+        res.status(400).send('project not found!!!');
+    })});
+
 //Get results for project and specific user from both kiosk and mturk workers
+
 router.get('/all/:projectCode/:userId', function(req, res, next) {
     var projectCode = req.params.projectCode;
     var userId = req.params.userId;

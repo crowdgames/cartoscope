@@ -577,3 +577,15 @@ exports.setUnArchived = function(projectID) {
       });
   });
 };
+
+exports.getFeaturedProject = function() {
+  return new Promise(function(resolve, error) {
+    var connection = db.get();
+    connection.queryAsync('SELECT * FROM '+databaseName+'.featured_url_route').then(
+      function(data) {
+        resolve(data);
+      }, function(err) {
+        error(err);
+      });
+  });
+};

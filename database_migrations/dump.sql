@@ -50,6 +50,23 @@ CREATE TABLE `downloadStatus` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+
+--
+-- Table structure for table `featured_url_route`
+--
+
+CREATE TABLE `featured_url_route` (
+  `id` int(11) NOT NULL,
+  `url` varchar(255) DEFAULT NULL,
+  `code` varchar(255) DEFAULT NULL,
+  `active_from` datetime DEFAULT CURRENT_TIMESTAMP,
+  `active_until` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+
 --
 -- Table structure for table `kiosk_workers`
 --
