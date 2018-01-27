@@ -44,6 +44,27 @@ exports.heatMapDataAll = function(projectCode, datasetId) {
     });
 };
 
+
+exports.heatMapDataAllMarkers = function(projectId) {
+    var connection = db.get();
+    return new promise(function(resolve, error) {
+        var heatMapQuery = "SELECT center_lat, center_lon, response, \
+     count(response) as cnt, CONCAT(center_lat, \"/\", center_lon) as key_item \
+     FROM response \
+     WHERE response <> -1  && project_id='" + projectId + "' \
+     GROUP BY center_lat, center_lon,response";
+        connection.queryAsync(heatMapQuery).then(
+            function(data) {
+
+                resolve(data);
+            }, function(err) {
+                error(err);
+                console.log(err)
+            });
+    });
+};
+
+
 exports.heatMapDataAllUser = function(projectCode, datasetId,userId) {
     var connection = db.get();
     return new promise(function(resolve, error) {
