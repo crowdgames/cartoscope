@@ -94,6 +94,42 @@ router.get('/getTutorial/:projectCode', function(req, res, next) {
     });
 });
 
+//Genetic Algorithm sequences
+router.get('/getTutorialSequence/:projectCode', function(req, res, next) {
+    var projectCode = req.params.projectCode;
+    projectDB.getTutorialSequenceRandom(projectCode).then(function(results) {
+        res.send(results);
+    }, function(err) {
+        res.status(400).send('Tutorial with sequence could not be generated!!!');
+    });
+});
+
+//Generate a random tutorial sequence
+router.get('/generateTutorialSequence/:projectCode', function(req, res, next) {
+    var projectCode = req.params.projectCode;
+    projectDB.generateTutorialSequencesRandom(projectCode).then(function(results) {
+        res.send(results);
+    }, function(err) {
+        res.status(400).send('Tutorial sequence could not be generated!!!',err);
+    });
+});
+
+//Generate a random tutorial sequence
+router.post('/addWorkerTutorial', function(req, res, next) {
+    var projectCode = req.body.projectCode;
+    var hitID = req.body.hitID;
+    var sequence = req.body.sequence;
+    var workerID = req.body.workerID;
+
+    projectDB.addUserTutorialSequence(workerID,hitID,projectCode,sequence).then(function(results) {
+        res.send(results);
+    }, function(err) {
+        res.status(400).send('Worker could not be matched to tutorial sequence');
+    });
+});
+
+
+
 
 
 router.post('/add', [upload.any(), filters.requireLogin, filters.requiredParamHandler(['name', 'description'])],
