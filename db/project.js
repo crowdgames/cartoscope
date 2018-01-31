@@ -228,7 +228,6 @@ exports.addTutorialSequence = function (uniqueCode,sequence) {
             'SELECT * FROM (SELECT \"'+uniqueCode+'\", \"'+ sequence +'\", \'1\') AS tmp ' +
             'WHERE NOT EXISTS (SELECT * FROM tutorial_sequences where ' +
             'unique_code=\"'+ uniqueCode +'\" and seq=\"'+ sequence +'\") LIMIT 1';
-        console.log(queryString)
         connection.queryAsync(queryString).then(
             function(data) {
                 resolve(data);
@@ -291,7 +290,6 @@ exports.generateTutorialSequencesRandom = function(uniqueCode) {
                         var finalSequenceArray = seqArray.slice(0,rand_size);
                         //make it to string
                         var finalSequence = finalSequenceArray.join("-");
-                        console.log(finalSequence)
                         //Insert sequence to database
                         exports.addTutorialSequence(uniqueCode,finalSequence).then(function(Adddata) {
                             if (Adddata) {

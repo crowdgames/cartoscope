@@ -26,6 +26,9 @@ var Promise = require('bluebird');
 var filters = require('../constants/filters');
 var imageCompressionLib = require('../scripts/imageCompression');
 var upload = multer({dest: 'uploads/'});
+var bcrypt = require('bcrypt');
+var salt = process.env.SALT;
+
 
 var email = process.env.MAILER;
 
@@ -121,9 +124,12 @@ router.post('/addWorkerTutorial', function(req, res, next) {
     var sequence = req.body.sequence;
     var workerID = req.body.workerID;
 
-    projectDB.addUserTutorialSequence(workerID,hitID,projectCode,sequence).then(function(results) {
+    var hashWorker = bcrypt.hashSync(workerID + hitID, salt);
+
+    projectDB.addUserTutorialSequence(hashWorker,hitID,projectCode,sequence).then(function(results) {
         res.send(results);
     }, function(err) {
+        console.log(err)
         res.status(400).send('Worker could not be matched to tutorial sequence');
     });
 });

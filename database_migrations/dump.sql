@@ -289,10 +289,9 @@ CREATE TABLE `tutorial_users` (
   `workerID` varchar(128) NOT NULL,
   `unique_code` varchar(128) DEFAULT NULL,
   `hitID` varchar(128) DEFAULT NULL,
-  `sequence` text,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `unique_index` (`workerID`,`unique_code`,`hitID`)
-) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=latin1;
+  `seq` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
