@@ -286,7 +286,8 @@ exports.generateTutorialSequencesRandom = function(uniqueCode) {
                             seqArray.push(item.id)
                         });
                         // We have a random sequence of all items, now select a random size between 0-array_size:
-                        var rand_size = Math.floor(Math.random() * (seqArray.length +1));
+                        //Do not allow sequences of only one item:
+                        var rand_size = Math.floor(Math.random() * (seqArray.length +1)) +1;
                         var finalSequenceArray = seqArray.slice(0,rand_size);
                         //make it to string
                         var finalSequence = finalSequenceArray.join("-");
