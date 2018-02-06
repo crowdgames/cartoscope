@@ -108,9 +108,10 @@ router.get('/getTutorialSequence/:projectCode', function(req, res, next) {
 });
 
 //Generate a random tutorial sequence
-router.get('/generateTutorialSequence/:projectCode', function(req, res, next) {
+router.get('/generateTutorialSequence/:projectCode/:seqsize', function(req, res, next) {
     var projectCode = req.params.projectCode;
-    projectDB.generateTutorialSequencesRandom(projectCode).then(function(results) {
+    var seqsize = req.params.seqsize;
+    projectDB.generateTutorialSequencesRandom(projectCode,seqsize).then(function(results) {
         res.send(results);
     }, function(err) {
         res.status(400).send('Tutorial sequence could not be generated!!!',err);

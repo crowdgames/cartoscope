@@ -271,7 +271,7 @@ exports.getTutorialSequenceRandom = function(uniqueCode) {
     });
 };
 
-exports.generateTutorialSequencesRandom = function(uniqueCode) {
+exports.generateTutorialSequencesRandom = function(uniqueCode,selsize) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
         //get all tutorial items for that code in random order
@@ -287,7 +287,13 @@ exports.generateTutorialSequencesRandom = function(uniqueCode) {
                         });
                         // We have a random sequence of all items, now select a random size between 0-array_size:
                         //Do not allow sequences of only one item:
-                        var rand_size = Math.floor(Math.random() * (seqArray.length +1)) +1;
+                        var rand_size = 0;
+                        if (selsize > 0) {
+                            rand_size = selsize;
+                        } else {
+                            rand_size = Math.floor(Math.random() * (seqArray.length +1)) +1;
+                        }
+
                         var finalSequenceArray = seqArray.slice(0,rand_size);
                         //make it to string
                         var finalSequence = finalSequenceArray.join("-");
