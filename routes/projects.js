@@ -26,6 +26,9 @@ var Promise = require('bluebird');
 var filters = require('../constants/filters');
 var imageCompressionLib = require('../scripts/imageCompression');
 var upload = multer({dest: 'uploads/'});
+var bcrypt = require('bcrypt');
+var salt = process.env.SALT;
+
 
 var email = process.env.MAILER;
 
@@ -93,6 +96,46 @@ router.get('/getTutorial/:projectCode', function(req, res, next) {
         res.status(400).send('results could not be generated!!!');
     });
 });
+
+//Genetic Algorithm sequences
+router.get('/getTutorialSequence/:projectCode', function(req, res, next) {
+    var projectCode = req.params.projectCode;
+    projectDB.getTutorialSequenceRandom(projectCode).then(function(results) {
+        res.send(results);
+    }, function(err) {
+        res.status(400).send('Tutorial with sequence could not be generated!!!');
+    });
+});
+
+//Generate a random tutorial sequence
+router.get('/generateTutorialSequence/:projectCode/:seqsize', function(req, res, next) {
+    var projectCode = req.params.projectCode;
+    var seqsize = req.params.seqsize;
+    projectDB.generateTutorialSequencesRandom(projectCode,seqsize).then(function(results) {
+        res.send(results);
+    }, function(err) {
+        res.status(400).send('Tutorial sequence could not be generated!!!',err);
+    });
+});
+
+//Generate a random tutorial sequence
+router.post('/addWorkerTutorial', function(req, res, next) {
+    var projectCode = req.body.projectCode;
+    var hitID = req.body.hitID;
+    var sequence = req.body.sequence;
+    var workerID = req.body.workerID;
+
+    var hashWorker = bcrypt.hashSync(workerID + hitID, salt);
+
+    projectDB.addUserTutorialSequence(hashWorker,hitID,projectCode,sequence).then(function(results) {
+        res.send(results);
+    }, function(err) {
+        console.log(err)
+        res.status(400).send('Worker could not be matched to tutorial sequence');
+    });
+});
+
+
 
 
 

@@ -40,6 +40,7 @@ router.get('/all/:projectCode', function(req, res, next) {
         res.status(400).send('project not found!!!');
     })});
 
+// Get aggregated results for markers
 router.get('/allMarkers/:projectCode', function(req, res, next) {
     var projectCode = req.params.projectCode;
     console.log(projectCode)
@@ -47,6 +48,20 @@ router.get('/allMarkers/:projectCode', function(req, res, next) {
         var datasetId = project.dataset_id;
         console.log(project.id)
         resultDB.heatMapDataAllMarkers(project.id).then(function(results) {
+            res.send(results);
+        }, function(err) {
+            res.status(400).send('heatmap results could not be generated!!!');
+        });
+    }, function(err) {
+        res.status(400).send('project not found!!!');
+    })});
+
+// Get raw results for markers task
+router.get('/allMarkersUsers/:projectCode', function(req, res, next) {
+    var projectCode = req.params.projectCode;
+    var project = projectDB.getSingleProjectFromCode(projectCode).then(function(project) {
+        var datasetId = project.dataset_id;
+        resultDB.heatMapDataAllMarkersUsers(project.id).then(function(results) {
             res.send(results);
         }, function(err) {
             res.status(400).send('heatmap results could not be generated!!!');

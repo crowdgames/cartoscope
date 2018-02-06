@@ -186,6 +186,7 @@ CREATE TABLE `projects` (
   `req_count` int(11) DEFAULT '0',
   `image_source` text,
   `tutorial_link` text,
+  `genetic` int(11) DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_code_UNIQUE` (`unique_code`),
   KEY `Creator_idx` (`creatorID`),
@@ -258,6 +259,40 @@ CREATE TABLE `tutorial` (
 ) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+
+--
+-- Table structure for table `tutorial_sequences`
+--
+
+DROP TABLE IF EXISTS `tutorial_sequences`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tutorial_sequences` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `unique_code` varchar(255) DEFAULT NULL,
+  `seq` text,
+  `active` int(11) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+--
+-- Table structure for table `tutorial_users`
+--
+
+DROP TABLE IF EXISTS `tutorial_users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tutorial_users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `workerID` varchar(128) NOT NULL,
+  `unique_code` varchar(128) DEFAULT NULL,
+  `hitID` varchar(128) DEFAULT NULL,
+  `seq` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 
 --

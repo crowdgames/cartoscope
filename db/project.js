@@ -219,6 +219,124 @@ exports.getTutorialFromCode = function(uniqueCode) {
     });
 };
 
+//Add a new genetic sequence, as long as it doesn't already exist
+exports.addTutorialSequence = function (uniqueCode,sequence) {
+
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        var queryString = 'INSERT INTO tutorial_sequences (unique_code,seq,active) ' +
+            'SELECT * FROM (SELECT \"'+uniqueCode+'\", \"'+ sequence +'\", \'1\') AS tmp ' +
+            'WHERE NOT EXISTS (SELECT * FROM tutorial_sequences where ' +
+            'unique_code=\"'+ uniqueCode +'\" and seq=\"'+ sequence +'\") LIMIT 1';
+        connection.queryAsync(queryString).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
+
+exports.getTutorialSequenceRandom = function(uniqueCode) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        //get a random sequence
+        var queryString = 'SELECT id from tutorial_sequences WHERE unique_code = \'' + uniqueCode + '\' ORDER BY RAND() LIMIT 1';
+        connection.queryAsync(queryString).then(
+            function(data) {
+                if (data.length > 0) {
+                    var seq_id = data[0].id;
+                    //Return tutorial points but with added sequence column
+                    queryString = 'SELECT t.*,ts.seq from tutorial as t ' +
+                        'JOIN tutorial_sequences as ts on  t.unique_code=ts.unique_code and ts.id=' + seq_id +
+                        ' WHERE t.unique_code = \'' + uniqueCode + '\' ';
+                    connection.queryAsync(queryString).then(
+                        function(data2) {
+                            if (data2.length > 0) {
+                                //Return tutorial points but with added sequence column
+                                resolve(data2);
+                            } else {
+                                error({code: 'Error getting tutorial with sequence'});
+                            }
+                        }, function(err) {
+                            error(err);
+                        });
+                } else {
+                    error({code: 'No tutorial sequence found'});
+                }
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
+exports.generateTutorialSequencesRandom = function(uniqueCode,selsize) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        //get all tutorial items for that code in random order
+        var queryString = 'SELECT id from tutorial WHERE unique_code = \'' + uniqueCode + '\' ORDER BY RAND() ';
+        connection.queryAsync(queryString).then(
+            function(data) {
+                if (data.length > 0) {
+                        // array of all ids
+                        var complete = 0;
+                        var seqArray = [];
+                        data.forEach(function(item){
+                            seqArray.push(item.id)
+                        });
+                        // We have a random sequence of all items, now select a random size between 0-array_size:
+                        //Do not allow sequences of only one item:
+                        var rand_size = 0;
+                        if (selsize > 0) {
+                            rand_size = selsize;
+                        } else {
+                            rand_size = Math.floor(Math.random() * (seqArray.length +1)) +1;
+                        }
+
+                        var finalSequenceArray = seqArray.slice(0,rand_size);
+                        //make it to string
+                        var finalSequence = finalSequenceArray.join("-");
+                        //Insert sequence to database
+                        exports.addTutorialSequence(uniqueCode,finalSequence).then(function(Adddata) {
+                            if (Adddata) {
+                                rows_changed = Adddata.affectedRows;
+                                if (rows_changed > 0){
+                                    complete = 1;
+                                }
+                                console.log(complete);
+                                resolve(complete)
+                            } else {
+                                error({code: 'Error adding generated sequence'});
+                            }
+                        }, function(err) {
+                            error(err);
+                        });
+
+                } else {
+                    error({code: 'No tutorial items found'});
+                }
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
+
+//Keep track of which worker is matched with which sequence
+exports.addUserTutorialSequence = function(worker_id,hitID,unique_code,sequence) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('INSERT INTO tutorial_users (unique_code,workerID,hitID,seq) VALUES(?,?,?,?)',
+            [unique_code,worker_id,hitID,sequence]).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
 
 exports.getNumberOfContributers = function(project) {
   return new Promise(function(resolve, error) {
