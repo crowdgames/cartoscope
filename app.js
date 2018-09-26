@@ -26,10 +26,9 @@ app.set('view engine', 'jade');
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
-app.use(bodyParser.urlencoded({
-  extended: true
-}));
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '1000mb'}));
+app.use(bodyParser.urlencoded({limit: '1000mb', extended: true}));
+
 app.use(cookieParser());
 app.use(compression());
 
@@ -56,6 +55,7 @@ passport.deserializeUser(function(user, done) {
 
 app.use(express.static(path.join(__dirname, 'public')));
 // app.use(express.static(path.join(__dirname, 'frontend')));
+
 
 app.use('/api/user', users);
 app.use('/api/project', projectsApi);
