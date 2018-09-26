@@ -139,8 +139,6 @@ router.get('/csv/:projectCode', function(req, res, next) {
                     raw_im_list.forEach(function(img_obj){
 
                         var img = img_obj.name;
-                        console.log(img)
-
                         var max_value = -1;
                         var max_name = '';
                         var o_name = img;
@@ -149,7 +147,7 @@ router.get('/csv/:projectCode', function(req, res, next) {
                         if (csv_data !=undefined) {
 
                            //find image
-                            
+
                             var rinfo = filterResponses(
                                 csv_data, {renamed_value: img + '.jpg' });
                             var renamed = rinfo[0].image_name;
