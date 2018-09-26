@@ -131,24 +131,25 @@ router.get('/csv/:projectCode', function(req, res, next) {
             //Get file with renaming convensions from backend:
             d3.csv('http://localhost:3000/files/'+projectCode + '_renamed.csv', function(csv_data) {
 
-
                 //get all the images from the dataset_id
-                projectDB.getDataSetNames(datasetId).then(function(raw_im_list) {
+                projectDB.getDataSetNames2(datasetId).then(function(raw_im_list) {
                     //parse images
-                    var im_list_r = raw_im_list[0];
-                    var im_list = im_list_r.image_list;
-                    var im_array = im_list.split(',');
-                    //get all votes for each image
-                    im_array.forEach(function(img){
+
+
+                    raw_im_list.forEach(function(img_obj){
+
+                        var img = img_obj.name;
+                        console.log(img)
 
                         var max_value = -1;
                         var max_name = '';
-                        var o_name = img
+                        var o_name = img;
 
                         //if a renaming guide exists, rename appropriately:
                         if (csv_data !=undefined) {
 
                            //find image
+                            
                             var rinfo = filterResponses(
                                 csv_data, {renamed_value: img + '.jpg' });
                             var renamed = rinfo[0].image_name;
@@ -160,7 +161,7 @@ router.get('/csv/:projectCode', function(req, res, next) {
 
                         //Make object for image
                         var counters = {image_name: o_name, question: template.question, crowd_source: 'Cartoscope', image_source: im_source };
-                        var tot_vot = 0
+                        var tot_vot = 0;
                         ans.forEach(function(ans){
                             //parse the ans:
                             var p_ans = '"' + ans + '"';
