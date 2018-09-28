@@ -4,9 +4,9 @@
 var db = require('../db/db');
 var bcrypt = require('bcrypt');
 var Promise = require('bluebird');
-var salt = process.env.SALT;
+var salt = process.env.CARTO_SALT;
 var randomString = require('randomstring');
-var databaseName = process.env.DB_NAME;
+var databaseName = process.env.CARTO_DB_NAME;
 var hitCode = process.env.hitCode;
 
 

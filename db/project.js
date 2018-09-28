@@ -3,7 +3,7 @@
  */
 var db = require('../db/db');
 var Promise = require('bluebird');
-var databaseName = process.env.DB_NAME;
+var databaseName = process.env.CARTO_DB_NAME;
 
 exports.isCodeUnique = function(uniqueCode, done) {
   var connection = db.get();

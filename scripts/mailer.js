@@ -3,7 +3,7 @@
  */
 
 var nodemailer = require('nodemailer');
-var email = process.env.MAILER;
+var email = process.env.CARTO_MAILER;
 
 exports.mailer = function(toAddr, subject, htmlBody) {
   // create reusable transporter object using the default SMTP transport

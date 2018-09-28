@@ -1,0 +1,27 @@
+<div class="step-5">
+    <span class="txt">Publication and Sharing Settings</span>
+    <div class="buttons">
+
+        <div class="privacy-button" ng-class="{'active': project.privacy == 0}" ng-click="project.privacy = 0">
+            <span class="title"><i class="fa fa-check-circle sel-check"></i>Public</span>
+            <span class="msg">Everyone is allowed to find and participate in this project</span>
+        </div>
+
+        <div class="privacy-button" ng-class="{'active': project.privacy == 1}" ng-click="project.privacy = 1">
+            <span class="title"><i class="fa fa-check-circle sel-check"></i>Private</span>
+            <span class="msg">A private project means people can not find it unless they received a link to the project. It is a better option if you want to limit who is participating in the project.  </span>
+        </div>
+    </div>
+    <div style="clear: both;">
+
+    </div>
+    <div class="link">
+        <div>
+            <span class="txt">Link to share</span>
+        </div>
+        <div>
+            <input class="invite" value="{{getPathToStart()}}" readonly>
+        </div>
+    </div>
+
+</div>

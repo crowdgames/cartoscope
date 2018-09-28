@@ -1,0 +1,36 @@
+<div class="step-1">
+    <div class="row">
+        <div class="col-md-6">
+            <div ng-switch on="::project.editing">
+                <span>
+                    Project Name*
+                </span>
+                <input ng-switch-when="true" ng-model="project.name" readonly>
+                <input ng-switch-when="false" ng-model="project.name">
+            </div>
+            <div>
+                <span>
+                    Description*
+                </span>
+                <textarea ng-model="project.description"></textarea>
+            </div>
+
+        </div>
+        <div class="col-md-6">
+            <span>
+                Project Image
+                <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
+                   data-placement="right" style="margin-left: 10px"
+                   title="This image will be used to represent your project on the website."></i>
+            </span>
+            <label class="file-sel">
+                {{coverPic.name || "Select Image"}}
+                <input type="file" accept="image/*" file-model="coverPic">
+            </label>
+
+            <div>
+                <canvas id="imageCanvas" style="max-height: 200px;width: auto;"></canvas>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,47 @@
+<div class="step-3">
+    <div class="holder">
+        <span class="lbl">
+            Invite Administrators
+        </span>
+        <div>
+            <div angucomplete-alt id="ex1"
+                 placeholder="Username"
+                 maxlength="50"
+                 pause="100"
+                 selected-object="project.invite.selectedUser"
+                 remote-url="/api/user/getusers/"
+                 search-fields="username"
+                 title-field="username"
+                 minlength="3"
+                 placeholder="Searching..."
+                 pause="300"
+                 template-url="t1.html"
+                 match-class="highlight"
+                 style="display: inline-block">
+            </div>
+
+            <span class="msg">
+                <i class="fa fa-exclamation-triangle"></i>
+                <span>
+                  When you add administrators, they will have full access to manage this project, including deleting it. If you add a new associate, be aware that they will have the same privileges of controls as you do.
+                </span>
+            </span>
+        </div>
+        <div>
+            <button class="invite-btn" ng-click="invite()" ng-disabled="!project.invite.selectedUser.originalObject.id">
+                INVITE
+            </button>
+        </div>
+    </div>
+    <div class="row admins-list-container">
+        <div class="col-md-12">
+            <div class="animate-repeat admins-row" ng-repeat="admin in project.admins">
+                <span class="admin">{{admin.username}}</span>
+                <span class="pull-right delete-btn" ng-click="deleteAdmin($index)">
+                    Delete Administrator
+                </span>
+            </div>
+
+        </div>
+    </div>
+</div>

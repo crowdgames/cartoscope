@@ -1,0 +1,128 @@
+body {
+    background: url('../images/background_dktp.png') no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size:cover;
+    color: #f8f8ff;
+}
+.title {
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+.content {
+    text-align: left ;
+    margin-right:8%;
+    margin-left:8%;
+    /*margin-top:2%;*/
+
+}
+.content > .row {
+    margin-top:1%;
+}
+.content > .agree-btn-row {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding-bottom: 1%;
+}
+#tut_correct_ans, #tut_text {
+    text-align: center;
+}
+.consent-button {
+    margin-top: 20px;
+    border-radius: 10px;
+    background-color: #9cdc1f;
+    color: #000;
+    font-size: 16px;
+    outline: none;
+    border: none;
+    padding: 8px 22px;
+    font-weight: bold;
+    width: 33%;
+}
+
+
+#marker_legend {
+    font-family: Arial, sans-serif;
+    background: #fff;
+    padding: 10px;
+    margin: 10px;
+    border: 3px solid #000;
+    float: left;
+    color: black;
+}
+#marker_legend h6 {
+    margin-top: 0;
+    font-weight:bold;
+}
+#marker_legend img {
+    max-width:10%;
+    max-height:10%;
+}
+
+
+#tut_question, .tut_answer {
+    text-align: center;
+}
+.tut_answer{
+    margin-left:4%;
+    margin-right:3%;
+    outline: none;
+    color:black;
+    font-weight: bold;
+    padding: 1% 2%;
+    width : 18%;
+    border-radius: 20px;
+}
+.instructions {
+    font-size: 2em;
+    font-weight: bold;
+}
+.img-border {
+    border: 10px white solid;
+}
+
+
+#marker_legend {
+    font-family: Arial, sans-serif;
+    background: #fff;
+    padding: 10px;
+    margin: 10px;
+    border: 3px solid #000;
+    float: left;
+    color:black
+}
+#marker_legend h6 {
+    margin-top: 0;
+    font-weight:bold;
+
+}
+#marker_legend img {
+    max-width:10%;
+    max-height:10%;
+}
+
+@media (orientation: portrait) and (max-width: 786px) {
+    .consent-button {
+        left: 0;
+        right: 0;
+        bottom: 0;
+        position: fixed;
+        height: 50px;
+        width: 100%;
+        -webkit-border-radius:0;
+        -moz-border-radius:0;
+        border-radius:0;
+        margin-top: 20px;
+    }
+    #correct-note {
+        text-align: center;
+        margin-bottom: 50px;
+    }
+
+    .tut_answer{
+       width: 80%;
+    }
+}

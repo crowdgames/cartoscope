@@ -1,0 +1,51 @@
+<div class="container " ng-controller="kioskProjectController">
+
+        <div class="row intro"  style="text-align: center">
+            <h1 class="col-sm-12 projectName" style="color: white;font-size: 36px;margin-top:50px;"><span style="font-size: 20px;">WELCOME TO</span></br>
+                <b><span style="color:black;">{{project_title}}</span></b></h1>
+        </div>
+
+
+
+                <div class="col-sm-12" style="">
+                    <center>
+            <p class="description " style="font-size: 22px; color: white;">
+                {{project_desc}}
+            </p>
+
+                    <div ng-hide="showCC"  >
+                        <p ng-if="showSource" ><a style="color: black;" target="_blank" ng-href="{{image_source}}">
+                            Image Source</a>
+                        </p>
+                    </div>
+                    <div ng-show="showCC"  >
+                        <p ng-if="showSource" >Images from  <a style="color: black;" target="_blank" ng-href="{{image_source}}">
+                            {{creator}}</a> under a <a href="https://creativecommons.org/licenses/by-nc-sa/2.0/" target="_blank">Creative Commons</a> licence.
+                        </p>
+                    </div>
+
+
+                </div>
+            </center>
+        </div>
+
+        <br>
+        <br>
+        <div class="row" style="text-align: center;margin-bottom:20px;">
+            <a ng-click="beginProject()">
+                <img src="../../images/contribute_btn_on.png"
+                     onmouseover="this.src='../../images/contribute_btn_hover.png'"
+                     onmouseleave="this.src='../../images/contribute_btn_on.png'"
+                     class="contribute"/>
+            </a>
+            <br>
+            <small>Contributing is free and anonymous.</small>
+        </div>
+        <div class="row">
+            <div style="text-align: center;margin: 1%;margin-top:2%;">
+                <p>Follow the project on:</p><a href="https://github.com/crowdgames/cartoscope-backend">
+                    <img src="../../images/github-logo.png" alt="Github" style="width: 150px; height: 50px;"/>
+                </a>
+            </div>
+        </div>
+</div>

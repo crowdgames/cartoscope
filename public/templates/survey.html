@@ -1,0 +1,252 @@
+<div class="container-fluid" ng-if="userType == 'mTurk'">
+
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4"><p class="h1">Follow up Survey</p></div>
+        <div class="col-md-4"></div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10"><p>Thank you for taking the time to contribute to our study. Your participation is invaluable to our work. As we
+            move forward, we would like to get some feedback from you about the usability of our software so that we can
+            take your thoughts into consideration during redevelopment. Please take a few moments to complete our brief
+            questionnaire and feel free to provide any additional comments you would like to share with us.</p></div>
+        <div class="col-md-1"></div>
+    </div>
+
+    <form class="horizontal col-md-offset-1 col-md-10" name="forms.mturk_form" >
+        <div class="form-group">
+            <label class="control-label col-sm-12">Can you tell us why did you complete the number of images that you did? <span style="color:#9CDC18">*</span>
+                <textarea class="form-control col-sm-9" rows="2" cols="50" ng-model="response.why_text" required></textarea>
+            </label>
+        </div>
+        <br>
+        <div class="form-group">
+            <div>
+                <label class="col-sm-2 control-label">Check all that apply:</label>
+                <div class="form-group col-md-10 col-sm-10">
+                    <label class="whymore-checkbox">
+                        <input type="checkbox" ng-model="response.whymore1" name="whymore" value="instructions" class="whymore">
+                        I did not understand the instructions
+                    </label>
+                    <label class="whymore-checkbox">
+                        <input type="checkbox" ng-model="response.whymore2" name="whymore" value="paid" class="whymore">
+                        I thought I would get paid more
+                    </label>
+                    <label class="whymore-checkbox">
+                        <input type="checkbox" ng-model="response.whymore3" name="whymore" value="reject" class="whymore">
+                        I thought my submission would not get approved
+                    </label>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="form-group" ng-show="survCh.showChainQuestions">
+            <div>
+                <label class="col-sm-2 control-label">Which interface would you prefer? <span style="color:#9CDC18">*</span>
+                </label>
+                <div class="form-group col-md-10 col-sm-10">
+                    <label>
+                        <input type="radio" name="int_first" value="{{first_choice}}" ng-model="response.pref_interface"  />{{first_choice}}
+                    </label>
+                    <label>
+                        <input type="radio" name="int_second" value="{{second_choice}}" ng-model="response.pref_interface"  />{{second_choice}}
+                    </label>
+                </div>
+            </div>
+
+        </div>
+        <br>
+        <div class="form-group" ng-show="survCh.showChainQuestions">
+            <label class="control-label">Can you tell as why?
+                <textarea class="form-control" rows="3" cols="50" ng-model="response.pref_interface_text"></textarea>
+            </label>
+        </div>
+        <br>
+        <div class="form-group" ng-show="survCh.showMapDiff">
+            <div>
+                <label class="col-sm-2 control-label">Did the presence of the map make any difference for you?
+                </label>
+                <div class="form-group col-md-10 col-sm-10">
+                    <label>
+                        <input type="radio" name="int_first" value=1 ng-model="response.map_diff">Yes
+                    </label>
+                    <label>
+                        <input type="radio" name="int_second" value=0 ng-model="response.map_diff">No
+                    </label>
+                </div>
+            </div>
+        </div>
+        <br>
+
+        <div class="form-group" ng-show="survCh.showMapDiff">
+            <label class="control-label">Can you tell as why?
+                <textarea class="form-control" rows="3" cols="50" ng-model="response.map_diff_text"></textarea>
+            </label>
+        </div>
+        <br>
+        <div class="form-group" >
+            <label class="control-label">In your opinion, where do you think these images are from? </label>
+                <textarea class="form-control" rows="3" cols="50" ng-model="response.image_location"></textarea>
+
+        </div>
+        <br>
+        <div class="form-group" >
+            <label class="control-label">Please describe from your memory what you looked at. </label>
+                <textarea class="form-control" rows="3" cols="50" ng-model="response.image_desc"></textarea>
+
+        </div>
+        <br>
+
+        <div class="form-group">
+            <div>
+                <label class="col-sm-2 control-label">Did you encounter any technical problems while using the system? <span style="color:#9CDC18">*</span>
+                </label>
+                <div class="form-group col-md-10 col-sm-10">
+                    <label>
+                        <input type="radio" name="techdiff" value=1 ng-model="response.tech_diff">Yes
+                    </label>
+                    <label>
+                        <input type="radio" name="techdiff" value=0 ng-model="response.tech_diff">No
+                    </label>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="form-group">
+            <label class="control-label">If yes, please describe:
+                <textarea class="form-control" rows="3" cols="50" ng-model="response.tech_diff_text"></textarea>
+            </label>
+        </div>
+        <br>
+        <div class="form-group">
+            <label>In the space provided, please provide any additional feedback you would like to share on this project.</label>
+            <textarea class="form-control" rows="3" cols="50" ng-model="response.additional_text"></textarea>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-md-10">Thank you for your time and your thoughts! Click Submit to complete your submission.</div>
+        </div>
+        <br>
+        <div class="form-group">
+            <button type="submit" ng-click="submit(mturk_form)" class="form-control btn btn-primary btn btn-block" style="background-color:#9cdc1f;color:black;">Submit</button>
+        </div>
+
+    </form>
+</div>
+
+<div class="container-fluid" id="museum-flow-survey" ng-if="userType == 'kiosk'">
+
+    <div class="row col-sm-8 col-sm-offset-2">
+
+        <h3 class="questions">Feedback</h3>
+
+        <p>Thank you for contributing to this project. We'd love to hear your thoughts on
+            improving our citizen science projects. Please answers the four quick questions below and feel free to
+            provide any additional comments.
+        </p>
+
+        <form name="forms.kiosk_form">
+            <div class="form-group">
+                <label class="questions control-label">Are you local to Cleveland?</label>
+                <div class="form-check" aria-label="local to cleveland">
+                    <label class="form-check-label">
+                            <input class="form-check-input"
+                                type="radio"
+                                name="local"
+                                value="yes"
+                                ng-model="response.local_diff"> YES </label>
+
+                        <label class="control-label">
+                            <input
+                                type="radio"
+                                name="local"
+                                value="no"
+                                ng-model="response.local_diff"> NO </label>
+                    <label class="control-label">
+                           <input
+                                type="radio"
+                                name="local"
+                                value="none"
+                                ng-model="response.local_diff"> PREFER NOT TO SAY </label>
+
+                </div>
+            </div>
+            <div class="form-group">
+                    <label class="questions">Did you enjoy the task?</label>
+                <div class="form-check" aria-label="enjoy the task?">
+                    <label class="form-check-label">
+                        <input class="form-check-input"
+                               type="radio"
+                               name="enjoytask"
+                               value="yes"
+                               ng-model="response.enjoy_task"> YES </label>
+
+                    <label class="control-label">
+                        <input
+                                type="radio"
+                                name="enjoytask"
+                                value="no"
+                                ng-model="response.enjoy_task"> NO </label>
+                    </div>
+                    <textarea class="form-control more-text" rows="3" cols="50" ng-model="response.enjoy_task_text"
+                    placeholder="Please describe why or why not..."></textarea>
+            </div>
+            <div class="form-group">
+                    <label class="questions">Have you had any prior experience with Algal Blooms?</label>
+                <div class="form-check" aria-label="Experience with algal blooms">
+                    <label class="form-check-label">
+                        <input class="form-check-input"
+                               type="radio"
+                               name="priorexp"
+                               value="yes"
+                               ng-model="response.priorexp"> YES </label>
+
+                    <label class="control-label">
+                        <input type="radio"
+                                name="priorexp"
+                                value="no"
+                                ng-model="response.priorexp"> NO </label>
+                </div>
+                    <textarea class="form-control more-text" rows="3" cols="50"  ng-model="response.priorexp_text"
+                    placeholder="Please describe why or why not..."></textarea>
+            </div>
+            <div class="form-group">
+                    <label class="questions">Would you contribute to this project again in the future?
+                    </label>
+                <div class="form-check" aria-label="Contribute in future?">
+                    <label class="form-check-label">
+                        <input class="form-check-input"
+                               type="radio"
+                               name="contribute"
+                               value="yes"
+                               ng-model="response.contribute"> YES </label>
+
+                    <label class="control-label">
+                        <input type="radio"
+                               name="contribute"
+                               value="no"
+                               ng-model="response.contribute"> NO </label>
+                    </div>
+
+                    <textarea class="form-control more-text" rows="3" cols="50" ng-model="response.contribute_text"
+                    placeholder="Please describe why or why not..."></textarea>
+
+            </div>
+            <div class="form-group">
+                <label class="questions">In the space provided, please provide any additional feedback you would like to share on this project.</label>
+                <textarea class="form-control" rows="3" cols="50" ng-model="response.additional_text"
+                placeholder="Type Here..."></textarea>
+            </div>
+            <p class="thankyou-message">Thank you for your time and your thoughts!
+                    Submit your responses and see how others have contributed to this project!</p>
+            <div class="form-group">
+                <button type="submit" ng-click="submit()" class="form-control btn btn-block submit-button submit-survey">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+

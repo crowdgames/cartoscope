@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test</title>
+
+    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="bower_components/angular/angular.min.js"></script>
+    <script src="script/index.js"></script>
+
+</head>
+<body ng-app="app" ng-controller="controller">
+    <div class="row">
+        <div class="col-md-4">
+            <div style="height: 10px;"></div>
+            <label> USERNAME <input ng-model="user.username"></label>
+            <label> PASSWORD <input ng-model="user.password" type="password"></label>
+            <div style="height: 10px;"></div>
+            <button ng-click="login()" class="form-control"> LOGIN </button>
+            <button ng-click="logout()" class="form-control"> LOGOUT </button>
+        </div>
+
+        <div class="col-md-4">
+            <div style="height: 10px;"></div>
+            <button ng-click="call()" class="form-control"> CALL </button>
+            <div>
+                {{data}}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

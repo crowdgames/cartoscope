@@ -1,0 +1,103 @@
+<div class="center-1 project-page-body">
+
+    <div class="content-links-wrapper">
+            <span>
+                <a ui-sref="root.getAllProjects" style="color:white">PROJECTS</a>
+            </span>
+        <span class="circ-sep"></span>
+        <span>
+               <a ui-sref="root.contact" style="color:white" ui-sref-active="active">GROUPS</a>
+            </span>
+        <span class="circ-sep"></span>
+        <span>
+               <a ui-sref="root.contact" style="color:white" ui-sref-active="active">NEWS</a>
+            </span>
+        <span class="circ-sep"></span>
+        <span>
+                <a ui-sref="root.contact" style="color:white" ui-sref-active="active">FORUM</a>
+        </span>
+    </div>
+    <div class="main-body">
+        <div class="search-panel">
+            <div class="take-space"></div>
+            <div class="button-panel">
+                <button ng-show="model.allowProject" ui-sref="root.projectCreation.step1">New Project</button>
+                <button ng-hide="model.allowProject" onclick="location.href='mailto:contact@cartosco.pe?subject=Cartoscope: Project Interest'">New Project</button>
+
+            </div>
+        </div>
+        <!--/api/tasks/startProject/{{project.unique_code}}-->
+        <br>
+        <div class="projects-body text-center">
+            <div class="project-creation-parent">
+                <div style="flex: 1;">
+                    <div class="tab-body">
+                        <div class="tabs" style="width: 100%;align-self: flex-start;">
+                            <span ng-click="model.showtab('info')" > BASIC INFO</span>
+                            <span ng-click="model.showtab('map')">RESULTS</span>
+                        </div>
+                        <div class="steps-view">
+
+                            <!--Project Info-->
+                           <div ng-show="model.showInfobool">
+
+                            <div style="color:white; padding: 20px;display: flex; justify-content: space-between" class="col-md-12">
+                                <div style="text-align: left;">
+                                    <h1>{{model.currentProject.name}}</h1>
+                                    <p>{{model.currentProject.description}}</p>
+                                    <!--<a href="/api/tasks/startProject/{{model.currentProject.unique_code}}" class="name">Contribute</a>-->
+                                    <a style=" background: #9cdc1f;font-weight: 800;color: #26272a;padding: 5px 10px;border: none;border-radius: 4px;outline: none;" href="/api/tasks/startProject/{{model.currentProject.unique_code}}" class="name">Contribute</a>
+
+                                    <!--<button href="/api/tasks/startProject/{{model.currentProject.unique_code}}" style=" background: #9cdc1f;font-weight: 800;color: #26272a;padding: 5px 10px;border: none;border-radius: 4px;outline: none;">Contribute</button> -->
+
+                                </div>
+                                <div>
+                                    <img src="images/default-no-profile-pic.png" ng-src="{{owner_photo}}"
+                                         style="width: 200px;height:200px;border-radius: 10px;" >
+                                    <p> Project Admin : {{model.currentProject.user.username}}<br>
+                                    </p>
+                                </div>
+                                </div>
+
+                           </div>
+                            <div ng-if="model.showMapbool">
+
+                                <h3 style="color:white;">{{model.question}}</h3>
+
+                                <div id="project_map" ng-if="model.successProject" style=" margin-left:10%;padding: 10px;width:80%;text-align: center;">
+
+
+                                    <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="options" bounds="map.bounds" >
+
+                                        <ui-gmap-layer namespace="visualization" type="HeatmapLayer" show="map.showHeat" onCreated="map.heatLayerCallback"></ui-gmap-layer>
+
+                                    </ui-gmap-google-map>
+
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-2 col-md-2"></div>
+                                    <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                                        <button class="btn-lg black " placeholder="Option" ng-repeat="option in model.options"
+                                                style=" margin-right:10px; background-color: {{model.button_colors[option.color]}};border-color: {{model.button_colors[option.color]}};
+                   border:2px solid {{model.button_colors[option.color]}};" ng-click="model.update_heatmap(option.color);">{{option.text}}</button>
+
+                                        <!--<button class="btn-lg black" placeholder="Show All"-->
+                                        <!--style="background-color: #FF69B4; border-color: #FF69B4;-->
+                                        <!--border:2px solid #FF69B4;" ng-click="update_heatmap('all','map1');">Show All</button>-->
+                                    </div>
+
+                                </div>
+                                <br>
+
+
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+</div>

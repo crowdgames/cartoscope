@@ -1,0 +1,140 @@
+body {
+    background-image: url('../images/background_dktp.png');
+    font-family: 'PT Sans', sans-serif;
+    color: #f8f8ff;
+}
+.whymore-checkbox {
+    display:block;
+}
+.form-group > .describe{
+    text-align: left;
+}
+
+.questions{
+    text-transform: uppercase;
+    font-family: 'Paytone One', sans-serif;
+    color: black;
+}
+
+.title{
+    text-transform: capitalize;
+    font-family: 'Paytone One', sans-serif;
+    color: black;
+}
+
+.submit-survey{
+    width: 200px;
+}
+
+.submit-button {
+    background-color:#9cdc1f;
+    color:black;
+    font-family: 'Paytone One', sans-serif;
+    border: 5px #9cdc1f solid;
+
+}
+
+.more-text {
+    margin-top: 10px;
+}
+
+.submit-button:hover{
+    background-color: #7F7F7F;
+    border: 5px #9cdc1f solid;
+}
+
+
+td.bottom
+{
+    width: 0.6cm;
+    height: 0.4cm;
+    border-bottom: 1px solid black;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    margin: 0px;
+    padding: 0px 0px 0px 0px;
+
+}
+
+table.scale
+{
+    margin: 0px;
+    padding: 0px 0px 0px 0px;
+    border-collapse: collapse
+}
+
+td.top1
+{
+    width: 0.8cm;
+    height: 0.4cm;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+    margin: 0px;
+    padding: 0px 0px 0px 0px;
+}
+td.top2
+{
+    width: 0.8cm;
+    height: 0.4cm;
+    border-top: 1px solid black;
+    border-right: 1px solid black;
+    margin: 0px;
+    padding: 0px 0px 0px 0px;
+}
+td.heading
+{
+    text-align: center;
+}
+td.left
+{
+}
+td.right
+{
+    text-align: right;
+}
+
+td.def
+{
+    width: 12cm;
+    padding: 0px 0px 0px 20px;
+    font: 12px Arial, Helvetica, sans-serif;
+}
+
+
+#marker_legend {
+    font-family: Arial, sans-serif;
+    background: #fff;
+    padding: 10px;
+    margin: 2px;
+    border: 3px solid #000;
+    float: left;
+    color: black
+
+}
+#marker_legend h6 {
+    margin-top: 0;
+    font-weight:bold;
+}
+#marker_legend img {
+    max-width:10%;
+    max-height:10%;
+}
+
+
+
+@media (max-width: 768px) {
+    .submit-survey {
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        position: fixed;
+        height: 50px;
+        margin-top: 30px;
+        font-size: 20px;
+    }
+
+    .thankyou-message{
+        margin-bottom: 70px;
+    }
+}

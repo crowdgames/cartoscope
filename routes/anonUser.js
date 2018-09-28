@@ -13,7 +13,7 @@ var querystring = require('querystring');
 var path = require('path');
 var randomString = require('randomstring');
 var bcrypt = require('bcrypt');
-var salt = process.env.SALT;
+var salt = process.env.CARTO_SALT;
 
 
 router.get('/startAnon/:pCode',

@@ -1,0 +1,342 @@
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4"><p class="h1">Follow up Survey</p></div>
+        <div class="col-md-4"></div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10"><p>Thank you for taking the time to contribute to our study. Your participation is invaluable to our work. As we
+            move forward, we would like to get some feedback from you about the usability of our software so that we can
+            take your thoughts into consideration during redevelopment. Please take a few moments to complete our brief
+            questionnaire and feel free to provide any additional comments you would like to share with us.</p></div>
+        <div class="col-md-1"></div>
+    </div>
+
+
+
+    <form class="horizontal col-md-offset-1 col-md-10" name="forms.mturk_form" >
+
+
+        <div class="form-group">
+            <label>What did you think of the activity?<span ng-if="req_answers" style="color:#9CDC18">*</span></label>
+            <textarea class="form-control" rows="2" cols="50" ng-model="response.opinion" required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>What did you think the images that you sorted could be used for?</label>
+            <textarea class="form-control" rows="2" cols="50" ng-model="response.image_use" ></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Do you have any thoughts about the images you looked at?</label>
+            <textarea class="form-control" rows="2" cols="50" ng-model="response.image_opinion" ></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>What would you improve or change in the activity?</label>
+            <textarea class="form-control" rows="3" cols="50" ng-model="response.improve" ></textarea>
+        </div>
+
+
+        <div class="form-group">
+            <center>
+                <h4>I enjoyed doing this activity very much.</h4>
+            <label >Not at all true</label>
+            <label ng-repeat="n in getNumber()">
+                <input type="radio" name="game1" style="margin:5px" ng-model="response.game1" ng-value=n  />
+            </label>
+            <label >Very True</label>
+
+            </center>
+        </div>
+
+        <div class="form-group">
+            <center>
+                <h4>I did this activity because I had to.</h4>
+                <label >Not at all true</label>
+                <label ng-repeat="n in getNumber()">
+                    <input type="radio" name="game2" style="margin:5px" ng-model="response.game2" ng-value=n  />
+                </label>
+                <label >Very True</label>
+            </center>
+        </div>
+
+        <div class="form-group">
+            <center>
+                <h4>This activity was fun to do.</h4>
+                <label >Not at all true</label>
+                <label ng-repeat="n in getNumber()">
+                    <input type="radio" name="game3" style="margin:5px" ng-model="response.game3" ng-value=n  />
+                </label>
+                <label >Very True</label>
+            </center>
+        </div>
+
+
+        <div class="form-group">
+            <center>
+                <h4>I would describe this activity as very interesting.</h4>
+                <label >Not at all true</label>
+                <label ng-repeat="n in getNumber()">
+                    <input type="radio" name="game4" style="margin:5px" ng-model="response.game4" ng-value=n  />
+                </label>
+                <label >Very True</label>
+
+            </center>
+        </div>
+
+        <div class="form-group">
+            <center>
+                <h4>This was an activity that I couldn't do very well.</h4>
+                <label >Not at all true</label>
+                <label ng-repeat="n in getNumber()">
+                    <input type="radio" name="game5" style="margin:5px" ng-model="response.game5" ng-value=n  />
+                </label>
+                <label >Very True</label>
+            </center>
+        </div>
+
+        <div class="form-group">
+            <center>
+                <h4>I thought this activity was quite enjoyable.</h4>
+                <label >Not at all true</label>
+                <label ng-repeat="n in getNumber()">
+                    <input type="radio" name="game6" style="margin:5px" ng-model="response.game6" ng-value=n  />
+                </label>
+                <label >Very True</label>
+            </center>
+        </div>
+
+        <div class="form-group">
+            <center>
+                <h4>While I was doing this activity, I was thinking about how much I enjoyed it.</h4>
+                <label >Not at all true</label>
+                <label ng-repeat="n in getNumber()">
+                    <input type="radio" name="game7" style="margin:5px" ng-model="response.game7" ng-value=n  />
+                </label>
+                <label >Very True</label>
+            </center>
+        </div>
+
+        <div class="form-group">
+            <center>
+                <h4>I felt like it was not my own choice to do this task.</h4>
+                <label >Not at all true</label>
+                <label ng-repeat="n in getNumber()">
+                    <input type="radio" name="game8" style="margin:5px" ng-model="response.game8" ng-value=n  />
+                </label>
+                <label >Very True</label>
+            </center>
+        </div>
+
+        <div class="form-group">
+            <center>
+                <h4>I think I am pretty good at this activity.</h4>
+                <label >Not at all true</label>
+                <label ng-repeat="n in getNumber()">
+                    <input type="radio" name="game9" style="margin:5px" ng-model="response.game9" ng-value=n  />
+                </label>
+                <label >Very True</label>
+            </center>
+        </div>
+
+        <div class="form-group">
+            <center>
+                <h4>I didn't try very hard to do well at this activity.</h4>
+                <label >Not at all true</label>
+                <label ng-repeat="n in getNumber()">
+                    <input type="radio" name="game10" style="margin:5px" ng-model="response.game10" ng-value=n  />
+                </label>
+                <label >Very True</label>
+            </center>
+        </div>
+
+        <div class="form-group">
+            <center>
+                <h4>I think I did pretty well at this activity compared to others.</h4>
+                <label >Not at all true</label>
+                <label ng-repeat="n in getNumber()">
+                    <input type="radio" name="game11" style="margin:5px" ng-model="response.game11" ng-value=n  />
+                </label>
+                <label >Very True</label>
+            </center>
+        </div>
+
+        <div class="form-group">
+            <center>
+                <h4>After working at this activity for a while, I felt pretty competent.</h4>
+                <label >Not at all true</label>
+                <label ng-repeat="n in getNumber()">
+                    <input type="radio" name="game12" style="margin:5px" ng-model="response.game12" ng-value=n  />
+                </label>
+                <label >Very True</label>
+            </center>
+        </div>
+
+        <div class="form-group">
+            <center>
+                <h4>I felt like I had to do this.</h4>
+                <label >Not at all true</label>
+                <label ng-repeat="n in getNumber()">
+                    <input type="radio" name="game13" style="margin:5px" ng-model="response.game13" ng-value=n  />
+                </label>
+                <label >Very True</label>
+            </center>
+        </div>
+
+        <div class="form-group">
+            <center>
+                <h4>I am satisfied with my performance at this task.</h4>
+                <label >Not at all true</label>
+                <label ng-repeat="n in getNumber()">
+                    <input type="radio" name="game14" style="margin:5px" ng-model="response.game14" ng-value=n  />
+                </label>
+                <label >Very True</label>
+            </center>
+        </div>
+
+        <div class="form-group">
+            <center>
+                <h4>I was pretty skilled at this activity.</h4>
+                <label >Not at all true</label>
+                <label ng-repeat="n in getNumber()">
+                    <input type="radio" name="game15" style="margin:5px" ng-model="response.game15" ng-value=n  />
+                </label>
+                <label >Very True</label>
+            </center>
+        </div>
+
+        <div class="form-group">
+            <center>
+                <h4>This activity did not hold my attention at all.</h4>
+                <label >Not at all true</label>
+                <label ng-repeat="n in getNumber()">
+                    <input type="radio" name="game16" style="margin:5px" ng-model="response.game16" ng-value=n  />
+                </label>
+                <label >Very True</label>
+            </center>
+        </div>
+
+        <div class="form-group">
+            <center>
+                <h4> I believe I had some choice about doing this activity.</h4>
+                <label >Not at all true</label>
+                <label ng-repeat="n in getNumber()">
+                    <input type="radio" name="game17" style="margin:5px" ng-model="response.game17" ng-value=n  />
+                </label>
+                <label >Very True</label>
+            </center>
+        </div>
+
+        <div class="form-group">
+            <center>
+                <h4> I did this activity because I wanted to.</h4>
+                <label >Not at all true</label>
+                <label ng-repeat="n in getNumber()">
+                    <input type="radio" name="game18" style="margin:5px" ng-model="response.game18" ng-value=n  />
+                </label>
+                <label >Very True</label>
+            </center>
+        </div>
+
+        <div class="form-group">
+            <center>
+                <h4> I didn't really have a choice about doing this task.</h4>
+                <label >Not at all true</label>
+                <label ng-repeat="n in getNumber()">
+                    <input type="radio" name="game19" style="margin:5px" ng-model="response.game19" ng-value=n  />
+                </label>
+                <label >Very True</label>
+            </center>
+        </div>
+
+        <div class="form-group">
+            <center>
+                <h4> I put a lot of effort into this.</h4>
+                <label >Not at all true</label>
+                <label ng-repeat="n in getNumber()">
+                    <input type="radio" name="game20" style="margin:5px" ng-model="response.game20" ng-value=n  />
+                </label>
+                <label >Very True</label>
+            </center>
+        </div>
+
+        <div class="form-group">
+            <center>
+                <h4>  I did this activity because I had no choice.</h4>
+                <label >Not at all true</label>
+                <label ng-repeat="n in getNumber()">
+                    <input type="radio" name="game21" style="margin:5px" ng-model="response.game21" ng-value=n  />
+                </label>
+                <label >Very True</label>
+            </center>
+        </div>
+
+        <div class="form-group">
+            <center>
+                <h4>  I tried very hard on this activity.</h4>
+                <label >Not at all true</label>
+                <label ng-repeat="n in getNumber()">
+                    <input type="radio" name="game22" style="margin:5px" ng-model="response.game22" ng-value=n  />
+                </label>
+                <label >Very True</label>
+            </center>
+        </div>
+
+        <div class="form-group">
+            <center>
+                <h4> It was important to me to do well at this task.</h4>
+                <label >Not at all true</label>
+                <label ng-repeat="n in getNumber()">
+                    <input type="radio" name="game23" style="margin:5px" ng-model="response.game23" ng-value=n  />
+                </label>
+                <label >Very True</label>
+            </center>
+        </div>
+
+        <div class="form-group">
+            <center>
+                <h4> I didn't put much energy into this.</h4>
+                <label >Not at all true</label>
+                <label ng-repeat="n in getNumber()">
+                    <input type="radio" name="game24" style="margin:5px" ng-model="response.game24" ng-value=n  />
+                </label>
+                <label >Very True</label>
+            </center>
+        </div>
+
+        <div class="form-group">
+            <center>
+                <h4> I thought this was a boring activity.</h4>
+                <label >Not at all true</label>
+                <label ng-repeat="n in getNumber()">
+                    <input type="radio" name="game25" style="margin:5px" ng-model="response.game25" ng-value=n  />
+                </label>
+                <label >Very True</label>
+            </center>
+        </div>
+
+        <br>
+
+        <div class="form-group">
+            <label>In the space provided, please provide any additional feedback you would like to share on this project.</label>
+            <textarea class="form-control" rows="3" cols="50" ng-model="response.additional_text"></textarea>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-md-10">Thank you for your time and your thoughts! Click Submit to complete your submission.</div>
+        </div>
+        <br>
+        <div class="form-group">
+            <button type="submit" ng-click="submit(mturk_form)" class="form-control btn btn-primary btn btn-block" style="background-color:#9cdc1f;color:black;">Submit</button>
+        </div>
+
+    </form>
+</div>
+
+
+
+

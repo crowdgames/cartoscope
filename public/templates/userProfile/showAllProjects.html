@@ -1,0 +1,50 @@
+<div class="center-1 project-page-body">
+
+    <div class="content-links-wrapper">
+        <span>
+            <a ui-sref="root.getAllProjects" style="color:white">PROJECTS</a>
+        </span>
+        <span class="circ-sep"></span>
+        <span>
+               <a ui-sref="root.contact" style="color:white" ui-sref-active="active">GROUPS</a>
+            </span>
+        <span class="circ-sep"></span>
+        <span>
+               <a ui-sref="root.contact" style="color:white" ui-sref-active="active">NEWS</a>
+            </span>
+        <span class="circ-sep"></span>
+        <span>
+                <a ui-sref="root.contact" style="color:white" ui-sref-active="active">FORUM</a>
+        </span>
+    </div>
+    <div class="main-body">
+        <div class="search-panel">
+            <div>
+                <div class="search-box">
+                    <input ng-model="searchText"><i class="fa fa-search"></i>
+                </div>
+            </div>
+            <div class="take-space"></div>
+            <div class="button-panel">
+                <button ng-show="model.allowProject" ui-sref="root.projectCreation.step1">New Project</button>
+                <button ng-hide="model.allowProject" onclick="location.href='mailto:contact@cartosco.pe?subject=Cartoscope: Project Interest'">New Project</button>
+
+            </div>
+        </div>
+        <!--/api/tasks/startProject/{{project.unique_code}}-->
+
+        <div class="projects-body text-center">
+                <div class="col-md-12" style="color: black">
+                        <div class="project-box" ng-repeat="project in model.projects" style="height: 250px; width: 200px;margin: 20px;">
+                            <a ng-click="model.showProjectDetails(project)" class="projects-public">
+                            <div class="head"></div>
+                            <div class="foot" style="background: white">
+                                <span class="name" style="border:none;color:black"><h5>{{project.name}}</h5></span>
+                                <button ng-click="model.showProjectDetails(project)" class="name" style="background:#9cdc1f;color: black">Contribute</button>
+                            </div>
+                            </a>
+                        </div>
+                </div>
+        </div>
+    </div>
+</div>

@@ -27,10 +27,10 @@ var filters = require('../constants/filters');
 var imageCompressionLib = require('../scripts/imageCompression');
 var upload = multer({dest: 'uploads/'});
 var bcrypt = require('bcrypt');
-var salt = process.env.SALT;
+var salt = process.env.CARTO_SALT;
 
 
-var email = process.env.MAILER;
+var email = process.env.CARTO_MAILER;
 
 module.exports = router;
 

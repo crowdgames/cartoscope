@@ -1,0 +1,464 @@
+<div class="container-fluid new-home " id="js-scrollspy">
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid">
+            <button class="start-contrib-button" ng-click="goToFeatured()">
+                START CONTRIBUTING
+            </button>
+            <button class="create-project-button" scroll-to="end">
+                Want to create your own project?
+            </button>
+            <span class="filler">
+
+            </span>
+            <ul class="no-style-ul right" id="nav-link">
+                <li class="nav-link-btn active" id="top-link">
+                    <a scroll-to="top">HOME</a>
+                </li>
+                <li class="nav-link-btn" id="projects-link">
+                    <a scroll-to="#projects-panel">PROJECTS</a>
+                </li>
+                <li class="nav-link-btn" id="abt-us-link">
+                    <a scroll-to="#about-us-panel">ABOUT</a>
+                </li>
+                <li class="nav-link-btn" id="contact-us-link">
+                    <a scroll-to="end">CONTACT</a>
+                </li>
+                <li class="nav-link-btn" data-toggle="modal" data-target="#exampleModal">
+                    <a>TERMS AND CONDITIONS</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="top-panel">
+        <div class="logo-img" >
+            <img id="logo-img" src="images/cartoscope-logo.png">
+            <p>Cartoscope is a platform for citizen science mapping. By sorting, labelling, and locating images, you can contribute to a variety of projects, including disaster response. Each member’s contribution adds up!</p>
+
+            <label>
+                <button ng-click="goToFeatured()">GET STARTED CONTRIBUTING</button>
+            </label>
+
+            <label>
+                Check out some of our existing projects
+            </label>
+
+            <div class="green-triangle-btm">
+                <img src="images/green-triangle-btm.png">
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="projects-panel" id="projects-panel">
+
+        <div class="project-box" ng-repeat="project in projects" ng-class="getRandomClass()" ng-click="goToProject(project.unique_code)">
+            <span class="title">
+                {{project.name}}
+            </span>
+            <p class="desc">
+                {{project.description}}
+            </p>
+
+        </div>
+    </div>
+
+    <div class="about-us-panel" id="about-us-panel">
+        <div class="body">
+            <div class="green-triangle-top">
+                <img src="images/green-triangle-top.png">
+            </div>
+
+            <div class="text">
+                <h1>
+                    About the Project
+                </h1>
+                <p>
+                    Cartoscope is a platform for citizen science through crowdsourced data analysis and mapping. By sorting, labelling, and locating images, community members can contribute to a variety of mapping projects, such as disaster response. Each member’s contribution adds up! Organizations can create their own projects and invite participants to help assist with their missions.
+
+                </p>
+
+                <h2>
+                    Principal Investigators
+                </h2>
+                <p>
+                    Seth Cooper, Sara Wylie
+                </p>
+
+                <h2>
+                    Credits
+                </h2>
+                <p>
+                    Sophie Spatharioti, Lorna Dsilva, Vasanti Mahajan, Rick Menasce, Shubhi Mittal, Kisalaya Prasad, Nitin Shetty, Becca Govoni
+                </p>
+                <h2>
+                    Supported by
+                </h2>
+                <p>
+                    Google, Northeastern University <sup>*</sup>
+                </p>
+
+                <p class="small">
+                    <sup>*</sup>Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of supporting organizations.
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="orgs-panel">
+        <div class="black-box">
+            <span class="al"></span>
+            <h1>THE COMMUNITY</h1>
+            <p>can contribute to a variety of mapping projects, such as disaster response </p>
+            <span class="al"></span>
+        </div>
+        <div class="body">
+            <div class="box o1">
+                <div class="logo">
+                    <div class="al"></div>
+                    <img src="images/locating.png">
+                    <h4>LOCATE POINTS OF INTEREST</h4>
+                    <div class="al"></div>
+                </div>
+                <div class="hover-panel">
+
+                </div>
+                <div class="hover-panel-text">
+                    <div class="al"></div>
+                    <div class="green-line"></div>
+                    Dive into more complex tasks such as rectifying location records and locating points of interest.
+                    <div class="green-line"></div>
+                    <div class="al"></div>
+
+                </div>
+                <div class="black-arrow-down">
+                    <span class="arrow">
+
+                    </span>
+                </div>
+            </div>
+            <div class="box o2">
+                <div class="logo">
+                    <div class="al"></div>
+                    <img src="images/sorting.png">
+                    <h4>LABELLING IMAGES</h4>
+                    <div class="al"></div>
+                </div>
+                <div class="hover-panel">
+
+                </div>
+                <div class="hover-panel-text">
+                    <div class="al"></div>
+                    <div class="green-line"></div>
+                    By labeling images, you can help identify issues such as damage, floods and water pollution.
+                    <div class="green-line"></div>
+                    <div class="al"></div>
+
+                </div>
+                <div class="black-arrow-down">
+                    <span class="arrow">
+
+                    </span>
+                </div>
+            </div>
+            <div class="box o3">
+                <div class="logo">
+                    <div class="al"></div>
+                    <img src="images/matters.png">
+                    <h4>EVERY CONTRIBUTION MATTERS!</h4>
+                    <div class="al"></div>
+                </div>
+                <div class="hover-panel">
+
+                </div>
+                <div class="hover-panel-text">
+                    <div class="al"></div>
+                    <div class="green-line"></div>
+                    Contributing to projects allows you to make an actual impact on response and recovery  as well as monitoring efforts.
+                    <div class="green-line"></div>
+                    <div class="al"></div>
+
+                </div>
+                <div class="black-arrow-down">
+                    <span class="arrow">
+
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="orgs-panel">
+        <div class="black-box">
+            <span class="al"></span>
+            <h1>THE ORGANIZATIONS</h1>
+            <p>can create their own projects and invite participants to help assist with their mission </p>
+            <span class="al"></span>
+        </div>
+        <div class="body">
+            <div class="box o2">
+                <div class="logo">
+                    <div class="al"></div>
+                    <img src="images/share.png">
+                    <h4>SHARE YOUR PROJECT</h4>
+                    <div class="al"></div>
+                </div>
+                <div class="hover-panel">
+
+                </div>
+                <div class="hover-panel-text">
+                    <div class="al"></div>
+                    <div class="green-line"></div>
+                    Connect with digital volunteers across the world  and harness the power of the crowd for your project needs.
+                    <div class="green-line"></div>
+                    <div class="al"></div>
+
+                </div>
+                <div class="black-arrow-down">
+                    <span class="arrow">
+
+                    </span>
+                </div>
+            </div>
+            <div class="box o1">
+                <div class="logo">
+                    <div class="al"></div>
+                    <img src="images/results.png">
+                    <h4>GET YOUR RESULTS BACK</h4>
+                    <div class="al"></div>
+                </div>
+                <div class="hover-panel">
+
+                </div>
+                <div class="hover-panel-text">
+                    <div class="al"></div>
+                    <div class="green-line"></div>
+                    Download results in widely used, easy to understand formats in real time  and stay up to date with your project progress.
+                    <div class="green-line"></div>
+                    <div class="al"></div>
+
+                </div>
+                <div class="black-arrow-down">
+                    <span class="arrow">
+
+                    </span>
+                </div>
+            </div>
+            <div class="box o3">
+                <div class="logo">
+                    <div class="al"></div>
+                    <img src="images/visualize.png">
+                    <h4>VISUALIZE CONTRIBUTIONS</h4>
+                    <div class="al"></div>
+                </div>
+                <div class="hover-panel">
+
+                </div>
+                <div class="hover-panel-text">
+                    <div class="al"></div>
+                    <div class="green-line"></div>
+                    Visualize the crowd efforts on your geo-tagged images using our map view.
+                    <div class="green-line"></div>
+                    <div class="al"></div>
+
+                </div>
+                <div class="black-arrow-down">
+                    <span class="arrow">
+
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer" id="contact-us" >
+        <div class="green-box">
+            <p> INTERESTED IN CREATING YOUR OWN PROJECT OR HAVE A QUESTION? </p>
+
+            <span> Send us an email! </span>
+            <div class="icon-box">
+                <a href="mailto:contact@cartosco.pe"><i class="glyphicon-envelope"></i></a>
+            </div>
+        </div>
+        <div class="black-bottom">
+            <i>Find us on Github, <a href="https://github.com/crowdgames/cartoscope-frontend"> Here</a> and <a href="https://github.com/crowdgames/cartoscope-backend"> Here</a></i>
+        </div>
+    </div>
+
+
+    <div class="modal fade" tabindex="-1" role="dialog" id="exampleModal">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Terms &amp; Conditions</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="center-content ng-scope" ui-view=""><div class="ng-scope">
+                        <div class="row">
+                            <div class="col-sm-12" style="text-align: left">
+
+                                <h3 class="section-title">Terms of Use</h3>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <p>Northeastern University,<br>
+                                            Department of: Computer and Information Science; Health Sciences
+                                            <br>
+                                            Name of Investigator(s): Seth Cooper; Sara Wylie
+                                            <br>
+                                            Title of Project: Crowdsourced Data Analysis and Mapping
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12"><h3 class="section-title">Request to Participate in Research</h3></div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-xs-12"><p>We would like to invite you to participate in a web-based online crowdsourcing project.
+                                        The task is part of a research study whose purpose is to examine how different variations in the presentation
+                                        of crowdsourced data analysis and mapping can affect accuracy and engagement.
+                                        You may receive a different interface with different task parameters than other participants.
+                                        Your interaction data will be recorded and analyzed. You may participate as long as you want.
+                                    </p></div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <p>We are asking you to participate in this study because of your interest in this citizen science platform
+                                            <span class="section-title">You must be at least 18 years old to participate in this project.</span>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <p><span class="section-title">The decision to participate in this research project is voluntary.</span>
+                                            You do not have to participate and you can refuse to participate in the task.
+                                            Even if you begin the project, you can stop at any time.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <p><span class="section-title">There are no foreseeable risks or discomforts to you for taking part in this study.</span>
+                                            <span class="section-title">There are no direct benefits to you from participating in this study.</span>
+                                            However, your responses may help us learn more about engagement and performance in citizen science.
+                                            <span class="section-title">You will not be paid for your participation in this study.</span>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <p>By creating an account and/or continuing to use the website or associated communication channels, you acknowledge that:
+
+                                        </p>
+                                        <ol type="a">
+                                            <li><p>
+                                                <span class="section-title">Your creation of an account and participation in this project may make you identifiable.</span> Your username, additional profile information provided by you
+                                                or derived from your participation, postings, and any images you upload, may be publicly visible on the project’s
+                                                website and any derived media such as screenshots and demonstrations. Your email will be kept confidential.
+                                            </p>
+                                            </li>
+                                            <li>
+                                                <p>
+                                                    <span class="section-title"> We record interactions with the website, forums, chat, and other communication channels, many of which are public.</span>
+                                                    We may record your IP address or use cookies. The website also stores your profile information, postings, and interactions.
+                                                    These interactions may be logged and analyzed for research. Please be aware that since areas of the chat and website are publicly available,
+                                                    we are unable to prevent any third party from independently observing these channels.
+                                                </p>
+                                            </li>
+                                            <li>
+                                                <p>
+                                                    <span class="section-title">We may post surveys on the website.</span> To better understand who participates in the project, we may occasionally post research surveys on the website.
+                                                    These surveys will ask basic questions about topics such as motivation or demographic information, such as age, gender, and education level.
+                                                    Participation in these surveys is entirely voluntary.
+                                                </p>
+                                            </li>
+                                            <li>
+                                                <p>
+                                                    <span class="section-title"> Data used for research may be made public or shared with collaborators.</span> Data and analysis may be shown on the website and used in external publications, presentations,
+                                                    promotional materials, and other public venues. Data logged by the website may be shared with domain experts for analysis.&nbsp;
+                                                    Reports or publications based on experimental data gathered during this research will use group data or will anonymize the identity of any individual.
+                                                    In the event that you have made a contribution for which you might be identified, we will contact you for permission before externally associating data analysis
+                                                    with your account name. However, your account name and other account information may appear without explicit permission in external demonstrations of the game
+                                                    or website, including presentations, videos, screenshots, and publications.
+                                                </p>
+                                            </li>
+                                            <li>
+                                                <p>
+                                                    <span class="section-title">The project may terminate, suspend, or block your account at any time.</span> The project may remove any data or postings you have provided.
+                                                </p>
+                                            </li>
+                                            <li>
+                                                <p>
+                                                    <span class="section-title">Project members may contact you with your account email.</span> &nbsp;When creating an account, you provide an email address. &nbsp;This email address may occasionally be used to contact you in relation to the project.
+                                                </p>
+                                            </li>
+                                            <li>
+                                                <p><span class="section-title">You may only upload images that you have rights to do so, and those images become public domain.</span></p>
+                                            </li>
+                                            <li>
+                                                <p>
+                                                    <span class="section-title">You can opt out of further data gathering at any time. </span> To do so, discontinue use of the website, forums, chat, and other communication channels associated with the project.
+                                                </p>
+                                            </li>
+                                            <li>
+                                                <p>
+                                                    <span class="section-title"> This policy may change in the future. </span> This policy may change at any time. You will be asked to agree to the new terms.
+                                                </p>
+                                            </li>
+
+                                        </ol>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <p><span class="section-title">If you have any questions regarding electronic privacy,</span> please feel free to contact Mark Nardone, NU’s
+                                            Director of Information Security via phone at 617-373-7901, or via email at privacy@neu.edu.
+                                        </p>
+                                        <p><span class="section-title">If you have any questions about this study,</span> please feel free to contact Seth Cooper, Email:
+                                            seth.cooper.study@gmail.com, or Sara Wylie, Email: s.wylie@neu.edu, the people mainly responsible for the
+                                            research.
+                                        </p>
+                                        <p>
+                                            <span class="section-title">If you have any questions regarding your rights as a research participant,</span> please contact Nan C. Regina,
+                                            Director, Human Subject Research Protection, Mail Stop: 560-177, Northeastern University, Boston, MA 02115.
+                                            Tel:
+                                            617.373.4588, Email: n.regina@neu.edu. You may call anonymously if you wish.
+                                        </p>
+                                        <p>
+                            <span class="section-title">This study has been reviewed and approved by the Northeastern University Institutional Review Board
+                                (#16-05-17).</span>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <p>Thank you for your time.</p>
+                                        <p>Seth Cooper and Sara Wylie</p>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div></div>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+
+</div>

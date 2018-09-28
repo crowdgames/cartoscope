@@ -1,0 +1,307 @@
+<div class="task-body container">
+    <nav class="navbar navbar-top navbar-fixed-top">
+        <div class="container text-center">
+            <p class="navbar-text">Image {{model.data.progress <= model.data.size ? model.data.progress:model.data.size }} out of {{model.data.size}}</p>
+            <div ng-switch="model.userType" class="pull-right">
+                <button ng-switch-when="mTurk" class="btn btn-default btn-primary done-button"
+                        ng-click="model.skipToSurvey()" style="height: 45px;" ng-show="showSurvButton">{{cont_button}}</button>
+                <button ng-switch-when="kiosk" class="btn btn-default btn-primary done-button"
+                        ng-click="model.handleEnd()" style="height: 45px;">I'M DONE</button>
+                <button ng-switch-default class="btn btn-default btn-primary done-button"
+                        ng-click="model.handleFinish()" style="height: 45px;">I'M DONE</button>
+            </div>
+        </div>
+
+        <div ng-switch="userType" ng-if=" !model.showFlightPath">
+
+            <div  ng-switch-default class="progress progressDiv" style="height: 5px;margin-top: 5px;border-radius: 0;">
+                <div  class="progress-bar progress-bar-striped " role="progressbar" aria-valuenow="{{next_per2}}"
+                      aria-valuemin="0" aria-valuemax="100" ng-style="mturkbarStyle">
+                </div>
+            </div>
+            <div ng-switch-when="mTurk"></div>
+
+        </div>
+    </nav>
+
+
+
+    <div class="row" ng-switch="model.userType" style="text-align: center;margin-bottom:5px; margin-top: 60px">
+
+        <div class="col-sm-12" ng-switch-when="mTurk" >
+
+            <div  ng-if="model.showFlightPath">
+                <center>
+                    <div class="col-sm-12">
+                        <ng-map id="flight_path" center="[{{model.flight_map_lat}},{{model.flight_map_lng}} ]"
+                                map-type-id="ROADMAP"
+                                zoom="{{model.fetchZoom()}}"
+                                on-center-changed="model.flight_centerChanged();"
+                                zoomControl= "true"
+                                zoom-control-options="{ style:'HORIZONTAL_BAR',position:'RIGHT_TOP'}"
+                                style="height:100px;width:500px;"
+                                class="mapDiv">
+                        </ng-map>
+                    </div>
+                </center>
+            </div>
+        </div>
+        <div class="col-sm-12" ng-switch-default ></div>
+
+    </div>
+
+
+    <div class="row"
+         ng-if="model.data.template.selectedTaskType == 'mapping'">
+        <div id="mapQuestion">
+            <h3 class="mapQuestion text-center" style="color:white">{{model.data.template.question}}
+                <span ng-show="model.userType === 'mTurk'" style="color: #9cdc1f;cursor: pointer;" data-target="#helpModal" data-toggle="modal"><i class="fa fa-question-circle-o" aria-hidden="true"></i></span>
+            </h3>
+
+        </div>
+
+        <div id="maps"
+             class="col-md-12 text-center">
+            <div class="col-md-6 col-xs-12 col-sm-12">
+                <ng-map  id="main_map" center="{{model.fetchCenter()}}"
+                        map-type-id="SATELLITE"
+                        zoom="{{model.defZoom}}"
+                        on-zoom_changed="model.zoomChanged();"
+                        on-center-changed="model.centerChanged();"
+                        class="mapDiv">
+                    <custom-control id="recenter" position="TOP_CENTER" index="1" on-click="model.recenter()">
+                        <button type="button" class="btn btn-default btn-sm" style="cursor:pointer;margin: 8px;">Recenter</button>
+                        <custom-control id="legend" position="TOP_RIGHT" index="1">
+                            <div ng-show="model.showMarkerPoints" id="marker_legend">
+                                <h6>Legend</h6>
+                                    <div  style="text-align: left" ng-repeat="leg_item in model.legendObject"><img src="{{leg_item.image}}" > {{leg_item.key}}</div>
+                            </div>
+                </ng-map>
+            </div>
+
+            <div class="col-md-6 col-xs-12 col-sm-12" style="width: auto">
+                <img ng-src="{{model.getNextTask()}}" ng-click="model.showBiggerImg()" class="imgDiv"/>
+            </div>
+
+        </div>
+
+        <div class="col-md-12" ng-hide="model.showFlightPath" ng-switch="userType">
+            <br>
+            <!--<h4 ng-switch-default class="text-center col-md-12 imgProgress">Image {{model.data.progress <= model.data.size ? model.data.progress:model.data.size }} out of {{model.data.size}}</h4>-->
+           <center>
+            <h8 style="color:white" ng-show="model.userType === 'mTurk'">You can go to the survey at any time without having to complete all  the images.</h8>
+           </center>
+
+        </div>
+
+
+
+
+        <nav class="navbar navbar-fixed-bottom navbar-bottom" ng-if="model.data.template.selectedTaskType == 'mapping'">
+            <div class="container text-center" style="padding: 0;width: 100%;">
+
+            <div class="bottom-panel">
+                <div class="row" ng-if="model.data.template.selectedTaskType == 'mapping'">
+                    <div class="col-md-3"></div>
+                    <div class="col-lg-12 col-md-6 col-sm-12 answers" >
+                        <div ng-repeat="option in model.data.template.options" style="display: inline">
+                            <button   ng-class="model.getColourClass(option.color)"
+                                      ng-click="model.submit($index)" ng-disabled="finished" class="options">
+                                {{option.text}}
+                            </button>
+                            <span ng-show="model.userType === 'mTurk'"  style="color: #9cdc1f;cursor: pointer;display:inline;margin-left:-18px" ng-click="showTutorial(option.text)"><i class="fa fa-question-circle-o" aria-hidden="true"></i></span>
+
+                        </div>
+                        <button ng-show="model.data.point_selection"  class="btn btn-default btn-primary "
+                                ng-click="model.submit(0);model.fetchCenter();model.resetZoom();" ng-disabled="finished" class="options text-center">
+                            Next
+                        </button>
+                    </div>
+                    <div class="col-md-3"></div>
+                </div>
+        </div>
+            </div>
+
+        </nav>
+
+
+    </div>
+
+    <button id="showImModalButton" style="display: none;" data-toggle="modal" data-target="#imModal">Open Modal</button>
+    <button id="showTutModalButton" style="display: none;" data-toggle="modal" data-target="#tutModal">Open Modal</button>
+
+
+    <div class="row" ng-if="model.data.template.selectedTaskType == 'tagging'">
+
+        <div class="col-sm-12  contribution-details" ng-if="model.showFlightPath" style="margin-top: 10px">
+
+               <h6  class="img-title">IMAGE {{model.data.progress <= model.data.size ? model.data.progress:model.data.size }} OUT OF {{model.data.size}}</h6>
+        </div>
+        <center>
+            <h8 style="color: white;" ng-show="model.userType === 'mTurk'">You can go to the survey at any time without having to complete all  the images.</h8>
+        </center>
+
+    </div>
+
+    <div class="row" style="text-align: center;" ng-if="model.data.template.selectedTaskType == 'tagging'">
+        <div class="col-sm-12" id="img">
+            <img id="task-img" style="max-height:450px" class="img-responsive img-task" ng-src="{{model.getNextTask()}}" ng-click="model.showBiggerImg()">
+        </div>
+
+    </div>
+
+
+    <nav class="navbar navbar-fixed-bottom navbar-bottom" ng-if="model.data.template.selectedTaskType == 'tagging'">
+        <div class="container text-center" style="padding: 0;width: 100%;">
+            <div class="bottom-panel">
+                <div class="question" ng-if="model.data.template.selectedTaskType == 'tagging'" >
+                    <span>{{model.data.template.question}}</span>
+                    <span  ng-show="model.userType === 'mTurk'" style="color: #9cdc1f;cursor: pointer;" data-target="#helpModal" data-toggle="modal"><i class="fa fa-question-circle-o" aria-hidden="true"></i></span>
+
+
+                </div>
+            </div>
+
+            <div class="row" ng-if="model.data.template.selectedTaskType == 'tagging'">
+                <div class="col-md-3"></div>
+                <div class="col-lg-12 col-md-6 col-sm-12 answers" >
+                    <div ng-repeat="option in model.data.template.options" style="display: inline">
+                        <button   ng-class="model.getColourClass(option.color)"
+                                  ng-click="model.submit($index)" ng-disabled="finished" class="options">
+                            {{option.text}}
+                        </button>
+                        <span ng-show="model.userType === 'mTurk'"  style="color: #9cdc1f;cursor: pointer;display:inline;margin-left:-18px" ng-click="showTutorial(option.text)"><i class="fa fa-question-circle-o" aria-hidden="true"></i></span>
+
+                    </div>
+
+                </div>
+                <div class="col-md-3"></div>
+            </div>
+
+            <!--<button id="showImModalButton" style="display: none;" data-toggle="modal" data-target="#imModal">Open Modal</button>-->
+
+        </div>
+    </nav>
+
+
+
+    <!--Image Magnification Modal-->
+    <div class="modal fade" id="imModal"  role="dialog" >
+        <div class="modal-dialog" role="document" style="width:80%">
+            <div class="im-modal-content">
+                <div class="modal-header" style="border-bottom: none">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <img class="im-modal-content" id="ModImg" ng-src="{{model.getNextTask()}}" ng-click="model.showBiggerImg()">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--&lt;!&ndash; The Modal &ndash;&gt;-->
+        <!--<div id="imModal" class="im-modal">-->
+            <!--<span ng-click="model.hideBiggerImg()"  class="im-modal-close">&times;</span>-->
+            <!--<img class="im-modal-content" id="ModImg" ng-src="{{model.getNextTask()}}" ng-click="model.hideBiggerImg()" >-->
+        <!--</div>-->
+
+
+    <div class="modal fade" id="helpModal"  role="dialog" >
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Instructions</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <div ng-show="model.userType === 'mTurk'">
+                    <ol>
+                            <li>Click START to begin rating images. For each image, answer the question that appears along with the image.</li>
+                            <li>When you are done rating, click the Go To Survey button to complete a short survey, after which your HIT will be
+                                completed.</li>
+                            <li>Please do not use your browser's back button while rating images or taking the survey.</li>
+                            <li>If you complete the survey, your submission will be approved.</li>
+                            <li>{{req_text}}</li>
+                        <li ng-show="model.showMarkerPoints" > Click on the markers to annotate them, by giving them a color.
+                            You can find all possible categories on the legend situated on the top right of the map.
+                            If you wish to <b>unselect</b> a marker, click through it until it becomes gray again.
+                            If no marker is visible in the map, try zooming out using the controls on the bottom right of the map
+                            until more markers appear.
+                            </li>
+                    </ol>
+                    </div>
+                    <div ng-hide="model.userType === 'mTurk'">
+                        <p>{{model.data.description}}</p>
+
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="tutModal"  role="dialog" >
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Examples</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <center>
+                    <div class="col-md-12" style="color: black">
+                        <div ng-repeat="item in model.tutorial" style="display: inline;">
+                            <img ng-src ="{{item.image}}" style="max-height: 200px; max-width: 200px;margin: 5px;">
+                        </div>
+                    </div>
+                    </center>
+
+                    <div class=" answers" >
+                    <button  ng-class="model.getColourClass(model.tutorial_button.color)"class="options">{{model.tutorial_button.text}}</button>
+                    </div>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script type="text/javascript">
+  var obj = $("#task-img");
+
+  obj.on("click", function() {
+    console.log(1);
+  });
+  obj.on("mouseenter", function() {
+    console.log(1);
+    obj.css({'transform': 'scale(3)'});
+  });
+
+  obj.on('mousemove', function(e) {
+    console.log(2);
+    obj.css({'transform-origin': ((e.pageX - $(this).offset().left) / $(this).width()) * 100 + '% ' + ((e.pageY - $(this).offset().top) / $(this).height()) * 100 + '%'});
+  });
+
+  obj.on("mouseleave", function() {
+    console.log(3);
+    obj.css({'transform': 'scale(1)'});
+  });
+</script>
+
+
+</div>
+

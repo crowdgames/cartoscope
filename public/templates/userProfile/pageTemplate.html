@@ -1,0 +1,55 @@
+
+
+<div class="container-fluid h-100">
+    <div class="row h-100">
+        <div class="col-sm-2 side-1">
+            <div class="side-content">
+                <div class="side-content-wrapper">
+                    <div class="profile-stats">
+                        <div class="stats">
+                            <span class="score">{{userPoints}}</span>
+                            <span class="lvl">{{userRank}}</span>
+                        </div>
+                        <img class="profile-pic" src="images/default-no-profile-pic.png" ng-src="{{user.profilePic}}"
+                             ui-sref="root.home">
+                    </div>
+                    <div class="filler">
+                        <div class="fill">
+
+                        </div>
+                    </div>
+                    <div class="side-contrib-btn">
+                        CONTRIBUTE
+                    </div>
+                    <div class="side-menu-btns">
+                        <div class="main-link" ui-sref="root.userProfile" ui-sref-active="active">
+                            Profile
+                        </div>
+                        <div class="main-link" ui-sref="root.getAllProjects" ui-sref-active="active">
+                            All Projects
+                        </div>
+                        <div class="main-link" ui-sref="root.projects" ui-sref-active="active">
+                            My Projects
+                        </div>
+                        <div class="main-link" ng-click="logout()">
+                            Sign Out
+                        </div>
+                    </div>
+                </div>
+
+                <div class="links-wrapper">
+                    <ul class="link-ul">
+                        <li><a style="color:#9cdc1f;" ui-sref="root.about" ui-sref-active="active">ABOUT US</a></li>
+                        <!--<li><a ui-sref="root.contact" ui-sref-active="active">CONTACT US</a></li>-->
+                        <li><a style="color:#9cdc1f;" href="mailto:contact@cartosco.pe">CONTACT US</a></li>
+                        <li><a style="color:#9cdc1f;" ui-sref="root.terms" ui-sref-active="active">TERMS AND CONDITIONS</a></li>
+                    </ul>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-10 view" ui-view>
+
+        </div>
+    </div>
+</div>

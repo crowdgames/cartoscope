@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="bower_components/angular/angular.min.js"></script>
+    <script src="script/projectCreation.js"></script>
+</head>
+<body ng-app="app">
+    <div ng-controller="controller">
+        <label> Name <input ng-model="projectData.name"></label>
+        <br>
+        <label> Description <textarea ng-model="projectData.desc"></textarea></label>
+        <br>
+        <label> Photo <input type="file" file-model="projectData.pic" accept="image/*"></label>
+        <br>
+        <button ng-click="createProject()">Create</button>
+    </div>
+
+</body>
+</html>

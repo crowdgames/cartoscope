@@ -1,0 +1,76 @@
+<div class="container" ng-controller="heatMapController">
+        <h1 style="color: black">Results & Contributions</h1>
+        <p> Below you can see how other people have contributed to the project. You can see results
+            by answer by clicking on the buttons below. Zoom in for more detailed results.</p>
+
+
+        <center>
+            <div id="map_canvas" ng-if="successProject1" >
+                <ui-gmap-google-map center="map1.center" zoom="map1.zoom" draggable="true" options="options" bounds="map1.bounds">
+
+                    <ui-gmap-layer namespace="visualization" type="HeatmapLayer" show="map1.showHeat" onCreated="map1.heatLayerCallback"></ui-gmap-layer>
+
+                </ui-gmap-google-map>
+
+            </div>
+            <br>
+            <div class="row">
+
+                <h3>{{question1}}</h3>
+
+                <div class="col-lg-2 col-md-2"></div>
+                <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                    <button class="btn-lg black " placeholder="Option" ng-repeat="option in options1"
+                            style=" margin-right:10px; background-color: {{option.color}};border-color: {{option.color}};
+                   border:2px solid {{option.color}};" ng-click="update_heatmap(option.ncolor,'map1');">{{option.name}}</button>
+
+                    <!--<button class="btn-lg black" placeholder="Show All"-->
+                            <!--style="background-color: #FF69B4; border-color: #FF69B4;-->
+                <!--border:2px solid #FF69B4;" ng-click="update_heatmap('all','map1');">Show All</button>-->
+                </div>
+
+            </div>
+
+            <div class="col-lg-2 col-md-2"></div>
+            <!--<center><h5 ng-if="successProject1">{{unique_images1}} images tagged so far by {{unique_workers1}} people</h5></center>-->
+
+
+
+
+
+            <div id="map_canvas2" ng-if="successProject2">
+                <ui-gmap-google-map center="map2.center" zoom="map2.zoom" draggable="true" options="options" bounds="map2.bounds">
+
+                    <ui-gmap-layer namespace="visualization" type="HeatmapLayer" show="map2.showHeat" onCreated="map2.heatLayerCallback"></ui-gmap-layer>
+
+                </ui-gmap-google-map>
+
+            </div>
+            <br>
+            <div class="row">
+
+                <h3>{{question2}}</h3>
+                <div class="col-lg-2 col-md-2"></div>
+                <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                    <button class="btn-lg black" placeholder="Option" ng-repeat="option in options2"
+                          style=" margin-right:10px; background-color: {{option.color}};border-color: {{option.color}};
+                   border:2px solid {{option.color}};" ng-click="update_heatmap(option.ncolor,'map2');">{{option.name}}</button>
+
+                    <!--<button class="btn-lg black" placeholder="Show All"-->
+                            <!--style="background-color: #FF69B4; border-color:#FF69B4;-->
+                <!--border:2px solid #FF69B4;" ng-click="update_heatmap('all','map2');">Show All</button>-->
+                </div>
+                <div class="col-lg-2 col-md-2"></div>
+            </div>
+            <!--<center><h5 ng-if="successProject2">{{unique_images2}} images tagged so far by {{unique_workers2}} people</h5></center>-->
+
+
+
+
+            <br>
+            <div class="row">
+                <h3>Thank you for taking the time to contribute to our study!</h3>
+            </div>
+        </center>
+
+</div>

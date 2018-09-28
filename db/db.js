@@ -22,9 +22,9 @@ var state = {
 exports.connect = function(mode, done) {
     state.pool = mysql.createPool({
         host: process.env.DB_HOST ? process.env.DB_HOST : '',
-        user: process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME
+        user: process.env.CARTO_DB_USER,
+        password: process.env.CARTO_DB_PASSWORD,
+        database: process.env.CARTO_DB_NAME
     });
     state.mode = mode;
     done();

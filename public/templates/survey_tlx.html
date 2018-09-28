@@ -1,0 +1,120 @@
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4"><p class="h1">Follow up Survey</p></div>
+        <div class="col-md-4"></div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10"><p>Thank you for taking the time to contribute to our study. Your participation is invaluable to our work. As we
+            move forward, we would like to get some feedback from you about the usability of our software so that we can
+            take your thoughts into consideration during redevelopment. Please take a few moments to complete our brief
+            questionnaire and feel free to provide any additional comments you would like to share with us.</p></div>
+        <div class="col-md-1"></div>
+    </div>
+
+
+
+    <form class="horizontal col-md-offset-1 col-md-10" name="forms.mturk_form" >
+
+
+
+        <div class="form-group">
+            <center>
+                <label><h4> Mental Demand<span ng-if="req_answers" style="color:#9CDC18">*</span></h4></label>
+                <p>How much mental and perceptual activity was required (e.g. thinking, deciding, calculating, remembering, looking, searching, etc)?
+                    Was the task easy or demanding, simple or complex, exacting or forgiving?</p>
+            <label >Low</label>
+            <label ng-repeat="n in getNumber()">
+                <input type="radio" name="mental" style="margin:5px" ng-model="response.mental" ng-value=n required />
+            </label>
+            <label >High</label>
+
+            </center>
+        </div>
+
+        <div class="form-group">
+            <center>
+                <label><h4> Physical Demand<span ng-if="req_answers" style="color:#9CDC18">*</span></h4></label>
+                <p>How much physical activity was required (e.g. pushing, pulling, turning, controlling, activating, etc)? Was the task easy or demanding, slow or brisk, slack or strenuous, restful or laborious?</p>
+                <label >Low</label>
+                <label ng-repeat="n in getNumber()">
+                    <input type="radio" name="physical" style="margin:5px" ng-model="response.physical" ng-value=n required />
+                </label>
+                <label >High</label>
+            </center>
+        </div>
+
+        <div class="form-group">
+            <center>
+                <label><h4> Temporal Demand<span ng-if="req_answers" style="color:#9CDC18">*</span></h4></label>
+                <p>How much time pressure did you feel due to the rate of pace at which the tasks or task elements occurred? Was the pace slow and leisurely or rapid and frantic?</p>
+                <label >Low</label>
+                <label ng-repeat="n in getNumber()">
+                    <input type="radio" name="temporal" style="margin:5px" ng-model="response.temporal" ng-value=n required />
+                </label>
+                <label >High</label>
+            </center>
+        </div>
+
+
+        <div class="form-group">
+            <center>
+                <label><h4> Performance<span ng-if="req_answers" style="color:#9CDC18">*</span></h4></label>
+                <p>How successful do you think you were in accomplishing the goals of the task set by the experimenter (or yourself)?
+                    How satisfied were you with your performance in accomplishing these goals?</p>                <label >Good</label>
+                <label ng-repeat="n in getNumber()">
+                    <input type="radio" name="performance" style="margin:5px" ng-model="response.performance" ng-value=n required />
+                </label>
+                <label >Poor</label>
+
+            </center>
+        </div>
+
+        <div class="form-group">
+            <center>
+                <label><h4> Effort<span ng-if="req_answers" style="color:#9CDC18">*</span></h4></label>
+                <p>How hard did you have to work (mentally and physically) to accomplish your level of performance?</p>
+                <label >Low</label>
+                <label ng-repeat="n in getNumber()">
+                    <input type="radio" name="effort" style="margin:5px" ng-model="response.effort" ng-value=n required />
+                </label>
+                <label >High</label>
+            </center>
+        </div>
+
+        <div class="form-group">
+            <center>
+                <label><h4> Frustration<span ng-if="req_answers" style="color:#9CDC18">*</span></h4></label>
+                <p>How insecure, discouraged, irritated, stressed and annoyed versus secure, gratified, content, relaxed and complacent did you feel during the task?</p>
+                <label >Low</label>
+                <label ng-repeat="n in getNumber()">
+                    <input type="radio" name="frustration" style="margin:5px" ng-model="response.frustration" ng-value=n required />
+                </label>
+                <label >High</label>
+            </center>
+        </div>
+
+        <br>
+
+        <div class="form-group">
+            <label>In the space provided, please provide any additional feedback you would like to share on this project.</label>
+            <textarea class="form-control" rows="3" cols="50" ng-model="response.additional_text"></textarea>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-md-10">Thank you for your time and your thoughts! Click Submit to complete your submission.</div>
+        </div>
+        <br>
+        <div class="form-group">
+            <button type="submit" ng-click="submit(mturk_form)" class="form-control btn btn-primary btn btn-block" style="background-color:#9cdc1f;color:black;">Submit</button>
+        </div>
+
+    </form>
+</div>
+
+
+
+

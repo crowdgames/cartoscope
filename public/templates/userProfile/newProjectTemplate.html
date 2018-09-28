@@ -1,0 +1,72 @@
+<div class="project-creation-parent">
+    <div class="top-panel">
+
+    </div>
+    <div style="flex: 1;">
+        <div class="tab-body">
+            <div class="tabs" style="width: 100%;align-self: flex-start;">
+                <span ui-sref="root.projectCreation.step1({project: project})"
+                      ng-class="{'active': isActive('root.projectCreation.step1')}">
+                    BASIC INFO
+                </span>
+                <span ui-sref="root.projectCreation.step2({project: project})"
+                      ng-class="{'active': isActive('root.projectCreation.step2'), 'greyed-out':!project.id}">
+                    CUSTOMIZE TASK
+                </span>
+                <span ui-sref="root.projectCreation.step3({project: project})"
+                      ng-class="{'active': isActive('root.projectCreation.step3'), 'greyed-out': !verifyCanImportData()}">
+                    ADMINISTRATORS
+                </span>
+                <span ui-sref="root.projectCreation.step4({project: project})"
+                      ng-class="{'active': isActive('root.projectCreation.step4'), 'greyed-out': !verifyCanImportData()}">
+                    IMPORT IMAGES
+                </span>
+                <span ui-sref="root.projectCreation.step5({project: project})"
+                      ng-class="{'active': isActive('root.projectCreation.step5'), 'greyed-out': !verifyCanPublish()}">
+                    PUBLISH SETTINGS
+                </span>
+                <span ui-sref="root.projectCreation.step6({project: project})"
+                      ng-class="{'active': isActive('root.projectCreation.step6'), 'greyed-out': !verifyCanPublish()}">
+                    MANAGE IMAGES
+                </span>
+                <span class="right" ng-click='openPublishPopup()' ng-if='!project.published'
+                      ng-class="{'greyed-out': !verifyCanPublish()}">
+                    PUBLISH
+                </span>
+                <span style="clear: both;display: none"></span>
+            </div>
+            <div class="steps-view">
+                <div ui-view="createProjChildView">
+
+                </div>
+                <div style="flex-grow:1">
+
+                </div>
+                <div>
+                    <button class="next-btn bottom-btn" ng-click="goNext()" ng-disabled="validate()">{{getNextText()}}
+                    </button>
+                </div>
+            </div>
+
+
+            <div class="modal fade" tabindex="-1" role="dialog" id="publishPopup">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title">Publish</h4>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" ng-click="publish()">Publish</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

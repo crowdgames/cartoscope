@@ -1,0 +1,67 @@
+<div class="step-2 step-5">
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12 buttons text-center" style="display:flex;justify-content: center">
+
+            <div class="privacy-button" ng-class="{'active': project.task.selectedTaskType == task.value}"
+                 ng-click="project.task.selectedTaskType = task.value" style="height:100px;display: inline;" ng-repeat="task in taskTypes" >
+                <span class="title"><i class="fa fa-check-circle sel-check"></i>{{task.name}}</span>
+                <span class="msg">{{task.note}}</span>
+            </div>
+
+        </div>
+        <div class="col-md-12 col-sm-12 col-xs-12 q-box" style="display:flex;justify-content: center;align-items: center;">
+            <div ng-if="project.task.selectedTaskType == 'tagging'">
+            <img src="../../../images/placeholder-image.png" alt="placeholder image" style="width:250px;height:250px;padding:10px;">
+            </div>
+
+            <div ng-if="project.task.selectedTaskType == 'mapping'" class="col-md-8"
+                 style="display:flex;justify-content: center;align-items: center;">
+                <img src="../../../images/placeholder-map.jpg" alt="placeholder image" style="width:250px;height:250px;padding:10px;">
+                <img src="../../../images/placeholder-image.png" alt="placeholder image" style="width:250px;height:250px;padding:10px;">
+            </div>
+
+            <div class="question-box">
+                <input ng-model="project.task.question" placeholder="Type your question here"/>
+            </div>
+        </div>
+    </div>
+
+    <div class="row question-box">
+        <div class="col-md-12">
+            <span class="option-add-btn" ng-click="addOption()" style="top:0px;">
+                <span class="fa fa-plus"></span>
+                <span>ADD ANSWER</span>
+            </span>
+        </div>
+        <br>
+        <div class="custom-answers">
+            <div class="options" style="margin-top:10px;">
+                <div>
+                    <div>
+                        <div class="c" ng-repeat="choice in project.task.options" ng-animate="'animate'">
+                            <div class="left">
+                                <input placeholder="Option" ng-model="choice.text"
+                                       ng-class="{'c1':choice.color==1,'c2':choice.color==2,'c3':choice.color==3,'c4':choice.color==4,'c5':choice.color==5,'c6':choice.color==6}">
+                                <i class="fa fa-times-circle kill-btn" ng-click="removeOption($index)"></i>
+                                <span class="col-sel c1 selected" ng-click="choice.color=1"
+                                      ng-class="{'selected':choice.color==1}"></span>
+                                <span class="col-sel c2" ng-click="choice.color=2"
+                                      ng-class="{'selected':choice.color==2}"></span>
+                                <span class="col-sel c3" ng-click="choice.color=3"
+                                      ng-class="{'selected':choice.color==3}"></span>
+                                <span class="col-sel c4" ng-click="choice.color=4"
+                                      ng-class="{'selected':choice.color==4}"></span>
+                                <span class="col-sel c5" ng-click="choice.color=5"
+                                      ng-class="{'selected':choice.color==5}"></span>
+                                <span class="col-sel c6" ng-click="choice.color=6"
+                                      ng-class="{'selected':choice.color==6}"></span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

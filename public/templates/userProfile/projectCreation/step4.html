@@ -1,0 +1,72 @@
+<div class="step-4">
+    <div class="holder">
+        <span class="txt">
+            Upload Image
+        </span>
+        <div>
+            <input class="invite" placeholder="Data set URL here..." ng-model="project.dataSetLink">
+        </div>
+        <div style="margin-top: 20px;color: white;">
+            <label style="font-weight: 400">Show Advanced Settings
+                <input type="checkbox" ng-model="showAdvancedSettings" style="margin-left: 20px;"></label>
+        </div>
+        <div ng-if="showAdvancedSettings" style="margin-top: 20px">
+            <input class="invite" placeholder="Add filter here using * and ?" ng-model="project.regex">
+            <i title="More Info..." data-toggle="modal" data-target="#examplesModal" style="color: white; font-size: 12px;margin-left: 10px; cursor: pointer" class="fa fa-question-circle"></i>
+        </div>
+        <div>
+            <button class="invite-btn" ng-click="sendDataSet()" ng-disabled="project.dataSetID">IMPORT</button>
+            <br>
+            <span class="txt">
+            OR: Upload Folder
+            </span>
+            <br>
+
+            <form ng-submit="sendDataSetLocal()">
+                <div class="txt">
+                    <label for="file">Choose file to upload</label>
+                    <input type="file" id="file" name="fileFolder" fileread="project.folderInput" >
+                </div>
+                <div>
+                    <button>Submit</button>
+                </div>
+            </form>
+
+
+            <span class="msg">
+                <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                <span class="txt">
+                  You can leave this page after uploading. An email will be sent when the images are ready.
+                </span>
+            </span>
+        </div>
+        <div>
+            <span ng-show="project.dataSetID" class="txt">
+                    Data set successfully uploaded. You can check the progress <a href="{{getProgressUrl()}}"
+                                                                                  target="_blank">here</a>
+                </span>
+        </div>
+    </div>
+
+    <div id="examplesModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Examples</h4>
+                </div>
+                <div class="modal-body">
+                    <p><b>*.jpg</b> matches all the JPEG files on the server like <i>foo.jpg</i>, <i>bar.jpg</i>, <i>foo_bar.jpg</i></p>
+                    <p><b>foo*.jpg</b> matches all the JPEG files on the server starting with foo like <i>foo1.jpg</i> <i>foo_bar.jpg</i></p>
+                    <p><b>foo???.jpg</b> matches all the JPEG files on the server starting with foo and have three more characters after foo like <i>foobar.jpg</i> but not <i>foo1.jpg</i></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

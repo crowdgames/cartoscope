@@ -29,7 +29,7 @@ var projectDB = require('../db/project');
 var ncp = require('ncp').ncp;
 ncp.limit = 16;
 
-var email = process.env.MAILER;
+var email = process.env.CARTO_MAILER;
 var fileUpload = require('express-fileupload');
 
 

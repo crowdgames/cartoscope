@@ -1,0 +1,158 @@
+<div class="center-1">
+    <div class="content-links-wrapper">
+        <span>
+              <a ui-sref="root.getAllProjects" style="color:white">PROJECTS</a>
+        </span>
+        <span class="circ-sep"></span>
+        <span>
+               <a ui-sref="root.contact" style="color:white" ui-sref-active="active">GROUPS</a>
+            </span>
+        <span class="circ-sep"></span>
+        <span>
+               <a ui-sref="root.contact" style="color:white" ui-sref-active="active">NEWS</a>
+            </span>
+        <span class="circ-sep"></span>
+        <span>
+                <a ui-sref="root.contact" style="color:white" ui-sref-active="active">FORUM</a>
+        </span>
+    </div>
+    <div style="display: flex;">
+        <div class="profile-side">
+            <div class="hanging-pic">
+                <img src="images/default-no-profile-pic.png" ng-src="{{user.profilePic}}">
+            </div>
+
+            <div>
+                <button ng-hide="allowProject" class="new-proj-btn" onclick="location.href='mailto:contact@cartosco.pe?subject=Cartoscope: Project Interest'">New Project</button>
+                <button ng-show="allowProject" class="new-proj-btn" ui-sref="root.projectCreation.step1">New Project</button>
+
+            </div>
+
+            <div class="up-stats">
+            <span class="usr-lvl">
+                {{userRank}}
+            </span>
+                <div class="progress-1">
+                    <div class="prog" ng-style="barStyle">
+
+                    </div>
+                </div>
+                <span class="points">{{nextLevelThres}}</span>
+
+            </div>
+
+        </div>
+
+        <div class="profile-main">
+            <div class="name" style="margin-left: 20px;">
+                <span class="txt">
+                    {{user.username}}
+                    <span class="edit-btn" ng-click="editProfile()">
+                    EDIT
+                </span>
+                </span>
+
+            </div>
+            <div class="info" style="margin: 20px;">
+                <h5>{{user.short_bio}}</h5>
+            </div>
+
+            <div style="margin-top: 5px;border-bottom:1px solid rgba(255,255,255,.4)"></div>
+            <div>
+                <div class="row">
+                    <div class="col-md-12" style="padding-right: 0;">
+                        <h4 class="contrib-title" class="contrib-title"
+                            style="padding-top: 5px;padding-bottom:5px;margin-left: 20px;">
+                            My Projects
+                        </h4>
+
+                        <div class="project-box" ng-repeat="project in projects" style="height: 250px; width: 200px;margin: 20px;">
+                            <a ng-click="showProjectDetails(project)" class="projects-public">
+                                <div class="head"></div>
+                                <div class="foot" style="background: white">
+                                    <span class="name" style="border:none;color:black"><h5>{{project.name}}</h5></span>
+                                    <button ng-click="showProjectDetails(project)" class="name" style="background:#9cdc1f;color: black">Contribute</button>
+                                </div>
+                            </a>
+                        </div>
+
+                        <h4 ng-if="projects.length == 0" style="margin-left: 20px;">No Projects Created yet</h4>
+
+                    </div>
+                    <div class="col-md-6" style="padding-right: 0;">
+                        <!--<span class="contrib-title" class="contrib-title" style="padding-top: 5px;padding-bottom:5px">My Contributions</span>-->
+                    </div>
+                </div>
+                <div style="margin-top: 5px;border-bottom:1px solid rgba(255,255,255,.4);margin-bottom: 100px"></div>
+
+            </div>
+
+        </div>
+    </div>
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document" style="width: 750px;">
+            <div class="modal-content">
+                <div class="modal-body register-modal-body">
+                    <div class="modal-kill-btn">
+                        <button data-dismiss="modal">X</button>
+                    </div>
+                    <div>
+                        <div class="row">
+                            <div class="col-lg-8">
+                                <label class="reg-lbl">
+                                    Username:
+
+                                    <span>{{user.username}}</span>
+                                </label>
+                                <br>
+                                <label class="reg-lbl">
+                                    Password
+                                    <input class="reg-inp" type="password" ng-model='user.password' value="{{user.password}}">
+                                </label>
+                                <label class="reg-lbl">
+                                    Confirm Password
+                                    <input class="reg-inp" type="password" ng-model='user.repPassword'  value="{{user.repPassword}}">
+                                </label>
+
+                                <label class="reg-lbl">
+                                    Email
+                                    <input class="reg-inp" ng-model='user.email'>
+                                </label>
+
+                                <label class="reg-lbl">
+                                    Short Bio
+                                    <textarea class="reg-inp" ng-model='user.short_bio'>{{user.short_bio}}</textarea>
+                                </label>
+
+                            </div>
+
+                            <div class="col-lg-4">
+                                <label>
+                                    Profile Picture
+                                    <img src="images/default-no-profile-pic.png"
+                                         ng-if="user.profilePic != {} "
+                                         ng-src="{{user.profilePic}}"
+                                         ng-model="user.profilePic"
+                                         style="width:200px;height:200px;"/>
+                                </label>
+                                <label>
+                                    Update Picture
+                                    <input type="file" file-model="user.profilePic" accept="image/*">
+
+                                </label>
+                                <canvas id="imageCanvas" ng-model="user.profilePic"
+                                        style="height: 200px;width: 200px; display: none;">
+                                </canvas>
+                            </div>
+
+                        </div>
+                        <button class="modal-register-button" ng-click="update()">
+                            Update Profile
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

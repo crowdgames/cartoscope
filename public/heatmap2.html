@@ -1,0 +1,196 @@
+<div class="container">
+    <h1 class="title">Results & Contributions</h1>
+    <p> Below you can see how
+        other people have contributed to the project. The markers indicate your
+        own contributions.</p>
+
+
+        <center>
+        <div id="map_canvas" ng-if="callSuccess">
+
+            <ui-gmap-google-map center="map1.center" zoom="map1.zoom" draggable="true" options="options" bounds="map1.bounds">
+                <!--<ui-gmap-markers  ng-hide="showMarkers" models="workerResultsTransformed" coords="'self'" icon="'icon'" events="map1.markersEvents">-->
+
+                    <!--<ui-gmap-windows show="'showWindow'" closeClick="'closeClick'" templateUrl="'templateUrl'" templateParameter="'templateParameter'" ng-cloak>-->
+                    <!--</ui-gmap-windows>-->
+                <!--</ui-gmap-markers>-->
+                <ui-gmap-layer  namespace="visualization" type="HeatmapLayer" show="map1.showHeat" onCreated="map1.heatLayerCallback"></ui-gmap-layer>
+
+
+                <ui-gmap-markers models="pointMarkersVisible" coords="'self'" icon="'icon'" events="map1.markersEvents">
+
+                    <ui-gmap-windows show="'showWindow'" closeClick="'closeClick'" templateUrl="'templateUrl'" templateParameter="'templateParameter'" ng-cloak>
+                    </ui-gmap-windows>
+                </ui-gmap-markers>
+
+
+
+
+                <ui-gmap-map-control position="top-right" index="1">
+                        <div  id="marker_legend">
+                            <h6>Legend</h6>
+                            <div  style="text-align: left" ng-repeat="itm in legendObject"><img src="{{itm.image}}" > {{itm.key}}</div>
+                    </div>
+                </ui-gmap-map-control>
+
+                <ui-gmap-map-control position="top-center" index="1">
+                    <div ng-show="showMarkers"  >
+
+                        <button class="btn black " placeholder="All"
+                                ng-click="update_selection('all');">View All</button>
+                        <button class="btn black " placeholder="User"
+                                ng-click="update_selection('user');">View User</button>
+
+                    </div>
+                </ui-gmap-map-control>
+
+            </ui-gmap-google-map>
+        </div>
+
+
+
+        <br>
+        <div class="row" ng-if="callSuccess">
+            <center>
+
+                <h3 class="title" style="color:white; text-transform: none">{{question1}}</h3>
+
+            <div class="col-lg-2 col-md-2"></div>
+            <div ng-hide="showMarkers" class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                <button class="btn-lg black submit-button" placeholder="Option" ng-repeat="option in options"
+                        style=" color: #000; background-color: {{option.color}};border-color: {{option.color}};
+                   border:2px solid {{option.color}};margin-right:10px;" ng-click="update_heatmap(option.ncolor,'map1');">{{option.name}}</button>
+                <!--<button class="btn-lg black" placeholder="Show All"-->
+                        <!--style=" background-color: #FF69B4; border-color: #FF69B4;-->
+                <!--border:2px solid #FF69B4;" ng-click="update_heatmap('all','map1');">Show All</button>-->
+            </div>
+                <div ng-show="showMarkers" class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                    <button class="btn-lg black submit-button" placeholder="Option" ng-repeat="option in options"
+                            style=" color: #000; background-color: {{option.color}};border-color: {{option.color}};
+                   border:2px solid {{option.color}};margin-right:10px;" ng-click="update_Markers(option.ncolor,'map1');">{{option.name}}</button>
+                    <!--<button class="btn-lg black" placeholder="Show All"-->
+                    <!--style=" background-color: #FF69B4; border-color: #FF69B4;-->
+                    <!--border:2px solid #FF69B4;" ng-click="update_heatmap('all','map1');">Show All</button>-->
+                </div>
+            </center>
+            <div class="col-lg-2 col-md-2"></div>
+        </div>
+        <!--<center><h5 ng-if="callSuccess">{{unique_images1}} images tagged so far by {{unique_workers1}} people</h5></center>-->
+
+            <div ng-show="showMarkers" class="row" style="margin-top: 10px;">
+                <center>
+                    <button class="btn btn-primary  " placeholder="Option"
+                            ng-click="update_Markers('reset','map1');">Reset Markers</button>
+                </center>
+            </div>
+
+        <div class="row">
+            <h3>Thank you for taking the time to contribute to our study!</h3>
+            <p ng-if="showSource" ><a style="color: black;" target="_blank" ng-href="{{image_source}}">
+                Image Source</a>
+            </p>
+        </div>
+
+        <button class="submit-button" ng-click="exit()" style="margin-top: 20px;
+            border-radius: 8px;
+            background-color: #9cdc1f;
+            color: #000;
+            font-size: 18px;
+            text-align: center;
+            outline: none;
+            border: none;
+            padding: 10px 25px;">Finish</button>
+
+    </center>
+
+    <!--get project code for the legend-->
+    <p style="display: none" id="pcode">{{project}}</p>
+    <input type="button"  id="projectValuePlace" value={{projectCodeForHeatMapHTML}} ng-show=false>
+
+</div>
+
+
+
+
+<!--<script type='text/javascript'>-->
+    <!--$(document).ready(function() {-->
+        <!--function timeout(){-->
+
+            <!--var pcod = document.getElementById("pcode").innerHTML;-->
+            <!--var pValCode = document.getElementById("projectValuePlace").value;-->
+            <!--console.log(pcod,pValCode);-->
+            <!--console.log(pcod === pValCode);-->
+
+
+            <!--if (pcod != pValCode) {-->
+
+                <!--var legendMap1 = '<div id="legendMap1" class="legendClass col-md-2 col-sm-2 col-lg-2">' +-->
+                    <!--'<div class="row">' +-->
+                    <!--'  <b>Your Tags</b>' +-->
+                    <!--'</div>' +-->
+                    <!--'<div class="row">' +-->
+                    <!--'<div class="col-md-1 col-sm-1 col-lg-1" > </div>' +-->
+                    <!--//'<div id="legendMap1option" class="col-md-6 col-sm-6 col-lg-6" style="background-color:#9cdc1f; width: 60px; height: 15px;"></div>' +-->
+                    <!--'<img src="/images/dots/cs_green_dot.svg" alt="green marker">' +-->
+
+                    <!--'<div class="col-md-1 col-sm-1 col-lg-1" > <small> Green </small> </div>' +-->
+                    <!--'</div>' +-->
+                    <!--'<div class="row">' +-->
+                    <!--'<div class="col-md-1 col-sm-1 col-lg-1" > </div>' +-->
+<!--//                '<div id="legendMap1option" class="col-md-6 col-sm-6 col-lg-6"style="background-color:#0072BC; width: 60px; height: 15px;">  </div>' +-->
+                    <!--'<img src="/images/dots/cs_blue_dot.svg" alt="blue marker">' +-->
+
+                    <!--'<div class="col-md-1 col-sm-1 col-lg-1" > <small> Blue </small> </div>' +-->
+                    <!--'</div>' +-->
+                    <!--'<div class="row">' +-->
+                    <!--'<div class="col-md-1 col-sm-1 col-lg-1" > </div>' +-->
+<!--//                '<div id="legendMap1option" class="col-md-6 col-sm-6 col-lg-6"style="background-color:#f7941d; width: 60px; height: 15px;">   </div>' +-->
+                    <!--'<img src="/images/dots/cs_orange_dot.svg" alt="brown marker">' +-->
+
+                    <!--'<div class="col-md-1 col-sm-1 col-lg-1" > <small> Brown </small> </div>' +-->
+                    <!--'</div>' +-->
+                    <!--'</div>';-->
+            <!--} else {-->
+
+                <!--var legendMap1 = '<div ng-if="callSuccess2" id="legendMap1" class="legendClass col-md-2 col-sm-2 col-lg-2">' +-->
+                    <!--'<div class="row">' +-->
+                    <!--' <b>Your Tags</b> ' +-->
+                    <!--'</div>' +-->
+                    <!--'<div class="row">' +-->
+                    <!--'<div class="col-md-1 col-sm-1 col-lg-1" > </div>' +-->
+                    <!--//'<div id="legendMap1option" class="col-md-6 col-sm-6 col-lg-6" style="background-color:#9cdc1f; width: 60px; height: 15px;"></div>' +-->
+                    <!--'<img src="/images/dots/cs_green_dot.svg" alt="Yes marker">' +-->
+
+                    <!--'<div class="col-md-1 col-sm-1 col-lg-1" > <small> Yes </small> </div>' +-->
+                    <!--'</div>' +-->
+                    <!--'<div class="row">' +-->
+                    <!--'<div class="col-md-1 col-sm-1 col-lg-1" > </div>' +-->
+<!--//                '<div id="legendMap1option" class="col-md-6 col-sm-6 col-lg-6"style="background-color:#0072BC; width: 60px; height: 15px;">  </div>' +-->
+                    <!--'<img src="/images/dots/cs_red_dot.svg" alt="No marker">' +-->
+
+                    <!--'<div class="col-md-1 col-sm-1 col-lg-1" > <small> No </small> </div>' +-->
+                    <!--'</div>' +-->
+                    <!--'<div class="row">' +-->
+                    <!--'<div class="col-md-1 col-sm-1 col-lg-1" > </div>' +-->
+<!--//                '<div id="legendMap1option" class="col-md-6 col-sm-6 col-lg-6"style="background-color:#f7941d; width: 60px; height: 15px;">   </div>' +-->
+                    <!--'<img src="/images/dots/cs_yellow_dot.svg" alt="Maybe marker">' +-->
+
+                    <!--'<div class="col-md-1 col-sm-1 col-lg-1" > <small> Maybe </small> </div>' +-->
+                    <!--'</div>' +-->
+                    <!--'</div>';-->
+
+            <!--}-->
+
+            <!--var map1Container = $('#map_canvas').children().children().children('.angular-google-map-container');-->
+
+            <!--map1Container.append(legendMap1);-->
+
+        <!--};-->
+
+        <!--setTimeout(function () {-->
+            <!--timeout();-->
+        <!--}, 500);-->
+
+
+    <!--});-->
+<!--</script>-->
