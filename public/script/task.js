@@ -535,7 +535,9 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                           poi_name: item.poi_name || ''
                       };
 
-                      if( vm.data.template.selectedTaskType == 'tagging') {
+                      if( (vm.data.template.selectedTaskType == 'tagging') || (
+                              (vm.data.template.selectedTaskType == 'mapping') && (vm.data.point_selection == false)
+                          )) {
                           vm.tutorial.push(obj)
                       } else {
                           vm.tutorialMapping.push(obj)

@@ -8,3 +8,4 @@ uploads/
 bower_components/
 *.log
 public/bower_components/
+public/images/
