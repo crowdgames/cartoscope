@@ -524,6 +524,7 @@ module.controller('heatMapProjectController', function($scope, $http, $window,$s
     $window.document.title ="Results";
     $scope.project = $stateParams.pCode;
     $scope.showMarkers = false;
+    $scope.showPoiName = false;
 
     //gradients: initial colors
     var gradients = {
@@ -755,6 +756,11 @@ module.controller('heatMapProjectController', function($scope, $http, $window,$s
         });
 
         $scope.options1 = opt;
+
+        $scope.project_poi_name = $scope.proj_data.poi_name;
+        if ($scope.project_poi_name){
+            $scope.showPoiName = true;
+        };
 
 
         if ($scope.projType == "tagging") {

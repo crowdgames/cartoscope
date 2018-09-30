@@ -26,6 +26,13 @@
 
             </div>
 
+            <div class="row" ng-if="successProject1 && !showMarkers">
+                <small><b>Note:</b> Heatmap generated based on image GPS locations
+                    <span ng-if="showPoiName">, not {{project_poi_name}} locations</span>
+                    </small>
+
+            </div>
+
             <div class="row" ng-if="successProject1">
                 <h3>{{question1}}</h3>
                 <div class="col-lg-2 col-md-2"></div>
