@@ -187,6 +187,7 @@ CREATE TABLE `projects` (
   `image_source` text,
   `tutorial_link` text,
   `genetic` int(11) DEFAULT '0',
+  `poi_name` text DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_code_UNIQUE` (`unique_code`),
   KEY `Creator_idx` (`creatorID`),
