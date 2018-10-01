@@ -6,7 +6,8 @@ var router = express.Router();
 var fs = require('fs');
 var json2csv = require('json2csv');
 var d3 = require('d3');
-
+var CARTO_PORT = process.env.CARTO_PORT || '8081';
+var path = require('path');
 module.exports = router;
 
 
@@ -40,10 +41,26 @@ router.get('/all/:projectCode', function(req, res, next) {
         res.status(400).send('project not found!!!');
     })});
 
+
+//Get results for project from both kiosk and mturk workers
+router.get('/all/majority/:projectCode', function(req, res, next) {
+    var projectCode = req.params.projectCode;
+    var project = projectDB.getSingleProjectFromCode(projectCode);
+    project.then(function(project) {
+        var datasetId = project.dataset_id;
+        resultDB.heatMapDataAllMajority(projectCode, datasetId).then(function(results) {
+            res.send(results);
+        }, function(err) {
+            res.status(400).send('heatmap results could not be generated!!!');
+        });
+    }, function(err) {
+        res.status(400).send('project not found!!!');
+    })});
+
+
 // Get aggregated results for markers
 router.get('/allMarkers/:projectCode', function(req, res, next) {
     var projectCode = req.params.projectCode;
-    console.log(projectCode)
     var project = projectDB.getSingleProjectFromCode(projectCode).then(function(project) {
         var datasetId = project.dataset_id;
         console.log(project.id)
@@ -97,13 +114,15 @@ router.get('/getUserStats/:userId', function(req, res, next) {
     });
 });
 
+
 //Get results in CSV form for specific project
 router.get('/csv/:projectCode', function(req, res, next) {
     var projectCode = req.params.projectCode;
     var project = projectDB.getSingleProjectFromCode(projectCode);
     project.then(function(project) {
         var datasetId = project.dataset_id;
-        resultDB.heatMapDataAll(projectCode, datasetId).then(function(results) {
+        resultDB.heatMapDataAllSummary(projectCode, datasetId).then(function(results) {
+
             //Get the distinct answers of the project and prepare the fields
             var template = JSON.parse(project.template);
             var opt = template.options;
@@ -129,13 +148,12 @@ router.get('/csv/:projectCode', function(req, res, next) {
 
 
             //Get file with renaming convensions from backend:
-            d3.csv('http://localhost:3000/files/'+projectCode + '_renamed.csv', function(csv_data) {
+            var renamed_csv_path = path.join(__dirname, 'public','/images/files/'+projectCode + '_renamed.csv');
+            d3.csv('http://localhost:'+ CARTO_PORT+'/images/files/'+projectCode + '_renamed.csv', function(csv_data) {
 
                 //get all the images from the dataset_id
                 projectDB.getDataSetNames2(datasetId).then(function(raw_im_list) {
                     //parse images
-
-
                     raw_im_list.forEach(function(img_obj){
 
                         var img = img_obj.name;
@@ -144,10 +162,9 @@ router.get('/csv/:projectCode', function(req, res, next) {
                         var o_name = img;
 
                         //if a renaming guide exists, rename appropriately:
-                        if (csv_data !=undefined) {
-
-                           //find image
-
+                        if (fs.existsSync(renamed_csv_path)) {
+                            console.log("File exists");
+                            //find image
                             var rinfo = filterResponses(
                                 csv_data, {renamed_value: img + '.jpg' });
                             var renamed = rinfo[0].image_name;
@@ -166,16 +183,25 @@ router.get('/csv/:projectCode', function(req, res, next) {
                             //filter results for image and answer
                             var answer_results = filterResponses(
                                 results, {task_id: img,answer:p_ans });
-                            //add to object
-                            counters[ans] = answer_results.length;
-                            tot_vot = tot_vot + answer_results.length;
-                            if (answer_results.length > max_value) {
-                                max_value = answer_results.length;
+                            //add to object [search will return only one result]
+                            if (answer_results.length > 0) {
+                                counters[ans] = answer_results[0].num_votes;
+
+                            } else {
+                                counters[ans] = 0;
+                            }
+                            tot_vot = tot_vot + counters[ans];
+                            if (counters[ans] > max_value) {
+                                max_value = counters[ans];
                                 max_name = ans;
                             }
                         });
                         counters.majority_answer = max_name;
-                        counters.majority_confidence = ((max_value/tot_vot)*100).toFixed(2).toString() + '%';
+                        if (tot_vot >0){
+                            counters.majority_confidence = ((max_value/tot_vot)*100).toFixed(2).toString() + '%';
+                        } else {
+                            counters.majority_confidence = '0%';
+                        }
                         //add to result
                         csv_results.push(counters);
                     });
@@ -187,11 +213,7 @@ router.get('/csv/:projectCode', function(req, res, next) {
                 }, function(err) {
                     res.status(400).send('results could not be generated!!!');
                 });
-
             });
-
-
-
         }, function(err) {
             res.status(400).send('Results could not be generated!!!');
         });

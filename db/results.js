@@ -45,6 +45,70 @@ exports.heatMapDataAll = function(projectCode, datasetId) {
 };
 
 
+exports.heatMapDataAllSummary = function(projectCode, datasetId) {
+    var connection = db.get();
+    return new promise(function(resolve, error) {
+        var heatMapQuery = "SELECT aa.*,pp.image_source from \
+        (SELECT a.task_id, ANY_VALUE(a.x) as x, ANY_VALUE(a.y) as y, ANY_VALUE(a.project_id) as project_id, \
+        ANY_VALUE(a.answer) as answer, ANY_VALUE(a.color) as color ,count(a.answer) as num_votes,ANY_VALUE(a.question) as question from \
+        (SELECT DISTINCT r.task_id, d.x, d.y, \
+        r.timestamp, r.user_id ,r.project_id, \
+        JSON_EXTRACT(p.template, CONCAT('$.options[', r.response, '].text')) as answer, \
+        JSON_EXTRACT(p.template, CONCAT('$.options[', r.response, '].color')) as color, \
+        JSON_EXTRACT(p.template, '$.question') as question \
+        FROM response as r, projects as p, dataset_" + datasetId + " as d \
+        WHERE r.project_id=p.id && \
+        d.name=r.task_id && p.unique_code='" + projectCode + "') as a \
+        GROUP BY task_id,answer) as aa \
+        LEFT JOIN projects as pp \
+        on aa.project_id=pp.id ";
+        connection.queryAsync(heatMapQuery).then(
+            function(data) {
+
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
+
+exports.heatMapDataAllMajority = function(projectCode, datasetId) {
+    var connection = db.get();
+    return new promise(function(resolve, error) {
+        var heatMapQuery = "SELECT s1.task_id, s1.x, s1.y, s1.answer, s1.color, s1.num_votes \
+        FROM (SELECT a.task_id, ANY_VALUE(a.x) as x, ANY_VALUE(a.y) as y, ANY_VALUE(a.project_id) as project_id, \
+        ANY_VALUE(a.answer) as answer, ANY_VALUE(a.color) as color ,count(a.answer) as num_votes from \
+        (SELECT DISTINCT r.task_id, d.x, d.y, \
+            r.timestamp, r.user_id ,r.project_id, \
+        JSON_EXTRACT(p.template, CONCAT('$.options[', r.response, '].text')) as answer, \
+        JSON_EXTRACT(p.template, CONCAT('$.options[', r.response, '].color')) as color, \
+        JSON_EXTRACT(p.template, '$.question') as question \
+        FROM response as r, projects as p, dataset_" + datasetId + " as d  \
+        WHERE r.project_id=p.id &&  d.name=r.task_id && p.unique_code='" + projectCode + "') as a \
+        GROUP BY task_id,answer) as s1 \
+        LEFT JOIN (SELECT a.task_id, ANY_VALUE(a.x) as x, ANY_VALUE(a.y) as y, ANY_VALUE(a.project_id) as project_id, \
+        ANY_VALUE(a.answer) as answer, ANY_VALUE(a.color) as color ,count(a.answer) as num_votes from \
+        (SELECT DISTINCT r.task_id, d.x, d.y, r.timestamp, r.user_id ,r.project_id, \
+        JSON_EXTRACT(p.template, CONCAT('$.options[', r.response, '].text')) as answer, \
+        JSON_EXTRACT(p.template, CONCAT('$.options[', r.response, '].color')) as color, \
+        JSON_EXTRACT(p.template, '$.question') as question \
+        FROM response as r, projects as p, dataset_" + datasetId + " as d  \
+        WHERE r.project_id=p.id &&  d.name=r.task_id && p.unique_code='" + projectCode + "') as a \
+        GROUP BY task_id,answer )  as s2 \
+        ON s1.task_id = s2.task_id  AND s1.num_votes < s2.num_votes \
+        WHERE s2.task_id IS NULL ";
+        connection.queryAsync(heatMapQuery).then(
+            function(data) {
+
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
+
 exports.heatMapDataAllMarkers = function(projectId) {
     var connection = db.get();
     return new promise(function(resolve, error) {

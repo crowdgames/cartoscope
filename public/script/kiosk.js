@@ -525,6 +525,7 @@ module.controller('heatMapProjectController', function($scope, $http, $window,$s
     $scope.project = $stateParams.pCode;
     $scope.showMarkers = false;
     $scope.showPoiName = false;
+    $scope.isMarkerTask = false;
 
     //gradients: initial colors
     var gradients = {
@@ -615,10 +616,8 @@ module.controller('heatMapProjectController', function($scope, $http, $window,$s
     //CSV Download Project
     $scope.downloadCSV = downloadCSV;
     function downloadCSV(){
-
         //Download the results
         location.href='/api/results/csv/' + $stateParams.pCode;
-
     }
 
     // Exit button to front page:
@@ -641,7 +640,6 @@ module.controller('heatMapProjectController', function($scope, $http, $window,$s
             // rdata, {answer: "\"" + answer + "\""});
             rdata, {color: parseInt(answer)});
 
-
         // Transform the data for the heatmap:
         answer_results.forEach(function (item) {
             geodata.push(new google.maps.LatLng(parseFloat(item.x), parseFloat(item.y)));
@@ -649,11 +647,6 @@ module.controller('heatMapProjectController', function($scope, $http, $window,$s
 
         //console.log(answer_results.length);
 
-
-        // Transform the data for the heatmap:
-        answer_results.forEach(function (item) {
-            geodata.push(new google.maps.LatLng(parseFloat(item.x), parseFloat(item.y)));
-        });
         //set the data for the heatmap
         pointArray = new google.maps.MVCArray(geodata);
         heatLayer.setData(pointArray);
@@ -735,12 +728,21 @@ module.controller('heatMapProjectController', function($scope, $http, $window,$s
 
         $scope.proj_data = pdata.data[0];
 
+        if ($scope.proj_data["point_selection"] ==1 && $scope.proj_data["points_file"] != null){
+            $scope.isMarkerTask = true;
+        }
+
 
         //Buttons for the heatmap
         //Get options from the template
         var templ = JSON.parse($scope.proj_data.template);
         var templ_opts = templ.options;
         $scope.projType = templ.selectedTaskType;
+        // Answer of first project
+        $scope.q1 = templ.question;
+        //Unquote
+        $scope.question1 = $scope.q1.replace(/\"/g, "");
+
 
         //build options and legendobject
         var opt = [];
@@ -749,11 +751,14 @@ module.controller('heatMapProjectController', function($scope, $http, $window,$s
             //Make the option buttons
             var opt_item = {'name': item.text, 'ncolor': item.color, 'color': $scope.hex_array[item.color -1] };
             opt.push(opt_item);
+
             $scope.legendObject.push({
                 key: item.text,
                 image: $scope.point_array[item.color -1]
             })
         });
+
+
 
         $scope.options1 = opt;
 
@@ -764,7 +769,7 @@ module.controller('heatMapProjectController', function($scope, $http, $window,$s
 
 
         if ($scope.projType == "tagging") {
-            $http.get('/api/results/all/' + $stateParams.pCode).then(function(data){
+            $http.get('/api/results/all/majority/' + $stateParams.pCode).then(function(data){
 
                 // console.log("Results from first project", data.data);
                 $scope.results1 = data.data;
@@ -772,12 +777,6 @@ module.controller('heatMapProjectController', function($scope, $http, $window,$s
                 $scope.unique_images1 = count_unique($scope.results1, 'task_id');
                 //Number of workers:
                 $scope.unique_workers1 = count_unique($scope.results1, 'workerid');
-
-
-                // Answer of first project
-                $scope.q1 = $scope.results1[0].question;
-                //Unquote
-                $scope.question1 = $scope.q1.replace(/\"/g, "");
 
 
                 //generate first map
@@ -797,7 +796,6 @@ module.controller('heatMapProjectController', function($scope, $http, $window,$s
                     showHeat: true
                 };
                 $scope.successProject1 = true;
-                console.log("HERE")
 
             }).catch(function(error){
 
@@ -814,7 +812,6 @@ module.controller('heatMapProjectController', function($scope, $http, $window,$s
                 $scope.q1 = templ.question;
                 //Unquote
                 $scope.question1 = $scope.q1.replace(/\"/g, "");
-
 
 
                 $http.get('/api/results/allMarkers/' + $stateParams.pCode).then(function(data){
@@ -926,22 +923,14 @@ module.controller('heatMapProjectController', function($scope, $http, $window,$s
 
             else {
                 //regular mapping task:
-                $http.get('/api/results/all/' + $stateParams.pCode).then(function(data){
+                $http.get('/api/results/all/majority/' + $stateParams.pCode).then(function(data){
 
                     // console.log("Results from first project", data.data);
                     $scope.results1 = data.data;
-                    console.log($scope.results1);
                     //number of images:
                     $scope.unique_images1 = count_unique($scope.results1, 'task_id');
                     //Number of workers:
                     $scope.unique_workers1 = count_unique($scope.results1, 'workerid');
-
-
-                    // Answer of first project
-                    $scope.q1 = $scope.results1[0].question;
-                    //Unquote
-                    $scope.question1 = $scope.q1.replace(/\"/g, "");
-
 
                     //generate first map
                     $scope.map1 = {
