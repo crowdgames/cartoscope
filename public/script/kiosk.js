@@ -188,7 +188,7 @@ module.config(function($stateProvider, $urlRouterProvider, $cookiesProvider) {
                 templateUrl: './navbar.html'
             },
             content: {
-                templateUrl: 'gridmapProject.html'
+                templateUrl: 'gridMapProject.html'
             },
             footer: {
                 templateUrl: '../footer.html'
