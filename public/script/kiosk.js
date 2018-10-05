@@ -1,11 +1,11 @@
 var module = angular.module('consentApp', ['ui.router', 'ngAnimate', 'ngRoute', 'uiGmapgoogle-maps','ngCookies', 'ngMap', 'configApp'])
-    .config(['uiGmapGoogleMapApiProvider', function (GoogleMapApi, googleMapAPIKey) {
-        GoogleMapApi.configure({
-            key: 'AIzaSyAL32H2arSyCcBfcD49o1wG32pkHaNlOJE',
-            // v: '3.20',
-            libraries: 'weather,geometry,visualization'
-        });
-    }]);
+    // .config(['uiGmapGoogleMapApiProvider', function (GoogleMapApi, googleMapAPIKey) {
+    //     GoogleMapApi.configure({
+    //         key: 'AIzaSyAL32H2arSyCcBfcD49o1wG32pkHaNlOJE',
+    //         // v: '3.20',
+    //         libraries: 'weather,geometry,visualization'
+    //     });
+    // }]);
 
 module.config(function($stateProvider, $urlRouterProvider, $cookiesProvider) {
 
@@ -188,7 +188,7 @@ module.config(function($stateProvider, $urlRouterProvider, $cookiesProvider) {
                 templateUrl: './navbar.html'
             },
             content: {
-                templateUrl: 'heatmapProject.html'
+                templateUrl: 'gridmapProject.html'
             },
             footer: {
                 templateUrl: '../footer.html'
@@ -659,6 +659,7 @@ module.controller('heatMapProjectController', function($scope, $http, $window,$s
     };
 
 
+
     $scope.update_heatmap = function (answer,mapno){
 
         var geodata = [];
@@ -768,7 +769,8 @@ module.controller('heatMapProjectController', function($scope, $http, $window,$s
         };
 
 
-        if ($scope.projType == "tagging") {
+        if ($scope.projType == "tagging" ||
+            ($scope.proj_data["point_selection"] ==0 && $scope.projType == "mapping") ) {
             $http.get('/api/results/all/majority/' + $stateParams.pCode).then(function(data){
 
                 // console.log("Results from first project", data.data);
@@ -777,7 +779,6 @@ module.controller('heatMapProjectController', function($scope, $http, $window,$s
                 $scope.unique_images1 = count_unique($scope.results1, 'task_id');
                 //Number of workers:
                 $scope.unique_workers1 = count_unique($scope.results1, 'workerid');
-
 
                 //generate first map
                 $scope.map1 = {
@@ -805,15 +806,11 @@ module.controller('heatMapProjectController', function($scope, $http, $window,$s
         } else {
 
             //Markers task
-
-            if($scope.proj_data["point_selection"] ==1 && $scope.proj_data["points_file"] != null) {
-
+            if($scope.projType == "mapping" && $scope.proj_data["point_selection"] ==1 && $scope.proj_data["points_file"] != null) {
                 // Answer of first project
                 $scope.q1 = templ.question;
                 //Unquote
                 $scope.question1 = $scope.q1.replace(/\"/g, "");
-
-
                 $http.get('/api/results/allMarkers/' + $stateParams.pCode).then(function(data){
 
                     // console.log("Results from first project", data.data);
@@ -825,16 +822,14 @@ module.controller('heatMapProjectController', function($scope, $http, $window,$s
 
                     //pick a random point as inital map center
                     var init_point = Math.floor(Math.random() * $scope.results1.length);
-
                     //process data for markers:
-
 
                     $scope.pointMarkers = [];
                     var pointId = 0;
                     for (var i = 0; i < $scope.pois.length; i++) {
 
                         //for each Unique marker, get all the votes
-                        var poi_item =  $scope.pois[i]
+                        var poi_item =  $scope.pois[i];
                         var marker_votes = filterResponses(
                             $scope.results1, {key_item: poi_item});
 
@@ -845,13 +840,11 @@ module.controller('heatMapProjectController', function($scope, $http, $window,$s
                         var max_cnt = 0;
                         var max_response = 0;
                         marker_votes.forEach(function (item){
-
                             if (item.cnt > max_cnt) {
                                 max_cnt = item.cnt;
                                 max_response = item.response;
                             }
                         });
-
                         if (max_response > 0 && max_cnt >0) {
                             var point_marker = {
                                 latitude: parseFloat(marker_votes[0].center_lat) ,
@@ -861,19 +854,14 @@ module.controller('heatMapProjectController', function($scope, $http, $window,$s
                                 icon: $scope.point_array[max_response-1]
                             };
 
-
                             point_marker.templateUrl = 'infowindowMarkers_template.html';
                             point_marker.templateParameter = {
                                 id:   pointId,
                                 title: {freq: max_cnt, res:max_response} //Show the max number of votes for this type
                             };
-
-
                             $scope.pointMarkers.push(point_marker);
                             pointId += 1;
                         }
-
-
 
                     }//end of markers loop
 
@@ -885,8 +873,6 @@ module.controller('heatMapProjectController', function($scope, $http, $window,$s
                     // $scope.pointMarkers.forEach(function (item) {
                     //     item.setMap(point_map);
                     // });
-
-
 
                     //generate first map
                     $scope.map1 = {
@@ -911,42 +897,6 @@ module.controller('heatMapProjectController', function($scope, $http, $window,$s
                             },
                             options: {}
                         }
-                    }
-                    $scope.successProject1 = true;
-
-                }).catch(function(error){
-
-                    //Error with first http get
-                    console.log(error);
-                });
-            }
-
-            else {
-                //regular mapping task:
-                $http.get('/api/results/all/majority/' + $stateParams.pCode).then(function(data){
-
-                    // console.log("Results from first project", data.data);
-                    $scope.results1 = data.data;
-                    //number of images:
-                    $scope.unique_images1 = count_unique($scope.results1, 'task_id');
-                    //Number of workers:
-                    $scope.unique_workers1 = count_unique($scope.results1, 'workerid');
-
-                    //generate first map
-                    $scope.map1 = {
-                        center: {
-                            latitude: parseFloat($scope.results1[0].x),
-                            longitude: parseFloat($scope.results1[0].y)
-                        },
-                        streetViewControl: false,
-                        zoom: 7,
-                        heatLayerCallback: function (layer) {
-                            //set the heat layer from the data
-                            $scope.pointArr1 = [];
-                            $scope.htlayer1 = layer;
-                            var htl1 = new HeatLayer($scope.htlayer1,$scope.results1,$scope.pointArr1,1);
-                        },
-                        showHeat: true
                     };
                     $scope.successProject1 = true;
 
@@ -955,21 +905,485 @@ module.controller('heatMapProjectController', function($scope, $http, $window,$s
                     //Error with first http get
                     console.log(error);
                 });
-
-
-
             }
-
 
         }
 
-
-
     });
 
-    //Get the results of the first project:
-
 });
+
+
+module.controller('gridMapProjectController',
+    function($scope, $http, $window,$stateParams,$timeout,NgMap) {
+
+
+    //change this if we want gridMap instead of heatMap
+    $scope.gridMap = false;
+
+    $scope.successProject1 = false;
+    $window.document.title ="Results";
+    $scope.project = $stateParams.pCode;
+    $scope.showMarkers = false;
+    $scope.showPoiName = false;
+    $scope.isMarkerTask = false;
+    $scope.rectArr=[]; //holds the grid array
+    $scope.geodata = [];
+
+    //gradients: initial colors
+    var gradients = {
+        red: [ 255,0,0],
+        green: [ 0, 255,0],
+        blue: [0,0,255],
+        orange: [255,165,0],
+        yellow: [255,255,0],
+        purple: [138,43,226],
+        all: [255,20,147]
+
+    };
+
+    $scope.hex_array = ['#9cdc1f',
+        '#FFF200',
+        '#F7941D',
+        '#ff0000',
+        '#0072BC',
+        '#8a2be2'
+    ];
+
+
+    var ans_colors =  {
+
+        '1':'green',
+        '2': 'yellow',
+        '3': 'orange',
+        '4' : 'red',
+        '5': 'blue',
+        '6' : 'purple',
+        'all': 'all'
+    };
+
+    $scope.point_array =  ['/images/markers/marker_green2.svg',
+        '/images/markers/marker_yellow2.svg',
+        '/images/markers/marker_orange2.svg',
+        '/images/markers/marker_red2.svg',
+        '/images/markers/marker_blue2.svg',
+        '/images/markers/marker_purple2.svg',
+        '/images/markers/marker_grey.svg'];
+
+
+    function count_unique(arr, key){
+
+        var flags = [], output = [], l = arr.length, i;
+        for( i=0; i<l; i++) {
+
+            var itm = arr[i];
+            if( flags[itm[key]]) continue;
+            flags[itm[key]] = true;
+            output.push(itm[key]);
+        }
+
+        return output.length;
+    }
+
+    function get_unique(arr, key){
+
+        var flags = [], output = [], l = arr.length, i;
+        for( i=0; i<l; i++) {
+
+            var itm = arr[i];
+            if( flags[itm[key]]) continue;
+            flags[itm[key]] = true;
+            output.push(itm[key]);
+        }
+
+        return output;
+    }
+
+    //Function generate_gradient: gradient array based on rgb array
+        // Different opacity
+        function generate_gradient(color) {
+
+            var g = [];
+            var op = 0;
+            //blue: 0,0,255 - 0,50,255 - 0,100,255 - 0,150,255 - 0,200,255
+
+            for (i = 0; i < 6; i++) {
+                g.push('rgba(' + color[0] + ' , ' + color[1] + ', ' + color[2] + ', ' + op + ')');
+                op = op + 0.20;
+            }
+            return g;
+        }
+
+    //CSV Download Project
+    $scope.downloadCSV = downloadCSV;
+    function downloadCSV(){
+        //Download the results
+        location.href='/api/results/csv/' + $stateParams.pCode;
+    }
+
+    // Exit button to front page:
+    $scope.exit = exit;
+    function exit(){
+        console.log('in exit');
+        // $window.location.href='/algalBloom.html';
+        $window.location.href='kioskProject.html#/kioskStart/' + $stateParams.pCode;
+    }
+
+    $scope.toggleGridMap = toggleGridMap;
+    function toggleGridMap(){
+            $scope.gridMap = !$scope.gridMap;
+    }
+
+    $scope.recenterMap = recenterMap;
+        function recenterMap(){
+            NgMap.getMap().then(function(map) {
+
+                map.setZoom(7);
+                var old_Center = new google.maps.LatLng($scope.results1[0].x,$scope.results1[0].y);
+                map.setCenter(old_Center)
+            })
+        }
+
+    $scope.InitMap = InitMap;
+    function InitMap (zoom){
+
+        //generate first map
+        $scope.map1 = {
+            center: {
+                latitude: parseFloat($scope.results1[0].x),
+                longitude: parseFloat($scope.results1[0].y)
+            },
+            streetViewControl: false,
+            zoom: zoom,
+            bounds: {}
+        };
+        NgMap.getMap().then(function(map) {
+            if ($scope.gridMap){
+                $scope.drawGrid()
+            } else {
+                $scope.update_heatmap(1);
+            }
+        })
+    }
+
+    //function that draws the initial grid
+    $scope.drawGrid = drawGrid;
+    function drawGrid () {
+
+        NgMap.getMap().then(function(map) {
+
+
+            $scope.rectArr = []
+            $scope.showGrid = false;
+            var NE = map.getBounds().getNorthEast();
+            var SW = map.getBounds().getSouthWest();
+            var aNorth  =   map.getBounds().getNorthEast().lat();
+            var aEast   =   map.getBounds().getNorthEast().lng();
+            var aSouth  =   map.getBounds().getSouthWest().lat();
+            var aWest   =   map.getBounds().getSouthWest().lng();
+
+
+            var width = 5.0;
+            var height = 5.0;
+            var l_dist = SW.lng() - NE.lng();
+            var b_dist = SW.lat() - NE.lat();
+            var lat_icrement = b_dist / width;
+            var lng_increment =l_dist / height;
+
+            var cnt = 0;
+            for (var i = 0; i < height; i++) {
+                for (var j = 0; j < width; j++) {
+                    var rSW = new google.maps.LatLng(NE.lat() + (lat_icrement * i), NE.lng() + (lng_increment * j));
+                    var rNE = new google.maps.LatLng(NE.lat() + (lat_icrement * (i + 1)), NE.lng() + (lng_increment * (j + 1)));
+                    var rBounds = new google.maps.LatLngBounds(rSW,rNE);
+                    var rNW =  new google.maps.LatLng(rNE.lat(), rSW.lng());
+                    var rSE = new google.maps.LatLng(rSW.lat(), rNE.lng());
+
+                    var rectangle = {
+                        ne:{lat:rNE.lat(),lng:rNE.lng()},
+                        nw:{lat:rNW.lat(),lng:rNW.lng()},
+                        sw:{lat:rSW.lat(),lng:rSW.lng()},
+                        se:{lat:rSE.lat(),lng:rSE.lng()},
+                        strokeColor: '#000000',
+                        strokeOpacity: 0,
+                        strokeWeight: 0,
+                        fillColor: '#FFFFFF',
+                        fillOpacity: 0.1,
+                        id: cnt
+                    };
+                    cnt+=1;
+                    //store all rects here
+                    $scope.rectArr.push(rectangle);
+
+                }
+            }
+            $scope.showGrid= true;
+            setGridColors(); //do this now
+        })
+
+    }
+
+    function checkIfWithinBounds(rec,point){
+        var polyCoords = [];
+        polyCoords.push(rec.ne);
+        polyCoords.push(rec.nw);
+        polyCoords.push(rec.sw);
+        polyCoords.push(rec.se);
+        var polygon = new google.maps.Polygon({paths: polyCoords});
+        var isIn = google.maps.geometry.poly.containsLocation(point,polygon);
+        return isIn;
+    }
+
+    //function to determine color of grid
+    function setGridColors(){
+
+        NgMap.getMap().then(function(map) {
+
+            for (var j = 0; j < $scope.rectArr.length; j++) {
+                var rect = $scope.rectArr[j];
+                var possible_colors = $scope.hex_array.length;
+                var major_counter = new Array(possible_colors+1).join('0').split('').map(parseFloat);
+                var hasOne = false;
+                $scope.results1.forEach(function (item){
+
+                    var mk = new google.maps.LatLng(parseFloat(item.x), parseFloat(item.y)); //get position of image
+                    //check if it contains:
+                    if (checkIfWithinBounds(rect,mk)){
+                        var col = parseInt(item.color);
+                        major_counter[col-1]+=1;
+                        hasOne = true;
+                    }
+                });
+                //we have all counts, must find max now:
+                if (hasOne){
+                    var max_color = -1;
+                    var max_cnt = -1;
+                    for (var i = 0; i < major_counter.length; i++) {
+                        if (major_counter[i] > max_cnt){
+                            max_color = i;
+                            max_cnt = major_counter[i];
+                        }
+                    }
+                    rect.fillColor = $scope.hex_array[max_color];
+                    rect.fillOpacity = 0.35;
+                    $scope.rectArr[j] = rect;
+                }
+            }
+
+
+        })
+    }
+
+    $scope.update_heatmap = function (answer){
+
+        NgMap.getMap().then(function(map) {
+
+                heatmap = map.heatmapLayers.heatID;
+
+                var geodata = [];
+                //Mapping of answers to colors:
+                if (answer != 'all') {
+
+                    //Filter data based on answer clicked
+                    var answer_results = filterResponses(
+                        //$scope.results1, {answer: "\"" + answer + "\""});
+                        $scope.results1, {color: parseInt(answer)});
+
+                } else {
+                    var answer_results = $scope.results1;
+                }
+
+                //console.log(answer_results.length);
+
+                // Transform the data for the heatmap:
+                answer_results.forEach(function (item) {
+                    geodata.push(new google.maps.LatLng(parseFloat(item.x), parseFloat(item.y)));
+                });
+
+
+                //set the data for the heatmap
+                $scope.pointArr1 = new google.maps.MVCArray(geodata);
+                heatmap.setData($scope.pointArr1 );
+
+                //change the gradient
+                var gradient = generate_gradient(gradients[ans_colors[answer]]);
+                heatmap.set('gradient',gradient);
+            });
+    };
+
+
+
+    $scope.update_Markers = function (answer){
+
+        NgMap.getMap().then(function(map) {
+
+            $scope.pointMarkers.forEach(function (item) {
+                if (answer === "reset") {
+                    item.setMap(map)
+                } else {
+                    if (item.icon == $scope.point_array[answer-1]){
+                        item.setMap(map)
+                    } else {
+                        item.setMap(null)
+                    }
+                }
+            });
+        })
+    };
+
+    //Function filterResponses: filter results based on some criteria
+    function filterResponses(array, criteria) {
+        return array.filter(function (obj) {
+            return Object.keys(criteria).every(function (c) {
+                return obj[c] == criteria[c];
+            });})
+    };
+
+
+    $http.get('/api/tasks/getInfoFree/' + $stateParams.pCode).then(function(pdata) {
+
+        $scope.proj_data = pdata.data[0];
+
+        if ($scope.proj_data["point_selection"] ==1 && $scope.proj_data["points_file"] != null){
+            $scope.isMarkerTask = true;
+        }
+
+        //Buttons for the heatmap
+        //Get options from the template
+        var templ = JSON.parse($scope.proj_data.template);
+        var templ_opts = templ.options;
+        $scope.projType = templ.selectedTaskType;
+        // Answer of first project
+        $scope.q1 = templ.question;
+        //Unquote
+        $scope.question1 = $scope.q1.replace(/\"/g, "");
+
+
+        //build options and legendobject
+        var opt = [];
+        $scope.legendObject = [];
+        templ_opts.forEach(function (item){
+            //Make the option buttons
+            var opt_item = {'name': item.text, 'ncolor': item.color, 'color': $scope.hex_array[item.color -1] };
+            opt.push(opt_item);
+
+            $scope.legendObject.push({
+                key: item.text,
+                image: $scope.point_array[item.color -1]
+            })
+        });
+
+        $scope.options1 = opt;
+
+        $scope.project_poi_name = $scope.proj_data.poi_name;
+        if ($scope.project_poi_name){
+            $scope.showPoiName = true;
+        };
+
+
+        if ($scope.projType == "tagging" ||
+            ($scope.proj_data["point_selection"] ==0 && $scope.projType == "mapping") ) {
+            $http.get('/api/results/all/majority/' + $stateParams.pCode).then(function(data){
+
+                // console.log("Results from first project", data.data);
+                $scope.results1 = data.data;
+                //number of images:
+                $scope.unique_images1 = count_unique($scope.results1, 'task_id');
+                //Number of workers:
+                $scope.unique_workers1 = count_unique($scope.results1, 'workerid');
+
+                $scope.InitMap(7); //init map with initial zoom 7
+                $scope.successProject1 = true;
+
+
+
+            }).catch(function(error){
+
+                //Error with first http get
+                console.log(error);
+            });
+        } else {
+
+            //Markers task
+            if($scope.projType == "mapping" && $scope.proj_data["point_selection"] ==1 && $scope.proj_data["points_file"] != null) {
+                // Answer of first project
+                $scope.q1 = templ.question;
+                //Unquote
+                $scope.question1 = $scope.q1.replace(/\"/g, "");
+                $http.get('/api/results/allMarkers/' + $stateParams.pCode).then(function(data){
+
+                    // console.log("Results from first project", data.data);
+                    $scope.results1 = data.data;
+                    //number of Pois:
+                    $scope.pois = get_unique($scope.results1, 'key_item');
+                    //pick a random point as inital map center
+                    var init_point = Math.floor(Math.random() * $scope.results1.length);
+                    //generate first map
+                    $scope.map1 = {
+                        center: {
+                            latitude: parseFloat($scope.results1[init_point].center_lat),
+                            longitude: parseFloat($scope.results1[init_point].center_lon)
+                        },
+                        streetViewControl: false,
+                        zoom: 7
+                    };
+                    $scope.successProject1 = true;
+
+                    //CREATE MARKERS once map is ready:
+
+                    NgMap.getMap().then(function(map) {
+
+                        //process data for markers:
+                        $scope.pointMarkers = [];
+                        var pointId = 0;
+                        for (var i = 0; i < $scope.pois.length; i++) {
+
+                            //for each Unique marker, get all the votes
+                            var poi_item =  $scope.pois[i];
+                            var marker_votes = filterResponses(
+                                $scope.results1, {key_item: poi_item});
+
+                            //get location
+                            var point_pos = {lat: parseFloat(marker_votes[0].center_lat) , lng: parseFloat(marker_votes[0].center_lon)};
+
+                            //find vote with majority
+                            var max_cnt = 0;
+                            var max_response = 0;
+                            marker_votes.forEach(function (item){
+                                if (item.cnt > max_cnt) {
+                                    max_cnt = item.cnt;
+                                    max_response = item.response;
+                                }
+                            });
+                            if (max_response > 0 && max_cnt >0) {
+
+                                var plat = parseFloat(marker_votes[0].center_lat);
+                                var plng = parseFloat(marker_votes[0].center_lon);
+                                var point_marker = new google.maps.Marker({
+                                    position: new google.maps.LatLng(plat,plng),
+                                    title: "Majority votes: " + max_cnt.toString(), //TODO: CHANGE THIS TO POI NAME!
+                                    id: pointId,
+                                    icon: $scope.point_array[max_response-1]
+                                });
+                                $scope.pointMarkers.push(point_marker);
+                                point_marker.setMap(map);
+                                pointId += 1;
+                            }
+
+                        }//end of markers loop
+                        $scope.showMarkers = true;
+                        $scope.totalMarkers = $scope.pointMarkers;
+                    })
+                }).catch(function(error){
+
+                    //Error with first http get
+                    console.log(error);
+                });
+            }
+        }
+    });
+});
+
 
 
 module.controller('appController', ['$scope', '$location', function($scope, $location) {
@@ -1502,7 +1916,6 @@ module.controller('mTurkController', ['$window','$scope','$location','$state','$
     $scope.begin = function() {
         //console.log('Begin....');
         //console.log($stateParams);
-
         $scope.params = $location.search();
         $scope.params.project= $stateParams.pCode;
 

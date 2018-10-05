@@ -130,7 +130,7 @@ router.post('/addWorkerTutorial', function(req, res, next) {
     projectDB.addUserTutorialSequence(hashWorker,hitID,projectCode,sequence).then(function(results) {
         res.send(results);
     }, function(err) {
-        console.log(err)
+        console.log(err);
         res.status(400).send('Worker could not be matched to tutorial sequence');
     });
 });
