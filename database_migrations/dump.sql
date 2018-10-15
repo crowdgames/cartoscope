@@ -187,6 +187,7 @@ CREATE TABLE `projects` (
   `image_source` text,
   `tutorial_link` text,
   `genetic` int(11) DEFAULT '0',
+  `genetic_task` int(11) DEFAULT '0',
   `poi_name` text DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_code_UNIQUE` (`unique_code`),
@@ -278,9 +279,23 @@ CREATE TABLE `tutorial_sequences` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
---
--- Table structure for table `tutorial_users`
---
+DROP TABLE IF EXISTS `task_genetic_sequences`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `task_genetic_sequences` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `unique_code_main` varchar(255) DEFAULT NULL,
+  `seq` text,
+  `active` int(11) DEFAULT '0',
+  `label_project` varchar(255) DEFAULT NULL,
+  `map_project` varchar(255) DEFAULT NULL,
+  `marker_project` varchar(255) DEFAULT NULL,
+  `progress_type` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
 
 DROP TABLE IF EXISTS `tutorial_users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -294,7 +309,6 @@ CREATE TABLE `tutorial_users` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
 
 --
 -- Table structure for table `users`

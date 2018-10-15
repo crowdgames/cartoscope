@@ -64,22 +64,22 @@ exports.findConsentedMTurkWorkerFromHash = function(workerID, projectID) {
   });
 };
 
-exports.addMTurkWorker = function(anonUser, projectID, siteID, consented) {
+exports.addMTurkWorker = function(anonUser, projectID, siteID, consented,genetic_id) {
   return new Promise(function(resolve, reject) {
     var connection = db.get();
-    
+
     connection.queryAsync('INSERT INTO `mturk_workers` ' +
-      '(`workerID`, `projectID`,`assignmentID`,`hitID`,`submitTo`,`siteID`,`consented`) VALUES ' +
-      '(?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `consented`=?',
+      '(`workerID`, `projectID`,`assignmentID`,`hitID`,`submitTo`,`siteID`,`consented`,`genetic_id`) VALUES ' +
+      '(?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `consented`=?',
       [bcrypt.hashSync(anonUser.workerId + anonUser.hitId, salt), projectID, anonUser.assignmentId,
-        anonUser.hitId, anonUser.submitTo, siteID, consented, consented]).then(
+        anonUser.hitId, anonUser.submitTo, siteID, consented, genetic_id, consented]).then(
       function(data) {
         if (data.insertId) {
           resolve(data.insertId);
         } else if (data.affectedRows > 0) {
-          resolve(0);
+            resolve(0);
         } else {
-          reject({code: 'Problem with insertion'});
+          reject('Problem with insertion');
         }
       }, function(err) {
         reject(err);
