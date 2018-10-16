@@ -233,6 +233,35 @@ router.post('/addWorkerTutorial', function(req, res, next) {
 
 
 
+//endpoint to create duplicate project based on existing code
+router.get('/duplicateProject/:pCode', [ filters.requireLogin],
+    function(req, res, next) {
+    var unique_code = req.params.pCode;
+        projectDB.getSingleProjectFromCode(unique_code).then(function(project_info) {
+            //create new project here:
+            generateUniqueProjectCode().then(function (unique_code_new) {
+                console.log("New Code is:" + unique_code_new);
+                //add all information from previous project here:
+                projectDB.importSettingsFromProject(unique_code_new, project_info).then(function (project_code) {
+                    //return all ok here and send new project code:
+                    res.send({
+                        new_code: project_code,
+                        old_code: unique_code,
+                        info: "Tutorial not set"
+                    });
+                }, function (err) {
+                    res.status(400).send('Duplication Failed: Project info could not be migrated ');
+                })
+
+            }, function (err) {
+                res.status(400).send('Duplication Failed: Project could not be found');
+            })
+        }, function (err) {
+            res.status(400).send('Duplication Failed: Project could not be found')
+
+    });
+});
+
 
 router.post('/add', [upload.any(), filters.requireLogin, filters.requiredParamHandler(['name', 'description'])],
   function(req, res, next) {

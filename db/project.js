@@ -374,6 +374,38 @@ exports.addUserTutorialSequence = function(worker_id,hitID,unique_code,sequence)
 };
 
 
+exports.importSettingsFromProject = function(new_code, pObj){
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        var obj_list = [];
+        //from pObj, pop id,created_at and last_modified: should not be altered
+        var old_unique_code = pObj["unique_code"];
+        delete pObj["unique_code"];
+        delete pObj["id"];
+        delete pObj["created_at"];
+        delete pObj["last_modified"];
+        //update code:
+        //then, for each remaining object key pair, make a key=key.value string
+        for (key in pObj){
+            obj_list.push(key)
+        }
+        var query = "INSERT INTO projects ( " + obj_list.toString() + ",unique_code)" +
+        " SELECT " + obj_list.toString() +  " ,\"" + new_code + "\"" +
+        " from projects where unique_code=\"" + old_unique_code + "\"";
+
+        //end query with project
+        connection.queryAsync(query).then(
+            function(data) {
+                resolve(new_code);
+            }, function(err) {
+                error(err);
+                console.log(err)
+            });
+    });
+};
+
+
+
 exports.getNumberOfContributers = function(project) {
   return new Promise(function(resolve, error) {
     var connection = db.get();
@@ -483,7 +515,7 @@ exports.getDataSetNames2 = function(datasetId) {
     var tableName = 'dataset_' + datasetId;
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        connection.queryAsync('SELECT name  FROM ' + tableName).then(
+        connection.queryAsync('SELECT name,x,y  FROM ' + tableName).then(
             function(data) {
                 resolve(data);
             }, function(err) {
