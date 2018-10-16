@@ -132,6 +132,8 @@ router.get('/csv/:projectCode', function(req, res, next) {
                 ans.push(item.text);
                 fields.push(item.text);
             });
+            fields.push('latitude');
+            fields.push('longitude');
             fields.push('majority_answer');
             fields.push('majority_confidence');
             fields.push('question');
@@ -157,6 +159,9 @@ router.get('/csv/:projectCode', function(req, res, next) {
                     raw_im_list.forEach(function(img_obj){
 
                         var img = img_obj.name;
+                        //send out coordinates of image as well
+                        var lat = img_obj.x;
+                        var lon = img_obj.y;
                         var max_value = -1;
                         var max_name = '';
                         var o_name = img;
@@ -175,7 +180,14 @@ router.get('/csv/:projectCode', function(req, res, next) {
                         }
 
                         //Make object for image
-                        var counters = {image_name: o_name, question: template.question, crowd_source: 'Cartoscope', image_source: im_source };
+                        var counters = {
+                            image_name: o_name,
+                            latitude: lat,
+                            longitude:lon,
+                            question: template.question,
+                            crowd_source: 'Cartoscope',
+                            image_source: im_source
+                        };
                         var tot_vot = 0;
                         ans.forEach(function(ans){
                             //parse the ans:

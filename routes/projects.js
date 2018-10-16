@@ -107,6 +107,102 @@ router.get('/getTutorialSequence/:projectCode', function(req, res, next) {
     });
 });
 
+
+//Genetic Algorithm sequences
+router.get('/getRandomSequenceGenetic/:projectCode', function(req, res, next) {
+    var projectCode = req.params.projectCode;
+    projectDB.getTutorialSequenceRandomGenetic(projectCode).then(function(results) {
+        res.send(results);
+    }, function(err) {
+        res.status(400).send('Tutorial with sequence could not be generated!!!');
+    });
+});
+
+
+
+//Genetic Algorithm sequences
+router.get('/getGeneticInfo/:projectCodeMain', function(req, res, next) {
+    var projectCode = req.params.projectCodeMain;
+    var user = req.session.passport.user;
+    //Get genetic sequence for given user and projectCode:
+        projectDB.getTaskGeneticInfoForUser(projectCode,user).then(function(gen_results) {
+            var project_list = [];
+            var supported_types = ['label','map','marker'];
+            supported_types.forEach(function(item){
+                var sub_code = gen_results[item + '_project'];
+                if (sub_code != undefined){
+                    project_list.push(sub_code)
+                }
+            });
+            //Get progresses for all cases
+            projectDB.getProgressNotNullOnEmptyMultipleCodes(project_list,user).then(function(prog_results) {
+                var total_res = {
+                    genetic_info: gen_results,
+                    progress_info:prog_results
+                };
+                res.send(total_res);
+            }, function(err) {
+                res.status(400).send('Progress for all items could not be found');
+            });
+
+
+            //res.send(results);
+        }, function(err) {
+            res.status(400).send('Genetic Info could not be reached');
+        });
+
+});
+
+
+//Genetic Algorithm Tutorial Items
+router.get('/getGeneticTutorialItems/:projectCodeMain', function(req, res, next) {
+    var projectCode = req.params.projectCodeMain;
+    var user = req.session.passport.user;
+    //Get genetic sequence for given user and projectCode:
+    projectDB.getTaskGeneticInfoForUser(projectCode,user).then(function(gen_results) {
+        var project_list = [];
+        var supported_types = ['label','map','marker'];
+        supported_types.forEach(function(item){
+            var sub_code = gen_results[item + '_project'];
+            if (sub_code != undefined){
+                project_list.push(sub_code)
+            }
+        });
+        //Get tutorial objects for all cases
+        projectDB.getTutorialItemsMultipleCodes(project_list).then(function(tut_results) {
+            res.send(tut_results);
+        }, function(err) {
+            res.status(400).send('Progress for all items could not be found');
+        });
+
+
+        //res.send(results);
+    }, function(err) {
+        res.status(400).send('Genetic Info could not be reached');
+    });
+
+});
+
+
+
+
+//Register progress to database if not there for genetic
+router.get('/registerProgressGenetic/:pCode', function(req, res, next) {
+    var projectCode = req.params.pCode;
+    var user = req.session.passport.user;
+    //Get genetic sequence for given user and projectCode:
+    projectDB.getSingleProjectFromCode(projectCode).then(function(project) {
+        projectDB.registerProgressGenetic(project.id,user).then(function(reg_results) {
+            res.send(reg_results);
+        }, function(err) {
+            res.status(400).send('Progress for project could not be initialized');
+        });
+    }, function(err) {
+        res.status(400).send('project could not be found');
+    })
+});
+
+
 //Generate a random tutorial sequence
 router.get('/generateTutorialSequence/:projectCode/:seqsize', function(req, res, next) {
     var projectCode = req.params.projectCode;
@@ -137,6 +233,34 @@ router.post('/addWorkerTutorial', function(req, res, next) {
 
 
 
+//endpoint to create duplicate project based on existing code
+router.get('/duplicateProject/:pCode', [ filters.requireLogin],
+    function(req, res, next) {
+    var unique_code = req.params.pCode;
+        projectDB.getSingleProjectFromCode(unique_code).then(function(project_info) {
+            //create new project here:
+            generateUniqueProjectCode().then(function (unique_code_new) {
+                console.log("New Code is:" + unique_code_new);
+                //add all information from previous project here:
+                projectDB.importSettingsFromProject(unique_code_new, project_info).then(function (project_code) {
+                    //return all ok here and send new project code:
+                    res.send({
+                        new_code: project_code,
+                        old_code: unique_code,
+                        info: "Tutorial not set"
+                    });
+                }, function (err) {
+                    res.status(400).send('Duplication Failed: Project info could not be migrated ');
+                })
+
+            }, function (err) {
+                res.status(400).send('Duplication Failed: Project could not be found');
+            })
+        }, function (err) {
+            res.status(400).send('Duplication Failed: Project could not be found')
+
+    });
+});
 
 
 router.post('/add', [upload.any(), filters.requireLogin, filters.requiredParamHandler(['name', 'description'])],
@@ -368,7 +492,7 @@ router.post('/:id/survey', [filters.requireLogin], function(req, res, next) {
       );
       
     }, function(err) {
-      console.log("error here")
+      console.log(err)
       res.status(500).send({error: err.code});
     });
   } else {

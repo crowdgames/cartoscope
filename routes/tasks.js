@@ -60,6 +60,64 @@ router.get('/getInfo/:code', [filters.requireLogin], function(req, res, next) {
 });
 
 
+//get info but if no progress found, then register it (genetic tasks)
+router.get('/getInfoRegister/:code', [filters.requireLogin], function(req, res, next) {
+    checkUserAllowedAccess(req.session.passport.user, req.params.code).then(function(data) {
+        //console.log('In CheckUserAllowed Acess', data);
+        var getProject = projectDB.getProjectFromCode(req.params.code);
+        var user = req.session.passport.user;
+        getProject.then(function(project) {
+            if (project.length > 0) {
+                var getDataSetSize = projectDB.getDataSetSize(project[0]['dataset_id']);
+                var getProgress = projectDB.getProgress(project[0].id, req.session.passport.user);
+
+                getProgress.catch(function(err) {
+                    res.status(500).send({error: 'Progress not found'});
+                    return null;
+                });
+
+                getDataSetSize.catch(function(err) {
+                    res.status(500).send({error: 'Data set not found'});
+                    return -1;
+                });
+
+                Promise.join(getProgress, getDataSetSize, function(progress, datasetSize) {
+                    if (progress && datasetSize > 0) {
+                        var data = project[0];
+                        data.progress = progress.progress;
+                        data.size = datasetSize;
+                        res.send(data);
+                    }  else if (progress == undefined){
+                        //insert progress
+                        projectDB.getProjectFromCode(req.params.code).then(function(pr) {
+                            projectDB.registerProgressGenetic(pr[0].id, user).then(function (reg_results) {
+                                var data = pr[0];
+                                data.progress = reg_results.progress;
+                                data.size = datasetSize;
+                                res.send(data);
+                            })
+                        })
+                    }
+                    else {
+                        res.status(500).send({error: 'Progress not found'});
+                    }
+                });
+            } else {
+                res.status(500).send({error: 'Project not found'});
+            }
+        }).catch(function(error) {
+            res.status(500).send({error: error.code || 'Project not found'});
+        });
+    }).catch(function(err) {
+        if (err.code) {
+            res.status(500).send({error: err.code});
+        } else {
+            res.status(401).send({error: 'You are not allowed to access this project'});
+        }
+    });
+});
+
+
 router.get('/getInfoFree/:code', function(req, res, next) {
         //console.log('In CheckUserAllowed Acess', data);
         var getProject = projectDB.getProjectFromCode(req.params.code);
@@ -198,9 +256,68 @@ router.get('/gettask/:code', [filters.requireLogin], function(req, res, next) {
   });
 });
 
-function processItems(dataSetId, dataSetSize, progressItem, userID, userType,inorder) {
+//same as above but return specific limit ahead
+router.get('/gettask/:code/:limit', [filters.requireLogin], function(req, res, next) {
+    projectDB.getSingleProjectFromCode(req.params.code).then(function(project) {
+        // console.log("IN Task get task "+ project);
+        var showInOrder = project.inorder;
+        var user = req.session.passport.user;
+        var dataSetId = project['dataset_id'];
+        if (!dataSetId) {
+            res.status(500).send({error: 'No data set found'});
+        } else {
+            var dataSetSize = projectDB.getDataSetSize(dataSetId);
+            var getProgress = projectDB.getProgress(project.id, req.session.passport.user);
+            var userID = req.session.passport.user.id;
+            dataSetSize.catch(function(err) {
+                res.status(500).send({error: 'Data set not found'});
+                return -1;
+            });
+
+            getProgress.catch(function(err) {
+                res.status(500).send({error: 'Progress not found'});
+                return null;
+            });
+
+            Promise.join(dataSetSize, getProgress, function(dataSetSize, progressItem) {
+                if (dataSetSize == -1 || !progressItem) {
+                    res.status(500).send({error: 'Data set not found or Progress not created.'});
+                } else {
+                    processItems(dataSetId, dataSetSize, progressItem, userID, user.type,showInOrder,req.params.limit).then(function(data) {
+                        if (data) {
+                            res.send({
+                                items: data,
+                                dataset: dataSetId,
+                                finished: false
+                            });
+                        } else {
+                            res.send({
+                                dataset: dataSetId,
+                                items: [],
+                                finished: true
+                            });
+                        }
+                    }).catch(function(err) {
+                        res.status(500).send({error: err.code || 'Could not retrieve items'});
+                    });
+                }
+            });
+        }
+    }).catch(function(err) {
+        res.status(500).send({error: err.code || 'Task not found'});
+    });
+});
+
+
+
+function processItems(dataSetId, dataSetSize, progressItem, userID, userType,inorder,limit) {
     //console.log('Data Set Size', dataSetSize);
     //console.log('processs data', progressItem);
+
+    //how many to fetch
+    if (limit == undefined){
+        limit = 5;
+    }
 
   return new Promise(function(resolve, reject) {
       var order = [];
@@ -232,12 +349,11 @@ function processItems(dataSetId, dataSetSize, progressItem, userID, userType,ino
     // }
 
       progressD = progressItem.progress;
-
       if (!inorder) {
           order = ss.shuffle(order, userIDStr.substr(userIDStr.length - 8));
       }
-      order = order.slice(progressD - 1, progressD + 4);
-      console.log("Order is" ,order)
+      //fetch next 5 items here:
+      order = order.slice(progressD - 1, progressD + (limit-1));
 
 
    // var userIDStr = userID + '';
@@ -288,15 +404,24 @@ router.get('/getImage/:dataset/:name', [filters.requireLogin], function(req, res
 router.get('/startProject/:project', [filters.requireLogin], function(req, res, next) {
   var user = req.session.passport.user;
   var chain = req.query.chain;
+  var genetic = req.query.genetic;
   projectDB.getSingleProjectFromCode(req.params.project).then(checkDataSetReady).then(function(project) {
     if (user.anonymous) {
       if (user.consented) {
         projectDB.findProgress(project, user.id, 1).then(function(data) {
           if ('progress' in data) {
 
+              var partial_link = '/task.html#/?code=';
+            //send genetic to task
+              if (genetic){
+                  partial_link = '/task.html#/genetic?code=';
+              };
+            var red_link = partial_link + req.params.project+ '&type='+req.session.passport.user.type +
+                '&workerID=' + user.workerID + '&hitID=' + user.hitID + '&assignmentID='+ user.assignmentID +'&chain=' + chain;
 
-            res.redirect('/task.html#/?code=' + req.params.project+ '&type='+req.session.passport.user.type +
-                '&workerID=' + user.workerID + '&hitID=' + user.hitID + '&assignmentID='+ user.assignmentID +'&chain=' + chain);
+
+
+            res.redirect(red_link);
           } else {
             res.status(500).send({error: 'No progress could be found'});
           }

@@ -1605,8 +1605,8 @@ module.factory('swalService', function() {
 
 // login module
 
-module.controller('loginController', ['$scope', '$http',
-    function($scope, $http) {
+module.controller('loginController', ['$scope', '$http', '$state',
+    function($scope, $http,$state) {
 
     $scope.userRegData = {};
     $scope.loginData = {};
@@ -1754,7 +1754,9 @@ module.controller('loginController', ['$scope', '$http',
         $http.post('api/login', data).then(function(response) {
             var data = response.data;
             if ('id' in data) {
-                document.location.href = '/UserProfile.html#/';
+                //redirect to old home
+                //document.location.href = '/UserProfile.html#/';
+                $state.go('root.home');
 
             }
         }, function(response) {

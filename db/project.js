@@ -203,9 +203,7 @@ exports.getSingleProjectFromCode = function(uniqueCode) {
 exports.getTutorialFromCode = function(uniqueCode) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        console.log("I got " + uniqueCode)
         var queryString = 'SELECT * from tutorial WHERE unique_code = \'' + uniqueCode + '\'';
-        console.log(queryString)
         connection.queryAsync(queryString).then(
             function(data) {
                 if (data.length > 0) {
@@ -271,6 +269,45 @@ exports.getTutorialSequenceRandom = function(uniqueCode) {
     });
 };
 
+
+exports.getTutorialSequenceRandomGenetic = function(uniqueCode) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        //get a random sequence
+        var queryString = 'SELECT id from task_genetic_sequences WHERE unique_code_main = \'' + uniqueCode + '\' ORDER BY RAND() LIMIT 1';
+        connection.queryAsync(queryString).then(
+            function(data) {
+                if (data.length > 0) {
+                    var genetic_id = data[0].id;
+                    resolve(genetic_id);
+                } else {
+                    error( 'No task genetic sequence found');
+                }
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
+exports.getTutorialSequenceRandomGeneticFull = function(uniqueCode) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        //get a random sequence
+        var queryString = 'SELECT * from task_genetic_sequences WHERE unique_code_main = \'' + uniqueCode + '\' ORDER BY RAND() LIMIT 1';
+        connection.queryAsync(queryString).then(
+            function(data) {
+                if (data.length > 0) {
+
+                    resolve(data);
+                } else {
+                    error( 'No task genetic sequence found');
+                }
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
 exports.generateTutorialSequencesRandom = function(uniqueCode,selsize) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
@@ -304,7 +341,6 @@ exports.generateTutorialSequencesRandom = function(uniqueCode,selsize) {
                                 if (rows_changed > 0){
                                     complete = 1;
                                 }
-                                console.log(complete);
                                 resolve(complete)
                             } else {
                                 error({code: 'Error adding generated sequence'});
@@ -323,7 +359,7 @@ exports.generateTutorialSequencesRandom = function(uniqueCode,selsize) {
 };
 
 
-//Keep track of which worker is matched with which sequence
+//Keep track of which worker is matched with which sequence (tutorial)
 exports.addUserTutorialSequence = function(worker_id,hitID,unique_code,sequence) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
@@ -336,6 +372,38 @@ exports.addUserTutorialSequence = function(worker_id,hitID,unique_code,sequence)
             });
     });
 };
+
+
+exports.importSettingsFromProject = function(new_code, pObj){
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        var obj_list = [];
+        //from pObj, pop id,created_at and last_modified: should not be altered
+        var old_unique_code = pObj["unique_code"];
+        delete pObj["unique_code"];
+        delete pObj["id"];
+        delete pObj["created_at"];
+        delete pObj["last_modified"];
+        //update code:
+        //then, for each remaining object key pair, make a key=key.value string
+        for (key in pObj){
+            obj_list.push(key)
+        }
+        var query = "INSERT INTO projects ( " + obj_list.toString() + ",unique_code)" +
+        " SELECT " + obj_list.toString() +  " ,\"" + new_code + "\"" +
+        " from projects where unique_code=\"" + old_unique_code + "\"";
+
+        //end query with project
+        connection.queryAsync(query).then(
+            function(data) {
+                resolve(new_code);
+            }, function(err) {
+                error(err);
+                console.log(err)
+            });
+    });
+};
+
 
 
 exports.getNumberOfContributers = function(project) {
@@ -431,7 +499,6 @@ exports.getDataSetPoints = function(datasetId) {
 
 exports.getDataSetNames = function(datasetId) {
     var tableName = 'dataset_' + datasetId;
-    console.log(tableName)
     return new Promise(function(resolve, error) {
         var connection = db.get();
         connection.queryAsync('SELECT GROUP_CONCAT(name) AS image_list FROM ' + tableName).then(
@@ -446,10 +513,9 @@ exports.getDataSetNames = function(datasetId) {
 
 exports.getDataSetNames2 = function(datasetId) {
     var tableName = 'dataset_' + datasetId;
-    console.log(tableName)
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        connection.queryAsync('SELECT name  FROM ' + tableName).then(
+        connection.queryAsync('SELECT name,x,y  FROM ' + tableName).then(
             function(data) {
                 resolve(data);
             }, function(err) {
@@ -678,6 +744,28 @@ exports.getProgressNotNullOnEmpty = function(projectID, user) {
   });
 };
 
+//get progress for multiple projects at the same time
+exports.getProgressNotNullOnEmptyMultipleCodes = function(projectID_list, user) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+        var pList_string = "'" + projectID_list.join("','") + "'";
+        connection.queryAsync('select pr.id,pr.project_id,pr.progress,p.unique_code from progress as pr \
+        LEFT JOIN projects as p ON pr.project_id=p.id \
+        WHERE pr.id=? and p.unique_code IN ('+ pList_string +')',
+            [user.id]).then(
+            function(data) {
+                if (data.length == 0) {
+                    resolve([]);
+                } else {
+                    resolve(data);
+                }
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
 exports.setArchived = function(projectID) {
   return new Promise(function(resolve, error) {
     var connection = db.get();
@@ -722,4 +810,76 @@ exports.getFeaturedProject = function() {
         error(err);
       });
   });
+};
+
+//get info for genetic id
+exports.getTaskGeneticInfoForUser = function(projectID, user) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT m.workerID,m.genetic_id,t.seq,t.label_project,t.map_project,t.marker_project,t.progress_type' +
+            ' FROM '+databaseName+'.mturk_workers as m left join  ' + databaseName +
+            '.task_genetic_sequences as t on m.genetic_id=t.id WHERE m.workerID=? and m.projectID=?',
+            [user.id, projectID]).then(
+            function(data) {
+                if (data.length == 0) {
+                    resolve([]);
+                } else {
+                    resolve(data[0]);
+                }
+            }, function(err) {
+                console.log(err)
+                error(err);
+            });
+    });
+};
+
+
+
+//get info for genetic id
+exports.registerProgressGenetic = function(projectID, user) {
+     return new Promise(function(resolve, error) {
+            var connection = db.get();
+            connection.queryAsync('INSERT INTO progress (id,project_id,progress,user_type)' +
+                ' VALUES (?,?,1,1)',
+                [user.id, projectID]).then(
+                function(data) {
+                    if (data.insertId) {
+                        console.log('In data insert');
+                        var res_data = {
+                            id: user.id,
+                            project_id:projectID,
+                            progress: 1,
+                            user_type: user.user_type
+                        }
+                        resolve(res_data);
+                    } else {
+                        error({code: 'Problem with insert'});
+                    }
+                }, function(err) {
+                    error(err);
+                });
+        });
+    };
+
+//get all tutorial objects
+exports.getTutorialItemsMultipleCodes = function(projectID_list) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+        var pList_string = "'" + projectID_list.join("','") + "'";
+        connection.queryAsync('select t.image_name, t.x, t.y, t.zoom, t.answer, t.explanation, t.poi_name, \
+        p.point_selection,p.points_file,p.tutorial_link,p.template,p.unique_code \
+           from tutorial as t \
+        LEFT JOIN projects as p ON t.unique_code=p.unique_code \
+        WHERE  p.unique_code IN ('+ pList_string +')').then(
+            function(data) {
+                if (data.length == 0) {
+                    resolve([]);
+                } else {
+                    resolve(data);
+                }
+            }, function(err) {
+                error(err);
+            });
+    });
 };
