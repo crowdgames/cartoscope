@@ -45,6 +45,8 @@
                     <span> | </span>
                     <span ng-click="goToEdit(project)">Edit</span>
                     <span> | </span>
+                    <span ng-click="duplicateProject(project)">Duplicate</span>
+                    <span> | </span>
                     <span ng-if='!project.archived' class="archive-btn" ng-click="toggleArchive(project)">
                         Archive
                     </span>

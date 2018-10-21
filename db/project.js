@@ -126,6 +126,20 @@ exports.updateDescription = function(projectId, description) {
     });
 };
 
+
+exports.updateDescriptionName = function(projectId, description,name) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('UPDATE projects SET description=? , name=? WHERE id=?',
+            [description,name, projectId]).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
 exports.publish = function(projectId) {
   return new Promise(function(resolve, error) {
     var connection = db.get();

@@ -340,6 +340,22 @@ router.post('/updateDescription',
         });
     });
 
+
+router.post('/updateDescriptionName',
+    [filters.requireLogin, filters.requiredParamHandler(['projectID', 'description']), upload.any()],
+    function(req, res, next) {
+        projectDB.updateDescriptionName(req.body.projectID, req.body.description,req.body.name).then(function(data) {
+            if (data.affectedRows == 1) {
+                res.send({'status': 'done'});
+            } else {
+                res.status(500).send({error: 'Project not found'});
+            }
+        }, function(err) {
+            console.log(err);
+            res.status(500).send({'error': err.code});
+        });
+    });
+
 router.get('/admins/:id', filters.requireLogin,
   function(req, res, next) {
     projectDB.getAdmins(req.params.id).then(function(data) {

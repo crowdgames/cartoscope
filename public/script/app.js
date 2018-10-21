@@ -321,10 +321,11 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
 
               var data = {
                   description: $scope.project.description,
-                  projectID: $scope.project.id
+                  projectID: $scope.project.id,
+                  name: $scope.project.name
               };
 
-              $http.post('/api/project/updateDescription', data).then(function(data) {
+              $http.post('/api/project/updateDescriptionName', data).then(function(data) {
                   $scope.$emit('moveNext');
               }, function(response) {
                   var msg = response.data.error || 'couldn\'t save description at this time';
@@ -1383,6 +1384,46 @@ module.controller('projectsPageController', ['$scope', 'userData', 'projects', '
     $scope.goToEdit = function(project) {
       $state.go('root.projectEdit.step1', {project: project, id: project.id});
     };
+
+    $scope.duplicateProject = function(project){
+        $http.get('/api/project/duplicateProject/' + project.unique_code).then(function(data) {
+            swal({
+                title: 'Success!',
+                confirmButtonColor: '#9cdc1f',
+                allowOutsideClick: true,
+                text: 'Project duplicated successfully',
+                type: 'success',
+                timer: 1500
+            });
+            //proceed to edit page
+            $timeout( function(){
+                //get project info first and then go to edit:
+                $http.get('/api/tasks/getInfoFree/' + data.data.new_code).then(function(npdata) {
+                    var new_project = npdata.data[0];
+                    $scope.goToEdit(new_project)
+                });
+
+
+
+
+            }, 5000 );
+
+
+
+        }, function(error){
+            swal({
+                title: 'Error!',
+                confirmButtonColor: '#9cdc1f',
+                allowOutsideClick: true,
+                text: 'Error duplicating project',
+                type: 'error',
+                confirmButtonText: 'Back'
+            });
+
+          console.log(error)
+
+        });
+    }
 
         //Allow project creation for selected user
         if ($scope.user.username == projectCreators) {$scope.allowProject = true}
