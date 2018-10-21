@@ -760,18 +760,23 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       };
 
-      //Map initialization for map tasks:
-      NgMap.getMap({id:'main_map'}).then(function(map) {
-          vm.map = map;
-          var myLatlng = new google.maps.LatLng(getLat(),getLng());
-          vm.map.setCenter(myLatlng);
-          latCenter = vm.map.getCenter().lat();
-          lngCenter = vm.map.getCenter().lng();
-          vm.lat= latCenter;
-          vm.lang = lngCenter;
-          vm.defZoom = 15;
-          //console.log(latCenter, lngCenter);
-      });
+      vm.map_init = function(){
+          //Map initialization for map tasks:
+          NgMap.getMap({id:'main_map'}).then(function(map) {
+              vm.map = map;
+              var myLatlng = new google.maps.LatLng(getLat(),getLng());
+              vm.map.setCenter(myLatlng);
+              latCenter = vm.map.getCenter().lat();
+              lngCenter = vm.map.getCenter().lng();
+              vm.lat= latCenter;
+              vm.lang = lngCenter;
+              vm.defZoom = 15;
+              //console.log(latCenter, lngCenter);
+              vm.recenter();
+          });
+      };
+
+
 
       function fetchCenter(){
           //console.log('In get Center ');
@@ -855,8 +860,15 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               $scope.req_text = "You must complete at least " + vm.req_amount + " subtasks in order to continue to the survey."
           }
 
+
           //get the tasks
           vm.getTasks();
+
+          //load map with minor timeout to make sure getTasks is done
+          $timeout( function(){
+              vm.map_init();
+          }, 1000 );
+
 
           //Set progress bar:
           $scope.next_per = (vm.data.progress / vm.data.size).toFixed(2) *100;
