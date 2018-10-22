@@ -71,6 +71,9 @@
                         zoom="{{model.defZoom}}"
                         on-zoom_changed="model.zoomChanged();"
                         on-center-changed="model.centerChanged();"
+                         map-type-control-options="{style:'DROPDOWN_MENU'}"
+                         street-view-control="false"
+                         fullscreen-control="false"
                         class="mapDiv">
                     <custom-control id="recenter" position="TOP_CENTER" index="1" on-click="model.recenter()">
                         <button type="button" class="btn btn-default btn-sm" style="cursor:pointer;margin: 8px;">Recenter</button>

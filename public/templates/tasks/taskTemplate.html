@@ -38,8 +38,8 @@
                                 zoom="{{model.fetchZoom()}}"
                                 on-center-changed="model.flight_centerChanged();"
                                 zoomControl= "true"
-                                zoom-control-options="{ style:'HORIZONTAL_BAR',position:'RIGHT_TOP'}"
-                                style="height:100px;width:500px;"
+                                fullscreenControl="false"
+                                zoom-control-options="{ style:'small',position:'RIGHT_BOTTOM'}"                                style="height:100px;width:500px;"
                                 class="mapDiv">
                         </ng-map>
                     </div>
@@ -66,9 +66,13 @@
                 <ng-map  id="main_map" center="{{model.fetchCenter()}}"
                         map-type-id="SATELLITE"
                         zoom="{{model.defZoom}}"
-                        on-zoom_changed="model.zoomChanged();"
+                         zoom-control-options="{ style:'SMALL',position:'RIGHT_BOTTOM'}"
+                         on-zoom_changed="model.zoomChanged();"
                         on-center-changed="model.centerChanged();"
-                        class="mapDiv">
+                         map-type-control-options="{style:'DROPDOWN_MENU'}"
+                         street-view-control="false"
+                         fullscreen-control="false"
+                         class="mapDiv">
                     <custom-control id="recenter" position="TOP_CENTER" index="1" on-click="model.recenter()">
                         <button type="button" class="btn btn-default btn-sm" style="cursor:pointer;margin: 8px;">Recenter</button>
                         <custom-control id="legend" position="TOP_RIGHT" index="1">
