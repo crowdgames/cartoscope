@@ -1967,19 +1967,21 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
             //start from end of string
             //while substring can be parsed to int, then digit and remaining is string
             var end = bl.length;
-            var start = 0;
-            var digit = bl.substring(end-1,end); //start with last one
-            var symbol = bl.substring(start,start+1);
+            var end_indx = end;
 
             while(true){
-                start++;
-                end--;
+
+                end_indx--;
+                digit = bl.substring(end_indx,end); //start with last one
+                symbol = bl.substring(0,end_indx);
                     //if digit stops parsing, we hit a symbol
-                    if (isNaN(parseInt(bl.substring(end-1,end)))) {
+                    if (isNaN(parseInt(digit)) ||  end_indx <= 0 ) {
+                        end_indx++;
+                        digit = bl.substring(end_indx,end); //start with last one
+                        symbol = bl.substring(0,end_indx);
                         break;
                     }
-                digit = bl.substring(end-1,end); //start with last one
-                symbol = bl.substring(start,start+1);
+
             }
             return {digit:parseInt(digit),symbol:symbol}
         }
@@ -1995,6 +1997,7 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
                 var block = blocks[idx];
                 var dec_b = decodeBlock(block);
                 var symbol = dec_b.symbol;
+
                 var digit = dec_b.digit;
                 sum += digit;
                 if (sum > vm.total_genetic_progress){
