@@ -1963,14 +1963,11 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
         //decodes block of type XX00 into XX and 00
         //eg L7 -> L and 7
         function decodeBlock(bl){
-
             //start from end of string
             //while substring can be parsed to int, then digit and remaining is string
             var end = bl.length;
             var end_indx = end;
-
             while(true){
-
                 end_indx--;
                 digit = bl.substring(end_indx,end); //start with last one
                 symbol = bl.substring(0,end_indx);
@@ -1981,7 +1978,6 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
                         symbol = bl.substring(0,end_indx);
                         break;
                     }
-
             }
             return {digit:parseInt(digit),symbol:symbol}
         }

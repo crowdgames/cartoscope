@@ -291,6 +291,9 @@ CREATE TABLE `task_genetic_sequences` (
   `map_project` varchar(255) DEFAULT NULL,
   `marker_project` varchar(255) DEFAULT NULL,
   `progress_type` varchar(255) DEFAULT NULL,
+    `fitness_function` FLOAT DEFAULT NULL,
+     `method` varchar(255) DEFAULT NULL,
+      `generated_from` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;

@@ -1,8 +1,11 @@
 <div class="task-body container">
     <nav class="navbar navbar-top navbar-fixed-top">
         <div class="container text-center">
+            <div class="col-xs-4 col-xs-offset-4">
+
             <p ng-if="model.viewProgress && model.progress_type !='block' " class="navbar-text">Image {{model.data.progress <= model.data.size ? model.data.progress:model.data.size }} out of {{model.data.size}}</p>
-            <p ng-if="model.viewProgress && model.progress_type =='block' " class="navbar-text">Image {{model.current_block_progress +1 }} out of {{model.current_block_size}} until the next task type</p>
+            <h5 ng-if="model.viewProgress && model.progress_type =='block' " class="navbar-text">Image {{model.current_block_progress +1 }} out of {{model.current_block_size}} until the next task type</h5>
+            </div>
 
             <div ng-switch="model.userType" class="pull-right">
                 <button ng-switch-when="mTurk" class="btn btn-default btn-primary done-button"
