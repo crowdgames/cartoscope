@@ -104,19 +104,46 @@ router.get('/updateRandomGeneticSequences/:mainCode/:strategy/:n',
         var topK = 4; //how many top to get
         var rem_seq = req.params.n; //how many more to generate
         var gen_list = [];
+        var seed_list = [];
+        var current_sequences = [];
 
 
-        //Get top K sequences
-        dynamicDB.selectTopKsequences(main_code,topK).then(function(seed_list) {
+        //Get all sequences ordered and make the top K the seeds
+        dynamicDB.getAllSequencesSorted(main_code).then(function(total_list) {
 
-            //TODO: SET ALL OTHERS TO ACTIVE=0!
+
+            for (var i = 0; i < total_list.length; i++) {
+                if (i < topK){
+                    seed_list.push(total_list[i]);
+                }
+                //populate current sequences to avoid making duplicates
+                current_sequences.push(total_list[i].seq);
+            }
+            console.log(seed_list.length);
+
+
+            //SET ALL OTHERS TO ACTIVE=0!
             dynamicDB.deactivateBottomSequences(main_code,seed_list).then(function(dt) {
                 //generate remaining ones
                 for (var i = 0; i < rem_seq; i++) {
-                    //add a new sequence based on the strategy
-                    var gen_seq = generate_from_strategy(seed_list,strategy);
+
+
+                    while (true){
+                        //add a new sequence based on the strategy
+                        var gen_seq = generate_from_strategy(seed_list,strategy);
+                        //check if not already existing
+                        if (current_sequences.indexOf(gen_seq.seq) == -1){
+                            break;
+                        } else {
+                            console.log("Ignoring duplicate")
+                        }
+
+                    }
+                    //add to gen list and also add the sequence so we don't get a duplicate
+                    current_sequences.push(gen_seq.seq);
                     gen_list.push(gen_seq);
                 }
+
                 //add to pool and set as active
                 dynamicDB.insertGeneticSequences2(gen_list).then(function(insert_data) {
                     res.status(200).send("Sequences generated")

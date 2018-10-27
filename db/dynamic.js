@@ -52,8 +52,6 @@ exports.insertGeneticSequences2 = function(sequence_list_obj) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
 
-        console.log(sequence_list_obj)
-
         //prepare data to insert as
         var values = [];
         sequence_list_obj.forEach(function(item){
@@ -87,6 +85,23 @@ exports.selectTopKsequences = function(main_code,k) {
         connection.queryAsync('SELECT * from task_genetic_sequences where unique_code_main=? and active=1 ' +
             'ORDER BY fitness_function DESC LIMIT ?',
             [main_code,k])
+            .then(
+                function(data) {
+                    resolve(data);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};
+
+//select top K sequences from current main project
+exports.getAllSequencesSorted = function(main_code) {
+
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT * from task_genetic_sequences where unique_code_main=? and active=1 ' +
+            'ORDER BY fitness_function DESC',
+            [main_code])
             .then(
                 function(data) {
                     resolve(data);
