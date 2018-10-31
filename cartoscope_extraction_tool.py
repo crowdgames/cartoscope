@@ -75,9 +75,13 @@ def get_votes_results(HITID,projects_info):
 
 # get all project codes
 def get_all_projects(HITID):
-    q_string = """select distinct m.projectID,m.hitID, p.unique_code, p.dataset_id,p.id as project_id
-    from mturk_workers as m left join projects as p on m.projectID=p.unique_code
-    where hitID=\'{}\'""".format(HITID)
+    q_string = """select distinct q.project_id, p.unique_code, p.dataset_id,p.id as project_id, m.hitID
+                  from progress as q
+                  left join projects as p
+                  on q.project_id=p.id
+                  left join mturk_workers as m
+                  on m.workerID=q.id
+                  where hitID=\'{}\'""".format(HITID)
     return(execute_mysql_query(q_string))
 
 
@@ -87,7 +91,7 @@ def write_json_to_csv(file,data):
 if __name__ == '__main__':
 
     #main folder to keep data
-    DIR = "../mturk_data/"
+    DIR = "../mturk_data/mturk_data"
     if os.path.isdir(DIR) == False:
         os.mkdir(DIR)
 
