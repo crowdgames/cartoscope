@@ -69,7 +69,9 @@ def get_votes_results(HITID,projects_info):
         left join task_genetic_sequences as q
         on q.id=m.genetic_id
         where hitID=\'{}\' and unique_code=\'{}\' """.format(dataset_id,HITID,code)
-        code_votes.append(execute_mysql_query(q_string))
+        u_votes = execute_mysql_query(q_string)
+        print("Total votes: " + str(len(u_codes.index)))
+        code_votes.append(u_votes)
     return(pd.concat(code_votes))
 
 
