@@ -52,23 +52,27 @@ def get_votes_results(HITID,projects_info):
     for index, row in projects_info.iterrows():
         code = row["unique_code"]
         dataset_id = row["dataset_id"]
-        print("Extracting data for code " + code)
-        q_string = """SELECT r.task_id,r.center_lat, r.center_lon, r.timestamp, p.unique_code,
-        IF(response = -1 , "dummy", JSON_EXTRACT(p.template, CONCAT('$.options[', r.response, '].text'))) as answer, 
-        JSON_EXTRACT(p.template, \'$.question\') as question, r.response,
-        d.x as initial_lat ,d.y as initial_lon,
-        m.workerID,m.hitID,m.projectID,m.genetic_id,
-        q.seq, q.label_project,q.map_project,q.marker_project,q.progress_type,q.method,q.generated_from
-        from response as r
-        left join projects as p
-        on r.project_id=p.id
-        left join dataset_{} as d
-        on r.task_id=d.name
-        left join mturk_workers as m
-        on m.projectID=p.unique_code and m.workerID=r.user_id
-        left join task_genetic_sequences as q
-        on q.id=m.genetic_id
-        where hitID=\'{}\' and unique_code=\'{}\' """.format(dataset_id,HITID,code)
+        project_id = row["project_id"]
+        print("Extracting data for code " + code )
+        q_string = """select r.task_id,r.center_lat, r.center_lon, r.timestamp, pr.id as progress_user_id, p.unique_code,
+                      IF(response = -1 , \"dummy\", JSON_EXTRACT(p.template, CONCAT(\'$.options[\', r.response, \'].text\'))) as answer,
+                      JSON_EXTRACT(p.template, \'$.question\') as question, r.response,
+                      d.x as initial_lat ,d.y as initial_lon,
+                      m.workerID,m.hitID,m.projectID,m.genetic_id,
+                      q.seq, q.label_project,q.map_project,q.marker_project,q.progress_type,q.method,q.generated_from
+                      from response as r
+                      left join projects as p
+                      on r.project_id=p.id
+                      left join progress as pr
+                      on pr.id = r.user_id
+                      left join mturk_workers as m
+                      on m.workerID=pr.id
+                      left join dataset_{} as d
+                      on r.task_id=d.name
+                      left join task_genetic_sequences as q
+                      on q.id=m.genetic_id
+                      where hitID=\'{}\' and unique_code=\'{}\'
+ """.format(dataset_id,HITID,code)
         u_votes = execute_mysql_query(q_string)
         print("Total votes: " + str(len(u_codes.index)))
         code_votes.append(u_votes)
@@ -77,7 +81,7 @@ def get_votes_results(HITID,projects_info):
 
 # get all project codes
 def get_all_projects(HITID):
-    q_string = """select distinct q.project_id, p.unique_code, p.dataset_id,p.id as project_id, m.hitID
+    q_string = """select distinct q.project_id, p.unique_code, p.dataset_id, m.hitID
                   from progress as q
                   left join projects as p
                   on q.project_id=p.id
