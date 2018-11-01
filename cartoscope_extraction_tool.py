@@ -57,7 +57,7 @@ def get_votes_results(HITID,projects_info):
         q_string = """select distinct r.task_id,r.center_lat, r.center_lon, r.timestamp, pr.id as progress_user_id, p.unique_code,
                       IF(response = -1 , \"dummy\", JSON_EXTRACT(p.template, CONCAT(\'$.options[\', r.response, \'].text\'))) as answer,
                       JSON_EXTRACT(p.template, \'$.question\') as question, r.response,
-                      d.x as initial_lat ,d.y as initial_lon,
+                      d.x ,d.y,
                       m.hitID,m.projectID,m.genetic_id,
                       q.seq, q.label_project,q.map_project,q.marker_project,q.progress_type,q.method,q.generated_from
                       from response as r
