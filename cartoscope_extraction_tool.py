@@ -54,17 +54,17 @@ def get_votes_results(HITID,projects_info):
         dataset_id = row["dataset_id"]
         project_id = row["project_id"]
         print("Extracting data for code " + code )
-        q_string = """select r.task_id,r.center_lat, r.center_lon, r.timestamp, pr.id as progress_user_id, p.unique_code,
+        q_string = """select distinct r.task_id,r.center_lat, r.center_lon, r.timestamp, pr.id as progress_user_id, p.unique_code,
                       IF(response = -1 , \"dummy\", JSON_EXTRACT(p.template, CONCAT(\'$.options[\', r.response, \'].text\'))) as answer,
                       JSON_EXTRACT(p.template, \'$.question\') as question, r.response,
                       d.x as initial_lat ,d.y as initial_lon,
-                      m.workerID,m.hitID,m.projectID,m.genetic_id,
+                      m.hitID,m.projectID,m.genetic_id,
                       q.seq, q.label_project,q.map_project,q.marker_project,q.progress_type,q.method,q.generated_from
                       from response as r
                       left join projects as p
                       on r.project_id=p.id
                       left join progress as pr
-                      on pr.id = r.user_id
+                      on pr.id = r.user_id and pr.project_id=p.id
                       left join mturk_workers as m
                       on m.workerID=pr.id
                       left join dataset_{} as d
@@ -129,5 +129,5 @@ if __name__ == '__main__':
         survey_results.to_csv(survey_file)
         #get votes:
         total_votes = get_votes_results(hit_id,project_info)
-        votes_file = os.path.join(DIR,hit_id,hit_id+"_votes.csv")
+        votes_file = os.path.join(DIR,hit_id,hit_id+"_votes_full.csv")
         total_votes.to_csv(votes_file)
