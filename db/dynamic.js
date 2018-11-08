@@ -99,7 +99,7 @@ exports.getAllSequencesSorted = function(main_code) {
 
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        connection.queryAsync('SELECT * from task_genetic_sequences where unique_code_main=? and active=1 ' +
+        connection.queryAsync('SELECT * from task_genetic_sequences where unique_code_main=? ' +
             'ORDER BY fitness_function DESC',
             [main_code])
             .then(
@@ -124,6 +124,22 @@ exports.deactivateBottomSequences = function(main_code,excluded_items) {
 
         connection.queryAsync('update task_genetic_sequences set active=0 where unique_code_main=? and id NOT IN ('+
             id_list.toString() +')',
+            [main_code])
+            .then(
+                function(data) {
+                    resolve(data);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};
+//deactivate all sequences of the main code
+exports.deactivateAllSequences = function(main_code) {
+
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+        connection.queryAsync('update task_genetic_sequences set active=0 where unique_code_main=?',
             [main_code])
             .then(
                 function(data) {
@@ -159,6 +175,41 @@ exports.updateFitnessFunction = function(project) {
         group by mg.genetic_id) as ss \
         on tt.id=ss.genetic_id \
         set tt.fitness_function=ss.avg_label_count',
+            [project.id])
+            .then(
+                function(data) {
+                    resolve(data);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};
+
+//update all fitness functions:
+//Fitness1: Label Count
+//Fitness2: Completion Time
+exports.updateFitnessFunctions = function(project) {
+
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('update task_genetic_sequences as tt \
+        inner join \
+        (select mg.genetic_id, mg.seq, mg.unique_code_main, mg.active,avg(mg.label_count) as avg_label_count, avg(mg.comp_time) as avg_comp_time \
+        from \
+        (select sr.user_id,sr.label_count, sr.comp_time,m.genetic_id,t.seq,t.unique_code_main,t.active \
+        from \
+        (select r.user_id, TIMESTAMPDIFF(SECOND,min(timestamp),max(timestamp)) as comp_time, count(r.response) as label_count \
+        from response as r \
+        where project_id=? \
+        group by r.user_id) as sr \
+        left join mturk_workers as m \
+        on m.workerID=sr.user_id \
+        left join task_genetic_sequences as t \
+        on t.id=m.genetic_id \
+        where m.genetic_id IS NOT NULL and m.genetic_id !=0) as mg \
+        group by mg.genetic_id) as ss \
+        on tt.id=ss.genetic_id \
+        set tt.fitness_function2=ss.avg_comp_time , tt.fitness_function=ss.avg_label_count',
             [project.id])
             .then(
                 function(data) {

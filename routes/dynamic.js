@@ -83,7 +83,7 @@ router.get('/updateFitnessFunctions/:mainCode',
         //Get project from code
         projectDB.getSingleProjectFromCode(main_code).then(function(project) {
             //update fitness functions based on code:
-            dynamicDB.updateFitnessFunction(project).then(function(data) {
+            dynamicDB.updateFitnessFunctions(project).then(function(data) {
                 res.send(200).status("Fitness functions updated succesfully!")
             },function (error){
                 res.send(400).status("Could not update fitness functions for given code")
@@ -96,13 +96,16 @@ router.get('/updateFitnessFunctions/:mainCode',
 
 //TODO: Update current Sequences based on specific strategy
 //Requires a fitness function
-router.get('/updateRandomGeneticSequences/:mainCode/:strategy/:n',
+router.get('/updateTaskGeneticSequences/:mainCode/:strategy/:n/:fit',
     function(req, res, next) {
 
         var main_code = req.params.mainCode;
         var strategy = req.params.strategy;
-        var topK = 4; //how many top to get
+        var fitness_type = req.params.fit;
         var rem_seq = req.params.n; //how many more to generate
+
+        //if no correct fitness type,
+        var topK = 4; //how many top to get
         var gen_list = [];
         var seed_list = [];
         var current_sequences = [];
@@ -123,7 +126,8 @@ router.get('/updateRandomGeneticSequences/:mainCode/:strategy/:n',
 
 
             //SET ALL OTHERS TO ACTIVE=0!
-            dynamicDB.deactivateBottomSequences(main_code,seed_list).then(function(dt) {
+            //dynamicDB.deactivateBottomSequences(main_code,seed_list).then(function(dt) {
+                dynamicDB.deactivateAllSequences(main_code).then(function(dt) {
                 //generate remaining ones
                 for (var i = 0; i < rem_seq; i++) {
 

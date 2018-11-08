@@ -43,6 +43,24 @@ def get_survey_resultsTLX(HITID):
     WHERE  m.hitID=\'{}\' ORDER BY (CASE WHEN a.response IS NULL then 1 ELSE 0 END) """.format(HITID)
     return(execute_mysql_query(q_string))
 
+def get_survey_resultsGAME(HITID):
+
+    game_string = ""
+    for x in range(1, 26):
+        game_string += "json_extract(a.response, \'$.game"+ str(x) + "\') AS game"+ str(x) ","
+
+
+    q_string = """ SELECT m.workerID, m.assignmentID, m.hitID,
+    json_extract(a.response, \'$.opinion\') AS opinion,
+    json_extract(a.response, \'$.image_use\') AS image_use,
+    json_extract(a.response, \'$.image_opinion\') AS image_opinion,
+    json_extract(a.response, \'$.improve\') AS improve,
+    json_extract(a.response, \'$.additional_feedback\') AS additional_feedback,""" +
+    game_string +
+    """FROM survey as a left join mturk_workers as m on m.workerID=a.user_id
+    WHERE  m.hitID=\'{}\' ORDER BY (CASE WHEN a.response IS NULL then 1 ELSE 0 END) """.format(HITID)
+    return(execute_mysql_query(q_string))
+
 
 # get the votes given specific HIT and project list
 #TODO: MARKER TASK HAS TO BE IFELSE
@@ -123,7 +141,11 @@ if __name__ == '__main__':
         project_info.to_csv(project_info_file)
 
         #get survey results for the hit_id
-        survey_results = get_survey_resultsTLX(hit_id)
+
+        if ("-TLX" in options):
+            survey_results = get_survey_resultsTLX(hit_id)
+        else:
+            survey_results = get_survey_resultsGAME(hit_id)
         #write to csv
         survey_file = os.path.join(DIR,hit_id,hit_id+"_survey.csv")
         survey_results.to_csv(survey_file)

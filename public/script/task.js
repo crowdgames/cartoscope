@@ -1584,6 +1584,10 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
 
         function submit(option) {
 
+
+            //update overall progress so far
+            vm.overall_progress_view += 1;
+
             vm.showModal();
 
             //if markers task, loop through all markers and submit the selected ones, ignore submit button option
@@ -2287,7 +2291,6 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
                     M: 0,
                     A: 0
                 };
-
                 //get the progress for each subtask and total progress:
                 vm.progress_genetic_data = vm.gen_data.progress_info;
                 vm.total_genetic_progress = 0;
@@ -2300,6 +2303,11 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
                         }
                     }
                 });
+                vm.overall_progress_view = vm.total_genetic_progress;
+
+
+
+
                 //from sequence, get next task to load
                 vm.genetic_task_current = '';
                 vm.genetic_task_current_symbol = '';
