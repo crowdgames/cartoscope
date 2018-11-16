@@ -55,6 +55,9 @@ CREATE TABLE `downloadStatus` (
 -- Table structure for table `featured_url_route`
 --
 
+DROP TABLE IF EXISTS `featured_url_route`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `featured_url_route` (
   `id` int(11) NOT NULL,
   `url` varchar(255) DEFAULT NULL,
@@ -62,8 +65,7 @@ CREATE TABLE `featured_url_route` (
   `active_from` datetime DEFAULT CURRENT_TIMESTAMP,
   `active_until` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 
-/*!40101 SET character_set_client = @saved_cs_client */;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 
@@ -102,6 +104,7 @@ CREATE TABLE `mturk_workers` (
   `siteID` varchar(128) DEFAULT '1',
   `consented` int(1) DEFAULT '1',
   `hit_code` varchar(128) DEFAULT NULL,
+  `genetic_id` int(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_index` (`workerID`,`projectID`,`hitID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=latin1;

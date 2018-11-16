@@ -591,6 +591,21 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           next_marker.setMap(vm.flight_map);
       }
 
+      //submit a dummy vote to indicate start of voting
+      function submitStartTime(){
+          var dummyTask = {name:"dummy"}
+          console.log(vm.data.id)
+          var body = {
+              projectID: vm.data.id,
+              option: -1,
+              taskID: dummyTask,
+              mapCenterLat:  0.1,
+              mapCenterLon:  0.1,
+              multiple: 1
+          };
+          $http.post('/api/tasks/submit', body)
+      }
+
 
       function submit(option) {
 
@@ -868,6 +883,9 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           $timeout( function(){
               vm.map_init();
           }, 1000 );
+
+          //record dummy vote for start of task
+          submitStartTime();
 
 
           //Set progress bar:
@@ -1581,6 +1599,20 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
             next_marker.setMap(vm.flight_map);
         }
 
+        //submit a dummy vote to indicate start of voting
+        function submitStartTime(){
+            var dummyTask = {name:"dummy"}
+            console.log(vm.data.id)
+            var body = {
+                projectID: vm.data.id,
+                option: -1,
+                taskID: dummyTask,
+                mapCenterLat:  0.1,
+                mapCenterLon:  0.1,
+                multiple: 1
+            };
+            $http.post('/api/tasks/submit', body)
+        }
 
         function submit(option) {
 
@@ -2047,7 +2079,8 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
                         $scope.next_per2 = Math.floor($scope.next_per);
                     }
 
-
+                    //add dummy vote for timestamp of first entry
+                    submitStartTime();
 
                     // required amount to be able to continue to survey
                     if (vm.data.progress > vm.req_amount ) {

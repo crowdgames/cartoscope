@@ -10,3 +10,11 @@ bower_components/
 public/bower_components/
 public/images/
 public/Tiles/
+.vs/Cartoscope/v15/.suo
+build/config.gypi
+bin/Microsoft.NodejsTools.WebRole.dll
+Cartoscope.njsproj
+obj/Debug/Cartoscope.njsproj.CoreCompileInputs.cache
+obj/Debug/Cartoscope.njsproj.FileListAbsolute.txt
+obj/Debug/Cartoscope.njsprojAssemblyReference.cache
+package-lock.json
