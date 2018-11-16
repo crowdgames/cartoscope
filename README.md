@@ -1,13 +1,14 @@
-# cartoscope-backend
+# Installation Instructions
 
 
 1.  git clone https://github.com/crowdgames/cartoscope-backend.git
 
-2. git clone https://github.com/crowdgames/cartoscope-frontend.git
 
 2.  Install Node, MySQL and Wget:
 	1. ##### Windows installation
-		Windows users follow the link to install Node: http://blog.teamtreehouse.com/install-node-js-npm-windows
+		1. Windows users follow the link to install Node: http://blog.teamtreehouse.com/install-node-js-npm-windows
+		2. When installing MySQL server, make sure the **lower_case_table_names is set to 2 and that passwords use Legacy Authentication Method is selected**
+		3. Make sure wget is in your path.
 	
 		 
 	2. #### OSX installation
@@ -30,7 +31,7 @@
 6. #### Run the following command to reset the password of any user (if required).
 		ALTER USER 'root'@'localhost' IDENTIFIED BY 'MyNewPassword'; 
 
-7. #### Unpack mysql database dump
+7. #### Create the necessary tables
 		Go to cartoscope-backend directory and run to create mysql database.
 			mysql -u converge -p convergeDB < database_migrations/dump.sql
 
@@ -39,60 +40,42 @@
         	mkdir temp
 			mkdir dataset
 			mkdir profile_photos
-
-8. #### Permissions for client_body_temp
-		Find the client_body_temp directory for nginx
-		sudo chown -Rv username client_body_temp/
-		(Replace username accordingly)
+8. #### Setup SSL Certificates:
+	Cartoscope requires SSL certificates for running on HTTPS. For creating self-signed certificates for testing purposes, follow this link: https://www.digitalocean.com/community/tutorials/openssl-essentials-working-with-ssl-certificates-private-keys-and-csrs
 
 9. #### Set environment variables in bashrc (replace with your values)
-		export DB_USER=converge                                                         
-		export DB_PASSWORD=database_password                                                     
-		export DB_NAME=convergeDB                                                       
-		export MAILER='xyz@abc.com'                                         
-		export SALT='$$$$$$$$$$$$$$$$$$$$$$'
+		export CARTO_DB_USER=converge                                                         
+		export CARTO_DB_PASSWORD=database_password                                                     
+		export CARTO_DB_NAME=convergeDB                                                       
+		export CARTO_MAILER='xyz@abc.com'                                         
+		export CARTO_SALT='$$$$$$$$$$$$$$$$$$$$$$'
+		export CARTO_PORT=80
+		export CARTO_PORT_SSL=443
+		CARTO_SSL_KEY='path/to/your/certificate.key'
+		CARTO_SSL_CRT='path/to/your/certificate.crt'
 		
 10. #### Python related installations:
-		install pip and then PIL
+		Make sure pip is installed and then intall PIL
 		sudo easy_install pip
 		Sudo pip install pillow
 
-11. #### Setting up ngnix.conf
-		1. sudo nginx -t to find path of ngnix.conf
-		2. Replace your ngnix.conf with the following code.
-				events {                                                                        
-    				worker_connections  1024;                                                   
-				}                                                                               
-                                                                                
-				http {                                                                          
-				  include  mime.types;                                               
-				  gzip  on;                                                               
-				  server {                                                                    
-					listen 8081;
-					client_max_body_size    100M;
-					location / {                                                    
-					  root /XXXXX/converge-frontend;
-					}                                                               
-					location /cmnh {                                                
-					  rewrite ^/.* /#/museum permanent;                            
-					}                                                               
-					location /login {                                                       
-					  rewrite ^/.* /#/login permanent;                                     
-					}                                                                      
-					location /api/ {                                                
-					   proxy_pass http://localhost:3000;                       
-					}                                                               
-				 }                                                                           
-			} 
-			/XXXXX/cartoscope-frontend is the absolute path to the front end repository for the project
-			
-		3. Sudo ngnix -s quit to stop
-		4. Sudo ngnix to start with new conf file.
-		5. Sudo ngnix -s reload to reload with a new conf when ngnix is already running
+11. #### Install required npm modules for backend and frontend:
+		cd cartoscope-backend
+		npm install
+		cd ./public
+		bower install
+12. To facilitate development, also install nodemon:https://nodemon.io/
 
-12. #### Start Project
-		1. Go to cartoscope-frontend directory and do: bower install
-		1. Go to cartoscope-backend directory and do: npm install
-		2. Do: npm start
-		3. Login to http://localhost:8081 to start.
+12. #### Start Server
+		cd ../cartoscope-backend
+		nodemon app
+		
+13. #### Setup Users etc.
+	1. Your main page is at http://localhost:CARTO_PORT (where CARTO_PORT is the port specified in the environment variables)
+	2. For the remainder of the instructions, we will use port 8081 as the selected port:
+	3. In order to start setting up projects, you will need to register a user by going to http://localhost:8081/#/login
+	4. Make sure your registered user's name is `cartoproject` for project creation privileges to apply.
+	5. Login with the user and create a project
+	6. **Caution** The current setup does not provide a graphical interface for creating project tutorials. This can be accomplished by adding the image files to the `cartoscope_backend/public/images/Tutorials/` folder and adding the relevant information to the 
+	
 
