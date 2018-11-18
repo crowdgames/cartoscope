@@ -113,15 +113,14 @@ exports.selectTopKsequences = function(main_code,k) {
 //select top K sequences from current main project, by fitness type
 exports.getAllSequencesSorted = function(main_code,fitness_type) {
 
-    var tp = "";
-    if (parseInt(fitness_type) == 2) {
-        tp = "2"
+    var tp = "fitness_function";
+    if (fitness_type == "2") {
+        tp = "fitness_function2"
     }
 
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        connection.queryAsync('SELECT * from task_genetic_sequences where unique_code_main=? ' +
-            'ORDER BY fitness_function? DESC',
+        connection.queryAsync('SELECT * from task_genetic_sequences where unique_code_main=? ORDER BY ? DESC',
             [tp, main_code])
             .then(
                 function(data) {
