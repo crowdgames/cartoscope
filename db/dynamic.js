@@ -120,7 +120,7 @@ exports.getAllSequencesSorted = function(main_code,fitness_type) {
 
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        var query = 'SELECT * from task_genetic_sequences where unique_code_main=\"' + main_code +'\" ORDER BY' + tp + ' DESC';
+        var query = 'SELECT * from task_genetic_sequences where unique_code_main=\"' + main_code +'\" ORDER BY ' + tp + ' DESC';
         connection.queryAsync(query)
             .then(
                 function(data) {
