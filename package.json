@@ -30,6 +30,7 @@
     "less": "^2.7.1",
     "less-middleware": "^1.0.4",
     "lodash": "^4.15.0",
+    "mathjs": "^5.2.3",
     "mmmagic": "^0.4.5",
     "morgan": "~1.7.0",
     "multer": "^1.2.0",
@@ -47,6 +48,7 @@
     "seededshuffle": "^0.1.1",
     "serve-favicon": "~2.3.0",
     "tar-fs": "*",
+    "underscore": "^1.9.1",
     "validator": "^5.5.0",
     "validators": "^0.3.1"
   },

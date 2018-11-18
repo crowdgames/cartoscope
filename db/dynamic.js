@@ -18,6 +18,22 @@ exports.getGenePool = function(projectId) {
     });
 };
 
+
+//get the gene pool
+exports.getGenePoolIds = function(projectCode) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        console.log(projectCode);
+        connection.queryAsync('SELECT GROUP_CONCAT(id) as genetic_id_list from task_genetic_sequences where unique_code_main=?  ', [projectCode])
+            .then(
+                function(data) {
+                    resolve(data);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};
+
 //insert a genetic sequence
 exports.insertGeneticSequences = function(gen_info,sequence_list) {
     return new Promise(function(resolve, error) {
@@ -94,13 +110,18 @@ exports.selectTopKsequences = function(main_code,k) {
     });
 };
 
-//select top K sequences from current main project
-exports.getAllSequencesSorted = function(main_code) {
+//select top K sequences from current main project, by fitness type
+exports.getAllSequencesSorted = function(main_code,fitness_type) {
+
+    var tp = "";
+    if (fitness_type == 2) {
+        tp = "2"
+    }
 
     return new Promise(function(resolve, error) {
         var connection = db.get();
         connection.queryAsync('SELECT * from task_genetic_sequences where unique_code_main=? ' +
-            'ORDER BY fitness_function DESC',
+            'ORDER BY fitness_function'+ tp +' DESC',
             [main_code])
             .then(
                 function(data) {
@@ -188,7 +209,8 @@ exports.updateFitnessFunction = function(project) {
 //update all fitness functions:
 //Fitness1: Label Count
 //Fitness2: Completion Time
-exports.updateFitnessFunctions = function(project) {
+//AVG STATS
+exports.updateFitnessFunctionsAVG = function(project) {
 
     return new Promise(function(resolve, error) {
         var connection = db.get();
@@ -211,6 +233,58 @@ exports.updateFitnessFunctions = function(project) {
         on tt.id=ss.genetic_id \
         set tt.fitness_function2=ss.avg_comp_time , tt.fitness_function=ss.avg_label_count',
             [project.id])
+            .then(
+                function(data) {
+                    resolve(data);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};
+
+
+exports.getWorkerStats = function(gen_id_list) {
+
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        var query = '(select sr.user_id,sr.label_count, sr.comp_time, sr.comp_time/sr.label_count as time_per_image,m.genetic_id,t.seq,t.unique_code_main,t.active \
+        from \
+        (select r.user_id, TIMESTAMPDIFF(SECOND,min(r.timestamp),max(r.timestamp)) as comp_time, count(r.response) -SUM(if(r.response = -1, 1, 0)) as label_count \
+        from response as r \
+        group by r.user_id) as sr \
+        left join mturk_workers as m \
+        on m.workerID=sr.user_id \
+        left join task_genetic_sequences as t \
+        on t.id=m.genetic_id \
+        where m.genetic_id IN ('+ gen_id_list +  ') ) ';
+
+        connection.queryAsync(query)
+            .then(
+                function(data) {
+                    resolve(data);
+                }, function(err) {
+                    console.log(err)
+                    error(err);
+                });
+    });
+};
+
+
+exports.updateSpecificFunctions = function(function_data) {
+
+    //join array of arrays into
+    let fit_vals ="";
+    function_data.forEach(function(item){
+        fit_vals += "(" + item.join() +"),"
+    });
+    //remove last comma from fit_vals
+    fit_vals = fit_vals.slice(0, -1);
+
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        query = 'INSERT INTO task_genetic_sequences (id,fitness_function,fitness_function2) VALUES '+ fit_vals +' \
+            ON DUPLICATE KEY UPDATE fitness_function=VALUES(fitness_function),fitness_function2=VALUES(fitness_function2)'
+        connection.queryAsync(query)
             .then(
                 function(data) {
                     resolve(data);

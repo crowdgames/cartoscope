@@ -11,6 +11,8 @@ var querystring = require('querystring');
 var path = require('path');
 var randomString = require('randomstring');
 var bcrypt = require('bcrypt');
+var _ = require('underscore');
+
 var salt = process.env.CARTO_SALT;
 var max_consecutive = 20; //max number of consecutive subtasks, eg L7
 
@@ -73,20 +75,87 @@ router.get('/initRandomGeneticSequences/:mainCode/:n/:sz/',
         });
     });
 
+//
+// //Update fitness functions using avg label count across workers
+// //Make sure to run this first before generating new sequences
+// router.get('/updateFitnessFunctionsAVG/:mainCode',
+//     function(req, res, next) {
+//
+//         var main_code = req.params.mainCode;
+//         //Get project from code
+//         projectDB.getSingleProjectFromCode(main_code).then(function(project) {
+//             //update fitness functions based on code:
+//             dynamicDB.updateFitnessFunctionsAVG(project).then(function(data) {
+//                 res.send(200).status("Fitness functions updated succesfully!")
+//             },function (error){
+//                 res.send(400).status("Could not update fitness functions for given code")
+//             });
+//         }, function (error) {
+//             res.send(404).status("Error Updating Fitness Functions: Project not found")
+//         });
+//     });
 
 //Update fitness functions using avg label count across workers
 //Make sure to run this first before generating new sequences
+// MEDIAN VALUES ENDPOIN
 router.get('/updateFitnessFunctions/:mainCode',
     function(req, res, next) {
 
         var main_code = req.params.mainCode;
+        //get all genetic ids from gene pool
+
+
         //Get project from code
-        projectDB.getSingleProjectFromCode(main_code).then(function(project) {
-            //update fitness functions based on code:
-            dynamicDB.updateFitnessFunctions(project).then(function(data) {
-                res.send(200).status("Fitness functions updated succesfully!")
+        dynamicDB.getGenePoolIds(main_code).then(function(g_data) {
+            //get all worker stats
+            var gen_ids = g_data[0].genetic_id_list;
+            dynamicDB.getWorkerStats(gen_ids).then(function(data) {
+
+                var fit_val_list = [];
+
+                var gen_ids_list = gen_ids.split(",");
+                //for every genetic id, sort based on label count and sort based on comp time
+                gen_ids_list.forEach(function(gid){
+                    //filter data
+                    var gen_data = filterResponses(data,{genetic_id:parseInt(gid)});
+                    if (gen_data.length != 0){
+                        var med_time = 0;
+                        var med_count = 0;
+                        //sort and get median using underscore library
+                        sorted_count =  _.sortBy(gen_data, 'label_count');
+                        sorted_time =  _.sortBy(gen_data, 'comp_time');
+                        //if even, median = avg(middle left, middle right)
+                        var mid_point = gen_data.length/parseFloat(2);
+
+                        if (gen_data.length % 2 == 0  ) {
+
+                            var m_left = parseInt(mid_point) -1;
+                            var m_right = parseInt(mid_point);
+                            console.log(sorted_count)
+                            med_count = ( sorted_count[m_left].label_count + sorted_count[m_right].label_count )/parseFloat(2);
+                            med_time = ( sorted_time[m_left].comp_time + sorted_time[m_right].comp_time )/parseFloat(2);
+                        } else {
+                            var m_p = parseInt(Math.floor(mid_point));
+                            med_count = sorted_count[m_p].label_count;
+                            med_time = sorted_time[m_p].comp_time;
+                        }
+                        //push to list
+                        fit_val_list.push([gid,med_count,med_time]);
+                    }
+
+                });
+
+
+                //Update specific functions:
+                dynamicDB.updateSpecificFunctions(fit_val_list).then(function(dt) {
+
+                    res.send(200).status("Fitness functions updated succesfully!")
+                },function (error){
+                    res.send(400).status("Could not update fitness functions for given code")
+                });
+
             },function (error){
-                res.send(400).status("Could not update fitness functions for given code")
+                res.send(400).status("Could not get worker stats for given code")
             });
         }, function (error) {
             res.send(404).status("Error Updating Fitness Functions: Project not found")
@@ -112,7 +181,8 @@ router.get('/updateTaskGeneticSequences/:mainCode/:strategy/:n/:fit',
 
 
         //Get all sequences ordered and make the top K the seeds
-        dynamicDB.getAllSequencesSorted(main_code).then(function(total_list) {
+        //need to fetch all existing to make sure we don't generate duplicates!
+        dynamicDB.getAllSequencesSorted(main_code,fitness_type).then(function(total_list) {
 
 
             for (var i = 0; i < total_list.length; i++) {
@@ -130,7 +200,6 @@ router.get('/updateTaskGeneticSequences/:mainCode/:strategy/:n/:fit',
                 dynamicDB.deactivateAllSequences(main_code).then(function(dt) {
                 //generate remaining ones
                 for (var i = 0; i < rem_seq; i++) {
-
 
                     while (true){
                         //add a new sequence based on the strategy
@@ -389,3 +458,24 @@ function flipGenome(genome){
     }
     return (new_genome)
 }
+
+//return unique values from array of objects based on key
+function get_unique(data,key){
+    var unique = {};
+    var distinct = [];
+    data.forEach(function (item) {
+        if (!unique[item[key]]) {
+            distinct.push(item[key]);
+            unique[item[key]] = true;
+        }
+    });
+    return(unique)
+}
+
+//Function filterResponses: filter array based on some criteria
+function filterResponses(array, criteria) {
+    return array.filter(function (obj) {
+        return Object.keys(criteria).every(function (c) {
+            return obj[c] == criteria[c];
+        });})
+};
