@@ -179,61 +179,68 @@ router.get('/updateTaskGeneticSequences/:mainCode/:strategy/:n/:fit',
         var seed_list = [];
         var current_sequences = [];
 
-
-        //Get all sequences ordered and make the top K the seeds
-        //need to fetch all existing to make sure we don't generate duplicates!
-        dynamicDB.getAllSequencesSorted(main_code,fitness_type).then(function(total_list) {
-
-
-            for (var i = 0; i < total_list.length; i++) {
-                if (i < topK){
-                    seed_list.push(total_list[i]);
-                }
-                //populate current sequences to avoid making duplicates
-                current_sequences.push(total_list[i].seq);
-            }
-            console.log(seed_list.length);
+        var available_strategies = ['flipblock','cross','crosspair'];
+        if (available_strategies.indexOf(strategy) == -1){
+            res.status(404).send("Strategy:" + strategy + " not supported");
+        } else {
+//Get all sequences ordered and make the top K the seeds
+            //need to fetch all existing to make sure we don't generate duplicates!
+            dynamicDB.getAllSequencesSorted(main_code,fitness_type).then(function(total_list) {
 
 
-            //SET ALL OTHERS TO ACTIVE=0!
-            //dynamicDB.deactivateBottomSequences(main_code,seed_list).then(function(dt) {
-                dynamicDB.deactivateAllSequences(main_code).then(function(dt) {
-                //generate remaining ones
-                for (var i = 0; i < rem_seq; i++) {
-
-                    while (true){
-                        //add a new sequence based on the strategy
-                        var gen_seq = generate_from_strategy(seed_list,strategy);
-                        //check if not already existing
-                        if (current_sequences.indexOf(gen_seq.seq) == -1){
-                            break;
-                        } else {
-                            console.log("Ignoring duplicate")
-                        }
-
+                for (var i = 0; i < total_list.length; i++) {
+                    if (i < topK){
+                        seed_list.push(total_list[i]);
                     }
-                    //add to gen list and also add the sequence so we don't get a duplicate
-                    current_sequences.push(gen_seq.seq);
-                    gen_list.push(gen_seq);
+                    //populate current sequences to avoid making duplicates
+                    current_sequences.push(total_list[i].seq);
                 }
+                console.log(seed_list.length);
 
-                //add to pool and set as active
-                dynamicDB.insertGeneticSequences2(gen_list).then(function(insert_data) {
-                    res.status(200).send("Sequences generated")
 
-                }, function(error){
-                    console.log(error);
-                    res.status(500).send("Could not add generated sequences");
-                })
+                //SET ALL OTHERS TO ACTIVE=0!
+                //dynamicDB.deactivateBottomSequences(main_code,seed_list).then(function(dt) {
+                dynamicDB.deactivateAllSequences(main_code).then(function(dt) {
+                    //generate remaining ones
+                    for (var i = 0; i < rem_seq; i++) {
 
-            }, function (error){
-                res.status(500).send("Could not deactivate sequences");
+                        while (true){
+                            //add a new sequence based on the strategy
+                            var gen_seq = generate_from_strategy(seed_list,strategy);
+                            //check if not already existing
+                            if (current_sequences.indexOf(gen_seq.seq) == -1){
+                                break;
+                            } else {
+                                console.log("Ignoring duplicate")
+                            }
+
+                        }
+                        //add to gen list and also add the sequence so we don't get a duplicate
+                        current_sequences.push(gen_seq.seq);
+                        gen_list.push(gen_seq);
+                    }
+
+                    //add to pool and set as active
+                    dynamicDB.insertGeneticSequences2(gen_list).then(function(insert_data) {
+                        res.status(200).send("Sequences generated")
+
+                    }, function(error){
+                        console.log(error);
+                        res.status(500).send("Could not add generated sequences");
+                    })
+
+                }, function (error){
+                    res.status(500).send("Could not deactivate sequences");
+                });
+
+
+            }, function (error) {
+                res.send(404).status("Error Updating Sequences: Project not found")
             });
+        }
 
 
-        }, function (error) {
-            res.send(404).status("Error Updating Sequences: Project not found")
-        });
+
 
     });
 
