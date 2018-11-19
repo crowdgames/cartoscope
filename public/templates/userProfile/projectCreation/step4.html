@@ -1,12 +1,18 @@
 <div class="step-4">
     <div class="holder">
-        <span class="txt">
+        <span class="txt" ng-if="project.task.selectedTaskType != 'ngs'">
             Upload Image
         </span>
-        <div>
+        <span class="txt" ng-if="project.task.selectedTaskType == 'ngs'">
+            Input NGS Map URL
+        </span>
+        <div ng-if="project.task.selectedTaskType != 'ngs'">
             <input class="invite" placeholder="Data set URL here..." ng-model="project.dataSetLink">
         </div>
-        <div style="margin-top: 20px;color: white;">
+        <div ng-if="project.task.selectedTaskType == 'ngs'">
+            <input class="invite" placeholder="NGS map URL here..." ng-model="project.dataSetLink">
+        </div>
+        <div style="margin-top: 20px;color: white;" ng-if="project.task.selectedTaskType != 'ngs'">
             <label style="font-weight: 400">Show Advanced Settings
                 <input type="checkbox" ng-model="showAdvancedSettings" style="margin-left: 20px;"></label>
         </div>
@@ -14,7 +20,7 @@
             <input class="invite" placeholder="Add filter here using * and ?" ng-model="project.regex">
             <i title="More Info..." data-toggle="modal" data-target="#examplesModal" style="color: white; font-size: 12px;margin-left: 10px; cursor: pointer" class="fa fa-question-circle"></i>
         </div>
-        <div>
+        <div ng-if="project.task.selectedTaskType != 'ngs'">
             <button class="invite-btn" ng-click="sendDataSet()" ng-disabled="project.dataSetID">IMPORT</button>
             <br>
             <span class="txt">
@@ -40,6 +46,32 @@
                 </span>
             </span>
         </div>
+        <div ng-if="project.task.selectedTaskType == 'ngs'">
+
+            <span class="txt">
+            AND: Upload CSV
+            </span>
+            <br>
+
+            <form ng-submit="sendDataSetNGS()">
+                <div class="txt">
+                    <label for="file">Choose file to upload</label>
+                    <input type="file" id="file" name="fileFolder" fileread="project.folderInput" >
+                </div>
+                <div>
+                    <button>Submit</button>
+                </div>
+            </form>
+
+
+            <span class="msg">
+                <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                <span class="txt">
+                  You can leave this page after uploading. An email will be sent when the images are ready.
+                </span>
+            </span>
+        </div>
+
         <div>
             <span ng-show="project.dataSetID" class="txt">
                     Data set successfully uploaded. You can check the progress <a href="{{getProgressUrl()}}"

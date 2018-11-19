@@ -100,6 +100,20 @@ exports.updatePrivacy = function(projectId, privacy) {
   });
 };
 
+
+exports.updateImageSource = function(projectId, image_source) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('UPDATE projects SET image_source=? WHERE id=?',
+            [image_source, projectId]).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
 exports.updateTemplate = function(projectId, template) {
   return new Promise(function(resolve, error) {
     var connection = db.get();
@@ -608,13 +622,18 @@ exports.createDataSetTable = function(datasetID) {
 exports.createDataSetItem = function(datasetID, name, x, y) {
   return new Promise(function(resolve, error) {
     var connection = db.get();
-    var qstr = 'insert into `dataset_' + datasetID + '` (`name`, `x`,`y`)' +
+
+
+      var qstr = 'insert into `dataset_' + datasetID + '` (`name`, `x`,`y`)' +
       ' values (?,?,?)';
     
     connection.queryAsync(qstr, [name, x, y]).then(function(data) {
       resolve(data);
     }, function(err) {
-      error(err);
+        console.log("NAME with issue")
+        console.log(name)
+
+        error(err);
     });
   });
 };

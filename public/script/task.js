@@ -112,8 +112,8 @@ module.controller('defaultController', ['$scope', '$location', function($scope, 
 //
 // }]);
 
-module.controller('taskController', ['$scope', '$location', '$http', 'userData', '$window', '$timeout', 'NgMap','$q', 'showTLX', 'heatMapProject1', 'heatMapProject2',
-  function($scope, $location, $http, userData,  $window, $timeout, NgMap, $q, showTLX,showGAME, heatMapProject1, heatMapProject2) {
+module.controller('taskController', ['$scope', '$location', '$http', 'userData', '$window', '$timeout', 'NgMap','$q', '$sce', 'showTLX', 'heatMapProject1', 'heatMapProject2',
+  function($scope, $location, $http, userData,  $window, $timeout, NgMap, $q,$sce, showTLX,showGAME, heatMapProject1, heatMapProject2) {
       $window.document.title = "Tasks";
 
 
@@ -137,6 +137,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.showBiggerImg = showBiggerImg;
       vm.hideBiggerImg = hideBiggerImg;
       vm.addMarker = addMarker;
+      vm.getFullIframe = getFullIframe;
 
       vm.map={};
       vm.lat="";
@@ -203,6 +204,15 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           $scope.cont_button = "GO TO SURVEY"
       }
 
+
+      function getFullIframe(){
+
+          var link = vm.data.image_source;
+          var zoom = vm.defZoom;
+          var x = vm.getLat();
+          var y = vm.getLng();
+          var url = link + '#' + zoom + '/'+  x + '/' + y;
+          return  $sce.trustAsResourceUrl(url)};
 
       function showModal() {
           $scope.uiMask.show = true;
