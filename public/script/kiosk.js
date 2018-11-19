@@ -1428,8 +1428,8 @@ module.controller('TermsController', ['$scope', '$window', '$stateParams', funct
 }]);
 
 module.controller('exampleController', ['$window', '$scope', '$state', '$stateParams','NgMap', '$timeout',
-    'heatMapProject1', 'heatMapProject2', 'googleMapAPIKey', '$http', '$q' , '$location',
-    function($window, $scope, $state, $stateParams, NgMap, $timeout,heatMapProject1, heatMapProject2, googleMapAPIKey, $http, $q, $location) {
+    'heatMapProject1', 'heatMapProject2', 'googleMapAPIKey', '$http', '$q' , '$location', '$sce',
+    function($window, $scope, $state, $stateParams, NgMap, $timeout,heatMapProject1, heatMapProject2, googleMapAPIKey, $http, $q, $location, $sce) {
     var vm = this;
     vm.params={};
 
@@ -1454,6 +1454,8 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
         vm.start = start;
         vm.map_init = map_init;
         vm.zoomToMarker = zoomToMarker;
+        vm.getFullIframe = getFullIframe;
+
 
         var dZoom = 15;
 
@@ -1481,7 +1483,20 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
         $scope.button_cols = ['#00ff00','#ffff00','#ffa500','#ff0000','#0000ff','#8a2be2',"gray"];
 
 
+        //for NGS tasks
+        function getFullIframe(){
 
+            if ( vm.counter != undefined && vm.tutorial[vm.counter] != undefined){
+
+                var link = vm.tutorial[vm.counter].image_source;
+                var zoom = vm.tutorial[vm.counter].zoom;
+                var x = vm.tutorial[vm.counter].lat;
+                var y = vm.tutorial[vm.counter].lng;
+                var url = link + '#' + zoom + '/'+  x + '/' + y;
+                return  $sce.trustAsResourceUrl(url)
+            }
+
+        };
 
         function fetchCenter(){
             //console.log('In get Center ');
@@ -1889,9 +1904,10 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                     heading: 0,
                     tilt: 0,
                     col_number : parseInt(sel_num),
-                    poi_name : item.poi_name || ''
+                    poi_name : item.poi_name || '',
+                    image_source: item.image_source
                 };
-                if( vm.params.projectType == 'tagging') {
+                if( vm.params.projectType != 'mapping') {
 
                     vm.tutorial.push(obj)
                 } else {
@@ -1901,7 +1917,6 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
             });
 
             if(vm.params.projectType == 'mapping'){
-
 
                 vm.map_init();
             }

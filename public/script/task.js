@@ -205,6 +205,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       }
 
 
+      //for NGS tasks
       function getFullIframe(){
 
           var link = vm.data.image_source;
@@ -212,7 +213,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           var x = vm.getLat();
           var y = vm.getLng();
           var url = link + '#' + zoom + '/'+  x + '/' + y;
-          return  $sce.trustAsResourceUrl(url)};
+          return  $sce.trustAsResourceUrl(url)
+      };
 
       function showModal() {
           $scope.uiMask.show = true;
@@ -565,7 +567,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                           poi_name: item.poi_name || ''
                       };
 
-                      if( (vm.data.template.selectedTaskType == 'tagging') || (
+                      if( (vm.data.template.selectedTaskType == 'tagging') || (vm.data.template.selectedTaskType == 'ngs') || (
                               (vm.data.template.selectedTaskType == 'mapping') && (vm.data.point_selection == false)
                           )) {
                           vm.tutorial.push(obj)

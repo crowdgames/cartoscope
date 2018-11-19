@@ -901,7 +901,7 @@ exports.getTutorialItemsMultipleCodes = function(projectID_list) {
 
         var pList_string = "'" + projectID_list.join("','") + "'";
         connection.queryAsync('select t.image_name, t.x, t.y, t.zoom, t.answer, t.explanation, t.poi_name, \
-        p.point_selection,p.points_file,p.tutorial_link,p.template,p.unique_code \
+        p.point_selection,p.points_file,p.tutorial_link,p.template,p.unique_code,p.image_source \
            from tutorial as t \
         LEFT JOIN projects as p ON t.unique_code=p.unique_code \
         WHERE  p.unique_code IN ('+ pList_string +')').then(
