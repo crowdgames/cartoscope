@@ -288,7 +288,7 @@ exports.getTutorialSequenceRandomGenetic = function(uniqueCode) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
         //get a random sequence
-        var queryString = 'SELECT id from task_genetic_sequences WHERE unique_code_main = \'' + uniqueCode + '\' ORDER BY RAND() LIMIT 1';
+        var queryString = 'SELECT id from task_genetic_sequences WHERE active=1 and unique_code_main = \'' + uniqueCode + '\' ORDER BY RAND() LIMIT 1';
         connection.queryAsync(queryString).then(
             function(data) {
                 if (data.length > 0) {
@@ -307,7 +307,7 @@ exports.getTutorialSequenceRandomGeneticFull = function(uniqueCode) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
         //get a random sequence
-        var queryString = 'SELECT * from task_genetic_sequences WHERE unique_code_main = \'' + uniqueCode + '\' ORDER BY RAND() LIMIT 1';
+        var queryString = 'SELECT * from task_genetic_sequences WHERE active=1 and unique_code_main = \'' + uniqueCode + '\' ORDER BY RAND() LIMIT 1';
         connection.queryAsync(queryString).then(
             function(data) {
                 if (data.length > 0) {
