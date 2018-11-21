@@ -61,6 +61,7 @@
 
 11. #### Install required npm modules for backend and frontend:
 		cd cartoscope-backend
+		npm install -g bower
 		npm install
 		cd ./public
 		bower install
