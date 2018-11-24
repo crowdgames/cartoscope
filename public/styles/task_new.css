@@ -161,6 +161,11 @@ button:hover{
     /*margin-left: 18%;*/
 }
 
+.iframeDiv{
+    width: 100%;
+    height: 400px;
+}
+
 #maps {
     display: flex;
     justify-content: center;

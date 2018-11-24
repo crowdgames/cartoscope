@@ -112,8 +112,8 @@ module.controller('defaultController', ['$scope', '$location', function($scope, 
 //
 // }]);
 
-module.controller('taskController', ['$scope', '$location', '$http', 'userData', '$window', '$timeout', 'NgMap','$q', 'showTLX', 'heatMapProject1', 'heatMapProject2',
-  function($scope, $location, $http, userData,  $window, $timeout, NgMap, $q, showTLX,showGAME, heatMapProject1, heatMapProject2) {
+module.controller('taskController', ['$scope', '$location', '$http', 'userData', '$window', '$timeout', 'NgMap','$q', '$sce', 'showTLX', 'heatMapProject1', 'heatMapProject2',
+  function($scope, $location, $http, userData,  $window, $timeout, NgMap, $q,$sce, showTLX,showGAME, heatMapProject1, heatMapProject2) {
       $window.document.title = "Tasks";
 
 
@@ -137,6 +137,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.showBiggerImg = showBiggerImg;
       vm.hideBiggerImg = hideBiggerImg;
       vm.addMarker = addMarker;
+      vm.getFullIframe = getFullIframe;
+      vm.injectMarkerInFrame = injectMarkerInFrame;
 
       vm.map={};
       vm.lat="";
@@ -203,6 +205,24 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           $scope.cont_button = "GO TO SURVEY"
       }
 
+
+      //for NGS tasks
+      function getFullIframe(){
+
+          var link = vm.data.image_source;
+          var zoom = vm.defZoom;
+          var x = vm.getLat();
+          var y = vm.getLng();
+          var url = link + '#' + zoom + '/'+  x + '/' + y;
+          return  $sce.trustAsResourceUrl(url)
+      };
+
+
+      //Todo: try to inject marker
+      function injectMarkerInFrame(){
+
+
+      }
 
       function showModal() {
           $scope.uiMask.show = true;
@@ -555,7 +575,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                           poi_name: item.poi_name || ''
                       };
 
-                      if( (vm.data.template.selectedTaskType == 'tagging') || (
+                      if( (vm.data.template.selectedTaskType == 'tagging') || (vm.data.template.selectedTaskType == 'ngs') || (
                               (vm.data.template.selectedTaskType == 'mapping') && (vm.data.point_selection == false)
                           )) {
                           vm.tutorial.push(obj)
@@ -886,6 +906,11 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
           //record dummy vote for start of task
           submitStartTime();
+
+          //if NGS, add marker to NGS map
+          if (vm.data.template.selectedTaskType == "ngs"){
+              vm.injectMarkerInFrame()
+          }
 
 
           //Set progress bar:

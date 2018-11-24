@@ -325,6 +325,22 @@ router.post('/changePrivacy',
     });
   });
 
+//update image source link
+router.post('/changeImageSource',
+    [filters.requireLogin, filters.requiredParamHandler(['projectID', 'image_source']), upload.any()],
+    function(req, res, next) {
+        projectDB.updateImageSource(req.body.projectID, req.body.image_source).then(function(data) {
+            if (data.affectedRows == 1) {
+                res.send({'status': 'done'});
+            } else {
+                res.status(500).send({error: 'Project not found'});
+            }
+        }, function(err) {
+            console.log(err);
+            res.status(500).send({'error': err.code});
+        });
+    });
+
 router.post('/updateDescription',
     [filters.requireLogin, filters.requiredParamHandler(['projectID', 'description']), upload.any()],
     function(req, res, next) {

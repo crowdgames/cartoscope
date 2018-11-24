@@ -8,13 +8,22 @@
         <div class="col-lg-1"></div>
     </div>
 
-    <div ng-show="model.params.projectType === 'tagging'" class="col-md-12">
-        <div class="row">
+    <div ng-show="model.params.projectType === 'tagging' || model.params.projectType === 'ngs'" class="col-md-12">
+
+
+        <div class="row" ng-show="model.params.projectType === 'tagging'">
             <div class="col-lg-3"></div>
             <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
                 <img id="tut_image" class="img-responsive img-border" ng-src="{{model.tutorial[model.counter].image}}">
             </div>
             <div class="col-lg-3"></div>
+        </div>
+
+        <!--NGS: show ngs image instead of stored image-->
+        <div class="row" ng-show="model.params.projectType === 'ngs'">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <iframe class="iframeDiv" ng-src="{{model.getFullIframe()}}" style="width:100%;height:400px"></iframe>
+            </div>
         </div>
 
         <div class="row">

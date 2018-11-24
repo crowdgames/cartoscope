@@ -1124,7 +1124,9 @@ module.controller('stepTwoController', ['$scope', '$state', '$stateParams', '$ht
       task1 : {name: 'Tagging label to images', value:'tagging', note: 'In this task you will ' +
       'select the appropriate label from a group of labels for an image'},
       task2 : {name: 'Mapping image to map', value:'mapping', note: 'In this task you will zoom ' +
-      'in and drag a map on the left to match the image on the right'}
+      'in and drag a map on the left to match the image on the right'},
+        task3 : {name: 'NGS Map', value:'ngs', note: 'In this task you will use a provided NGS map ' +
+                'to answer questions regarding locations'}
     };
 
       $scope.project.task.selectedTaskType = $scope.project.task.selectedTaskType || 'tagging';
@@ -1266,6 +1268,29 @@ module.controller('stepFourController', ['$scope', '$state', '$http', 'swalServi
               swalService.showErrorMsg('Please enter a folder');
           }
       };
+
+      //TODO: url link should be the ngs map link
+
+      //TODO: Folder should be the local file
+      $scope.sendDataSetNGS = function() {
+          console.log($scope.project);
+          if ($scope.project.folderInput && $scope.project.dataSetLink) {
+              $http.post('/api/test/uploadNGS', {
+                  'file': $scope.project.folderInput,
+                  'projectID': $scope.project.id,
+                  'map_link': $scope.project.dataSetLink
+              }).then(function(data) {
+                  if (data.data.uniqueCode) {
+                      $scope.project.dataSetID = data.data.uniqueCode;
+                  }
+              }, function(err) {
+                  alert('Something wrong with the CSV');
+              });
+          } else {
+              swalService.showErrorMsg('Please enter a csv file and a link to the NGS map');
+          }
+      };
+
 
     $scope.$on('validate', function(e) {
       $scope.validate();
