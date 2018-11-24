@@ -39,7 +39,6 @@
 		Go to cartoscope-backend directory and run
         	mkdir temp
 			mkdir dataset
-			mkdir profile_photos
 8. #### Setup SSL Certificates:
 	Cartoscope requires SSL certificates for running on HTTPS. For creating self-signed certificates for testing purposes, follow this link: https://www.digitalocean.com/community/tutorials/openssl-essentials-working-with-ssl-certificates-private-keys-and-csrs
 
