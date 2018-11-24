@@ -112,7 +112,7 @@ router.get('/getTutorialSequence/:projectCode', function(req, res, next) {
 router.get('/getRandomSequenceGenetic/:projectCode', function(req, res, next) {
     var projectCode = req.params.projectCode;
     projectDB.getTutorialSequenceRandomGenetic(projectCode).then(function(results) {
-        res.send(results);
+        res.send({random_id:results});
     }, function(err) {
         res.status(400).send('Tutorial with sequence could not be generated!!!');
     });
