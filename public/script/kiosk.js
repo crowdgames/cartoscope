@@ -1244,9 +1244,7 @@ module.controller('gridMapProjectController',
 
         $scope.proj_data = pdata.data[0];
 
-        if ($scope.proj_data["point_selection"] ==1 && $scope.proj_data["points_file"] != null){
-            $scope.isMarkerTask = true;
-        }
+
 
         //Buttons for the heatmap
         //Get options from the template
@@ -1257,6 +1255,10 @@ module.controller('gridMapProjectController',
         $scope.q1 = templ.question;
         //Unquote
         $scope.question1 = $scope.q1.replace(/\"/g, "");
+
+        if ( ($scope.proj_data["point_selection"] ==1 && $scope.proj_data["points_file"] != null) || $scope.projType == "ngs" ){
+            $scope.isMarkerTask = true;
+        }
 
 
         //build options and legendobject
@@ -1380,6 +1382,76 @@ module.controller('gridMapProjectController',
                     console.log(error);
                 });
             }
+
+            //NGS MARKER TASK
+            if ($scope.projType == "ngs") {
+
+                $scope.q1 = templ.question;
+                //Unquote
+                $scope.question1 = $scope.q1.replace(/\"/g, "");
+                $http.get('/api/results/all/majority/' + $stateParams.pCode).then(function(data){
+
+                    // console.log("Results from first project", data.data);
+                    $scope.results1 = data.data;
+                    //number of Pois:
+                    //pick a random point as inital map center
+                    var init_point = Math.floor(Math.random() * $scope.results1.length);
+                    //generate first map
+                    $scope.map1 = {
+                        center: {
+                            latitude: parseFloat($scope.results1[init_point].x),
+                            longitude: parseFloat($scope.results1[init_point].y)
+                        },
+                        streetViewControl: false,
+                        zoom: 7
+                    };
+                    $scope.successProject1 = true;
+
+                    //CREATE MARKERS once map is ready:
+
+                    NgMap.getMap().then(function(map) {
+
+                        //process data for markers:
+                        $scope.pointMarkers = [];
+                        var pointId = 0;
+                        for (var i = 0; i < $scope.results1.length; i++) {
+
+                            //for each Unique marker, get all the votes
+                            var poi_item =  $scope.results1[i];
+
+
+                            //majority and num votes
+                            var max_cnt = poi_item.num_votes;
+                            var max_response = parseInt(poi_item.color);
+
+                            if (max_cnt > 0) {
+
+
+                                var plat = parseFloat(poi_item.x);
+                                var plng = parseFloat(poi_item.y);
+                                var point_marker = new google.maps.Marker({
+                                    position: new google.maps.LatLng(plat,plng),
+                                    title: "Majority votes: " + max_cnt.toString(), //Change this to poi name?
+                                    id: pointId,
+                                    icon: $scope.point_array[max_response-1]
+                                });
+                                $scope.pointMarkers.push(point_marker);
+                                point_marker.setMap(map);
+                                pointId += 1;
+                            }
+
+                        }//end of markers loop
+                        $scope.showMarkers = true;
+                        $scope.totalMarkers = $scope.pointMarkers;
+                    })
+                }).catch(function(error){
+
+                    //Error with first http get
+                    console.log(error);
+                });
+
+            }
+
         }
     });
 });

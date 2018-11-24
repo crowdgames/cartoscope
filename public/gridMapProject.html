@@ -35,7 +35,7 @@
                                </button>
                         </div>
                     </custom-control>
-                    <custom-control ng-show="!showMarkers" id="recenter_button"   position="TOP_CENTER"  index="1">
+                    <custom-control id="recenter_button"   position="TOP_CENTER"  index="1">
                         <div class="map_button_kiosk"  >
                             <button ng-click="recenterMap()" >Reset Map
                             </button>
@@ -59,7 +59,7 @@
                 </ng-map>
 
             </div>
-            <div class="row" ng-if="successProject1 && !showMarkers">
+            <div class="row" ng-if="successProject1 && !showMarkers && projType !='ngs' ">
                 <small><b>Note:</b> <span ng-if="gridMap">GridMap</span><span ng-if="!gridMap">HeatMap</span> generated based on image GPS locations
                     <span ng-if="showPoiName">, not {{project_poi_name}} locations</span>
                     </small>
@@ -110,7 +110,7 @@
 
             <div class="row">
                 <h3>Thank you for taking the time to contribute to our study!</h3>
-                <div ng-show="successProject1 && !showMarkers">
+                <div ng-show="successProject1 && (!showMarkers || projType == 'ngs')">
                     <button class="submit-button" ng-click="downloadCSV()" style="margin-top: 20px;
             border-radius: 8px;
             background-color: #9cdc1f;

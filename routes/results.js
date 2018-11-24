@@ -214,8 +214,10 @@ router.get('/csv/:projectCode', function(req, res, next) {
                         } else {
                             counters.majority_confidence = '0%';
                         }
-                        //add to result
-                        csv_results.push(counters);
+                        //add to result if non zero
+                        if (tot_vot > 0 ){
+                            csv_results.push(counters);
+                        }
                     });
                     //Array of objects to CSV
                     var csv = json2csv({ data: csv_results, fields: fields });
