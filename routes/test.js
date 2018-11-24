@@ -916,11 +916,18 @@ function readPoints(fName){
     return new Promise(function(resolve, reject) {
         console.log("Will read csv: " + fName)
         //read csv file using d3
-        fs.readFile(fName, 'utf8', function (err, data) {
-        var csv_data = d3.csvParse(data);
-        console.log(csv_data)
-        resolve(csv_data);
-        });
+
+        if (fName.endsWith('.csv')){
+            fs.readFile(fName, 'utf8', function (err, data) {
+                var csv_data = d3.csvParse(data);
+                console.log(csv_data)
+                resolve(csv_data);
+            });
+        } else {
+            resolve([])
+        }
+
+
 
 
     }).catch(function(err) {

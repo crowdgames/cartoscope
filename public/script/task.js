@@ -138,6 +138,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.hideBiggerImg = hideBiggerImg;
       vm.addMarker = addMarker;
       vm.getFullIframe = getFullIframe;
+      vm.injectMarkerInFrame = injectMarkerInFrame;
 
       vm.map={};
       vm.lat="";
@@ -215,6 +216,13 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           var url = link + '#' + zoom + '/'+  x + '/' + y;
           return  $sce.trustAsResourceUrl(url)
       };
+
+
+      //Todo: try to inject marker
+      function injectMarkerInFrame(){
+
+
+      }
 
       function showModal() {
           $scope.uiMask.show = true;
@@ -898,6 +906,11 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
           //record dummy vote for start of task
           submitStartTime();
+
+          //if NGS, add marker to NGS map
+          if (vm.data.template.selectedTaskType == "ngs"){
+              vm.injectMarkerInFrame()
+          }
 
 
           //Set progress bar:
