@@ -96,14 +96,17 @@ body {
     text-align: center;
 }
 .tut_answer{
-    margin-left:4%;
-    margin-right:3%;
+    width: 150px;
+    height:50px;
+    padding: 2px;
+    font-weight: 600;
+    white-space: normal;
+    border-radius: 10px;
+    border: 2px solid black;
     outline: none;
-    color:black;
-    font-weight: bold;
-    padding: 1% 2%;
-    width : 18%;
-    border-radius: 20px;
+    margin: 5px 20px;
+    color: black;
+    text-transform: uppercase;
 }
 .instructions {
     font-size: 2em;

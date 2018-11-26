@@ -39,7 +39,7 @@
             <div class="col-lg-2 col-md-2"></div>
             <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
                 <center>
-                <button class="btn-lg tut_answer" placeholder="Option" ng-repeat="option in model.tutorial[model.counter].options"
+                <button class="btn tut_answer" placeholder="Option" ng-repeat="option in model.tutorial[model.counter].options"
                         style="background-color: {{option.color}};border-color: {{option.color}};
                    border:2px solid {{option.color}}; padding: 2px;"
                         ng-click="model.show_Correct_Options(option.name)"
@@ -105,12 +105,12 @@
 
             <div id="markerShowAnswerButton" class="col-md-12 col-sm-12  col-xs-12">
                 <center>
-                    <button ng-hide="model.showMarkers"  class="btn-lg tut_answer" placeholder="Option" ng-repeat="option in model.tutorialMapping[model.counter].options"
+                    <button ng-hide="model.showMarkers"  class="btn tut_answer" placeholder="Option" ng-repeat="option in model.tutorialMapping[model.counter].options"
                             style="background-color: {{option.color}};border-color: {{option.color}};
                    border:2px solid {{option.color}}; padding: 2px;" ng-click="model.show_Correct_Options(option.name)"
                     >{{option.name}}</button>
 
-                    <button ng-show="model.showMarkers"  class="btn-lg tut_answer consent-button" placeholder="Option"
+                    <button ng-show="model.showMarkers"  class="btn tut_answer consent-button" placeholder="Option"
                             class="btn btn-default btn-primary " ng-click="model.show_Correct_Options()"
                     >Show Answer </button>
                 </center>

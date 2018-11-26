@@ -7,6 +7,8 @@ var module = angular.module('consentApp', ['ui.router', 'ngAnimate', 'ngRoute', 
     //     });
     // }]);
 
+
+
 module.config(function($stateProvider, $urlRouterProvider, $cookiesProvider) {
 
     var n = new Date();
@@ -2079,6 +2081,10 @@ module.controller('kioskProjectController', ['$window','$scope','$location','$st
             $scope.project_title =  $scope.proj_data.name;
             $scope.project_desc =  $scope.proj_data.description;
             $scope.image_source = $scope.proj_data.image_source;
+
+            $scope.proj_template = JSON.parse($scope.proj_data.template);
+            $scope.projectType =  $scope.proj_template.selectedTaskType;
+
 
             if ($scope.image_source != null) {
                 $scope.showSource = true;

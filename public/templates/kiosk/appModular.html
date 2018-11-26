@@ -14,8 +14,12 @@
             </p>
 
                     <div ng-hide="showCC"  >
-                        <p ng-if="showSource" ><a style="color: black;" target="_blank" ng-href="{{image_source}}">
-                            Image Source</a>
+                        <p ng-if="showSource" >
+                            <a style="color: black;" target="_blank" ng-href="{{image_source}}">
+
+                                <span ng-if="projectType != 'ngs'">Image Source </span>
+                                <span ng-if="projectType == 'ngs'">Map Source </span>
+                        </a>
                         </p>
                     </div>
                     <div ng-show="showCC"  >
@@ -43,7 +47,7 @@
         </div>
         <div class="row">
             <div style="text-align: center;margin: 1%;margin-top:2%;">
-                <p>Follow the project on:</p><a href="https://github.com/crowdgames/cartoscope-backend">
+                <p>Cartoscope is open-source. Code available on:</p><a href="https://github.com/crowdgames/cartoscope-backend">
                     <img src="../../images/github-logo.png" alt="Github" style="width: 150px; height: 50px;"/>
                 </a>
             </div>
