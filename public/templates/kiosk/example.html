@@ -36,15 +36,15 @@
 
         <div class="row">
             <center>
-            <div class="col-lg-2 col-md-2"></div>
-            <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+            <!--<div class="col-lg-2 col-md-2"></div>-->
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <button class="btn tut_answer" placeholder="Option" ng-repeat="option in model.tutorial[model.counter].options"
                         style="background-color: {{option.color}};border-color: {{option.color}};
                    border:2px solid {{option.color}}; padding: 2px;"
                         ng-click="model.show_Correct_Options(option.name)"
                 >{{option.name}}</button>
             </div>
-            <div class="col-lg-2 col-md-2"></div>
+            <!--<div class="col-lg-2 col-md-2"></div>-->
             </center>
         </div>
 
