@@ -131,7 +131,6 @@ router.get('/updateFitnessFunctions/:mainCode',
 
                             var m_left = parseInt(mid_point) -1;
                             var m_right = parseInt(mid_point);
-                            console.log(sorted_count)
                             med_count = ( sorted_count[m_left].label_count + sorted_count[m_right].label_count )/parseFloat(2);
                             med_time = ( sorted_time[m_left].comp_time + sorted_time[m_right].comp_time )/parseFloat(2);
                         } else {
@@ -170,6 +169,7 @@ router.get('/updateTaskGeneticSequences/:mainCode/:strategy/:n/:fit',
 
         var main_code = req.params.mainCode;
         var strategy = req.params.strategy;
+        var in_strat = strategy;
         var fitness_type = req.params.fit;
         var rem_seq = req.params.n; //how many more to generate
 
@@ -179,7 +179,7 @@ router.get('/updateTaskGeneticSequences/:mainCode/:strategy/:n/:fit',
         var seed_list = [];
         var current_sequences = [];
 
-        var available_strategies = ['flipblock','cross','crosspair'];
+        var available_strategies = ['flipblock','cross','crosspair','mixed'];
         if (available_strategies.indexOf(strategy) == -1){
             res.status(404).send("Strategy:" + strategy + " not supported");
         } else {
@@ -204,9 +204,17 @@ router.get('/updateTaskGeneticSequences/:mainCode/:strategy/:n/:fit',
                     //generate remaining ones
                     for (var i = 0; i < rem_seq; i++) {
 
+                        if (strategy == "mixed"){
+                            if (i < rem_seq/2) {
+                                in_strat = "flipblock";
+                            } else {
+                                in_strat = "cross";
+                            }
+                        }
+
                         while (true){
                             //add a new sequence based on the strategy
-                            var gen_seq = generate_from_strategy(seed_list,strategy);
+                            var gen_seq = generate_from_strategy(seed_list,in_strat);
                             //check if not already existing
                             if (current_sequences.indexOf(gen_seq.seq) == -1){
                                 break;
