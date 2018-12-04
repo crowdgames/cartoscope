@@ -614,7 +614,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       //submit a dummy vote to indicate start of voting
       function submitStartTime(){
           var dummyTask = {name:"dummy"}
-          console.log(vm.data.id)
           var body = {
               projectID: vm.data.id,
               option: -1,
@@ -1140,8 +1139,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
   }]);
 
 
-module.controller('geneticTaskController', ['$scope', '$location', '$http', 'userData', '$window', '$timeout', 'NgMap','$q', 'showTLX', 'heatMapProject1', 'heatMapProject2',
-    function($scope, $location, $http, userData,  $window, $timeout, NgMap, $q, showTLX,showGAME, heatMapProject1, heatMapProject2) {
+module.controller('geneticTaskController', ['$scope', '$location', '$http', 'userData', '$window', '$timeout', 'NgMap','$q', '$sce', 'showTLX', 'heatMapProject1', 'heatMapProject2',
+    function($scope, $location, $http, userData,  $window, $timeout, NgMap, $q,$sce, showTLX,showGAME, heatMapProject1, heatMapProject2) {
         $window.document.title = "Tasks";
 
         var vm = this;
@@ -1165,6 +1164,8 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
         vm.hideBiggerImg = hideBiggerImg;
         vm.addMarker = addMarker;
         vm.map_init = map_init;
+        vm.getFullIframe = getFullIframe;
+
         //hide progress bar:
         vm.viewProgress = true;
 
@@ -1231,6 +1232,18 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
         } else {
             $scope.cont_button = "GO TO SURVEY"
         }
+
+
+        //for NGS tasks
+        function getFullIframe(){
+
+            var link = vm.data.image_source;
+            var zoom = vm.defZoom;
+            var x = vm.getLat();
+            var y = vm.getLng();
+            var url = link + '#' + zoom + '/'+  x + '/' + y;
+            return  $sce.trustAsResourceUrl(url)
+        };
 
 
         function showModal() {
@@ -1588,7 +1601,7 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
                             poi_name: item.poi_name || ''
                         };
 
-                        if( (vm.data.template.selectedTaskType == 'tagging') || (
+                        if( (vm.data.template.selectedTaskType == 'tagging') || (vm.data.template.selectedTaskType == 'ngs') ||   (
                                 (vm.data.template.selectedTaskType == 'mapping') && (vm.data.point_selection == false)
                             )) {
                             vm.tutorial.push(obj)
@@ -1627,7 +1640,6 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
         //submit a dummy vote to indicate start of voting
         function submitStartTime(){
             var dummyTask = {name:"dummy"}
-            console.log(vm.data.id)
             var body = {
                 projectID: vm.data.id,
                 option: -1,
@@ -2024,6 +2036,8 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
         //decodes block of type XX00 into XX and 00
         //eg L7 -> L and 7
         function decodeBlock(bl){
+
+
             //start from end of string
             //while substring can be parsed to int, then digit and remaining is string
             var end = bl.length;
@@ -2046,7 +2060,7 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
         //based on where we are
         vm.getNextGeneticCode = function(){
 
-            var blocks = vm.genetic_sequence .split('-');
+            var blocks = vm.genetic_sequence.split('-');
             var b_length = blocks.length;
             var idx = 0;
             var sum = 0;
@@ -2092,7 +2106,6 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
                     vm.getTasks();
 
                     //Set progress bar:
-                    //TODO: Fix progress bar in block case:
                     if (vm.progress_type == "block"){
                         $scope.next_per = (vm.current_block_progress / vm.current_block_size).toFixed(2) *100;
                         $scope.mturkbarStyle = {"width" : $scope.next_per.toString() + "%"};
@@ -2323,6 +2336,7 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
 
         vm.getGeneticInfo = function(callback){
             //get sequence info
+
             $http.get('/api/project/getGeneticInfo/' + vm.code).then(function(gen_seq_data) {
 
                 vm.gen_data = gen_seq_data.data;
@@ -2338,17 +2352,19 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
 
                 //get the projects for each type
                 //TODO: HANDLE MULTIPLE CODES OF SAME TYPE e.g L, LL etc if comma separaterd text
+                extract_multiple_projects(vm.gen_data.genetic_info);
 
-                vm.genetic_projects = {
-                    L: vm.gen_data.genetic_info.label_project,
-                    M: vm.gen_data.genetic_info.map_project,
-                    A: vm.gen_data.genetic_info.marker_project
-                };
-                vm.genetic_projects_progress = {
-                    L: 0,
-                    M: 0,
-                    A: 0
-                };
+                // vm.genetic_projects = {
+                //     L: vm.gen_data.genetic_info.label_project,
+                //     M: vm.gen_data.genetic_info.map_project,
+                //     A: vm.gen_data.genetic_info.marker_project
+                // };
+                // vm.genetic_projects_progress = {
+                //     L: 0,
+                //     M: 0,
+                //     A: 0
+                // };
+
                 //get the progress for each subtask and total progress:
                 vm.progress_genetic_data = vm.gen_data.progress_info;
                 vm.total_genetic_progress = 0;
@@ -2386,6 +2402,35 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
 
 
 
+
+
+        //extract codes for the multiple of same type case
+        function extract_multiple_projects(dt){
+
+            var project_columns = ['label_project','map_project','marker_project'];
+            var project_shortcuts = ['L','M','A'];
+            vm.genetic_projects = {};
+            vm.genetic_projects_progress = {};
+
+
+            //for every type, retrieve list of projects
+            for (var i = 0; i < project_columns.length; i++) {
+
+                var item = project_columns[i];
+                var code = project_shortcuts[i];
+
+                //ιf not null, break list and make a short code for each
+                if (dt[item] != undefined){
+
+                    var proj_list =  dt[item].split(',');
+                    proj_list.forEach(function(item){
+                        vm.genetic_projects[code] = item;
+                        vm.genetic_projects_progress[code] = 0;
+                        code += code;
+                    })
+                }
+            }
+        }
 
 
         function getColourClass(color) {

@@ -102,12 +102,11 @@ router.get('/updateFitnessFunctions/:mainCode',
     function(req, res, next) {
 
         var main_code = req.params.mainCode;
-        //get all genetic ids from gene pool
 
 
-        //Get project from code
+        //get all genetic ids from stats
         dynamicDB.getGenePoolIds(main_code).then(function(g_data) {
-            //get all worker stats
+            //get all worker stats for these ids
             var gen_ids = g_data[0].genetic_id_list;
             dynamicDB.getWorkerStats(gen_ids).then(function(data) {
 
@@ -183,19 +182,21 @@ router.get('/updateTaskGeneticSequences/:mainCode/:strategy/:n/:fit',
         if (available_strategies.indexOf(strategy) == -1){
             res.status(404).send("Strategy:" + strategy + " not supported");
         } else {
-//Get all sequences ordered and make the top K the seeds
+            //Get all sequences ordered and make the top K the seeds
             //need to fetch all existing to make sure we don't generate duplicates!
             dynamicDB.getAllSequencesSorted(main_code,fitness_type).then(function(total_list) {
 
+                //get the pool data from the first item (all should have the same pool data
+                var pool_data = decodeGeneticPool(total_list[0]);
 
                 for (var i = 0; i < total_list.length; i++) {
                     if (i < topK){
                         seed_list.push(total_list[i]);
                     }
+
                     //populate current sequences to avoid making duplicates
                     current_sequences.push(total_list[i].seq);
                 }
-                console.log(seed_list.length);
 
 
                 //SET ALL OTHERS TO ACTIVE=0!
@@ -214,7 +215,7 @@ router.get('/updateTaskGeneticSequences/:mainCode/:strategy/:n/:fit',
 
                         while (true){
                             //add a new sequence based on the strategy
-                            var gen_seq = generate_from_strategy(seed_list,in_strat);
+                            var gen_seq = generate_from_strategy(seed_list,in_strat,pool_data);
                             //check if not already existing
                             if (current_sequences.indexOf(gen_seq.seq) == -1){
                                 break;
@@ -266,6 +267,31 @@ function setPoolMultipe(obj,lstring,smb){
         });
     }
     return obj
+}
+
+//given an item from the task_genetic_sequences table,extract the pool as an object
+// e.g {L:..., LL:...}
+function decodeGeneticPool(data){
+
+    var pool_data = {};
+    var short_codes = {'label': 'L','map': 'M','marker':'A'};
+    for (var k in data){
+        //if key in the form of _project
+        if ( k.indexOf('_project') !== -1) {
+            var itm = data[k];
+
+            if (itm != undefined){
+                var type_p = k.split('_')[0];
+                var code_list = itm.split(',');
+                var s_code = short_codes[type_p];
+                code_list.forEach(function(item){
+                    pool_data[s_code] = item;
+                    s_code += s_code;
+                })
+            }
+        }
+    }
+    return (pool_data)
 }
 
 
@@ -357,7 +383,7 @@ function decodeSequence(sq){
 }
 
 
-function generate_from_strategy(sl,strategy){
+function generate_from_strategy(sl,strategy,pool_data){
 
     if (strategy == "flipblock") {
 
@@ -365,7 +391,7 @@ function generate_from_strategy(sl,strategy){
         var rand_index = randomInt(0, sl.length - 1);
         //MUST DEEEP COPY OBJECT FIRST
         var rand_seq = JSON.parse(JSON.stringify(sl[rand_index]));
-        var gen_seq = generate_flipblock(rand_seq);
+        var gen_seq = generate_flipblock(rand_seq,pool_data);
         var gen_from = rand_seq.id;
 
 
@@ -398,19 +424,22 @@ function generate_from_strategy(sl,strategy){
 }
 
 // pick random block size from 2 to 4 and flip everything in there:
-function generate_flipblock(rs){
+// flip based on individual genome, by flipping coin
+function generate_flipblock(rs,pl){
 
     //pick random block size from 2-4
     var block_size = randomInt(2,4);
     var new_seq = decodeSequence(rs.seq);
+
     //pick random block position
     var random_pos = randomInt(0,new_seq.length-block_size-1);
     //flip the block
     for (var i=random_pos; i < random_pos + block_size; i++ ){
-        new_seq[i] = flipGenome(new_seq[i])
+        new_seq[i] = flipGenome(new_seq[i],pl)
     }
     //encode sequence to short form and return object
     rs.seq = encodeSequence(new_seq).join('-');
+
     return(rs);
 }
 //crosspair: pick random middle point j, keep all up to j from first
@@ -460,18 +489,17 @@ function generate_crosspair(seq1,seq2) {
 }
 
 
-//flip L <-> M
-//TODO: what about A??
-function flipGenome(genome){
-    var new_genome = "";
-    for (var i = 0; i < genome.length; i++) {
-        if (genome.charAt(i) == "L"){
-            new_genome += "M";
-        } else if (genome.charAt(i) == "M"){
-            new_genome += "L";
-        }
-    }
-    return (new_genome)
+//flip genome to another by picking from the supplied genome pool.
+function flipGenome(genome,pl){
+
+    var pool_options = Object.keys(pl); //get all the pool options
+    //remove current genome from options
+    pool_options.splice(pool_options.indexOf(genome), 1);
+    //pick random item from pool
+    var rand_pos = randomInt(0, pool_options.length - 1);
+    new_genome = pool_options[rand_pos];
+    return(new_genome);
+
 }
 
 //return unique values from array of objects based on key

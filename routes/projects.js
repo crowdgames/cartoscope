@@ -131,7 +131,11 @@ router.get('/getGeneticInfo/:projectCodeMain', function(req, res, next) {
             supported_types.forEach(function(item){
                 var sub_code = gen_results[item + '_project'];
                 if (sub_code != undefined){
-                    project_list.push(sub_code)
+                    var type_list = sub_code.split(",");
+                    type_list.forEach(function(type_item){
+                        project_list.push(type_item)
+
+                    })
                 }
             });
             //Get progresses for all cases
@@ -165,7 +169,10 @@ router.get('/getGeneticTutorialItems/:projectCodeMain', function(req, res, next)
         supported_types.forEach(function(item){
             var sub_code = gen_results[item + '_project'];
             if (sub_code != undefined){
-                project_list.push(sub_code)
+                var type_list = sub_code.split(",");
+                type_list.forEach(function(type_item){
+                    project_list.push(type_item)
+                })
             }
         });
         //Get tutorial objects for all cases

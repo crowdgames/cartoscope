@@ -684,8 +684,8 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
 
     }]);
 
-module.controller('exampleGeneticController', ['$window', '$scope', '$state', '$stateParams','NgMap', '$timeout', '$http','$q' ,'googleMapAPIKey', '$location',
-    function($window, $scope, $state, $stateParams, NgMap, $timeout, $http, $q , googleMapAPIKey, $location) {
+module.controller('exampleGeneticController', ['$window', '$scope', '$state', '$stateParams','NgMap', '$timeout', '$http','$q', '$sce', 'googleMapAPIKey', '$location',
+    function($window, $scope, $state, $stateParams, NgMap, $timeout, $http, $q , $sce, googleMapAPIKey, $location) {
         var vm = this;
         vm.params={};
 
@@ -718,6 +718,8 @@ module.controller('exampleGeneticController', ['$window', '$scope', '$state', '$
         vm.start = start;
         vm.map_init = map_init;
         vm.zoomToMarker = zoomToMarker;
+        vm.getFullIframe = getFullIframeGen;
+
 
         var dZoom = 15;
 
@@ -735,6 +737,22 @@ module.controller('exampleGeneticController', ['$window', '$scope', '$state', '$
         $scope.button_cols = ['#00ff00','#ffff00','#ffa500','#ff0000','#0000ff','#8a2be2',"gray"];
 
 
+        //for NGS tasks
+        function getFullIframeGen(){
+
+
+            if ( vm.tutorial_gen != undefined && vm.tutorial_gen.length > 0 && vm.tutorial_gen[0] != undefined){
+                var link = vm.tutorial_gen[0].image_source;
+                var zoom = vm.tutorial_gen[0].zoom;
+                var x = vm.tutorial_gen[0].lat;
+                var y = vm.tutorial_gen[0].lng;
+                var url = link + '#' + zoom + '/'+  x + '/' + y;
+                return  $sce.trustAsResourceUrl(url)
+            }
+
+        };
+
+
         vm.setGeneticObject = function(){
 
             //set the current project details
@@ -747,6 +765,7 @@ module.controller('exampleGeneticController', ['$window', '$scope', '$state', '$
             vm.tutorial_link = vm.current_object.tutorial_link;
             vm.lat = vm.current_object.lat;
             vm.lang = vm.current_object.lng;
+            vm.image_source  = vm.current_object.image_source;
             if (vm.tutorial_link != undefined){
                 vm.showTutorialLink = true;
             }
@@ -757,6 +776,7 @@ module.controller('exampleGeneticController', ['$window', '$scope', '$state', '$
             }
             //item consumed, will shift now to have next ready
             vm.tutorial_gen.shift();
+            console.log(vm.tutorial_gen[0]);
 
         };
 
@@ -912,8 +932,6 @@ module.controller('exampleGeneticController', ['$window', '$scope', '$state', '$
                         })
                     }
 
-
-
                 }
 
             });
@@ -1028,7 +1046,7 @@ module.controller('exampleGeneticController', ['$window', '$scope', '$state', '$
 
         function resetTextVisibility(type){
 
-            if (type == "tagging") {
+            if (type == "tagging" ||type == "ngs" ) {
                 document.getElementById("correct-note").style.visibility = "hidden";
                 document.getElementById("tut_next").style.visibility = "hidden";
                 document.getElementById("tut_text").style.visibility = "hidden";
@@ -1173,7 +1191,6 @@ module.controller('exampleGeneticController', ['$window', '$scope', '$state', '$
                 vm.tutorial_gen = [];
                 vm.tutorial_gen_all = [];
 
-                console.log(tutData);
 
                 tutData.forEach(function(item) {
 
@@ -1210,12 +1227,15 @@ module.controller('exampleGeneticController', ['$window', '$scope', '$state', '$
                         tilt: 0,
                         col_number : parseInt(sel_num),
                         poi_name : item.poi_name || '',
-                        task_type : tmpl.selectedTaskType
+                        task_type : tmpl.selectedTaskType,
+                        image_source : item.image_source
                     };
                     vm.tutorial_gen.push(obj);
                     vm.tutorial_gen_all.push(obj);
 
                 });
+
+
 
                 //start the sequence
                 vm.setGeneticObject();

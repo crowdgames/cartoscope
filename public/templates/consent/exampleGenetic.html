@@ -10,13 +10,21 @@
         <div class="col-lg-1"></div>
     </div>
 
-    <div ng-show="model.projectType === 'tagging'" class="col-md-12">
-        <div class="row">
+    <div ng-show="model.projectType === 'tagging' || model.projectType === 'ngs'" class="col-md-12">
+
+        <div class="row" ng-show="model.projectType === 'tagging'">
             <div class="col-lg-3"></div>
             <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
                 <img id="tut_image" class="img-responsive img-border" ng-src="{{model.current_object.image}}">
             </div>
             <div class="col-lg-3"></div>
+        </div>
+
+        <!--NGS: show ngs image instead of stored image-->
+        <div class="row" ng-show="model.projectType === 'ngs'">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <iframe class="iframeDiv" ng-src="{{model.getFullIframe()}}" style="width:100%;height:400px"></iframe>
+            </div>
         </div>
 
         <div class="row">
@@ -28,17 +36,17 @@
         </div>
 
         <div class="row">
-            <div class="col-lg-2 col-md-2"></div>
-            <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+            <!--<div class="col-lg-2 col-md-2"></div>-->
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <center>
-                <button class="btn-lg tut_answer" placeholder="Option" ng-repeat="option in model.current_object.options"
+                <button class="btn tut_answer" placeholder="Option" ng-repeat="option in model.current_object.options"
                         style="background-color: {{option.color}};border-color: {{option.color}};
                    border:2px solid {{option.color}}; padding: 2px;"
                         ng-click="model.show_Correct_Options(option.name)"
                 >{{option.name}}</button>
                 </center>
             </div>
-            <div class="col-lg-2 col-md-2"></div>
+            <!--<div class="col-lg-2 col-md-2"></div>-->
         </div>
 
         <div id="correct-note" class="row" style="visibility:hidden">
@@ -97,12 +105,12 @@
 
             <div id="markerShowAnswerButton" class="col-md-12 col-sm-12  col-xs-12">
                 <center>
-                    <button ng-hide="model.showMarkers"  class="btn-lg tut_answer" placeholder="Option" ng-repeat="option in model.current_object.options"
+                    <button ng-hide="model.showMarkers"  class="btn tut_answer" placeholder="Option" ng-repeat="option in model.current_object.options"
                             style="background-color: {{option.color}};border-color: {{option.color}};
                    border:2px solid {{option.color}}; padding: 2px;" ng-click="model.show_Correct_Options(option.name)"
                     >{{option.name}}</button>
 
-                    <button ng-show="model.showMarkers"  class="btn-lg tut_answer consent-button" placeholder="Option"
+                    <button ng-show="model.showMarkers"  class="btn tut_answer consent-button" placeholder="Option"
                             class="btn btn-default btn-primary " ng-click="model.show_Correct_Options()"
                     >Show Answer </button>
                 </center>

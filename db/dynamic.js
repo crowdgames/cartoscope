@@ -18,6 +18,24 @@ exports.getGenePool = function(projectId) {
     });
 };
 
+//returns the pool as an object {L:... , LL: ..., M:...}
+exports.getGenePoolCoded = function(projectId) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        console.log(projectId);
+        connection.queryAsync('SELECT id,label_project,map_project,marker_project from task_genetic_sequences where unique_code_main=? LIMIT 1', [projectId])
+            .then(
+                function(data) {
+
+                    //convert to object with keys and mappings
+                   var pool_data = decodeGeneticPool(data);
+                    resolve(pool_data);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};
+
 
 //get the gene pool
 exports.getGenePoolIds = function(projectCode) {
@@ -294,3 +312,24 @@ exports.updateSpecificFunctions = function(function_data) {
 };
 
 
+function decodeGeneticPool(data){
+    var pool_data = {};
+    var short_codes = {'label': 'L','map': 'M','marker':'A'};
+    for (var k in data){
+        //if key in the form of _project
+        if ( k.indexOf('_project') !== -1) {
+            var itm = data[k];
+
+            if (itm != undefined){
+                var type_p = k.split('_')[0];
+                var code_list = itm.split(',');
+                var s_code = short_codes[type_p];
+                code_list.forEach(function(item){
+                    pool_data[s_code] = item;
+                    s_code += s_code;
+                })
+            }
+        }
+    }
+    return (pool_data)
+}

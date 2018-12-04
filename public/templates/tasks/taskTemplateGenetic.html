@@ -118,7 +118,7 @@
                                       ng-click="model.submit($index)" ng-disabled="finished" class="options btn">
                                 {{option.text}}
                             </button>
-                            <span ng-show="model.userType === 'mTurk'"  style="color: #9cdc1f;cursor: pointer;display:inline;margin-left:-18px" ng-click="showTutorial(option.text)"><i class="fa fa-question-circle-o" aria-hidden="true"></i></span>
+                            <span ng-show="model.userType === 'mTurk'"  style="color: #9cdc1f;cursor: pointer;display:inline;margin-left:-5px" ng-click="showTutorial(option.text)"><i class="fa fa-question-circle-o" aria-hidden="true"></i></span>
 
                         </div>
                         <button ng-show="model.data.point_selection"  class="btn btn-default btn-primary "
@@ -138,6 +138,65 @@
 
     <button id="showImModalButton" style="display: none;" data-toggle="modal" data-target="#imModal">Open Modal</button>
     <button id="showTutModalButton" style="display: none;" data-toggle="modal" data-target="#tutModal">Open Modal</button>
+
+    <div class="row" ng-if="model.data.template.selectedTaskType == 'ngs'">
+        <div id="ngsQuestion">
+            <h3 class="mapQuestion text-center" style="color:white">{{model.data.template.question}}
+                <span ng-show="model.userType === 'mTurk'" style="color: #9cdc1f;cursor: pointer;" data-target="#helpModal" data-toggle="modal"><i class="fa fa-question-circle-o" aria-hidden="true"></i></span>
+            </h3>
+
+        </div>
+
+        <div id="iframe_div"
+             class="col-md-12 text-center">
+            <div class="col-md-12 col-xs-12 col-sm-12">
+                <iframe id="iframe_div2" class="iframeDiv" ng-src="{{model.getFullIframe()}}"></iframe>
+            </div>
+
+
+        </div>
+
+        <div class="col-md-12" ng-hide="model.showFlightPath" ng-switch="userType">
+            <br>
+            <!--<h4 ng-switch-default class="text-center col-md-12 imgProgress">Image {{model.data.progress <= model.data.size ? model.data.progress:model.data.size }} out of {{model.data.size}}</h4>-->
+            <center>
+                <h8 style="color:white" ng-show="model.userType === 'mTurk'">You can go to the survey at any time without having to complete all  the images.</h8>
+            </center>
+
+        </div>
+
+
+
+
+        <nav class="navbar navbar-fixed-bottom navbar-bottom" ng-if="model.data.template.selectedTaskType == 'ngs'">
+            <div class="container text-center" style="padding: 0;width: 100%;">
+
+                <div class="bottom-panel">
+                    <div class="row" ng-if="model.data.template.selectedTaskType == 'ngs'">
+                        <!--<div class="col-md-3"></div>-->
+                        <div class="col-lg-12 col-md-12 col-sm-12 answers" >
+                            <div ng-hide="model.data.point_selection" ng-repeat="option in model.data.template.options" style="display: inline">
+                                <button   ng-class="model.getColourClass(option.color)"
+                                          ng-click="model.submit($index)" ng-disabled="finished" class="options btn">
+                                    {{option.text}}
+                                </button>
+                                <span ng-show="model.userType === 'mTurk'"  style="color: #9cdc1f;cursor: pointer;display:inline;margin-left:-5px" ng-click="showTutorial(option.text)"><i class="fa fa-question-circle-o" aria-hidden="true"></i></span>
+
+                            </div>
+                            <!--<button ng-show="model.data.point_selection"  class="btn btn-default btn-primary "-->
+                            <!--ng-click="model.submit(0);model.fetchCenter();model.resetZoom();" ng-disabled="finished" class="options text-center">-->
+                            <!--Next-->
+                            <!--</button>-->
+                        </div>
+                        <!--<div class="col-md-3"></div>-->
+                    </div>
+                </div>
+            </div>
+
+        </nav>
+
+
+    </div>
 
 
     <div class="row" ng-if="model.data.template.selectedTaskType == 'tagging'">
@@ -179,7 +238,7 @@
                                   ng-click="model.submit($index)" ng-disabled="finished" class="options btn">
                             {{option.text}}
                         </button>
-                        <span ng-show="model.userType === 'mTurk'"  style="color: #9cdc1f;cursor: pointer;display:inline;margin-left:-18px" ng-click="showTutorial(option.text)"><i class="fa fa-question-circle-o" aria-hidden="true"></i></span>
+                        <span ng-show="model.userType === 'mTurk'"  style="color: #9cdc1f;cursor: pointer;display:inline;margin-left:-5px" ng-click="showTutorial(option.text)"><i class="fa fa-question-circle-o" aria-hidden="true"></i></span>
 
                     </div>
 
