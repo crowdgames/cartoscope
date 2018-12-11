@@ -25,25 +25,21 @@ router.get('/initRandomGeneticSequences/:mainCode/:n/:sz/',
         var mainCode = req.params.mainCode;
         var code_pool = {};
         var final_sequences_list = []; //list of strings
-        var seq_size = parseInt(req.params.sz);
-        var seq_n  = parseInt(req.params.n);
+        var seq_size = parseInt(req.params.sz); //size of sequence
+        var seq_n  = parseInt(req.params.n); // number of sequences to generate
         var def_progress_type = 'none'; //default progress type
 
         //First have to get the gene pool from db
         dynamicDB.getGenePool(mainCode).then(function(gene_res) {
 
+
             var gene = gene_res[0];
 
-            //need to make the first part of the genomes
-            //L: tagging, M: mapping, A: marker etc
-            //Support for multiple projects e.g LL LLL etc
-            code_pool = setPoolMultipe(code_pool,gene.label_project,'L');
-            code_pool = setPoolMultipe(code_pool,gene.map_project,'M');
-            code_pool = setPoolMultipe(code_pool,gene.marker_project,'A');
+            var code_pool = decodeGeneticPool(gene);
 
             //now we need to create n random sequences of size sz
-            //TODO: handle duplicates?
-            for (var i = 0; i < seq_n; i++) {
+            //do not allow duplicates
+            while (final_sequences_list.length < seq_n) {
                 var generated_seq = [];
                 for (var j = 0; j < seq_size; j++) {
                     generated_seq.push(generateGenome(code_pool));
@@ -51,7 +47,9 @@ router.get('/initRandomGeneticSequences/:mainCode/:n/:sz/',
                 //add to list as string separated by -
                 var encoded_seq = encodeSequence(generated_seq);
                 var enc_string = encoded_seq.join("-");
-                final_sequences_list.push(enc_string)
+                if (final_sequences_list.indexOf(enc_string) == -1){
+                    final_sequences_list.push(enc_string)
+                }
             }
 
             //add to DB
@@ -59,6 +57,7 @@ router.get('/initRandomGeneticSequences/:mainCode/:n/:sz/',
             var seq_gen_info = gene;
             seq_gen_info.progress_type = def_progress_type;
             seq_gen_info.active = 1;
+            seq_gen_info.method = "random"
 
             dynamicDB.insertGeneticSequences(seq_gen_info,final_sequences_list).then(function(insert_data) {
                 res.status(200).send("Sequences generated")
@@ -161,7 +160,6 @@ router.get('/updateFitnessFunctions/:mainCode',
     });
 
 
-//TODO: Update current Sequences based on specific strategy
 //Requires a fitness function
 router.get('/updateTaskGeneticSequences/:mainCode/:strategy/:n/:fit',
     function(req, res, next) {
@@ -276,7 +274,7 @@ function decodeGeneticPool(data){
     var pool_data = {};
     var short_codes = {'label': 'L','map': 'M','marker':'A'};
     for (var k in data){
-        //if key in the form of _project
+        //if key in the form of _project e.g label_project, map_project, marker_project
         if ( k.indexOf('_project') !== -1) {
             var itm = data[k];
 
@@ -295,15 +293,6 @@ function decodeGeneticPool(data){
 }
 
 
-//quick and sloppy way to genrate the pool from the given sequence
-//assumes that the mappings to unique codes are known when run
-function setPoolfromSeq(sq){
-    return sq.filter(unique);
-}
-
-function unique(value, index, self) {
-    return self.indexOf(value) === index;
-}
 
 //generate a genome as random type of task (L,M,A,...)
 // eg L, M etc

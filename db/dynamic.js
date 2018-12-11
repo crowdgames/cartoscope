@@ -19,16 +19,16 @@ exports.getGenePool = function(projectId) {
 };
 
 //returns the pool as an object {L:... , LL: ..., M:...}
+//ignore deactivated sequences that have active = -1
 exports.getGenePoolCoded = function(projectId) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        console.log(projectId);
-        connection.queryAsync('SELECT id,label_project,map_project,marker_project from task_genetic_sequences where unique_code_main=? LIMIT 1', [projectId])
+        connection.queryAsync('SELECT id,label_project,map_project,marker_project from task_genetic_sequences where active !=-1 and unique_code_main=? LIMIT 1', [projectId])
             .then(
                 function(data) {
 
                     //convert to object with keys and mappings
-                   var pool_data = decodeGeneticPool(data);
+                   var pool_data = decodeGeneticPool(data[0]);
                     resolve(pool_data);
                 }, function(err) {
                     error(err);
@@ -42,7 +42,7 @@ exports.getGenePoolIds = function(projectCode) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
         console.log(projectCode);
-        connection.queryAsync('SELECT GROUP_CONCAT(id) as genetic_id_list from task_genetic_sequences where unique_code_main=?  ', [projectCode])
+        connection.queryAsync('SELECT GROUP_CONCAT(id) as genetic_id_list from task_genetic_sequences where active!=-1 and unique_code_main=?  ', [projectCode])
             .then(
                 function(data) {
                     resolve(data);
@@ -67,11 +67,12 @@ exports.insertGeneticSequences = function(gen_info,sequence_list) {
                 gen_info.map_project,
                 gen_info.marker_project,
                 gen_info.progress_type,
-                gen_info.active
+                gen_info.active,
+                gen_info.method
             ])
 
         });
-        connection.queryAsync('INSERT INTO task_genetic_sequences (unique_code_main,seq,label_project,map_project,marker_project,progress_type,active) VALUES ?', [values])
+        connection.queryAsync('INSERT INTO task_genetic_sequences (unique_code_main,seq,label_project,map_project,marker_project,progress_type,active,method) VALUES ?', [values])
             .then(
                 function(data) {
                     resolve(data);
@@ -138,7 +139,7 @@ exports.getAllSequencesSorted = function(main_code,fitness_type) {
 
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        var query = 'SELECT * from task_genetic_sequences where unique_code_main=\"' + main_code +'\" ORDER BY ' + tp + ' DESC';
+        var query = 'SELECT * from task_genetic_sequences where active != -1 and unique_code_main=\"' + main_code +'\" ORDER BY ' + tp + ' DESC';
         connection.queryAsync(query)
             .then(
                 function(data) {
@@ -150,6 +151,7 @@ exports.getAllSequencesSorted = function(main_code,fitness_type) {
 };
 
 //deactivate all sequences of the main code that do not have an id in the list
+//leave permanently deactivated as is
 exports.deactivateBottomSequences = function(main_code,excluded_items) {
 
     return new Promise(function(resolve, error) {
@@ -160,7 +162,7 @@ exports.deactivateBottomSequences = function(main_code,excluded_items) {
             id_list.push(item.id.toString())
         });
 
-        connection.queryAsync('update task_genetic_sequences set active=0 where unique_code_main=? and id NOT IN ('+
+        connection.queryAsync('update task_genetic_sequences set active=0 where active !=-1 and unique_code_main=? and id NOT IN ('+
             id_list.toString() +')',
             [main_code])
             .then(
@@ -177,7 +179,7 @@ exports.deactivateAllSequences = function(main_code) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
 
-        connection.queryAsync('update task_genetic_sequences set active=0 where unique_code_main=?',
+        connection.queryAsync('update task_genetic_sequences set active=0 where active != -1 and unique_code_main=?',
             [main_code])
             .then(
                 function(data) {
