@@ -9,6 +9,8 @@ var path = require('path');
 var ExifImage = require('exif').ExifImage;
 // set resizeSize for compression
 var resizeSize = 640;
+var sharp = require('sharp')
+
 
 exports.processData = function(files) {
   //  console.log('files ', files);
@@ -68,22 +70,46 @@ exports.processData = function(files) {
 
 function reduceImage(baseDir, fileName, target) {
   return new Promise(function(resolve, reject) {
-    var testCall = spawn('python', [path.resolve(__dirname + '/../scripts/imagecompression.py'),
-      baseDir, fileName, target, resizeSize]);
-    testCall.stdout.on('data', function(data) {
-    });
-    testCall.on('close', function(code) {
-      if (code == 0) {
-        resolve({
-          compressed: target + '/' + fileName,
-          fileName: fileName
-        });
-      } else {
-        reject(code);
-      }
-    });
-  });
+
+      sharp( path.join(baseDir,fileName))
+          .resize(resizeSize, resizeSize)
+          .toFile(path.join(target,fileName), function(err) {
+              if (err){
+                  //console.log("OOPS")
+                  //console.log(err)
+                  reject(err)
+
+              } else {
+                  //console.log("Finished: " + path.join(target,fileName))
+                  resolve({
+                      compressed: target + '/' + fileName,
+                      fileName: fileName
+                  })
+              }
+          });
+    })
 }
+
+
+function reduceImage2(baseDir, fileName, target) {
+    return new Promise(function(resolve, reject) {
+        var testCall = spawn('python', [path.resolve(__dirname + '/../scripts/imagecompression.py'),
+            baseDir, fileName, target, resizeSize]);
+        testCall.stdout.on('data', function(data) {
+        });
+        testCall.on('close', function(code) {
+            if (code == 0) {
+                resolve({
+                    compressed: target + '/' + fileName,
+                    fileName: fileName
+                });
+            } else {
+                reject(code);
+            }
+        });
+    });
+}
+
 
 function readXY(fName) {
   return new Promise(function(resolve, reject) {
@@ -128,6 +154,7 @@ function readXY(fName) {
         resolve(data);
       });
     } catch (error) {
+        console.log("WOOPS")
       reject(error);
     }
   }).catch(function(err) {

@@ -26,6 +26,10 @@ var db = require('./db/db.js');
 var app = express();
 
 
+var multer = require('multer');
+
+
+
 //app.use(cors());
 const cors = require('cors');
 app.use(cors({
@@ -119,7 +123,7 @@ if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
     console.log(err);
     res.status(err.status || 500);
-    res.render('error', {
+    res.send('error', {
       message: err.message,
       error: err
     });

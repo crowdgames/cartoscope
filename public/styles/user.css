@@ -653,6 +653,50 @@ button {
   padding: 4px 30px;
   outline: none;
 }
+
+
+.project-creation-parent .tab-body .steps-view .step-4 .holder .buttons {
+  margin-top: 5px;
+  margin-left: 13px;
+}
+.project-creation-parent .tab-body .steps-view .step-4 .holder .buttons .upload-button {
+  height: 135px;
+  /*background: #9cdc1f;*/
+  background: #26272a;
+  border-radius: 10px;
+  border: 3px solid #9cdc1f;
+  color: #9cdc1f;
+  margin-right: 20px;
+  float: left;
+  width: 300px;
+  padding: 20px 20px;
+  cursor: pointer;
+}
+
+.project-creation-parent .tab-body .steps-view .step-4 .holder .buttons .upload-button .title {
+  color: white;
+  font-size: 12px;
+  display: block;
+}
+.project-creation-parent .tab-body .steps-view .step-4 .holder .buttons .upload-button .sel-check {
+  display: none;
+}
+.project-creation-parent .tab-body .steps-view .step-4 .holder .buttons .upload-button .msg {
+  font-size: 9px;
+}
+.project-creation-parent .tab-body .steps-view .step-4 .holder .buttons .upload-button.active {
+  /*background: #26272a;*/
+  background: #9cdc1f;
+  color: #26272a;
+}
+.project-creation-parent .tab-body .steps-view .step-4 .holder .buttons .upload-button.active .sel-check {
+  display: inline;
+  margin-right: 5px;
+}
+
+
+/* Step 5*/
+
 .project-creation-parent .tab-body .steps-view .step-5 {
   padding: 20px 50px;
 }

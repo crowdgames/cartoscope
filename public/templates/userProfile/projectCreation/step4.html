@@ -1,43 +1,77 @@
 <div class="step-4">
     <div class="holder">
-        <span class="txt" ng-if="project.task.selectedTaskType != 'ngs'">
-            Upload Image
+
+    <span class="txt" >Upload Images</span>
+
+
+    <div class="buttons" ng-show="project.task.selectedTaskType != 'ngs'"  >
+
+    <div class="upload-button" ng-class="{'active': uploadMethod == 1}" ng-click="uploadMethod = 1">
+        <span class="title"><i class="fa fa-check-circle sel-check"></i>Local Upload</span>
+        <span class="msg"> Upload a compressed .tar or .zip file containing the images.  </span>
+    </div>
+
+    <div class="upload-button" ng-class="{'active': uploadMethod == 0}" ng-click="uploadMethod = 0">
+        <span class="title"><i class="fa fa-check-circle sel-check"></i>Cloud Upload</span>
+        <span class="msg">Upload images using cloud services like Dropbox.</span>
+    </div>
+        <div style="clear: both;">
+
+        </div>
+
+    </div>
+
+        <!--ask if we need the coordinates functionality-->
+        <div style="color: white;margin-top: 10px;" ng-show="project.task.selectedTaskType == 'tagging'">
+            <label style="font-weight: 400">Images have coordinates (Uncheck if creating a simple labelling project)
+                <input type="checkbox" ng-model="project.hasLocation" style="margin-left: 20px;" checked="checked">
+            </label>
+        </div>
+
+
+
+        <span class="txt" ng-if="project.task.selectedTaskType != 'ngs' && uploadMethod == 0 ">
+            Upload Dataset Link
         </span>
-        <span class="txt" ng-if="project.task.selectedTaskType == 'ngs'">
+        <span class="txt" ng-if="project.task.selectedTaskType == 'ngs' ">
             Input NGS Map URL
         </span>
-        <div ng-if="project.task.selectedTaskType != 'ngs'">
+        <div ng-show="project.task.selectedTaskType != 'ngs' && uploadMethod == 0 ">
             <input class="invite" placeholder="Data set URL here..." ng-model="project.dataSetLink">
         </div>
-        <div ng-if="project.task.selectedTaskType == 'ngs'">
+        <div ng-show="project.task.selectedTaskType == 'ngs' ">
             <input class="invite" placeholder="NGS map URL here..." ng-model="project.dataSetLink">
         </div>
-        <div style="margin-top: 20px;color: white;" ng-if="project.task.selectedTaskType != 'ngs'">
+        <div style="margin-top: 20px;color: white;" ng-show="project.task.selectedTaskType != 'ngs' && uploadMethod == 0 ">
             <label style="font-weight: 400">Show Advanced Settings
                 <input type="checkbox" ng-model="showAdvancedSettings" style="margin-left: 20px;"></label>
         </div>
-        <div ng-if="showAdvancedSettings" style="margin-top: 20px">
+
+        <div ng-show="showAdvancedSettings" style="margin-top: 20px">
             <input class="invite" placeholder="Add filter here using * and ?" ng-model="project.regex">
             <i title="More Info..." data-toggle="modal" data-target="#examplesModal" style="color: white; font-size: 12px;margin-left: 10px; cursor: pointer" class="fa fa-question-circle"></i>
         </div>
-        <div ng-if="project.task.selectedTaskType != 'ngs'">
+
+        <!-- import button: cloud -->
+        <div ng-show="project.task.selectedTaskType != 'ngs' && uploadMethod == 0 ">
             <button class="invite-btn" ng-click="sendDataSet()" ng-disabled="project.dataSetID">IMPORT</button>
-            <br>
+
+        </div>
+
+
+        <div ng-show="project.task.selectedTaskType != 'ngs' && uploadMethod == 1">
+
             <span class="txt">
-            OR: Upload Folder
+            Upload Folder
             </span>
             <br>
 
-            <form ng-submit="sendDataSetLocal()">
-                <div class="txt">
-                    <label for="file">Choose file to upload</label>
-                    <input type="file" id="file" name="fileFolder" fileread="project.folderInput" >
-                </div>
-                <div>
-                    <button>Submit</button>
-                </div>
+            <form >
+                <button class="btn" ngf-select="" ng-model="file" >Select File</button> <span class="txt">{{file.name}}</span>
+                <br>
+                <br>
+                <button type="submit" class="invite-btn" ng-click="sendDataSetLocal()" ng-disabled="project.dataSetID">IMPORT</button>
             </form>
-
 
             <span class="msg">
                 <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
@@ -46,20 +80,21 @@
                 </span>
             </span>
         </div>
-        <div ng-if="project.task.selectedTaskType == 'ngs'">
+
+        <div ng-show="project.task.selectedTaskType == 'ngs' ">
 
             <span class="txt">
             AND: Upload CSV
             </span>
             <br>
 
-            <form ng-submit="sendDataSetNGS()">
+            <form >
                 <div class="txt">
                     <label for="file">Choose file to upload</label>
                     <input type="file" id="file" name="fileFolder" fileread="project.folderInput" >
                 </div>
                 <div>
-                    <button>Submit</button>
+                    <button type="submit" class="invite-btn" ng-click="sendDataSetNGS()" ng-disabled="project.dataSetID">IMPORT</button>
                 </div>
             </form>
 
@@ -73,10 +108,22 @@
         </div>
 
         <div>
-            <span ng-show="project.dataSetID" class="txt">
-                    Data set successfully uploaded. You can check the progress <a href="{{getProgressUrl()}}"
-                                                                                  target="_blank">here</a>
+            <!--<span ng-show="project.dataSetID" class="txt">-->
+                    <!--Data set successfully uploaded. You can check the progress <a href="{{getProgressUrl()}}"-->
+                                                                                  <!--target="_blank">here</a>-->
+                <!--</span>-->
+            <div  ng-show="showUploadProgress">
+                <div class="progress" style="width:50%;margin-left: 1%;">
+                    <div  class="progress-bar progress-bar-striped " role="progressbar" aria-valuenow="{{progressPercentage}}"
+                          aria-valuemin="0" aria-valuemax="100" ng-style="uploadProgressStyle">
+                    </div>
+                </div>
+                <span ng-hide="project.dataSetID" class="txt"> Upload Progress </span>
+                <span ng-show="project.dataSetID" class="txt">
+                Data set successfully uploaded. You can check the progress <a href="{{getProgressUrl()}}"
+                target="_blank">here</a>
                 </span>
+            </div>
         </div>
     </div>
 

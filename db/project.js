@@ -141,6 +141,22 @@ exports.updateDescription = function(projectId, description) {
 };
 
 
+exports.updateHasLocation = function(projectId, has_location) {
+
+
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('UPDATE projects SET has_location=? WHERE id=?',
+            [has_location, projectId]).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
+
 exports.updateDescriptionName = function(projectId, description,name) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
@@ -626,7 +642,8 @@ exports.createDataSetItem = function(datasetID, name, x, y) {
 
       var qstr = 'insert into `dataset_' + datasetID + '` (`name`, `x`,`y`)' +
       ' values (?,?,?)';
-    
+
+
     connection.queryAsync(qstr, [name, x, y]).then(function(data) {
       resolve(data);
     }, function(err) {

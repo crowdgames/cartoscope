@@ -52,6 +52,22 @@ exports.getGenePoolIds = function(projectCode) {
     });
 };
 
+
+//get the gene pool only for active ones
+exports.getGenePoolIdsActive = function(projectCode) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        console.log(projectCode);
+        connection.queryAsync('SELECT GROUP_CONCAT(id) as genetic_id_list from task_genetic_sequences where active=1 and unique_code_main=?  ', [projectCode])
+            .then(
+                function(data) {
+                    resolve(data);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};
+
 //insert a genetic sequence
 exports.insertGeneticSequences = function(gen_info,sequence_list) {
     return new Promise(function(resolve, error) {
@@ -282,7 +298,7 @@ exports.getWorkerStats = function(gen_id_list) {
                 function(data) {
                     resolve(data);
                 }, function(err) {
-                    console.log(err)
+                    console.log(err);
                     error(err);
                 });
     });

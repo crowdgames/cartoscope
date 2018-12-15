@@ -103,10 +103,11 @@ router.get('/updateFitnessFunctions/:mainCode',
         var main_code = req.params.mainCode;
 
 
-        //get all genetic ids from stats
-        dynamicDB.getGenePoolIds(main_code).then(function(g_data) {
+        //get all currently active genetic ids from stats
+        dynamicDB.getGenePoolIdsActive(main_code).then(function(g_data) {
             //get all worker stats for these ids
             var gen_ids = g_data[0].genetic_id_list;
+            //get the worker stats
             dynamicDB.getWorkerStats(gen_ids).then(function(data) {
 
                 var fit_val_list = [];

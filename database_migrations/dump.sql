@@ -191,6 +191,7 @@ CREATE TABLE `projects` (
   `tutorial_link` text,
   `genetic` int(11) DEFAULT '0',
   `genetic_task` int(11) DEFAULT '0',
+  `has_location` int(11) DEFAULT '1',
   `poi_name` text DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_code_UNIQUE` (`unique_code`),

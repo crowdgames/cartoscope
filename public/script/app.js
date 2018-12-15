@@ -1,7 +1,7 @@
 /**
  * Created by kiprasad on 12/09/16.
  */
-var module = angular.module('app', ['ui.router', 'angucomplete-alt', 'ngAnimate','uiGmapgoogle-maps','configApp'])
+var module = angular.module('app', ['ui.router', 'angucomplete-alt', 'ngAnimate','uiGmapgoogle-maps','configApp','ngFileUpload'])
 
     .config(['uiGmapGoogleMapApiProvider', function (GoogleMapApi) {
         GoogleMapApi.configure({
@@ -1229,8 +1229,29 @@ module.controller('stepThreeController', ['$scope', '$templateCache', '$http', '
 
   }]);
 
-module.controller('stepFourController', ['$scope', '$state', '$http', 'swalService',
-  function($scope, $state, $http, swalService) {
+module.controller('stepFourController', ['$scope', '$state', '$http', 'swalService', 'Upload',
+  function($scope, $state, $http, swalService, Upload) {
+
+
+  $scope.showUploadProgress = false;
+  $scope.project.hasLocation = true;
+  $scope.uploadMethod = 1;
+
+
+  $scope.update_hasLocation = function(){
+
+      var data = {
+          projectID: $scope.project.id,
+          has_location: $scope.hasLocation | 0
+      };
+      $http.post('/api/project/updateHasLocation', data).then(function(data) {
+      }, function(response) {
+          var msg = response.data.error || 'couldn\'t update location at this time';
+          swalService.showErrorMsg(msg);
+      })
+
+
+  };
 
     $scope.sendDataSet = function() {
       if ($scope.project.dataSetLink) {
@@ -1241,6 +1262,9 @@ module.controller('stepFourController', ['$scope', '$state', '$http', 'swalServi
         }).then(function(data) {
           if (data.data.uniqueCode) {
             $scope.project.dataSetID = data.data.uniqueCode;
+              //update location if unchecked
+              $scope.update_hasLocation();
+
           }
         }, function(err) {
           alert('Something wrong with the uploaded data set');
@@ -1250,28 +1274,44 @@ module.controller('stepFourController', ['$scope', '$state', '$http', 'swalServi
       }
     };
 
+
       $scope.sendDataSetLocal = function() {
-          console.log($scope.project);
-          if ($scope.project.folderInput) {
-              $http.post('/api/test/uploadLocal', {
-                  'file': $scope.project.folderInput,
+
+          if ($scope.file) {
+              Upload.upload({
+                  url: '/api/test/uploadLocal',
+                  method: 'POST',
+                  data: {'file': $scope.file,
                   'projectID': $scope.project.id,
-                  'regex': $scope.project.regex || ''
-              }).then(function(data) {
-                  if (data.data.uniqueCode) {
-                      $scope.project.dataSetID = data.data.uniqueCode;
+                  'regex': $scope.project.regex || ''}
+              }).then(function (resp) {
+                  //$scope.showUploadProgress = false;
+
+                  console.log('Success! Dataset uploaded.');
+                  if (resp.data.uniqueCode) {
+                      $scope.project.dataSetID = resp.data.uniqueCode;
+                      //update location if unchecked
+                      $scope.update_hasLocation();
+
                   }
-              }, function(err) {
+              }, function (resp) {
+                  $scope.showUploadProgress = false;
+
                   alert('Something wrong with the uploaded data set');
+              }, function (evt) {
+                  $scope.showUploadProgress = true;
+
+                  $scope.progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+                  $scope.uploadProgressStyle = {"width" : $scope.progressPercentage.toString() + "%"};
+
               });
           } else {
-              swalService.showErrorMsg('Please enter a folder');
+              swalService.showErrorMsg('Please enter a valid compressed folder');
           }
       };
 
-      //TODO: url link should be the ngs map link
 
-      //TODO: Folder should be the local file
+      //Folder contains csvs with locations and link is ngs link
       $scope.sendDataSetNGS = function() {
           console.log($scope.project);
           if ($scope.project.folderInput && $scope.project.dataSetLink) {
