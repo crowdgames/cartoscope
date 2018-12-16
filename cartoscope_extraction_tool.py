@@ -77,7 +77,7 @@ def get_votes_results(HITID,projects_info):
                       JSON_EXTRACT(p.template, \'$.question\') as question, r.response,
                       d.x ,d.y,
                       m.hitID,m.genetic_id,
-                      q.seq, q.label_project,q.map_project,q.marker_project,q.progress_type,q.method,q.generated_from
+                      q.seq, q.label_project,q.map_project,q.marker_project,q.progress_type,q.method,q.generated_from,q.ignore_codes
                       from response as r
                       left join projects as p
                       on r.project_id=p.id
