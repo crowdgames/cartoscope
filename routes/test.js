@@ -254,52 +254,57 @@ function downloadLocal(loc,downloadID, projectID) {
                             var c_ext = path.extname(name);
                             return allowed_extensions.indexOf(c_ext) == -1 // ignore everything but images
                         },
-                        strip:1,
-                        finish: function(code) {
+                        strip:1})
+                        .on('error', function (err) {
+                            console.error('ERROR', err);
+                        })
+                        .on('finish', function (code) {
+                            //finish: function(code) {
                             console.log("Finished");
-                            readDataSetFiles(dirName, downloadID).then(imageCompressionLibWithExif.processData).then(function(data) {
-                                            console.log('data in read files', data);
-                                            projectDB.createDataSetTable(downloadID).then(function(d) {
-                                                var pArr = [];
-                                                for (var i in data) {
-                                                    console.log(data[i]);
-                                                    var name = i;
-                                                    var x = data[i].x;
-                                                    var y = data[i].y;
+                            readDataSetFiles(dirName, downloadID).then(imageCompressionLibWithExif.processData).then(function (data) {
+                                console.log('data in read files', data);
+                                projectDB.createDataSetTable(downloadID).then(function (d) {
+                                    var pArr = [];
+                                    for (var i in data) {
+                                        console.log(data[i]);
+                                        var name = i;
+                                        var x = data[i].x;
+                                        var y = data[i].y;
 
-                                                    if (!isNaN(x) && !isNaN(y)) {
-                                                        var p = projectDB.createDataSetItem(downloadID, name, x, y);
-                                                        //catch and print error but do not cause problem
-                                                        p.catch(function(err) {
-                                                            console.log(err)
-                                                        });
-                                                        pArr.push(p);
-                                                    }
-                                                }
-
-                                                Promise.all(pArr).then(function(data) {
-                                                    //mailer.mailer(email, 'done', '<b> Done downloading file ' + filename + ' </b>');
-                                                    console.log("Done downloading file");
-                                                    //delete original compressed file:
-                                                    fs.unlink(loc, (err) => {
-                                                        if (err) throw err;
-                                                        console.log('Compressed file was deleted');
-                                                    });
-
-
-                                                    downloadStatus.setStatus(downloadID, 4, function(err, res) {
-                                                    });
-                                                });
+                                        if (!isNaN(x) && !isNaN(y)) {
+                                            var p = projectDB.createDataSetItem(downloadID, name, x, y);
+                                            //catch and print error but do not cause problem
+                                            p.catch(function (err) {
+                                                console.log(err)
                                             });
-                                        }).catch(function(err) {
-                                            //mailer.mailer(email, 'done', '<b> Error downloading file ' + filename + ' </b>');
-                                            console.log(err)
-                                            console.log("Error downloading file");
-                                            downloadStatus.setStatus(downloadID, 4, function(err, res) {
-                                            });
+                                            pArr.push(p);
+                                        }
+                                    }
+
+                                    Promise.all(pArr).then(function (data) {
+                                        //mailer.mailer(email, 'done', '<b> Done downloading file ' + filename + ' </b>');
+                                        console.log("Done downloading file");
+                                        //delete original compressed file:
+                                        fs.unlink(loc, (err) => {
+                                            if (err) throw err;
+                                            console.log('Compressed file was deleted');
                                         });
 
-                        }
+
+                                        downloadStatus.setStatus(downloadID, 4, function (err, res) {
+                                        });
+                                    });
+                                });
+                            }).catch(function (err) {
+                                //mailer.mailer(email, 'done', '<b> Error downloading file ' + filename + ' </b>');
+                                console.log(err)
+                                console.log("Error downloading file");
+                                downloadStatus.setStatus(downloadID, 4, function (err, res) {
+                                });
+                            });
+
+                            //}
+                        //}))
                     }))
 
 
@@ -326,6 +331,8 @@ function downloadLocal(loc,downloadID, projectID) {
                         else
                             console.log('unzip successfully.');
 
+                        //unzip will require moving everything from the resulting folder to parent folder
+
                         readDataSetFiles(dirName, downloadID).then(imageCompressionLibWithExif.processData).then(function(data) {
                             console.log('data in read files', data);
                             projectDB.createDataSetTable(downloadID).then(function(d) {
@@ -347,13 +354,11 @@ function downloadLocal(loc,downloadID, projectID) {
                                 }
 
                                 Promise.all(pArr).then(function(data) {
-                                    mailer.mailer(email, 'done', '<b> Done downloading file ' + filename + ' </b>');
                                     downloadStatus.setStatus(downloadID, 4, function(err, res) {
                                     });
                                 });
                             });
                         }).catch(function(err) {
-                            mailer.mailer(email, 'done', '<b> Error downloading file ' + filename + ' </b>');
                             downloadStatus.setStatus(downloadID, 4, function(err, res) {
                             });
                         });
@@ -496,7 +501,6 @@ function downloadNGS(loc,downloadID, projectID,map_link) {
                         });
                     });
                 }).catch(function(err) {
-                    mailer.mailer(email, 'done', '<b> Error downloading file ' + filename + ' </b>');
                     downloadStatus.setStatus(downloadID, 4, function(err, res) {
                     });
                 });
@@ -532,7 +536,6 @@ function downloadDrop(loc, downloadID, projectID) {
         exec(wget, {maxBuffer: 1024 * 10000000}, function(err) {
 
             if (err) {
-                mailer.mailer(email, 'done', '<b> Error downloading file </b>');
                 // status error with file
                 console.log('error');
                 console.log(err);
@@ -595,13 +598,11 @@ function downloadDrop(loc, downloadID, projectID) {
                                     }
 
                                     Promise.all(pArr).then(function(data) {
-                                        mailer.mailer(email, 'done', '<b> Done downloading file ' + filename + ' </b>');
                                         downloadStatus.setStatus(downloadID, 4, function(err, res) {
                                         });
                                     });
                                 });
                             }).catch(function(err) {
-                                mailer.mailer(email, 'done', '<b> Error downloading file ' + filename + ' </b>');
                                 downloadStatus.setStatus(downloadID, 4, function(err, res) {
                                 });
                             });
@@ -646,13 +647,11 @@ function downloadDrop(loc, downloadID, projectID) {
                                 }
 
                                 Promise.all(pArr).then(function(data) {
-                                    mailer.mailer(email, 'done', '<b> Done downloading file ' + filename + ' </b>');
                                     downloadStatus.setStatus(downloadID, 4, function(err, res) {
                                     });
                                 });
                             });
                         }).catch(function(err) {
-                            mailer.mailer(email, 'done', '<b> Error downloading file ' + filename + ' </b>');
                             downloadStatus.setStatus(downloadID, 4, function(err, res) {
                             });
                         });
@@ -844,7 +843,7 @@ function readDataSetFiles(dirName, dataSetID) {
         //skip all hidden files:
         items.forEach(function (it){
 
-            if (it.charAt(0) != '.'){
+            if (it.charAt(0) != '.' && it.charAt(0) != '_'){
                 filtered_items.push(it);
             }
 
