@@ -1275,8 +1275,8 @@ module.controller('stepFourController', ['$scope', '$state', '$http', 'swalServi
     };
 
 
-      $scope.sendDataSetLocal = function() {
 
+      $scope.sendDataSetLocal = function() {
           if ($scope.file) {
               Upload.upload({
                   url: '/api/test/uploadLocal',
@@ -1311,20 +1311,35 @@ module.controller('stepFourController', ['$scope', '$state', '$http', 'swalServi
       };
 
 
-      //Folder contains csvs with locations and link is ngs link
       $scope.sendDataSetNGS = function() {
-          console.log($scope.project);
-          if ($scope.project.folderInput && $scope.project.dataSetLink) {
-              $http.post('/api/test/uploadNGS', {
-                  'file': $scope.project.folderInput,
-                  'projectID': $scope.project.id,
-                  'map_link': $scope.project.dataSetLink
-              }).then(function(data) {
-                  if (data.data.uniqueCode) {
-                      $scope.project.dataSetID = data.data.uniqueCode;
+          if ($scope.file && $scope.project.dataSetLink) {
+              Upload.upload({
+                  url: '/api/test/uploadNGS',
+                  method: 'POST',
+                  data: {'file': $scope.file,
+                      'projectID': $scope.project.id,
+                      'map_link': $scope.project.dataSetLink,
+                      'regex': $scope.project.regex || ''}
+              }).then(function (resp) {
+                  //$scope.showUploadProgress = false;
+
+                  console.log('Success! Dataset uploaded.');
+                  if (resp.data.uniqueCode) {
+                      $scope.project.dataSetID = resp.data.uniqueCode;
+                      //update location if unchecked
+                      $scope.update_hasLocation();
+
                   }
-              }, function(err) {
-                  alert('Something wrong with the CSV');
+              }, function (resp) {
+                  $scope.showUploadProgress = false;
+
+                  alert('Something wrong with the uploaded data set');
+              }, function (evt) {
+                  $scope.showUploadProgress = true;
+
+                  $scope.progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+                  $scope.uploadProgressStyle = {"width" : $scope.progressPercentage.toString() + "%"};
+
               });
           } else {
               swalService.showErrorMsg('Please enter a csv file and a link to the NGS map');

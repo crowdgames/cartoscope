@@ -153,58 +153,20 @@ router.post('/uploadLocal', fupload.single('file'),
 
 
 //filters.requireLogin
-router.post('/uploadNGS', [ filters.requiredParamHandler(['file', 'projectID'])],
+router.post('/uploadNGS', fupload.single('file'),
     function(req, res, next) {
 
 
-        var body = req.body;
-        //should check if directory here:
-        if (!body.file) {
-            console.log("Error")
-            return res.status(400).send('No files were uploaded.');
-        }
-        // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
-        var folderFileFull = body.file;
-        var headers = folderFileFull.split(';')[0];
-        console.log(headers);
-        var folderFileRest = folderFileFull.split(';')[1];
-        var encoding = folderFileRest.split(',')[0];
-        console.log(encoding);
-        var file_ext = '.tar';
-        if (headers.includes('tar')){
-            file_ext = '.tar';
-        }
-        var map_link = body.map_link; //
+        var map_link = req.body.map_link;
 
-
-
-        var folderFile = folderFileRest.split(',')[1];
-
-        assignDownloadID(function(downloadID) {
-            var folderName = "temp/" + downloadID
-            var filePath =  folderName + '/' + downloadID + file_ext;
-
-            if (!fs.existsSync(folderName)) {
-                console.log("Creating directory");
-                fs.mkdirSync(folderName);
-            }
-
-
-            var options = { encoding: encoding };
-            var writeStream = fs.createWriteStream(filePath, options);
-            // write some data with a base64 encoding
-            writeStream.write(folderFile, encoding);
-            // the finish event is emitted when all data has been flushed from the stream
-            writeStream.end(function () {
-                console.log('file done');
-                //download Local
-                downloadNGS(filePath,downloadID, req.body.projectID,map_link);
-                res.send({
-                    uniqueCode: downloadID
-                });
-
+        assignDownloadID(function (downloadID) {
+            //proceed to analyze the folder
+            var stored_filename = req.file.path;
+            downloadNGS(stored_filename,downloadID, req.body.projectID,map_link);
+            res.send({
+                uniqueCode: downloadID
             });
-        });
+        })
 
     });
 
@@ -234,7 +196,7 @@ function downloadLocal(loc,downloadID, projectID) {
 
                 var filename = loc;
                 var type = filename.substr(filename.lastIndexOf('.'));
-                console.log(type)
+                console.log(type);
 
 
                 if (type == '.gz' || type == '.tar' ) {
@@ -266,7 +228,6 @@ function downloadLocal(loc,downloadID, projectID) {
                                 projectDB.createDataSetTable(downloadID).then(function (d) {
                                     var pArr = [];
                                     for (var i in data) {
-                                        console.log(data[i]);
                                         var name = i;
                                         var x = data[i].x;
                                         var y = data[i].y;
@@ -323,7 +284,6 @@ function downloadLocal(loc,downloadID, projectID) {
                     });
 
                     // var un = fs.createReadStream(zip).pipe(unzip.Extract({ path: dirName+"/"+downloadID }));
-                    console.log(zip, dirName);
 
                     Minizip.unzip(zip, dirName, function(err) {
                         if (err)
@@ -354,6 +314,12 @@ function downloadLocal(loc,downloadID, projectID) {
                                 }
 
                                 Promise.all(pArr).then(function(data) {
+
+                                    fs.unlink(loc, (err) => {
+                                        if (err) throw err;
+                                        console.log('Compressed file was deleted');
+                                    });
+
                                     downloadStatus.setStatus(downloadID, 4, function(err, res) {
                                     });
                                 });
@@ -382,8 +348,9 @@ function downloadNGS(loc,downloadID, projectID,map_link) {
         var downloadDir = 'temp/';
         var datasetDir = 'dataset/';
 
-        // status downloaded
-        console.log('In success setting download status');
+        console.log("In download Local:" + downloadID)
+
+
         downloadStatus.setStatus(downloadID, 2, function(err, res) {
         });
 
@@ -392,32 +359,35 @@ function downloadNGS(loc,downloadID, projectID,map_link) {
 
         if (!fs.existsSync(dirName)) {
             fs.mkdirSync(dirName);
-        }
+        };
 
         var filename = loc;
-        var parsedFilename = path.parse(filename);
-        console.log('filename ', filename, " ..... ", parsedFilename);
-        var type = parsedFilename.ext;
+        var type = filename.substr(filename.lastIndexOf('.'));
+        console.log(type);
 
         if (type == '.gz' || type == '.tar') {
             console.log('TAR FILE');
 
             var tarFile = filename;
             console.log("Will untar");
+            console.log(loc)
 
             // status started unzipping
             downloadStatus.setStatus(downloadID, 3, function(err, res) {
             });
 
-            var untar = spawn('tar', ['-xvf', tarFile, '-C', dirName + '/.','--strip-components=1']);
-
-            untar.stdout.on('data', function(data) {
-                console.log('on tar data', data)
-            });
-
-            untar.on('close', function(code) {
-                console.log('code ', code);
-                if (code == 0) {
+            fs.createReadStream(loc).pipe(tar.extract(dirName, {
+                ignore: function(name) {
+                    var allowed_extensions = ['.csv'];
+                    var c_ext = path.extname(name);
+                    return allowed_extensions.indexOf(c_ext) == -1 // ignore everything but csvs
+                },
+                strip:1
+                })
+                .on('error', function (err) {
+                    console.error('ERROR', err);
+                })
+                .on('finish', function (code) {
                     readDataSetFiles(dirName, downloadID).then(readCSVs).then(function(data) {
                         projectDB.createDataSetTable(downloadID).then(function(d) {
                             var pArr = [];
@@ -425,17 +395,26 @@ function downloadNGS(loc,downloadID, projectID,map_link) {
                                 var name = i;
                                 var x = data[i].x;
                                 var y = data[i].y;
+                                //make sure we don't accidentaly add NAs
+                                if (!isNaN(x) && !isNaN(y)) {
+                                    var p = projectDB.createDataSetItem(downloadID, name, x, y);
+                                    p.catch(function(err) {
+                                        return null;
+                                    });
+                                    pArr.push(p);
+                                }
 
-                                var p = projectDB.createDataSetItem(downloadID, name, x, y);
-                                p.catch(function(err) {
-                                    return null;
-                                });
-                                pArr.push(p);
                             }
 
                             Promise.all(pArr).then(function(data) {
                                 //mailer.mailer(email, 'done', '<b> Done downloading file ' + filename + ' </b>');
                                 console.log("Done downloading file");
+
+                                fs.unlink(loc, (err) => {
+                                    if (err) throw err;
+                                    console.log('Compressed file was deleted');
+                                });
+
                                 downloadStatus.setStatus(downloadID, 4, function(err, res) {
                                     //Change image source here
                                     projectDB.updateImageSource(projectID,map_link).then(function(d){
@@ -445,19 +424,18 @@ function downloadNGS(loc,downloadID, projectID,map_link) {
                             });
                         });
                     }).catch(function(err) {
-                        //mailer.mailer(email, 'done', '<b> Error downloading file ' + filename + ' </b>');
-                        console.log("Error downloading file");
-                        console.log(err)
+                       console.log("Error downloading file");
+                        console.log(err);
                         downloadStatus.setStatus(downloadID, 4, function(err, res) {
                         });
                     });
-                }
-            });
+
+                }));
 
         } else if (type == '.zip') {
             console.log('ZIP FILE');
 
-            var zip = 'temp/' + downloadID+ '/' + loc;
+            var zip = loc;
 
             fs.chmod(zip, 0755, function(err){
                 if(err) throw err;
@@ -484,15 +462,24 @@ function downloadNGS(loc,downloadID, projectID,map_link) {
                             var name = i;
                             var x = data[i].x;
                             var y = data[i].y;
-                            var p = projectDB.createDataSetItem(downloadID, name, x, y);
-                            p.catch(function(err) {
-                                return null;
-                            });
-                            pArr.push(p);
+                            if (!isNaN(x) && !isNaN(y)) {
+                                var p = projectDB.createDataSetItem(downloadID, name, x, y);
+                                p.catch(function(err) {
+                                    return null;
+                                });
+                                pArr.push(p);
+                            }
+
                         }
 
                         Promise.all(pArr).then(function(data) {
                             //mailer.mailer(email, 'done', '<b> Done downloading file ' + filename + ' </b>');
+
+                            fs.unlink(loc, (err) => {
+                                if (err) throw err;
+                                console.log('Compressed file was deleted');
+                            });
+
                             downloadStatus.setStatus(downloadID, 4, function(err, res) {
                                 projectDB.updateImageSource(projectID,map_link).then(function(d){
                                     console.log("Map Link updated")
@@ -835,6 +822,7 @@ function assignDownloadID(done) {
 
 function readDataSetFiles(dirName, dataSetID) {
 
+
   var p = new Promise(function(resolve, error) {
     fs.readdir(dirName, function(err, items) {
         console.log('items', items);
@@ -848,7 +836,7 @@ function readDataSetFiles(dirName, dataSetID) {
             }
 
         });
-        console.log('items', filtered_items);
+        console.log('filtered items', filtered_items);
 
 
         if (!err) {
@@ -856,6 +844,7 @@ function readDataSetFiles(dirName, dataSetID) {
         this.dataSetID = dataSetID;
         resolve(filtered_items);
       } else {
+            console.log("error: " + err);
         error(err);
       }
     });
@@ -865,7 +854,7 @@ function readDataSetFiles(dirName, dataSetID) {
 }
 
 function readCSVs(files) {
-    //  console.log('files ', files);
+    console.log('files to read csv ', files);
     return new Promise(function(resolve, error) {
             var processingTemp = this.dirName + '/tmp';
 
@@ -892,7 +881,6 @@ function readCSVs(files) {
                     if (data != null) {
                         for (var p in data){
                             var or_point = data[p];
-                            console.log(or_point)
                             if (or_point.name != undefined){
                             //make sure the formats are x,y for latitude longitude
                             var point = {};
@@ -907,7 +895,6 @@ function readCSVs(files) {
                             } else {
                                 point.y = or_point.y;
                             }
-                            console.log(point)
                             fnameMap[point.name] = point;
                             }
                         }
@@ -935,7 +922,6 @@ function readPoints(fName){
         if (fName.endsWith('.csv')){
             fs.readFile(fName, 'utf8', function (err, data) {
                 var csv_data = d3.csvParse(data);
-                console.log(csv_data)
                 resolve(csv_data);
             });
         } else {

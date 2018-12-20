@@ -88,15 +88,14 @@
             </span>
             <br>
 
+
             <form >
-                <div class="txt">
-                    <label for="file">Choose file to upload</label>
-                    <input type="file" id="file" name="fileFolder" fileread="project.folderInput" >
-                </div>
-                <div>
-                    <button type="submit" class="invite-btn" ng-click="sendDataSetNGS()" ng-disabled="project.dataSetID">IMPORT</button>
-                </div>
+                <button class="btn" ngf-select="" ng-model="file" >Select File</button> <span class="txt">{{file.name}}</span>
+                <br>
+                <br>
+                <button type="submit" class="invite-btn" ng-click="sendDataSetNGS()" ng-disabled="project.dataSetID">IMPORT</button>
             </form>
+
 
 
             <span class="msg">
