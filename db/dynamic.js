@@ -8,7 +8,7 @@ exports.getGenePool = function(projectId) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
         console.log(projectId);
-        connection.queryAsync('SELECT * from task_genetic_sequences where unique_code_main=? and active=0 LIMIT 1', [projectId])
+        connection.queryAsync('SELECT * from task_genetic_sequences where unique_code_main=? and method!="tree" and active=0 LIMIT 1', [projectId])
             .then(
                 function(data) {
                     resolve(data);
@@ -23,7 +23,7 @@ exports.getGenePool = function(projectId) {
 exports.getGenePoolCoded = function(projectId) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        connection.queryAsync('SELECT id,label_project,map_project,marker_project from task_genetic_sequences where active !=-1 and unique_code_main=? LIMIT 1', [projectId])
+        connection.queryAsync('SELECT id,label_project,map_project,marker_project from task_genetic_sequences where active !=-1 and method!="tree" and unique_code_main=? LIMIT 1', [projectId])
             .then(
                 function(data) {
 
@@ -42,7 +42,7 @@ exports.getGenePoolIds = function(projectCode) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
         console.log(projectCode);
-        connection.queryAsync('SELECT GROUP_CONCAT(id) as genetic_id_list from task_genetic_sequences where active!=-1 and unique_code_main=?  ', [projectCode])
+        connection.queryAsync('SELECT GROUP_CONCAT(id) as genetic_id_list from task_genetic_sequences where active!=-1 and method!="tree" and unique_code_main=?  ', [projectCode])
             .then(
                 function(data) {
                     resolve(data);
@@ -58,7 +58,7 @@ exports.getGenePoolIdsActive = function(projectCode) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
         console.log(projectCode);
-        connection.queryAsync('SELECT GROUP_CONCAT(id) as genetic_id_list from task_genetic_sequences where active=1 and unique_code_main=?  ', [projectCode])
+        connection.queryAsync('SELECT GROUP_CONCAT(id) as genetic_id_list from task_genetic_sequences where active=1 and method!="tree" and unique_code_main=?  ', [projectCode])
             .then(
                 function(data) {
                     resolve(data);
@@ -84,11 +84,12 @@ exports.insertGeneticSequences = function(gen_info,sequence_list) {
                 gen_info.marker_project,
                 gen_info.progress_type,
                 gen_info.active,
-                gen_info.method
+                gen_info.method,
+                gen_info.ignore_codes
             ])
 
         });
-        connection.queryAsync('INSERT INTO task_genetic_sequences (unique_code_main,seq,label_project,map_project,marker_project,progress_type,active,method) VALUES ?', [values])
+        connection.queryAsync('INSERT INTO task_genetic_sequences (unique_code_main,seq,label_project,map_project,marker_project,progress_type,active,method,ignore_codes) VALUES ?', [values])
             .then(
                 function(data) {
                     resolve(data);
@@ -115,10 +116,11 @@ exports.insertGeneticSequences2 = function(sequence_list_obj) {
                 item.progress_type,
                 1,
                 item.method,
-                item.generated_from
+                item.generated_from,
+                item.ignore_codes
             ])
         });
-        connection.queryAsync('INSERT INTO task_genetic_sequences (unique_code_main,seq,label_project,map_project,marker_project,progress_type,active,method,generated_from) VALUES ?', [values])
+        connection.queryAsync('INSERT INTO task_genetic_sequences (unique_code_main,seq,label_project,map_project,marker_project,progress_type,active,method,generated_from,ignore_codes) VALUES ?', [values])
             .then(
                 function(data) {
                     resolve(data);
@@ -133,7 +135,7 @@ exports.selectTopKsequences = function(main_code,k) {
 
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        connection.queryAsync('SELECT * from task_genetic_sequences where unique_code_main=? and active=1 ' +
+        connection.queryAsync('SELECT * from task_genetic_sequences where unique_code_main=? and active=1 and method!="tree" ' +
             'ORDER BY fitness_function DESC LIMIT ?',
             [main_code,k])
             .then(
@@ -155,7 +157,7 @@ exports.getAllSequencesSorted = function(main_code,fitness_type) {
 
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        var query = 'SELECT * from task_genetic_sequences where active != -1 and unique_code_main=\"' + main_code +'\" ORDER BY ' + tp + ' DESC';
+        var query = 'SELECT * from task_genetic_sequences where active != -1 and method!="tree" and unique_code_main=\"' + main_code +'\" ORDER BY ' + tp + ' DESC';
         connection.queryAsync(query)
             .then(
                 function(data) {
@@ -178,7 +180,7 @@ exports.deactivateBottomSequences = function(main_code,excluded_items) {
             id_list.push(item.id.toString())
         });
 
-        connection.queryAsync('update task_genetic_sequences set active=0 where active !=-1 and unique_code_main=? and id NOT IN ('+
+        connection.queryAsync('update task_genetic_sequences set active=0 where active !=-1 and method!="tree" and unique_code_main=? and id NOT IN ('+
             id_list.toString() +')',
             [main_code])
             .then(
@@ -195,7 +197,7 @@ exports.deactivateAllSequences = function(main_code) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
 
-        connection.queryAsync('update task_genetic_sequences set active=0 where active != -1 and unique_code_main=?',
+        connection.queryAsync('update task_genetic_sequences set active=0 where active != -1 and method!="tree" and unique_code_main=?',
             [main_code])
             .then(
                 function(data) {
@@ -330,11 +332,222 @@ exports.updateSpecificFunctions = function(function_data) {
 };
 
 
+
+//get the active genetic tree for the given main code
+exports.getTreeFromCode = function(projectCode) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT * from genetic_tree where active=1 and unique_code_main=?  ', [projectCode])
+            .then(
+                function(data) {
+                    resolve(data);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};
+
+//create a sequence of size 100 based on current tree state and MONTE CARLO
+exports.createUserSequenceFromTree = function(main_code){
+
+
+    return new Promise(function(resolve, error) {
+        //will generate a sequence with max horizon 100. should update if not realistic
+        var sequence_length = 100;
+        var uct_c = Math.sqrt(2); //constant for Monte Carlo UCT
+
+        //get tree from main code
+        exports.getTreeFromCode(main_code).then(function(tree) {
+
+
+            //start with root:
+            var parent = "start";
+            var generated_sequence = [];
+
+            //repeat for size k
+            for (var i = 0; i < sequence_length; i++) {
+
+                //get parent info: Should only be one entry (one node)
+                var parent_info = filterResponses(tree,{node:parent});
+
+
+                if (i==0){
+                    var root_info = parent_info[0];
+                    var unexpanded_children = decodeGeneticPool(parent_info[0]);
+                }
+
+                //IF NO PARENT INFO, set unexpanded children to all possible combos
+                //follow up check will always go to randomly pick unexpanded child
+                if (parent_info.length != 0){
+                    //var parent_id = parent_info[0].id;
+                    //get possible children:  e.g L,LL, M etc. It should be a combination of the "_project" fields
+                    var possible_children_pool = decodeGeneticPool(parent_info[0]);
+
+
+                    //get expanded children entries of the parent:
+                    var expanded_children = filterResponses(tree,{parent:parent});
+                    //get unexpanded children
+                    var unexpanded_children = get_unexpanded_tree_children(possible_children_pool,expanded_children);
+                } else {
+                    var unexpanded_children = decodeGeneticPool(root_info);
+
+                }
+
+                //If unexpanded children exist, pick one randomly
+                if (Object.keys(unexpanded_children).length > 0){
+                    var next_step = generateGenome(unexpanded_children); //essentially picks a child at random
+
+                } else {
+                    //all options expanded, need to to UCT:
+                    var N = 0; //total people across all branches
+                    var uct_values = [];
+                    //go through each and build the UCT
+                    expanded_children.forEach(function(item){
+
+                        // get the sequence code from the name
+                        var name = item.node;
+                        var codes = name.split('-');
+                        var code = codes[codes.length -1];
+
+                        //augment total people
+                        N += item.people;
+                        var obj = {
+                            code: code,
+                            fitness:item.fitness_function,
+                            n: item.people };
+                        //add it to list
+                        uct_values.push(obj)
+                    });
+                    //once we have that data, find max code:
+                    var next_step = "";
+                    var max_value = 0;
+                    uct_values.forEach(function(item){
+
+                        var child_value = item.fitness + uct_c * Math.sqrt( Math.log(N)/item.n);
+                        // console.log("Child: " + item.code + " value: " + child_value.toString())
+                        if (child_value >= max_value){
+                            max_value = child_value;
+                            next_step = item.code;
+                        }
+                    })
+                }
+                //at this point we have the next step: push it to the total sequence:
+                generated_sequence.push(next_step);
+                //update the parent to be the sequence so far:
+                parent = generated_sequence.join('-');
+
+            }
+
+            //after the sequence is complete, convert to short form and return it
+            var gen_seq_short = encodeSequence(generated_sequence).join("-");
+            //create the object of the sequence and add it to the task_genetic_sequences:
+
+            var gen_obj = {
+                unique_code_main: root_info.unique_code_main,
+                seq: gen_seq_short,
+                label_project: root_info.label_project,
+                map_project: root_info.map_project,
+                marker_project: root_info.marker_project,
+                ignore_codes: root_info.ignore_codes,
+                progress_type: root_info.progress_type || "none",
+                active: 1,
+                method: "tree"
+            };
+            var gen_list = [gen_obj];
+            exports.insertGeneticSequences2(gen_list).then(function(insert_data) {
+                //Send genetic id back
+                if (insert_data.insertId) {
+                    resolve(insert_data.insertId);
+                } else if (insert_data.affectedRows > 0) {
+                    resolve(0);
+                } else {
+                    error({code: 'Problem with insertion'});
+                }
+
+
+            }, function(err){
+                console.log(err);
+                error(err)
+            })
+
+
+        }, function(err){
+            console.log(err);
+            error(err)
+        })
+
+    });
+
+
+};
+
+
+//input: array of objects containing the tree nodes and info
+//insert new nodes and on duplicate, update fitness functions and people values
+exports.updateTreeFromDATA = function(tree_data) {
+
+    //join array of arrays into
+    let fit_vals ="";
+    let key_vals = "";
+    tree_data.forEach(function(item){
+        if (item.node == "start"){
+            console.log(item)
+        }
+        fit_vals += "(";
+        key_vals = Object.keys(item).join(); // make sure the keys are set
+        let ob_vals = Object.values(item);
+        ob_vals.forEach(function(val){
+
+            fit_vals += "'" + val + "',"
+        });
+        fit_vals = fit_vals.slice(0, -1);
+        fit_vals += "),"
+    });
+    //remove last comma from fit_vals
+    fit_vals = fit_vals.slice(0, -1);
+
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        query = 'INSERT INTO genetic_tree (' + key_vals + ') VALUES '+ fit_vals +' \
+            ON DUPLICATE KEY UPDATE fitness_function=VALUES(fitness_function),fitness_function_mean=VALUES(fitness_function_mean)\
+            ,people=VALUES(people)'
+        connection.queryAsync(query)
+            .then(
+                function(data) {
+                    resolve(data);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};
+
+
+
+// get unexpanded children from oroginal pool by eliminating expanded
+function get_unexpanded_tree_children(pool,exp){
+    //start with all unexpanded
+    var unexpanded = pool;
+    exp.forEach(function(item){
+        //get the code from the squence : eg. L. LL etc. node should be in form L-M-LL etc
+        var node = item.node;
+        var codes = node.split('-');
+        var code = codes[codes.length-1];
+        //remove it from the unexpanded
+        delete unexpanded[code];
+
+    });
+    //return remaining as unexpanded
+    return (unexpanded)
+}
+
+//given an item from the task_genetic_sequences table,extract the pool as an object
+// e.g {L:..., LL:...}
 function decodeGeneticPool(data){
+
     var pool_data = {};
     var short_codes = {'label': 'L','map': 'M','marker':'A'};
     for (var k in data){
-        //if key in the form of _project
+        //if key in the form of _project e.g label_project, map_project, marker_project
         if ( k.indexOf('_project') !== -1) {
             var itm = data[k];
 
@@ -351,3 +564,46 @@ function decodeGeneticPool(data){
     }
     return (pool_data)
 }
+
+
+
+//generate a genome as random type of task (L,M,A,...)
+// eg L, M etc
+function generateGenome(pool){
+    //pick random first part of genome
+    var keys = Object.keys(pool);
+    // var n = randomInt(1,max_consecutive);
+    var smb = keys[Math.floor(Math.random()*keys.length)];
+    // return (smb + n.toString())
+    return smb
+}
+
+//encode long form sequence to short form
+function encodeSequence(seq_array){
+
+    var enc_array = [];
+    var symbol = seq_array[0];
+    var n = 1;
+    for (var i = 1; i < seq_array.length; i++) {
+
+        if (seq_array[i] != symbol){
+            enc_array.push(symbol + n.toString());
+            symbol = seq_array[i];
+            n = 1;
+        } else {
+            n++;
+        }
+    };
+    //push remaining
+    enc_array.push(symbol + n.toString());
+    return(enc_array)
+}
+
+
+//Function filterResponses: filter array based on some criteria
+function filterResponses(array, criteria) {
+    return array.filter(function (obj) {
+        return Object.keys(criteria).every(function (c) {
+            return obj[c] == criteria[c];
+        });})
+};

@@ -405,6 +405,7 @@ router.get('/startProject/:project', [filters.requireLogin], function(req, res, 
   var user = req.session.passport.user;
   var chain = req.query.chain;
   var genetic = req.query.genetic;
+  var genetic_tree = req.query.tree;
   projectDB.getSingleProjectFromCode(req.params.project).then(checkDataSetReady).then(function(project) {
     if (user.anonymous) {
       if (user.consented) {
@@ -413,7 +414,7 @@ router.get('/startProject/:project', [filters.requireLogin], function(req, res, 
 
               var partial_link = '/task.html#/?code=';
             //send genetic to task
-              if (genetic){
+              if (genetic || genetic_tree){
                   partial_link = '/task.html#/genetic?code=';
               };
             var red_link = partial_link + req.params.project+ '&type='+req.session.passport.user.type +

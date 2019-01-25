@@ -7,6 +7,7 @@ module.exports = router;
 var filters = require('../constants/filters');
 var Promise = require('bluebird');
 var projectDB = require('../db/project');
+var dynamicDB = require('../db/dynamic')
 var anonUserDB = require('../db/anonUser');
 var resultDB = require('../db/results');
 var querystring = require('querystring');
@@ -27,6 +28,7 @@ router.get('/startAnon/:pCode',
     var chain = req.query.chain;
     var fromChain = req.query.fromChain;
     var genetic = req.query.genetic; //whether the task is genetic
+      var genetic_tree = req.query.tree; //whether the task is MCTS tree
 
 
     projectDB.getSingleProjectFromCode(projectID).then(function(project) {
@@ -38,6 +40,10 @@ router.get('/startAnon/:pCode',
                 //if genetic, we need to add genetic ID to user
                 if (genetic){
                     red_link += '&genetic=1';
+                }
+                //if tree, need to pre-generate the sequence before adding it to user
+                if (genetic_tree){
+                    red_link += '&tree=1';
                 }
             res.redirect(red_link);
           });
@@ -276,27 +282,55 @@ router.get('/consent/:pCode',
     var selectedProject={};
     projectDB.getSingleProjectFromCode(req.params.pCode).then(function(project) {
         selectedProject = project;
+
+        //TODO: CHECK HERE FOR TREE: IF EXISTS, THEN MAKE SEQUENCE FROM TREE
+
         //here check for genetic:
-        if (!req.query.genetic){
+        console.log(req.query)
+        if (!req.query.genetic && !req.query.tree){
+            console.log("regular user")
             return anonUserDB.addMTurkWorker(req.query, req.params.pCode, 1, 1,0);
         } else {
-            //must assign genetic sequence first and add id and log in user
-            console.log("assigning genetic id");
-            projectDB.getTutorialSequenceRandomGenetic(req.params.pCode).then(function (genetic_id) {
-                anonUserDB.addMTurkWorker(req.query, req.params.pCode, 1, 1, genetic_id).then(function (userID) {
-                    if (userID != null) {
-                        //log the user here!
-                        //find user then login
-                        anonUserDB.findConsentedMTurkWorker(req.query.workerId, req.params.pCode,req.query.hitId).then(function(user) {
-                            if (user.id) {
-                                loginAnonUser(req, user).then(function (d) {
-                                    res.status(200).send({project: selectedProject});
-                                })
-                            }
-                        })
-                    }
-                });
-            })
+
+            if (req.query.genetic) {
+                //must assign genetic sequence first and add id and log in user
+                console.log("assigning genetic id");
+                projectDB.getTutorialSequenceRandomGenetic(req.params.pCode).then(function (genetic_id) {
+                    anonUserDB.addMTurkWorker(req.query, req.params.pCode, 1, 1, genetic_id).then(function (userID) {
+                        if (userID != null) {
+                            //log the user here!
+                            //find user then login
+                            anonUserDB.findConsentedMTurkWorker(req.query.workerId, req.params.pCode,req.query.hitId).then(function(user) {
+                                if (user.id) {
+                                    loginAnonUser(req, user).then(function (d) {
+                                        res.status(200).send({project: selectedProject});
+                                    })
+                                }
+                            })
+                        }
+                    });
+                })
+            } else {
+                //must assign genetic sequence first and add id and log in user
+                console.log("create genetic sequence from tree");
+                dynamicDB.createUserSequenceFromTree(req.params.pCode).then(function (genetic_id) {
+
+                    anonUserDB.addMTurkWorker(req.query, req.params.pCode, 1, 1, genetic_id).then(function (userID) {
+                        if (userID != null) {
+                            //log the user here!
+                            //find user then login
+                            anonUserDB.findConsentedMTurkWorker(req.query.workerId, req.params.pCode,req.query.hitId).then(function(user) {
+                                if (user.id) {
+                                    loginAnonUser(req, user).then(function (d) {
+                                        res.status(200).send({project: selectedProject});
+                                    })
+                                }
+                            })
+                        }
+                    });
+                })
+            }
+
         }
 
     }).then(function(userID) {

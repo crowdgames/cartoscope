@@ -22,7 +22,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
             submitTo:'',
             projectType:'',
             chain:-1,
-            genetic: 0
+            genetic: 0,
+            tree:0
         },
         controller: 'instructionController'
     });
@@ -41,7 +42,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
             projectType: '',
             chain: -1,
             fromChain:0,
-            genetic: 0
+            genetic: 0,
+            tree:0
         },
         // controller: 'exampleController'
     });
@@ -60,7 +62,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
             projectType: '',
             chain: -1,
             fromChain:0,
-            genetic: 0
+            genetic: 0,
+            tree:0
         },
         // controller: 'exampleController'
     });
@@ -104,6 +107,7 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
         vm.params.chain = $stateParams.chain || -1;
         vm.params.fromChain = $stateParams.fromChain || -1;
         var genetic = $stateParams.genetic;
+        var genetic_tree = $stateParams.tree;
 
 
         vm.googleMapsUrl= "https://maps.googleapis.com/maps/api/js?key="+googleMapAPIKey;
@@ -538,6 +542,11 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                 qs += '&genetic=' + genetic;
             }
 
+            //for genetic
+            if (parseInt(genetic_tree)){
+                qs += '&tree=' + genetic_tree;
+            }
+
 
             //console.log('reqParams ', reqParams);
             if(reqParams.kioskId==1){
@@ -702,6 +711,7 @@ module.controller('exampleGeneticController', ['$window', '$scope', '$state', '$
         vm.params.chain = $stateParams.chain || -1;
         vm.params.fromChain = $stateParams.fromChain || -1;
         var genetic = $stateParams.genetic;
+        var genetic_tree = $stateParams.tree;
         vm.showMapModal = true;
 
 
@@ -1155,6 +1165,10 @@ module.controller('exampleGeneticController', ['$window', '$scope', '$state', '$
             if (parseInt(genetic)){
                 qs += '&genetic=' + genetic;
             }
+            //for tree
+            if (parseInt(genetic_tree)){
+                qs += '&tree=' + genetic_tree;
+            }
 
 
             //console.log('reqParams ', reqParams);
@@ -1279,6 +1293,11 @@ module.controller('mTurkController', ['$window','$scope','$location','$state','$
             qs += '&genetic=1'
         }
 
+        //if tree in params, pass it
+        if ($scope.params.tree == "1"){
+            qs += '&tree=1'
+        }
+
         window.location.replace('/api/anon/startAnon/' + $scope.params.project + '?' + qs.substr(1));
     }
 }]);
@@ -1333,6 +1352,7 @@ module.controller('instructionController', ['$window','$scope', '$state','$state
         }
         $scope.params.projectType = $stateParams.projectType;
         var genetic = $scope.params.genetic || 0;
+        var genetic_tree = $scope.params.tree || 0;
 
 
         //Get the project info to see how many required
@@ -1389,7 +1409,7 @@ module.controller('instructionController', ['$window','$scope', '$state','$state
                 });
             } else {
                 var state_name = 'examples';
-                if (genetic){
+                if (genetic || genetic_tree){
                     state_name = 'examplesGenetic';
                 }
 
@@ -1403,7 +1423,8 @@ module.controller('instructionController', ['$window','$scope', '$state','$state
                     //If we are chaining projects, we must have reached this part with chain=1, otherwise set it to 0
                     chain: $scope.params.chain,
                     fromChain: fromChain,
-                    genetic: genetic
+                    genetic: genetic,
+                    tree: genetic_tree
                 });
             }
 
@@ -1441,6 +1462,12 @@ module.controller('consentController', ['$scope', '$http', '$state',
                 genetic = 1;
             };
 
+            var genetic_tree = 0;
+            if ($scope.params.tree == "1"){
+                qs += '&tree=1';
+                genetic_tree = 1;
+            };
+
             //console.log(qs.substr(1));
             $http.get('/api/anon/consent/' + $scope.params.project + '?' + qs.substr(1)).then(function(e, data) {
                 $scope.project = e.data.project;
@@ -1448,7 +1475,7 @@ module.controller('consentController', ['$scope', '$http', '$state',
                 $scope.projectType = type.selectedTaskType;
                 $state.go('instruction', {workerId: $scope.params.workerId,
                     assignmentId: $scope.params.assignmentId, hitId:$scope.params.hitId, submitTo: $scope.params.submitTo,
-                    projectType:  $scope.projectType, chain: chain, genetic: genetic});
+                    projectType:  $scope.projectType, chain: chain, genetic: genetic,tree:genetic_tree});
                 // window.location.replace('/api/anon/startAnon/' + $scope.params.project + '?' + qs.substr(1));
             }, function(err) {
                 console.log(err);

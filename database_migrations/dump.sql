@@ -300,7 +300,33 @@ CREATE TABLE `task_genetic_sequences` (
   `fitness_function2` FLOAT DEFAULT NULL,
   `method` varchar(255) DEFAULT NULL,
   `generated_from` varchar(255) DEFAULT NULL,
+  `ignore_codes` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+-- table for tree storage
+
+DROP TABLE IF EXISTS `genetic_tree`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `genetic_tree` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `unique_code_main` varchar(255) DEFAULT NULL,
+  `active` int(11) DEFAULT '0',
+  `parent` varchar(255),
+  `node` varchar(255),
+  `label_project` varchar(255) DEFAULT NULL,
+  `map_project` varchar(255) DEFAULT NULL,
+  `marker_project` varchar(255) DEFAULT NULL,
+  `progress_type` varchar(255) DEFAULT NULL,
+  `fitness_function` FLOAT DEFAULT NULL,
+  `fitness_function_mean` FLOAT DEFAULT NULL,
+  `people` int(11) DEFAULT '0',
+  `ignore_codes` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+ UNIQUE KEY (`unique_code_main`, `node`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

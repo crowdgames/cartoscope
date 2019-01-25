@@ -254,6 +254,53 @@ router.get('/updateTaskGeneticSequences/:mainCode/:strategy/:n/:fit',
 
 
 
+//create a sequence of size 100 based on current tree state and MONTE CARLO
+//testing endpoint. The functionality is used when creating an entry in mturk workers in the mturk path
+router.get('/createUserSequenceFromTree/:mainCode', function(req,res,next){
+
+    var main_code = req.params.mainCode;
+    dynamicDB.createUserSequenceFromTree(main_code).then(function(generated_genetic_id) {
+        res.status(200).send({genetic_id: generated_genetic_id})
+    }, function(error){
+        console.log(error)
+        res.status(404).send(error)
+    })
+});
+
+
+// update the tree using the data provided (source: R code)
+// testing endpoint. The functionality is used when creating an entry in mturk workers in the mturk path
+router.post('/updateGeneticTreeFromRDATA/:mainCode', function(req,res,next){
+
+
+    var main_code = req.params.mainCode;
+    var updated_tree = req.body.tree
+
+    dynamicDB.updateTreeFromDATA(updated_tree).then(function(data) {
+        res.status(200).send("Tree updated from R data sucessfully")
+    }, function(error){
+        console.log(error)
+        res.status(404).send(error)
+    })
+
+
+});
+
+
+//create a sequence of size 100 based on current tree state and MONTE CARLO
+//testing endpoint. The functionality is used when creating an entry in mturk workers in the mturk path
+router.get('/retrieveTree/:mainCode', function(req,res,next){
+
+    var main_code = req.params.mainCode;
+    dynamicDB.getTreeFromCode(main_code).then(function(tree) {
+        res.send(tree)
+    }, function(error){
+        console.log(error)
+        res.status(404).send(error)
+    })
+});
+
+
 
 
 //given a list of codes and a symbol, break them up and add to object
