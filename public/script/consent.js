@@ -751,11 +751,11 @@ module.controller('exampleGeneticController', ['$window', '$scope', '$state', '$
         function getFullIframeGen(){
 
 
-            if ( vm.tutorial_gen != undefined && vm.tutorial_gen.length > 0 && vm.tutorial_gen[0] != undefined){
-                var link = vm.tutorial_gen[0].image_source;
-                var zoom = vm.tutorial_gen[0].zoom;
-                var x = vm.tutorial_gen[0].lat;
-                var y = vm.tutorial_gen[0].lng;
+            if ( vm.tutorial_gen != undefined && vm.tutorial_gen.length > 0 && vm.current_object != undefined){
+                var link = vm.current_object.image_source;
+                var zoom = vm.current_object.zoom;
+                var x = vm.current_object.lat;
+                var y = vm.current_object.lng;
                 var url = link + '#' + zoom + '/'+  x + '/' + y;
                 return  $sce.trustAsResourceUrl(url)
             }
@@ -1204,6 +1204,8 @@ module.controller('exampleGeneticController', ['$window', '$scope', '$state', '$
                 vm.points_file = tutData[0].points_file;
                 vm.tutorial_gen = [];
                 vm.tutorial_gen_all = [];
+
+                console.log(tutData)
 
 
                 tutData.forEach(function(item) {

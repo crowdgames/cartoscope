@@ -1275,9 +1275,12 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
         function getTasksGenetic() {
             showModal();
             //make sure to register if 0
-            $http.get('/api/tasks/gettask/' + vm.code + '/' + vm.genetic_tasks_to_load).then(function(e) {
+
+
+            $http.get('/api/tasks/gettask/' + vm.genetic_task_current + '/' + vm.genetic_tasks_to_load).then(function(e) {
                 vm.dataset = e.data.dataset;
                 vm.tasks = e.data.items;
+
 
                 if (e.data.finished) {
                     vm.finished = true;
@@ -2084,7 +2087,7 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
             vm.genetic_tasks_to_load = sum - (vm.total_genetic_progress ) ;
             vm.current_block_size = digit;
             vm.current_block_progress = digit - vm.genetic_tasks_to_load;
-
+            
         };
 
 
