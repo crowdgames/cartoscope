@@ -1165,6 +1165,8 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
         vm.addMarker = addMarker;
         vm.map_init = map_init;
         vm.getFullIframe = getFullIframe;
+        vm.checkSatisfiedSequence = checkSatisfiedSequence;
+        var SEQ_DEPTH = 4; //TODO: Change from hardcoded to variable
 
         //hide progress bar:
         vm.viewProgress = true;
@@ -1404,6 +1406,12 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
 
 
                 } else {
+
+
+                    //in genetic cases, check if user satisfied constraint
+                    vm.checkSatisfiedSequence();
+
+
                     //Add the chaining parameter to show relevant questions at the survey
                     //Provision for NASA-TLX questionnaire
                     if(showTLX){
@@ -1434,6 +1442,10 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
                     if (vm.showFlightPath) {
                         flight_last = 1
                     }
+
+
+                    //in genetic cases, check if user satisfied constraint
+                    vm.checkSatisfiedSequence();
 
                     //if we have to chain, call DB to get the next project code
                     if (vm.chaining !=-1) {
@@ -2087,7 +2099,7 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
             vm.genetic_tasks_to_load = sum - (vm.total_genetic_progress ) ;
             vm.current_block_size = digit;
             vm.current_block_progress = digit - vm.genetic_tasks_to_load;
-            
+
         };
 
 
@@ -2398,6 +2410,23 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
 
             });
         };
+
+
+        //chedk if subsequence is satisfied
+        function checkSatisfiedSequence(){
+
+            //will need the sequence and the progress
+            var dummyTask = {name:"dummy"}
+            var body = {
+                sequence: vm.genetic_sequence,
+                progress: vm.total_genetic_progress + vm.current_block_progress,
+                depth: SEQ_DEPTH
+            };
+            $http.post('/api/dynamic/checkSatisfiedSubsequence/' + vm.code , body)
+
+
+        };
+
 
 
         //get genetic info then load project

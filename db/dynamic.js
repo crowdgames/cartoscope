@@ -482,6 +482,175 @@ exports.createUserSequenceFromTree = function(main_code){
 };
 
 
+//create a sequence of size 100 based on current tree state and MONTE CARLO, but with first K levels forced
+exports.createUserSequenceFromTreeForcedK = function(main_code,depth){
+
+
+    return new Promise(function(resolve, error) {
+        //will generate a sequence with max horizon 100. should update if not realistic
+        var sequence_length = 100;
+        var uct_c = Math.sqrt(2); //constant for Monte Carlo UCT
+
+        //get tree from main code
+        exports.getTreeFromCode(main_code).then(function(tree) {
+
+
+            //start with root:
+            var parent = "start";
+            var generated_sequence = [];
+
+
+            //get root here:
+            //get parent info: Should only be one entry (one node)
+            var root_info = filterResponses(tree,{node:parent})[0];
+            console.log(root_info)
+            var unexpanded_children = decodeGeneticPool(root_info);
+
+
+
+
+            //Pick one of the forced levels that haven't been satisfied yet and add to generated sequence;
+            //get assigned subsequence and update it as assigned
+            exports.getUnassignedOption(main_code,depth).then(function(subseq_data){
+
+                //Check if empty, if yes, then restart from depth=0
+                if (subseq_data.length > 0){
+                    var subseq = subseq_data[0].subsequence;
+                    //set the first k based on the subset
+                    var sub_list = subseq.split("-");
+                    generated_sequence.push.apply(generated_sequence, sub_list);
+                    //skip to current parent
+                    parent = generated_sequence.join('-');
+
+                } else {
+                    var subseq = "";
+                    depth = 0 ;
+                }
+
+                exports.updateForcedAssignment(main_code,subseq,depth).then(function(dd){
+
+
+
+                    //continue as before
+                    //repeat for size k
+                    for (var i = depth; i < sequence_length; i++) {
+
+                        //get parent info: Should only be one entry (one node)
+                        var parent_info = filterResponses(tree,{node:parent});
+
+
+
+
+                        //IF NO PARENT INFO, set unexpanded children to all possible combos
+                        //follow up check will always go to randomly pick unexpanded child
+                        if (parent_info.length != 0){
+                            //var parent_id = parent_info[0].id;
+                            //get possible children:  e.g L,LL, M etc. It should be a combination of the "_project" fields
+                            var possible_children_pool = decodeGeneticPool(parent_info[0]);
+
+
+                            //get expanded children entries of the parent:
+                            var expanded_children = filterResponses(tree,{parent:parent});
+                            //get unexpanded children
+                             unexpanded_children = get_unexpanded_tree_children(possible_children_pool,expanded_children);
+                        } else {
+                            unexpanded_children = decodeGeneticPool(root_info);
+
+                        }
+
+                        //If unexpanded children exist, pick one randomly
+                        if (Object.keys(unexpanded_children).length > 0){
+                            var next_step = generateGenome(unexpanded_children); //essentially picks a child at random
+
+                        } else {
+                            //all options expanded, need to to UCT:
+                            var N = 0; //total people across all branches
+                            var uct_values = [];
+                            //go through each and build the UCT
+                            expanded_children.forEach(function(item){
+
+                                // get the sequence code from the name
+                                var name = item.node;
+                                var codes = name.split('-');
+                                var code = codes[codes.length -1];
+
+                                //augment total people
+                                N += item.people;
+                                var obj = {
+                                    code: code,
+                                    fitness:item.fitness_function,
+                                    n: item.people };
+                                //add it to list
+                                uct_values.push(obj)
+                            });
+                            //once we have that data, find max code:
+                            var next_step = "";
+                            var max_value = 0;
+                            uct_values.forEach(function(item){
+
+                                var child_value = item.fitness + uct_c * Math.sqrt( Math.log(N)/item.n);
+                                // console.log("Child: " + item.code + " value: " + child_value.toString())
+                                if (child_value >= max_value){
+                                    max_value = child_value;
+                                    next_step = item.code;
+                                }
+                            })
+                        }
+                        //at this point we have the next step: push it to the total sequence:
+
+                        generated_sequence.push(next_step);
+                        //update the parent to be the sequence so far:
+                        parent = generated_sequence.join('-');
+
+                    }
+
+                    //after the sequence is complete, convert to short form and return it
+                    var gen_seq_short = encodeSequence(generated_sequence).join("-");
+                    //create the object of the sequence and add it to the task_genetic_sequences:
+
+                    var gen_obj = {
+                        unique_code_main: root_info.unique_code_main,
+                        seq: gen_seq_short,
+                        label_project: root_info.label_project,
+                        map_project: root_info.map_project,
+                        marker_project: root_info.marker_project,
+                        ignore_codes: root_info.ignore_codes,
+                        progress_type: root_info.progress_type || "none",
+                        active: 1,
+                        method: "tree"
+                    };
+                    var gen_list = [gen_obj];
+                    exports.insertGeneticSequences2(gen_list).then(function(insert_data) {
+                        //Send genetic id back
+                        if (insert_data.insertId) {
+                            resolve(insert_data.insertId);
+                        } else if (insert_data.affectedRows > 0) {
+                            resolve(0);
+                        } else {
+                            error({code: 'Problem with insertion'});
+                        }
+
+
+                    }, function(err){
+                        console.log(err);
+                        error(err)
+                    })
+
+
+                })
+            })
+
+
+        }, function(err){
+            console.log(err);
+            error(err)
+        })
+
+    });
+
+
+};
+
 //input: array of objects containing the tree nodes and info
 //insert new nodes and on duplicate, update fitness functions and people values
 exports.updateTreeFromDATA = function(tree_data) {
@@ -522,6 +691,112 @@ exports.updateTreeFromDATA = function(tree_data) {
 };
 
 
+
+//given the list of possible codes, make all possible combinations up to given depth
+//e.g [L,LL,A,M]...
+exports.populateForcedOptions = function(unique_code_main,options_list,depth) {
+
+    return new Promise(function(resolve, error) {
+
+    var key_vals = ["unique_code_main","subsequence","sub_size"];
+
+
+    //generate all possible combinations of length d
+    var fit_vals = "";
+    var combs = getCombinationsSize(options_list,depth);
+    combs.forEach(function(item){
+         fit_vals += "(\"" + unique_code_main + "\",\"" + item + "\", "+ depth + "),"
+    });
+    //remove last comma from fit_vals
+    fit_vals = fit_vals.slice(0, -1);
+
+
+
+    //add to table
+        var connection = db.get();
+        query = 'INSERT INTO tree_forced (' + key_vals.toString() + ') VALUES '+ fit_vals +' \
+            ON DUPLICATE KEY UPDATE active=1,assigned=0,satisfied=0;';
+        connection.queryAsync(query)
+            .then(
+                function(data) {
+                    resolve(data);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};
+
+
+//pick random unassigned forced option
+exports.getUnassignedOption = function(projectCode,depth) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT subsequence from tree_forced where active=1 and assigned=0 and satisfied=0  and unique_code_main=? and sub_size=? ORDER BY RAND() LIMIT 1', [projectCode,depth])
+            .then(
+                function(subseq) {
+                    resolve(subseq);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};
+
+//update previously unassigned forced option as assigned
+exports.updateForcedAssignment = function(projectCode,subsequence,depth) {
+    return new Promise(function(resolve, error) {
+
+        //if depth 0 don't do anything
+        if (depth == 0){
+            resolve([])
+        } else {
+            var connection = db.get();
+            connection.queryAsync('update tree_forced set assigned=1 where active=1 and unique_code_main=? and subsequence=? and sub_size=?', [projectCode,subsequence,depth])
+                .then(
+                    function(data) {
+                        resolve(data);
+                    }, function(err) {
+                        error(err);
+                    });
+        }
+
+
+    });
+};
+
+
+//update previously unassigned forced option as satisfied
+exports.updateForcedAssignmentSatisfied = function(projectCode,subsequence,depth) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('update tree_forced set satisfied=1 where active=1 and assigned=1 and unique_code_main=? and subsequence=? and sub_size=?', [projectCode,subsequence,depth])
+            .then(
+                function(data) {
+                    resolve(data);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};
+
+
+//update previously unassigned forced option as unassigned
+exports.updateForcedAssignmentFree = function(projectCode,subsequence,depth) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('update tree_forced set assigned=0 where active=1 and assigned=1 and unique_code_main=? and subsequence=? and sub_size=?', [projectCode,subsequence,depth])
+            .then(
+                function(data) {
+                    resolve(data);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};
+
+
+// ********************** FUNCTIONS **********************
+
+// *******************************************************
 
 // get unexpanded children from oroginal pool by eliminating expanded
 function get_unexpanded_tree_children(pool,exp){
@@ -607,3 +882,44 @@ function filterResponses(array, criteria) {
             return obj[c] == criteria[c];
         });})
 };
+
+//get all possible combinations of size s
+function getCombinationsSize(arr,d) {
+
+
+    var sequences = [];
+    var n = arr.length;
+
+    //init array of size n^d * d
+    var matrix = new Array(Math.pow(n, d)*d).join('0').split('').map(parseFloat);
+
+    for (var col = 1; col <= d; col++) {
+        var row = 0;
+        for (var iter = 1; iter <= Math.pow(n,col-1); iter++) {
+            for (var symbol = 0; symbol < arr.length; symbol++) {
+                for (var times = 1; times <= Math.pow(n,d-col); times++) {
+                    //write symbol at cell [row,col]
+                    //var ind = (col-1)* Math.pow(n,d) + row;
+                    var ind = row*d + col -1;
+                    matrix[ind] = symbol;
+                    //row++
+                    row++;
+                }
+                }
+        }
+    }
+
+   //iterate over rows:
+    for(var i = 0; i < Math.pow(n, d)*d; i += d) {
+
+        var row_el = matrix.slice(i,i+d);
+        var sArr = [];
+        row_el.forEach(function(it){
+            sArr.push(arr[it])
+        })
+        sequences.push(sArr.join('-'));
+    }
+    return(sequences)
+}
+
+

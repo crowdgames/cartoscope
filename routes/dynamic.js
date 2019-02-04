@@ -262,6 +262,22 @@ router.get('/createUserSequenceFromTree/:mainCode', function(req,res,next){
     dynamicDB.createUserSequenceFromTree(main_code).then(function(generated_genetic_id) {
         res.status(200).send({genetic_id: generated_genetic_id})
     }, function(error){
+        console.log(error);
+        res.status(404).send(error)
+    })
+});
+
+
+
+//create a sequence of size 100 based on current tree state and MONTE CARLO
+//testing endpoint. The functionality is used when creating an entry in mturk workers in the mturk path
+router.get('/createUserSequenceFromTreeForcedDepth/:mainCode/:depth', function(req,res,next){
+
+    var main_code = req.params.mainCode;
+    var depth = parseInt(req.params.depth);
+    dynamicDB.createUserSequenceFromTreeForcedK(main_code,depth).then(function(generated_genetic_id) {
+        res.status(200).send({genetic_id: generated_genetic_id})
+    }, function(error){
         console.log(error)
         res.status(404).send(error)
     })
@@ -301,6 +317,81 @@ router.get('/retrieveTree/:mainCode', function(req,res,next){
 });
 
 
+//create a sequence of size 100 based on current tree state and MONTE CARLO
+//testing endpoint. The functionality is used when creating an entry in mturk workers in the mturk path
+router.get('/populateTreeForced/:mainCode/:depth', function(req,res,next){
+
+    var main_code = req.params.mainCode;
+    var depth = parseInt(req.params.depth);
+
+
+
+    console.log("Fetching tree");
+    //get tree from code
+    dynamicDB.getTreeFromCode(main_code).then(function(tree) {
+
+        //get the pool from the tree
+        if (tree.length >0) {
+            var tree_pool = decodeGeneticPool(tree[0]);
+            var tree_codes = Object.keys(tree_pool);
+            //generate forced options from depth
+            dynamicDB.populateForcedOptions(main_code,tree_codes,depth).then(function(data) {
+                res.status(200).send("Forced options generated succesfully")
+            }, function(error){
+                console.log(error)
+                res.status(400).send(error)
+            })
+
+
+        } else {
+            res.status(404).send("No tree nodes found")
+
+        }
+
+
+
+    }, function(error){
+        console.log(error)
+        res.status(404).send(error)
+    })
+});
+
+
+router.post('/checkSatisfiedSubsequence/:mainCode', function(req,res,next){
+
+
+    var main_code = req.params.mainCode;
+    var sequence = req.body.sequence;
+    var progress = req.body.progress;
+    var depth = req.body.depth;
+    var seq_decoded = decodeSequence(sequence);
+    var seq_sub = seq_decoded.slice(0,depth).join("-");
+
+    console.log("Progress: " + progress);
+    console.log("Depth: " + depth)
+
+
+    //TODO: Check if progress > depth, then it is satisfied
+    if (progress >= depth){
+
+        dynamicDB.updateForcedAssignmentSatisfied(main_code,seq_sub,depth).then(function(data) {
+            res.status(200).send("Assignment satisfied succesfully")
+        }, function(error){
+            console.log(error)
+            res.status(404).send(error)
+        })
+    } else {
+        console.log("Releasing assignment");
+        dynamicDB.updateForcedAssignmentFree(main_code,seq_sub,depth).then(function(data) {
+            res.status(200).send("Assignment released succesfully")
+        }, function(error){
+            console.log(error)
+            res.status(404).send(error)
+        })
+
+    }
+
+});
 
 
 //given a list of codes and a symbol, break them up and add to object

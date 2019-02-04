@@ -331,6 +331,22 @@ CREATE TABLE `genetic_tree` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
+DROP TABLE IF EXISTS `tree_forced`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tree_forced` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `unique_code_main` varchar(255) DEFAULT NULL,
+  `active` int(11) DEFAULT 1,
+  `subsequence` varchar(255),
+   `sub_size` int(11) DEFAULT 0,
+  `assigned` int(11) DEFAULT 0,
+  `satisfied` int(11) DEFAULT 0,
+  PRIMARY KEY (`id`),
+   UNIQUE KEY (`unique_code_main`, `subsequence`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 DROP TABLE IF EXISTS `tutorial_users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;

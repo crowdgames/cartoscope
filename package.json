@@ -30,7 +30,7 @@
     "less": "^2.7.1",
     "less-middleware": "^1.0.4",
     "lodash": "^4.15.0",
-    "mathjs": "^5.2.3",
+    "mathjs": "^5.4.2",
     "mmmagic": "^0.4.5",
     "morgan": "~1.7.0",
     "multer": "^1.2.0",
