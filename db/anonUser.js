@@ -9,6 +9,47 @@ var randomString = require('randomstring');
 var databaseName = process.env.CARTO_DB_NAME;
 var hitCode = process.env.hitCode;
 
+var mailCentralUSER = process.env.CARTO_MAILER;
+var mailCentralPWD = process.env.CARTO_MAILER_PWD;
+
+
+/* Mail notifications  */
+var nodemailer = require('nodemailer');
+var transport = nodemailer.createTransport({
+    service: "gmail",
+    host: "smtp.gmail.com",
+    auth: {
+        user: mailCentralUSER.toString(),
+        pass: mailCentralPWD.toString()
+    }
+});
+
+
+//Send email Notification
+exports.sendEmailNotification = function(to, subject, message) {
+
+    return new Promise(function(resolve, reject) {
+
+        var mailOptions = {
+            from: mailCentralUSER,
+            to: to,
+            subject: subject,
+            text: message,
+            html: message
+        };
+        transport.sendMail(mailOptions, function (error, response) {
+            transport.close();
+
+            if (error) {
+                reject(error);
+            } else {
+                resolve(response)
+            }
+
+        })
+    })
+};
+
 
 
 exports.findMTurkWorker = function(workerID, projectID,hitID) {
@@ -151,6 +192,23 @@ exports.findConsentedKioskWorker = function(workerID, projectID) {
             });
     });
 };
+
+//count how many workers we have so far
+exports.countWorkersPerHIT = function(hitID){
+    return new Promise(function(resolve, reject) {
+        var connection = db.get();
+        connection.queryAsync('select hitId,count(*) as num_workers from mturk_workers GROUP BY hitId having hitId=?',
+            [hitID]).then(
+            function(data) {
+
+                console.log(data[0])
+                resolve(data[0].num_workers);
+            }, function(err) {
+                reject(err);
+            });
+    });
+}
+
 
 function generateUniqueCode() {
   return new Promise(function(resolve) {

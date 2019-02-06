@@ -10,11 +10,13 @@ var projectDB = require('../db/project');
 var dynamicDB = require('../db/dynamic')
 var anonUserDB = require('../db/anonUser');
 var resultDB = require('../db/results');
+var messagesDB = require('../db/messages');
 var querystring = require('querystring');
 var path = require('path');
 var randomString = require('randomstring');
 var bcrypt = require('bcrypt');
 var salt = process.env.CARTO_SALT;
+var CARTO_MAILER_NOTIFY = process.env.CARTO_MAILER_NOTIFY;
 
 
 router.get('/startAnon/:pCode',
@@ -421,6 +423,20 @@ router.get('/awardBonusTutorialOld/:pCode/:hitId/:workerid',function(req,res,nex
     });
 });
 
+
+//email notification to test if hit id has enough people
+router.get('/notifyHITProgress/:hitId/:threshold',function(req,res,next) {
+
+    var hit_id = req.params.hitId;
+    var threshold = req.params.threshold;
+    //get people
+    messagesDB.NotifyHITThresholdMet(hit_id,threshold).then(function(num_workers) {
+        res.status(200).send("Threshold met")
+
+    }).catch(function(err) {
+        res.status(500).send({error: err.code});
+    });
+});
 
 
 
