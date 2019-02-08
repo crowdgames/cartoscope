@@ -28,7 +28,7 @@ exports.getGenePoolCoded = function(projectId) {
                 function(data) {
 
                     //convert to object with keys and mappings
-                   var pool_data = decodeGeneticPool(data[0]);
+                    var pool_data = decodeGeneticPool(data[0]);
                     resolve(pool_data);
                 }, function(err) {
                     error(err);
@@ -354,7 +354,6 @@ exports.createUserSequenceFromTree = function(main_code){
     return new Promise(function(resolve, error) {
         //will generate a sequence with max horizon 100. should update if not realistic
         var sequence_length = 100;
-        var uct_c = Math.sqrt(2); //constant for Monte Carlo UCT
 
         //get tree from main code
         exports.getTreeFromCode(main_code).then(function(tree) {
@@ -373,64 +372,57 @@ exports.createUserSequenceFromTree = function(main_code){
 
                 if (i==0){
                     var root_info = parent_info[0];
-                    var unexpanded_children = decodeGeneticPool(parent_info[0]);
+
+                    var possible_children_pool = decodeGeneticPool(root_info); //get all possible children from root
+
+
                 }
 
                 //IF NO PARENT INFO, set unexpanded children to all possible combos
                 //follow up check will always go to randomly pick unexpanded child
                 if (parent_info.length != 0){
+
+
                     //var parent_id = parent_info[0].id;
                     //get possible children:  e.g L,LL, M etc. It should be a combination of the "_project" fields
-                    var possible_children_pool = decodeGeneticPool(parent_info[0]);
-
 
                     //get expanded children entries of the parent:
                     var expanded_children = filterResponses(tree,{parent:parent});
+
                     //get unexpanded children
                     var unexpanded_children = get_unexpanded_tree_children(possible_children_pool,expanded_children);
+                    possible_children_pool = decodeGeneticPool(root_info); //get all possible children from root (need to redo this because object messed up in function
+
                 } else {
-                    var unexpanded_children = decodeGeneticPool(root_info);
+                    var unexpanded_children = possible_children_pool;
+                    possible_children_pool = decodeGeneticPool(root_info); //get all possible children from root
+
+
 
                 }
 
-                //If unexpanded children exist, pick one randomly
-                if (Object.keys(unexpanded_children).length > 0){
+                //TODO: P( pick_unexpanded) = #unexpanded / #all_children
+                // P( pick_expanded) = 1 - P( pick_unexpanded)
+                // First draw: whether to pick from expanded or unexpanded pool
+                // if 0: pick uniformly random from unexpanded
+                // if 1: pick using UCT from expanded
+
+
+
+                var pick_unexp_p = Object.keys(unexpanded_children).length*1.0/Object.keys(possible_children_pool).length; //make sure float division!
+                var pick_exp_p = 1 - pick_unexp_p;
+                var pick_choice = pick_random_with_likelihood([0,1],[pick_unexp_p,pick_exp_p]);
+
+                //0: pick unexpanded, 1: pick expanded
+                if (pick_choice == 0){
                     var next_step = generateGenome(unexpanded_children); //essentially picks a child at random
 
                 } else {
-                    //all options expanded, need to to UCT:
-                    var N = 0; //total people across all branches
-                    var uct_values = [];
-                    //go through each and build the UCT
-                    expanded_children.forEach(function(item){
+                    var next_step = select_UCT(expanded_children);
 
-                        // get the sequence code from the name
-                        var name = item.node;
-                        var codes = name.split('-');
-                        var code = codes[codes.length -1];
-
-                        //augment total people
-                        N += item.people;
-                        var obj = {
-                            code: code,
-                            fitness:item.fitness_function,
-                            n: item.people };
-                        //add it to list
-                        uct_values.push(obj)
-                    });
-                    //once we have that data, find max code:
-                    var next_step = "";
-                    var max_value = 0;
-                    uct_values.forEach(function(item){
-
-                        var child_value = item.fitness + uct_c * Math.sqrt( Math.log(N)/item.n);
-                        // console.log("Child: " + item.code + " value: " + child_value.toString())
-                        if (child_value >= max_value){
-                            max_value = child_value;
-                            next_step = item.code;
-                        }
-                    })
                 }
+
+
                 //at this point we have the next step: push it to the total sequence:
                 generated_sequence.push(next_step);
                 //update the parent to be the sequence so far:
@@ -503,10 +495,7 @@ exports.createUserSequenceFromTreeForcedK = function(main_code,depth){
             //get root here:
             //get parent info: Should only be one entry (one node)
             var root_info = filterResponses(tree,{node:parent})[0];
-            console.log(root_info)
             var unexpanded_children = decodeGeneticPool(root_info);
-
-
 
 
             //Pick one of the forced levels that haven't been satisfied yet and add to generated sequence;
@@ -552,7 +541,7 @@ exports.createUserSequenceFromTreeForcedK = function(main_code,depth){
                             //get expanded children entries of the parent:
                             var expanded_children = filterResponses(tree,{parent:parent});
                             //get unexpanded children
-                             unexpanded_children = get_unexpanded_tree_children(possible_children_pool,expanded_children);
+                            unexpanded_children = get_unexpanded_tree_children(possible_children_pool,expanded_children);
                         } else {
                             unexpanded_children = decodeGeneticPool(root_info);
 
@@ -698,21 +687,21 @@ exports.populateForcedOptions = function(unique_code_main,options_list,depth) {
 
     return new Promise(function(resolve, error) {
 
-    var key_vals = ["unique_code_main","subsequence","sub_size"];
+        var key_vals = ["unique_code_main","subsequence","sub_size"];
 
 
-    //generate all possible combinations of length d
-    var fit_vals = "";
-    var combs = getCombinationsSize(options_list,depth);
-    combs.forEach(function(item){
-         fit_vals += "(\"" + unique_code_main + "\",\"" + item + "\", "+ depth + "),"
-    });
-    //remove last comma from fit_vals
-    fit_vals = fit_vals.slice(0, -1);
+        //generate all possible combinations of length d
+        var fit_vals = "";
+        var combs = getCombinationsSize(options_list,depth);
+        combs.forEach(function(item){
+            fit_vals += "(\"" + unique_code_main + "\",\"" + item + "\", "+ depth + "),"
+        });
+        //remove last comma from fit_vals
+        fit_vals = fit_vals.slice(0, -1);
 
 
 
-    //add to table
+        //add to table
         var connection = db.get();
         query = 'INSERT INTO tree_forced (' + key_vals.toString() + ') VALUES '+ fit_vals +' \
             ON DUPLICATE KEY UPDATE active=1,assigned=0,satisfied=0;';
@@ -815,6 +804,80 @@ function get_unexpanded_tree_children(pool,exp){
     return (unexpanded)
 }
 
+
+//make a selection based on given children
+function select_UCT(children){
+//all options expanded, need to to UCT:
+    var N = 0; //total people across all branches
+    var uct_c = Math.sqrt(2); //constant for Monte Carlo UCT
+    var uct_values = [];
+    //go through each and build the UCT
+    children.forEach(function(item){
+
+        // get the sequence code from the name
+        var name = item.node;
+        var codes = name.split('-');
+        var code = codes[codes.length -1];
+
+        //augment total people
+        N += item.people;
+        var obj = {
+            code: code,
+            fitness:item.fitness_function,
+            n: item.people };
+        //add it to list
+        uct_values.push(obj)
+    });
+    //TODO: ONCE we have that, pick with given likelihoods
+    //likelihood given by UCT formula:
+    var options = [];
+    var likelihoods = [];
+    uct_values.forEach(function(item){
+        var p = item.fitness + uct_c * Math.sqrt( Math.log(N)/item.n);
+        options.push(item.code);
+        likelihoods.push(p)
+    });
+    var next_step = pick_random_with_likelihood(options,likelihoods);
+    return(next_step);
+
+}
+
+
+
+//make a selection with probabilities
+function pick_random_with_likelihood(pool,probs){
+
+
+    //if we only have one option in the pool, return that option
+    if (pool.length ==1){
+        return (pool[0])
+    }
+
+    //if probs not sum to 1, normalize:
+    var sum_array = 0
+    for(var j = 0, length = probs.length; j < length; j++){
+        sum_array += probs[j]
+    }
+    if (sum_array > 1){
+        for(var j = 0, length = probs.length; j < length; j++){
+            probs[j] = probs[j]*1.0/sum_array;
+        }
+    }
+    //pick with probabilities
+    var sum_p = 0;
+    i = -1;
+    //pick random from 0-1
+    q = Math.random();
+    while (sum_p <= q){
+        i+= 1;
+        sum_p += probs[i];
+    }
+
+    return (pool[i])
+}
+
+
+
 //given an item from the task_genetic_sequences table,extract the pool as an object
 // e.g {L:..., LL:...}
 function decodeGeneticPool(data){
@@ -905,11 +968,11 @@ function getCombinationsSize(arr,d) {
                     //row++
                     row++;
                 }
-                }
+            }
         }
     }
 
-   //iterate over rows:
+    //iterate over rows:
     for(var i = 0; i < Math.pow(n, d)*d; i += d) {
 
         var row_el = matrix.slice(i,i+d);
