@@ -15,6 +15,8 @@ var session = require('express-session');
 var anonApi = require('./routes/anonUser');
 var results = require('./routes/results');
 var dynamicr = require('./routes/dynamic');
+var tileoscope = require('./routes/tileoscope');
+
 
 
 var featured = require('./routes/featured');
@@ -93,6 +95,7 @@ app.use('/api/test', require('./routes/test'));
 // Results api, refers to heatmap results presently
 app.use('/api/results', results);
 app.use('/api/dynamic', dynamicr);
+app.use('/api/tileoscope', tileoscope);
 
 
 

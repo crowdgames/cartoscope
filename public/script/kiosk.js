@@ -726,7 +726,6 @@ module.controller('heatMapProjectController', function($scope, $http, $window,$s
     };
 
 
-
     $http.get('/api/tasks/getInfoFree/' + $stateParams.pCode).then(function(pdata) {
 
         $scope.proj_data = pdata.data[0];
@@ -773,7 +772,12 @@ module.controller('heatMapProjectController', function($scope, $http, $window,$s
 
         if ($scope.projType == "tagging" ||
             ($scope.proj_data["point_selection"] ==0 && $scope.projType == "mapping") ) {
-            $http.get('/api/results/all/majority/' + $stateParams.pCode).then(function(data){
+             $http.get('/api/results/all/majority/' + $stateParams.pCode).then(function(data){
+
+            //$http.get('/api/results/csv_heatmap/' + $stateParams.pCode).then(function(data){
+
+
+                console.log(data.data)
 
                 // console.log("Results from first project", data.data);
                 $scope.results1 = data.data;
@@ -917,7 +921,8 @@ module.controller('heatMapProjectController', function($scope, $http, $window,$s
 
 
 module.controller('gridMapProjectController',
-    function($scope, $http, $window,$stateParams,$timeout,NgMap) {
+    function($scope, $http, $window,$stateParams,$timeout,$location,NgMap) {
+
 
 
     //change this if we want gridMap instead of heatMap
@@ -931,6 +936,61 @@ module.controller('gridMapProjectController',
     $scope.isMarkerTask = false;
     $scope.rectArr=[]; //holds the grid array
     $scope.geodata = [];
+
+    //read source from url, if from tileoscope games, then show user contributions as well as dots!
+
+    var url_params = $location.search();
+    $scope.fromTileARUser = 0;
+
+    if (url_params.hasOwnProperty('source') && url_params.hasOwnProperty('user_code')  ){
+        $scope.game_source = url_params.source;
+        $scope.fromTileARUser = url_params.user_code;
+    }
+
+
+
+    //function that adds user points here:
+    $scope.plot_tileoscope_user_points = function (map,callback){
+
+        console.log("Getting user points")
+
+        //get the points from the backend:
+        var post_body = {
+            project_code: $stateParams.pCode,
+            user_code : $scope.fromTileARUser
+        }
+        $http.post('/api/tileoscope/getTileoscopeUserVotes',post_body).then(function(uvotes) {
+
+            var user_votes = uvotes.data;
+
+            //add markers to map:
+
+            $scope.userMarkers = [];
+            var pointId = 0;
+            for (var i = 0; i < user_votes.length; i++) {
+
+                    var vote_item = user_votes[i];
+                    var plat = parseFloat(vote_item.x);
+                    var plng = parseFloat(vote_item.y);
+                    var point_marker = new google.maps.Marker({
+                        position: new google.maps.LatLng(plat,plng),
+                        title: "Image name: " + vote_item.task_id,
+                        id: pointId,
+                        icon: $scope.point_array[parseInt(vote_item.color)-1]
+                    });
+                    $scope.userMarkers.push(point_marker);
+                    point_marker.setMap(map);
+                    pointId += 1;
+
+
+            }//end of markers loop
+            callback(user_votes);
+        })
+
+    };
+
+
+
 
     //gradients: initial colors
     var gradients = {
@@ -1016,6 +1076,8 @@ module.controller('gridMapProjectController',
             return g;
         }
 
+
+
     //CSV Download Project
     $scope.downloadCSV = downloadCSV;
     function downloadCSV(){
@@ -1060,11 +1122,27 @@ module.controller('gridMapProjectController',
             bounds: {}
         };
         NgMap.getMap().then(function(map) {
-            if ($scope.gridMap){
-                $scope.drawGrid()
-            } else {
-                $scope.update_heatmap(1);
+
+            if($scope.fromTileARUser){
+
+                $scope.plot_tileoscope_user_points(map,function(res){
+                    if ($scope.gridMap){
+                        $scope.drawGrid()
+                    } else {
+                        $scope.update_heatmap(1);
+                    }
+                })
+
+            }else {
+                if ($scope.gridMap){
+                    $scope.drawGrid()
+                } else {
+                    $scope.update_heatmap(1);
+                }
             }
+
+
+
         })
     }
 
@@ -1247,7 +1325,6 @@ module.controller('gridMapProjectController',
         $scope.proj_data = pdata.data[0];
 
 
-
         //Buttons for the heatmap
         //Get options from the template
         var templ = JSON.parse($scope.proj_data.template);
@@ -1285,11 +1362,16 @@ module.controller('gridMapProjectController',
         };
 
 
-        if ($scope.projType == "tagging" ||
-            ($scope.proj_data["point_selection"] ==0 && $scope.projType == "mapping") ) {
-            $http.get('/api/results/all/majority/' + $stateParams.pCode).then(function(data){
 
-                // console.log("Results from first project", data.data);
+
+
+        if ( $scope.projType == "tagging" ||
+             ($scope.proj_data["point_selection"] ==0 && $scope.projType == "mapping") ) {
+
+            //$http.get('/api/results/all/majority/' + $stateParams.pCode).then(function(data){
+            $http.get('/api/results/csv_heatmap/' + $stateParams.pCode).then(function(data){
+
+
                 $scope.results1 = data.data;
                 //number of images:
                 $scope.unique_images1 = count_unique($scope.results1, 'task_id');
@@ -2093,7 +2175,8 @@ module.controller('kioskProjectController', ['$window','$scope','$location','$st
             //Get the creator name from the collaborators:
             //get collaborator info from db
             $http.get('/api/user/getAboutInfoCreator/' + $stateParams.pCode).then(function(cdata){
-                if (cdata.data){
+                console.log(cdata.data);
+                if (cdata.data && cdata.data.length >0){
 
                     $scope.creator = cdata.data[0].name;
                     $scope.showCC = true;
