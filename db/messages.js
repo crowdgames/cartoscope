@@ -9,8 +9,8 @@ var databaseName = process.env.CARTO_DB_NAME;
 var hitCode = process.env.hitCode;
 
 
-var mailCentralUSER = process.env.CARTO_MAILER;
-var mailCentralPWD = process.env.CARTO_MAILER_PWD;
+var mailCentralUSER = process.env.CARTO_MAILER || "";
+var mailCentralPWD = process.env.CARTO_MAILER_PWD || "";
 
 
 /* Mail notifications  */
