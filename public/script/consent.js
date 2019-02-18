@@ -242,6 +242,8 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                                     var marker_indx = $scope.point_array_filtered.indexOf(col);
                                     marker_indx = (marker_indx + 1) % $scope.point_array_filtered.length;
                                     this.icon = $scope.point_array_filtered[marker_indx];
+                                    this.setIcon($scope.point_array_filtered[marker_indx])
+
                                     this.setMap(map)
 
                                 });
@@ -284,6 +286,8 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                                         var marker_indx = $scope.point_array_filtered.indexOf(col);
                                         marker_indx = (marker_indx + 1) % $scope.point_array_filtered.length;
                                         this.icon = $scope.point_array_filtered[marker_indx];
+                                        this.setIcon($scope.point_array_filtered[marker_indx])
+
                                         this.setMap(map);
                                     });
                                     csv_marker.setMap(map);
@@ -891,6 +895,7 @@ module.controller('exampleGeneticController', ['$window', '$scope', '$state', '$
                                     var marker_indx = $scope.point_array_filtered.indexOf(col);
                                     marker_indx = (marker_indx + 1) % $scope.point_array_filtered.length;
                                     this.icon = $scope.point_array_filtered[marker_indx];
+                                    this.setIcon($scope.point_array_filtered[marker_indx])
                                     this.setMap(map)
 
                                 });
@@ -933,6 +938,8 @@ module.controller('exampleGeneticController', ['$window', '$scope', '$state', '$
                                         var marker_indx = $scope.point_array_filtered.indexOf(col);
                                         marker_indx = (marker_indx + 1) % $scope.point_array_filtered.length;
                                         this.icon = $scope.point_array_filtered[marker_indx];
+                                        this.setIcon($scope.point_array_filtered[marker_indx])
+
                                         this.setMap(map);
                                     });
                                     csv_marker.setMap(map);
