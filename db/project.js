@@ -673,9 +673,10 @@ exports.addSurvey = function(userID, projectID, response) {
   return new Promise(function(resolve, error) {
     var connection = db.get();
         connection.queryAsync('INSERT INTO '+databaseName+'.`survey`(`user_id`,`project_id`,`response`)' +
-            'VALUES (?, ?, ?)',
+            'VALUES (?, ?, ?) on DUPLICATE KEY update response=VALUES(response)',
       [userID, projectID, JSON.stringify(response)]).then(
       function(data) {
+          console.log(data)
         if (data.insertId) {
             console.log('In data insert');
           resolve(data.insertId);

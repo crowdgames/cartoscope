@@ -900,7 +900,11 @@ module.controller('surveyGAMEontroller', ['$scope', '$http', '$state', '$locatio
                     $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId});
                 }
             }, function(err) {
-                alert('Something unexpected occurred');
+                if ($scope.userType == 'mTurk') {
+                    alert('Something unexpected occurred. Please use your worker id as the completion code to get compensated.');
+                } else {
+                    alert('Something unexpected occurred.');
+                }
             });
         }
     };

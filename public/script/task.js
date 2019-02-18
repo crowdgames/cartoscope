@@ -658,6 +658,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
                       //regray the marker!
                       item.icon = $scope.point_array_filtered[$scope.point_array_filtered.length -1];
+                      item.setIcon($scope.point_array_filtered[$scope.point_array_filtered.length -1]);
                       item.setMap(vm.map);
 
                       promiseArray.push($http.post('/api/tasks/submit', body));
@@ -781,6 +782,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                               var col = vm.data.template.options[option].color;
                               item.icon = $scope.icon_array[parseInt(col)-1];
                               // item.setZIndex(google.maps.Marker.MAX_ZINDEX + 1);
+                              item.setIcon($scope.icon_array[parseInt(col)-1])
                               item.setMap(vm.flight_map);
                               vm.setCurrentPos();
                               found = true
@@ -1701,6 +1703,7 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
 
                         //regray the marker!
                         item.icon = $scope.point_array_filtered[$scope.point_array_filtered.length -1];
+                        item.setIcon($scope.point_array_filtered[$scope.point_array_filtered.length -1])
                         item.setMap(vm.map);
 
                         promiseArray.push($http.post('/api/tasks/submit', body));
@@ -1722,41 +1725,111 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
                 //wait until all posts are completed then continue to next image
                 $q.all(promiseArray).then(function(dataArray) {
 
-                    latCenter = vm.tasks[0].x;
-                    lngCenter = vm.tasks[0].y;
                     vm.defZoom = dZoom;
                     vm.tasks.shift();
+                    vm.current_block_progress++;
+
+                    //if out of tasks, fetch next group, else reset latCenter
+                    if (vm.tasks.length == 0) {
+                        //vm.getTasks();
+                        vm.getGeneticInfo(function(){
+                            //reset vote location
+                            $scope.votedLat = latCenter;
+                            $scope.votedLng = lngCenter;
+
+                            vm.hideModal();
+
+                            //percentage complete
+                            vm.data.progress = parseInt(vm.data.progress) + 1;
+
+                            if (vm.progress_type == "block"){
+                                $scope.next_per = (vm.current_block_progress / vm.current_block_size).toFixed(2) *100;
+                                if (vm.current_block_progress == 0){
+                                    $scope.next_per = 0;
+                                }
+                                $scope.mturkbarStyle = {"width" : $scope.next_per.toString() + "%"};
+
+
+                            } else {
+                                //update progress bar:
+                                $scope.next_per = (vm.data.progress / vm.data.size).toFixed(2) *100;
+                                if (vm.data.progress == 1){
+                                    $scope.next_per = 0;
+                                }
+                                $scope.mturkbarStyle = {"width" : $scope.next_per.toString() + "%"};
+                            }
+                            $scope.next_per2 = Math.floor($scope.next_per);
+
+
+                            //if we are past the required amount for the project, show exit button
+                            if (vm.data.progress > vm.req_amount ) {
+                                $scope.showSurvButton = true;
+                            }
+
+
+                            //if flight path, change color of marker for the image that was just voted
+                            if (vm.showFlightPath) {
+                                $scope.geoMarkers.some(function (item) {
+                                    found = false;
+                                    if (item.title === vm.image) {
+                                        var col = vm.data.template.options[option].color;
+                                        item.icon = $scope.icon_array[parseInt(col)-1];
+                                        item.setIcon($scope.icon_array[parseInt(col)-1]);
+                                        // item.setZIndex(google.maps.Marker.MAX_ZINDEX + 1);
+                                        item.setMap(vm.flight_map);
+                                        vm.setCurrentPos();
+                                        found = true
+                                    }
+                                    return found;
+                                })
+                            }
+                        });
+                    } else {
+                        latCenter = vm.tasks[0].x;
+                        lngCenter = vm.tasks[0].y;
+                        if (vm.viewMarkerPoints){
+                            vm.addMarker(vm.tasks[0].x,vm.tasks[0].y)
+                        }
+                    }
+
+                    //reset vote location
+                    $scope.votedLat = latCenter;
+                    $scope.votedLng = lngCenter;
+
+
                     vm.hideModal();
+
+                    //percentage complete
+                    $scope.next_per2 = Math.floor($scope.next_per);
+
+
                     vm.data.progress = parseInt(vm.data.progress) + 1;
                     //update progress bar:
 
+
                     if (vm.progress_type == "block"){
                         $scope.next_per = (vm.current_block_progress / vm.current_block_size).toFixed(2) *100;
+                        if (vm.current_block_progress == 0){
+                            $scope.next_per = 0;
+                        }
                         $scope.mturkbarStyle = {"width" : $scope.next_per.toString() + "%"};
 
-                        //this is zero because the block progress in the genetic case is 0
-                        if (vm.current_block_progress ==0) {
-                            $scope.next_per2 = 0;
-                        } else {
-                            $scope.next_per2 = Math.floor($scope.next_per);
-                        }
                     } else {
+                        //update progress bar:
                         $scope.next_per = (vm.data.progress / vm.data.size).toFixed(2) *100;
-                        $scope.mturkbarStyle = {"width" : $scope.next_per.toString() + "%"};
-
-                        if (vm.data.progress ==1) {
-                            $scope.next_per2 = 0;
-                        } else {
-                            $scope.next_per2 = Math.floor($scope.next_per);
+                        if (vm.data.progress == 1){
+                            $scope.next_per = 0;
                         }
+                        $scope.mturkbarStyle = {"width" : $scope.next_per.toString() + "%"};
+                    }
+                    $scope.next_per2 = Math.floor($scope.next_per);
+
+                    //if we are past the required amount for the project, show exit button
+                    if (vm.data.progress > vm.req_amount ) {
+                        $scope.showSurvButton = true;
                     }
 
 
-
-
-                    if (vm.tasks.length == 0) {
-                        vm.getTasks()
-                    }
                     //if flight path, change color of marker for the image that was just voted
                     if (vm.showFlightPath) {
                         $scope.geoMarkers.some(function (item) {
@@ -1764,6 +1837,7 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
                             if (item.title === vm.image) {
                                 var col = vm.data.template.options[option].color;
                                 item.icon = $scope.icon_array[parseInt(col)-1];
+                                item.setIcon($scope.icon_array[parseInt(col)-1])
                                 // item.setZIndex(google.maps.Marker.MAX_ZINDEX + 1);
                                 item.setMap(vm.flight_map);
                                 vm.setCurrentPos();
@@ -1772,7 +1846,6 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
                             return found;
                         })
                     }
-
                 });
 
 
@@ -1838,6 +1911,7 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
                                     if (item.title === vm.image) {
                                         var col = vm.data.template.options[option].color;
                                         item.icon = $scope.icon_array[parseInt(col)-1];
+                                        item.setIcon($scope.icon_array[parseInt(col)-1]);
                                         // item.setZIndex(google.maps.Marker.MAX_ZINDEX + 1);
                                         item.setMap(vm.flight_map);
                                         vm.setCurrentPos();
@@ -1900,6 +1974,7 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
                             if (item.title === vm.image) {
                                 var col = vm.data.template.options[option].color;
                                 item.icon = $scope.icon_array[parseInt(col)-1];
+                                item.setIcon($scope.icon_array[parseInt(col)-1])
                                 // item.setZIndex(google.maps.Marker.MAX_ZINDEX + 1);
                                 item.setMap(vm.flight_map);
                                 vm.setCurrentPos();
