@@ -358,6 +358,7 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                         if (marker.id === item.poi_name) {
                             marker.icon = $scope.point_array[item.col_number - 1];
                             // item.setZIndex(google.maps.Marker.MAX_ZINDEX + 1);
+                            marker.setIcon($scope.point_array[item.col_number - 1])
                             marker.setMap(point_map);
                             found = true
                         }
@@ -1013,6 +1014,7 @@ module.controller('exampleGeneticController', ['$window', '$scope', '$state', '$
                         if (marker.id === item.poi_name) {
                             marker.icon = $scope.point_array[item.col_number - 1];
                             // item.setZIndex(google.maps.Marker.MAX_ZINDEX + 1);
+                            marker.setIcon($scope.point_array[item.col_number - 1])
                             marker.setMap(point_map);
                             found = true
                         }
