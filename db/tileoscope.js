@@ -14,10 +14,14 @@ exports.addResponseTileoscope = function(userId, projectId, task_list, response)
         //for every item in the task list, make an item to add:
         for (var i = 0; i < task_list.length; i++) {
 
-            var task = "\"" + task_list[i] + "\"";
+            //make sure we don't enter empty image
+            if (task_list[i] != ""){
+                var task = "\"" + task_list[i] + "\"";
+                var vl = [userId,projectId,task,response,1]
+                values_list += "(" + vl.toString() + "),"
+            }
 
-            var vl = [userId,projectId,task,response,1]
-            values_list += "(" + vl.toString() + "),"
+
         }
         //remove last , from values_list
         values_list = values_list.slice(0, -1);
@@ -25,7 +29,7 @@ exports.addResponseTileoscope = function(userId, projectId, task_list, response)
         connection.queryAsync('INSERT INTO response (user_id, project_id,task_id,response,site_id) VALUES ' + values_list).then(
             function(data) {
                 if (data.insertId) {
-                    resolve(data.insertId);
+                    resolve(data.affectedRows);
                 } else {
                     error({code: 'Problem with insert'});
                 }

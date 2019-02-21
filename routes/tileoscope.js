@@ -17,7 +17,7 @@ module.exports = router;
 
 
 
-//TODO: Register tileoscope User to Cartoscope Code
+// Register tileoscope User to Cartoscope Code
 router.post('/registerTileoscopeUser', function(req, res, next) {
 
 
@@ -50,6 +50,50 @@ router.post('/registerTileoscopeUser', function(req, res, next) {
                             res.status(200).send({user_id:user.id, project_code: projectID});
                         }
                     })
+            });
+
+        }, function(err) {
+            console.log('err ', err);
+            res.status(404).send('No project found.');
+        });
+    }
+
+});
+
+
+// Register tileoscope User to Cartoscope Code
+router.get('/registerTileoscopeUser', function(req, res, next) {
+
+
+    //if one of the two missing, then error!
+    var projectID = req.query.project_code;
+    var workerId = req.query.user_code;
+
+
+    if (projectID == undefined){
+        res.status(400).send('Project code missing.');
+    }
+    else if (workerId == undefined){
+        res.status(400).send('User code missing.');
+    } else {
+        //make the mturk user object
+        var anonUser = {
+            workerId: req.query.user_code,
+            hitId: req.query.hitId || "tileoscope_AR",
+            assignmentId: req.query.assignmentId || "tileoscope_AR",
+            submitTo: req.query.submitTo || "tileoscope_AR"
+        };
+
+        //make sure there is a project
+        projectDB.getSingleProjectFromCode(projectID).then(function(project) {
+            //add them as mturk worker and return user id and project code
+            anonUserDB.addMTurkWorker(anonUser, projectID, 1, 1, 0).then(function (userID) {
+                //find user then return corresponding user id and project code
+                anonUserDB.findConsentedMTurkWorker(anonUser.workerId, projectID,anonUser.hitId).then(function(user) {
+                    if (user.id) {
+                        res.status(200).send({user_id:user.id, project_code: projectID});
+                    }
+                })
             });
 
         }, function(err) {
@@ -115,7 +159,6 @@ router.post('/submitMatch', function(req, res, next) {
     var workerId = req.body.user_code;
 
     //also need category and array of images:
-    var image_array = req.body.matches.split(",");
     var category_raw = req.body.category;
 
 
@@ -125,13 +168,16 @@ router.post('/submitMatch', function(req, res, next) {
     else if (workerId == undefined){
         res.status(400).send('User code missing.');
     }
-    else if (image_array == undefined){
+    else if (req.body.matches == undefined){
         res.status(400).send('Matches missing.');
     }
     else if (category_raw == undefined){
         res.status(400).send('Category missing.');
     }
     else {
+
+        var image_array = req.body.matches.split(",");
+
 
         //make the mturk user object
         var anonUser = {
@@ -166,11 +212,95 @@ router.post('/submitMatch', function(req, res, next) {
                         //each vote needs: project_id, user_id, task_id (the image) and the response
                         tileDB.addResponseTileoscope(user.id, project.id, image_array, answer_decoded) .then(function (data) {
                                 // console.log('data inserted', data);
-                                res.status(200).send({});
+                            res.status(200).send({user_id:user.id, project_code: projectID,items_added:data});
                             }).catch(function(err) {
                                 console.log(err)
                                 res.status(500).send({err: err.code || 'Could not submit response'});
                             });
+                    } else {
+                        res.status(404).send("user not found")
+                    }
+                });
+
+            }
+
+        }, function(err) {
+            console.log('err ', err);
+            res.status(404).send('No project found.');
+        });
+    }
+});
+
+
+//Register tileoscope User to Cartoscope Code
+router.get('/submitMatch', function(req, res, next) {
+
+
+    //if one of the two missing, then error!
+    var projectID = req.query.project_code;
+    var workerId = req.query.user_code;
+
+
+    var category_raw = req.query.category;
+
+
+    if (projectID == undefined){
+        res.status(400).send('Project code missing.');
+    }
+    else if (workerId == undefined){
+        res.status(400).send('User code missing.');
+    }
+    else if (req.query.matches == undefined){
+        res.status(400).send('Matches missing.');
+    }
+    else if (category_raw == undefined){
+        res.status(400).send('Category missing.');
+    }
+    else {
+
+        //also need category and array of images:
+        var image_array = req.query.matches.split(",");
+
+
+
+        //make the mturk user object
+        var anonUser = {
+            workerId: req.query.user_code,
+            hitId: req.query.hitId || "tileoscope_AR",
+            assignmentId: req.query.assignmentId || "tileoscope_AR",
+            submitTo: req.query.submitTo || "tileoscope_AR"
+        };
+
+        //make sure there is a project
+        projectDB.getSingleProjectFromCode(projectID).then(function(project) {
+
+            var template = JSON.parse(project.template); //we need this to convert text answer to number answer
+            var templ_options = template.options;
+            console.log(templ_options);
+            var answers = [];
+            templ_options.forEach(function(item){
+
+                answers.push(item.text.toLowerCase());
+            });
+
+            var category =  category_raw.replace(/_/gi," ").toLowerCase();
+            var answer_decoded = answers.indexOf(category);
+
+            //if answer invalid, return error
+            if (answer_decoded == -1){
+                res.status(400).send('Invalid category.');
+            } else {
+                //find user then return corresponding user id and project code
+                anonUserDB.findConsentedMTurkWorker(anonUser.workerId, projectID, anonUser.hitId).then(function (user) {
+                    if (user.id) {
+                        //each vote needs: project_id, user_id, task_id (the image) and the response
+                        tileDB.addResponseTileoscope(user.id, project.id, image_array, answer_decoded) .then(function (data) {
+                            // console.log('data inserted', data);
+                            res.status(200).send({user_id:user.id, project_code: projectID,items_added:data});
+                        }).catch(function(err) {
+                            console.log(err)
+                            res.status(500).send({err: err.code || 'Could not submit response'});
+                        });
                     } else {
                         res.status(404).send("user not found")
                     }
