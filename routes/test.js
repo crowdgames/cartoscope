@@ -151,6 +151,26 @@ router.post('/uploadLocal', fupload.single('file'),
     })
 
 
+//filters.requireLogin
+router.post('/uploadLocalSlider', fupload.single('file'),
+    function(req, res, next) {
+
+        var main_project_id = req.body.projectID;
+
+        assignDownloadID(function (downloadID) {
+
+            //proceed to analyze the folder
+            console.log(req.file)
+            var stored_filename = req.file.path;
+            console.log(stored_filename)
+            downloadLocal(stored_filename, downloadID, main_project_id,1);
+            res.send({
+                uniqueCode: downloadID
+            });
+        })
+    })
+
+
 
 //filters.requireLogin
 router.post('/uploadNGS', fupload.single('file'),
@@ -172,7 +192,12 @@ router.post('/uploadNGS', fupload.single('file'),
 
 
 
-function downloadLocal(loc,downloadID, projectID) {
+function downloadLocal(loc,downloadID, projectID,has_slider) {
+
+    var remove_before = has_slider || 0;
+    //if we have a has_slider parameter, we must not add any image starting with before_ to the db table
+    //User must make sure no images they want shown start with before_
+
     projectDB.addDataSetID(projectID, downloadID).then(function() {
         // Status starting Download
         downloadStatus.setStatus(downloadID, 1, function(err, res) {
@@ -182,7 +207,7 @@ function downloadLocal(loc,downloadID, projectID) {
         var downloadDir = 'temp/';
         var datasetDir = 'dataset/';
 
-        console.log("In download Local:" + downloadID)
+        console.log("In download Local:" + downloadID);
 
         // status downloaded
         downloadStatus.setStatus(downloadID, 2, function(err, res) {
@@ -232,7 +257,16 @@ function downloadLocal(loc,downloadID, projectID) {
                                         var x = data[i].x;
                                         var y = data[i].y;
 
-                                        if (!isNaN(x) && !isNaN(y)) {
+                                        var is_before = 0;
+
+                                        if (remove_before){
+                                            if (name.startsWith("before_")){
+                                                is_before = 1;
+                                            }
+                                        }
+
+                                        //only add item if we have valid coords or we have slider task and is before image
+                                        if (!isNaN(x) && !isNaN(y) && !is_before) {
                                             var p = projectDB.createDataSetItem(downloadID, name, x, y);
                                             //catch and print error but do not cause problem
                                             p.catch(function (err) {

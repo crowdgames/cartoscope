@@ -171,6 +171,22 @@ button:hover{
     height: 400px;
 }
 
+
+.sliderDiv {
+    width: 80%;
+    height: 80%;}
+
+
+div.jx-slider {
+    max-width: 600px;
+    max-height: 600px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+
+
 #maps {
     display: flex;
     justify-content: center;

@@ -1126,7 +1126,9 @@ module.controller('stepTwoController', ['$scope', '$state', '$stateParams', '$ht
       task2 : {name: 'Mapping image to map', value:'mapping', note: 'In this task you will zoom ' +
       'in and drag a map on the left to match the image on the right'},
         task3 : {name: 'NGS Map', value:'ngs', note: 'In this task you will use a provided NGS map ' +
-                'to answer questions regarding locations'}
+                'to answer questions regarding locations'},
+        task4 : {name: 'Slider Task', value:'slider', note: 'In this task you will view before ' +
+                'and after photos and answer questions regarding the after photo.'}
     };
 
       $scope.project.task.selectedTaskType = $scope.project.task.selectedTaskType || 'tagging';
@@ -1276,10 +1278,17 @@ module.controller('stepFourController', ['$scope', '$state', '$http', 'swalServi
 
 
 
-      $scope.sendDataSetLocal = function() {
+      $scope.sendDataSetLocal = function(is_slider) {
           if ($scope.file) {
+
+            var url_link = '/api/test/uploadLocal';
+            if (is_slider){
+                url_link = '/api/test/uploadLocalSlider'
+            }
+
+
               Upload.upload({
-                  url: '/api/test/uploadLocal',
+                  url: url_link,
                   method: 'POST',
                   data: {'file': $scope.file,
                   'projectID': $scope.project.id,
