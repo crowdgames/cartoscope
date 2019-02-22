@@ -316,10 +316,10 @@ router.get('/consent/:pCode',
                 //must assign genetic sequence first and add id and log in user
                 console.log("create genetic sequence from tree");
 
-                var SEQ_DEPTH = 4; //TODO: Change from hardcoded to variable
+                var SEQ_DEPTH = 6; //TODO: Change from hardcoded to variable
 
-                //dynamicDB.createUserSequenceFromTreeForcedK(req.params.pCode,SEQ_DEPTH).then(function (genetic_id) {
-                dynamicDB.createUserSequenceFromTree(req.params.pCode).then(function (genetic_id) {
+                dynamicDB.createUserSequenceFromTreeForcedK(req.params.pCode,SEQ_DEPTH).then(function (genetic_id) {
+                //dynamicDB.createUserSequenceFromTree(req.params.pCode).then(function (genetic_id) {
 
                     anonUserDB.addMTurkWorker(req.query, req.params.pCode, 1, 1, genetic_id).then(function (userID) {
                         if (userID != null) {
