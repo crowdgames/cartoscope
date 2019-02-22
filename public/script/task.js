@@ -1170,7 +1170,7 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
         vm.map_init = map_init;
         vm.getFullIframe = getFullIframe;
         vm.checkSatisfiedSequence = checkSatisfiedSequence;
-        var SEQ_DEPTH = 4; //TODO: Change from hardcoded to variable
+        var SEQ_DEPTH = 6; //TODO: Change from hardcoded to variable
 
         //hide progress bar:
         vm.viewProgress = true;
