@@ -10,7 +10,7 @@ exports.heatMapData = function(projectCode, datasetId) {
      JSON_EXTRACT(p.template, CONCAT('$.options[', r.response, '].color')) as color, \
      JSON_EXTRACT(p.template, '$.question') as question \
      FROM response as r, kiosk_workers as m, projects as p, dataset_" + datasetId + " as d \
-     WHERE r.project_id=p.id && m.projectID=p.unique_code && \
+     WHERE r.project_id=p.id && m.projectID=p.unique_code &&  r.response >=0 && \
      r.user_id=m.workerId && d.name=r.task_id && p.unique_code='" + projectCode + "'";
     connection.queryAsync(heatMapQuery).then(
       function(data) {
@@ -32,7 +32,7 @@ exports.heatMapDataAll = function(projectCode, datasetId) {
      JSON_EXTRACT(p.template, CONCAT('$.options[', r.response, '].color')) as color, \
      JSON_EXTRACT(p.template, '$.question') as question \
      FROM response as r, projects as p, dataset_" + datasetId + " as d \
-     WHERE r.project_id=p.id && \
+     WHERE r.project_id=p.id && r.response >=0 && \
       d.name=r.task_id && p.unique_code='" + projectCode + "'";
         connection.queryAsync(heatMapQuery).then(
             function(data) {
@@ -59,7 +59,7 @@ exports.heatMapDataAllSummary = function(projectCode, datasetId) {
         JSON_EXTRACT(p.template, '$.question') as question \
         FROM response as r, projects as p, dataset_" + datasetId + " as d \
         WHERE r.project_id=p.id && \
-        d.name=r.task_id && p.unique_code='" + projectCode + "') as a \
+        d.name=r.task_id && p.unique_code='" + projectCode + "' and r.response >=0) as a \
         GROUP BY task_id,answer) as aa \
         LEFT JOIN projects as pp \
         on aa.project_id=pp.id ";
@@ -95,7 +95,7 @@ exports.heatMapDataAllMajority = function(projectCode, datasetId) {
         JSON_EXTRACT(p.template, CONCAT('$.options[', r.response, '].color')) as color, \
         JSON_EXTRACT(p.template, '$.question') as question \
         FROM response as r, projects as p, dataset_" + datasetId + " as d  \
-        WHERE r.project_id=p.id &&  d.name=r.task_id && p.unique_code='" + projectCode + "') as a \
+        WHERE r.project_id=p.id &&  r.response >=0 && d.name=r.task_id && p.unique_code='" + projectCode + "') as a \
         GROUP BY task_id,answer )  as s2 \
         ON s1.task_id = s2.task_id  AND s1.num_votes < s2.num_votes \
         WHERE s2.task_id IS NULL ";
@@ -157,7 +157,7 @@ exports.heatMapDataAllUser = function(projectCode, datasetId,userId) {
      JSON_EXTRACT(p.template, CONCAT('$.options[', r.response, '].color')) as color, \
      JSON_EXTRACT(p.template, '$.question') as question \
      FROM response as r, projects as p, dataset_" + datasetId + " as d \
-     WHERE r.project_id=p.id && \
+     WHERE r.project_id=p.id &&  r.response >=0 && \
       d.name=r.task_id && r.user_id='" + userId + "' && p.unique_code='" + projectCode + "'";
 
         connection.queryAsync(heatMapQuery).then(
