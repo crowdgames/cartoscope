@@ -47,6 +47,7 @@ exports.heatMapDataAll = function(projectCode, datasetId) {
 
 exports.heatMapDataAllSummary = function(projectCode, datasetId) {
     var connection = db.get();
+    console.log(projectCode,datasetId)
     return new promise(function(resolve, error) {
         var heatMapQuery = "SELECT aa.*,pp.image_source from \
         (SELECT a.task_id, ANY_VALUE(a.x) as x, ANY_VALUE(a.y) as y, ANY_VALUE(a.project_id) as project_id, \
