@@ -364,7 +364,7 @@ router.get('/csv_heatmap/:projectCode', function(req, res, next) {
                 });
             });
         }, function(err) {
-            res.status(400).send('Results could not be generated!!!');
+            res.status(400).send(err);
         });
     }, function(err) {
         res.status(400).send('project not found!!!');
