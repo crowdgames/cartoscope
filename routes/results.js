@@ -359,6 +359,7 @@ router.get('/csv_heatmap/:projectCode', function(req, res, next) {
                     //res.attachment('results_'+projectCode +'.csv');
                     res.send(csv_results);
                 }, function(err) {
+                    console.log(err)
                     res.status(400).send('results could not be generated!!!');
                 });
             });
