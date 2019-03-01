@@ -2,6 +2,8 @@ var resultDB = require('../db/results');
 var anonUserDB = require('../db/anonUser');
 var projectDB = require('../db/project');
 var tileDB = require('../db/tileoscope');
+var dynamicDB = require('../db/dynamic');
+
 var filters = require('../constants/filters');
 var express = require('express');
 var router = express.Router();
@@ -367,5 +369,111 @@ router.post('/getTileoscopeUserVotes', function(req, res, next) {
             res.status(404).send('No project found.');
         });
     }
+
+});
+
+
+// Get a generated sequence for Tilescope Web
+router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
+
+
+    //if one of the two missing, then error!
+    var projectID = req.query.tree;
+    var workerId = req.query.workerId;
+
+
+    if (projectID == undefined){
+        res.status(400).send('Project code missing.');
+    }
+    else if (workerId == undefined){
+        res.status(400).send('User code missing.');
+    } else {
+        //make the mturk user object
+        var anonUser = {
+            workerId: req.query.user_code,
+            hitId: req.query.hitId || "tileoscope",
+            assignmentId: req.query.assignmentId || "tileoscope",
+            submitTo: req.query.submitTo || "tileoscope"
+        };
+
+        //make sure there is a tree
+        dynamicDB.getTreeFromCodeTileoscope(projectID).then(function(tree) {
+
+            console.log("Tree exists.")
+
+            //check if user exists:
+            anonUserDB.findConsentedMTurkWorker(anonUser.workerId, projectID,anonUser.hitId).then(function(user) {
+                if (user.id) {
+                    console.log("User exists.Fetching sequence")
+                    //res.status(200).send({user_id:user.id, project_code: projectID});
+                    //retrieve from genetic id
+                    tileDB.getCreatedSequenceTileoscope(user.genetic_id).then(function(genetic_data) {
+
+                        res.setHeader('Access-Control-Allow-Origin', '*');
+
+
+                        res.send(genetic_data[0].seq)
+
+                    }, function(error){
+
+                        res.status(400).send("Error retrieving sequence for existing user.")
+
+                    });
+
+
+                } else {
+                    //get genetic code from backend
+
+                    console.log("User not found. Creating...")
+
+                    dynamicDB.createUserSequenceFromTreeTileoscope(projectID).then(function(genetic_data){
+
+                        console.log(genetic_data)
+                        var genetic_id = genetic_data.genetic_id;
+                        var genetic_seq = genetic_data.seq;
+                        //add them as mturk worker and return genetic sequence
+                        anonUserDB.addMTurkWorker(anonUser, projectID, 1, 1, genetic_id).then(function (userID) {
+                            //find user then return corresponding user id and project code
+                            anonUserDB.findConsentedMTurkWorker(anonUser.workerId, projectID,anonUser.hitId).then(function(user) {
+                                if (user.id) {
+                                    //res.status(200).send({user_id:user.id, project_code: projectID});
+                                    res.send(genetic_seq)
+                                }
+                            })
+                        });
+
+                    },function(err) {
+                        console.log('err ', err);
+                        res.status(404).send('Could not generate sequence.');
+                    });
+                }
+            })
+
+
+
+
+        }, function(err) {
+            console.log('err ', err);
+            res.status(404).send('No tree found.');
+        });
+    }
+
+});
+
+
+// update the tree using the data provided (source: R code)
+router.post('/updateGeneticTreeFromRDATA/:mainCode', function(req,res,next){
+
+
+    var main_code = req.params.mainCode;
+    var updated_tree = req.body.tree
+
+    dynamicDB.updateTreeFromDATATileoscope(updated_tree).then(function(data) {
+        res.status(200).send("Tileoscope Tree updated from R data sucessfully")
+    }, function(error){
+        console.log(error)
+        res.status(404).send(error)
+    })
+
 
 });

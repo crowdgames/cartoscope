@@ -38,3 +38,19 @@ exports.addResponseTileoscope = function(userId, projectId, task_list, response)
             });
     });
 };
+
+
+
+//get the active genetic tree for the given main code
+exports.getCreatedSequenceTileoscope = function(id) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT * from tileoscope_task_genetic_sequences where id=?  ', [id])
+            .then(
+                function(data) {
+                    resolve(data);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};
