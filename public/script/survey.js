@@ -658,7 +658,14 @@ module.controller('surveyController', ['$scope', '$http', '$state', '$location',
             $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId});
         }
       }, function(err) {
-        alert('Something unexpected occurred');
+          if ($scope.userType == 'mTurk') {
+
+              //if there is any other unexpected issue, use fallback code:
+              var fallback = "c0b72bcf-39ac-40f5-99c4-d4016f510237";
+              alert('Something unexpected occurred. Please use the following completion code to get compensated: ' + fallback);
+          } else {
+              alert('Something unexpected occurred.');
+          }
       });
     }
   };
@@ -829,7 +836,14 @@ module.controller('surveyTLXController', ['$scope', '$http', '$state', '$locatio
                     $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId});
                 }
             }, function(err) {
-                alert('Something unexpected occurred');
+                if ($scope.userType == 'mTurk') {
+
+                    //if there is any other unexpected issue, use fallback code:
+                    var fallback = "c0b72bcf-39ac-40f5-99c4-d4016f510237";
+                    alert('Something unexpected occurred. Please use the following completion code to get compensated: ' + fallback);
+                } else {
+                    alert('Something unexpected occurred.');
+                }
             });
         }
     };
@@ -901,7 +915,10 @@ module.controller('surveyGAMEontroller', ['$scope', '$http', '$state', '$locatio
                 }
             }, function(err) {
                 if ($scope.userType == 'mTurk') {
-                    alert('Something unexpected occurred. Please use your worker id as the completion code to get compensated.');
+
+                    //if there is any other unexpected issue, use fallback code:
+                    var fallback = "c0b72bcf-39ac-40f5-99c4-d4016f510237";
+                    alert('Something unexpected occurred. Please use the following completion code to get compensated: ' + fallback);
                 } else {
                     alert('Something unexpected occurred.');
                 }

@@ -392,6 +392,130 @@ exports.getTreeFromCodeTileoscope = function(projectCode) {
     });
 };
 
+//based on tree with pool, generate sequence
+exports.createUserSequenceFromTreeRandom = function(main_code){
+
+
+    return new Promise(function(resolve, error) {
+        //will generate a sequence with max horizon 100. should update if not realistic
+        var sequence_length = 100;
+
+        //get tree from main code
+        exports.getTreeFromCode(main_code).then(function(tree) {
+
+
+            //start with root:
+            var parent = "start";
+            var generated_sequence = [];
+            var parent_info = filterResponses(tree,{node:parent});
+            var root_info = parent_info[0];
+            var possible_children_pool = decodeGeneticPool(root_info); //get all possible children from root
+
+
+
+            //repeat for size k, pick random option
+            for (var i = 0; i < sequence_length; i++) {
+
+                var next_step = generateGenome(possible_children_pool); //essentially picks a child at random
+
+                //at this point we have the next step: push it to the total sequence:
+                generated_sequence.push(next_step);
+                //update the parent to be the sequence so far:
+            }
+
+            //after the sequence is complete, convert to short form and return it
+            var gen_seq_short = encodeSequence(generated_sequence).join("-");
+            //create the object of the sequence and add it to the task_genetic_sequences:
+
+            var gen_obj = {
+                unique_code_main: root_info.unique_code_main,
+                seq: gen_seq_short,
+                label_project: root_info.label_project,
+                map_project: root_info.map_project,
+                marker_project: root_info.marker_project,
+                ignore_codes: root_info.ignore_codes,
+                progress_type: root_info.progress_type || "none",
+                active: 1,
+                method: "tree_random"
+            };
+            var gen_list = [gen_obj];
+            exports.insertGeneticSequences2(gen_list).then(function(insert_data) {
+                //Send genetic id back
+                if (insert_data.insertId) {
+                    resolve(insert_data.insertId);
+                } else if (insert_data.affectedRows > 0) {
+                    resolve(0);
+                } else {
+                    error({code: 'Problem with insertion'});
+                }
+
+
+            }, function(err){
+                console.log(err);
+                error(err)
+            })
+
+
+        }, function(err){
+            console.log(err);
+            error(err)
+        })
+
+    });
+
+
+};
+
+exports.createUserSequenceQlearn = function(main_code) {
+
+    return new Promise(function (resolve, error) {
+
+
+        //Randomly pick between making a random sequence and picking the optimal strategy qlearn
+
+        var pick_optimal = Math.round(Math.random());
+
+        if (pick_optimal){
+            console.log("Picking optimal");
+
+            exports.pickQlearnOptimalSequence(main_code).then(function(genetic_id) {
+
+                resolve(genetic_id)
+
+            })
+
+        } else {
+            console.log("Creating random");
+            exports.createUserSequenceFromTreeRandom(main_code).then(function(genetic_id) {
+                resolve(genetic_id)
+            })
+
+        }
+
+
+
+    });
+
+};
+
+
+//select top K sequences from current main project
+exports.pickQlearnOptimalSequence = function(main_code) {
+
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT id from task_genetic_sequences where unique_code_main=? and active=1 and method="qlearn_optimal" ',
+            [main_code])
+            .then(
+                function(data) {
+                    resolve(data[0].id);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};
+
+
 //create a sequence of size 100 based on current tree state and MONTE CARLO
 exports.createUserSequenceFromTree = function(main_code){
 

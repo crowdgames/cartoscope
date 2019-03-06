@@ -523,35 +523,82 @@ router.get('/:id/unarchive', function(req, res, next) {
   });
 });
 
+//
+// //fix for issues with codes!
+// router.post('/:id/survey', [filters.requireLogin], function(req, res, next) {
+//   if (req.session.passport.user.anonymous) {
+//     projectDB.getSingleProjectFromCode(req.params.id).then(function(project) {
+//         projectDB.addSurvey(req.session.passport.user.id, project.id, req.body).then(
+//         function(data) {
+//           console.log('inside function ... '+ data);
+//           if(req.session.passport.user.type == "mTurk"){
+//               anonUserDB.addHitCode(req.session.passport.user.id, req.params.id).then(function(data) {
+//                   res.send({hitCode: data, workerId: req.session.passport.user.id});
+//               }, function(err) {
+//                   res.status(500).send({error: err.code || 'Could not generate hit code. Please contact us'});
+//               });
+//           } else  if(req.session.passport.user.type == "kiosk"){
+//               //req.logout();
+//               res.send({heatMap: 'heatMap', workerId: req.session.passport.user.id});
+//           }
+//         },
+//         function(err) {
+//           res.status(500).send({error: err.code});
+//         }
+//       );
+//
+//     }, function(err) {
+//       console.log(err)
+//       res.status(500).send({error: err.code});
+//     });
+//   } else {
+//     res.status(401).send({error: 'Only anonymous users can complete the survey'});
+//   }
+// });
+
+
+//fix for issues with codes!
 router.post('/:id/survey', [filters.requireLogin], function(req, res, next) {
-  if (req.session.passport.user.anonymous) {
-    projectDB.getSingleProjectFromCode(req.params.id).then(function(project) {
-        projectDB.addSurvey(req.session.passport.user.id, project.id, req.body).then(
-        function(data) {
-          console.log('inside function ... '+ data);
-          if(req.session.passport.user.type == "mTurk"){
-              anonUserDB.addHitCode(req.session.passport.user.id, req.params.id).then(function(data) {
-                  res.send({hitCode: data, workerId: req.session.passport.user.id});
-              }, function(err) {
-                  res.status(500).send({error: err.code || 'Could not generate hit code. Please contact us'});
-              });
-          } else  if(req.session.passport.user.type == "kiosk"){
-              //req.logout();
-              res.send({heatMap: 'heatMap', workerId: req.session.passport.user.id});
-          }
-        },
-        function(err) {
-          res.status(500).send({error: err.code});
-        }
-      );
-      
-    }, function(err) {
-      console.log(err)
-      res.status(500).send({error: err.code});
-    });
-  } else {
-    res.status(401).send({error: 'Only anonymous users can complete the survey'});
-  }
+    if (req.session.passport.user.anonymous) {
+        projectDB.getSingleProjectFromCode(req.params.id).then(function(project) {
+            projectDB.addSurvey(req.session.passport.user.id, project.id, req.body).then(
+                function(data) {
+                    console.log('inside function ... '+ data);
+                    if(req.session.passport.user.type == "mTurk"){
+
+                        //if participant id, send participant id as hit code, else from env
+                        var hitCode = process.env.hitCode;
+                        if (req.session.passport.user.hasOwnProperty("participantID")){
+                            hitCode = req.session.passport.user.participantID;
+                        }
+
+                        res.send({hitCode: hitCode, workerId: req.session.passport.user.id});
+
+
+                    } else  if(req.session.passport.user.type == "kiosk"){
+                        //req.logout();
+                        res.send({heatMap: 'heatMap', workerId: req.session.passport.user.id});
+                    }
+                },
+                function(err) {
+                    //if for any reason there is an issue adding the survey text, still send hit code
+                    //if participant id, send participant id as hit code, else from env
+                    var hitCode = process.env.hitCode;
+                    if (req.session.passport.user.hasOwnProperty("participantID")){
+                        hitCode = req.session.passport.user.participantID;
+                    }
+                    res.send({hitCode: hitCode, workerId: req.session.passport.user.id});
+
+                }
+            );
+
+        }, function(err) {
+            console.log(err)
+            res.status(500).send({error: err.code});
+        });
+    } else {
+        res.status(401).send({error: 'Only anonymous users can complete the survey'});
+    }
 });
 
 router.post('/upload', [filters.requireLogin, filters.requiredParamHandler(['file', 'projectID'])],

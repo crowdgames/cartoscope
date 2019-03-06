@@ -311,7 +311,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               //if chaining, go to next task if needed
               if (vm.chaining !=-1) {
 
-                  var workerID = $location.search().workerID;
+                  var workerID = $location.search().workerID || $location.search().participantID;
 
                   //get the next projects in the chain
                   $http.get('/api/project/getNextProjectChain/' + encodeURIComponent(workerID)).then(function(data) {
@@ -406,7 +406,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   //if we have to chain, call DB to get the next project code
                   if (vm.chaining !=-1) {
 
-                      var workerID = $location.search().workerID;
+                      var workerID = $location.search().workerID || $location.search().participantID ;
 
                       //get the next projects in the chain
                       $http.get('/api/project/getNextProjectChain/' + encodeURIComponent(workerID)).then(function(data) {
@@ -966,8 +966,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   if (userData) {
                       var queryline = '/api/results/all/' + vm.code + '/' + userData.id;
                   } else {
-                      var workerID = $location.search().workerID;
-                      var hitID = $location.search().hitID;
+                      var workerID = $location.search().workerID || $location.search().participantID;
+                      var hitID = $location.search().hitID || $location.search().trialID;
                       var queryline = '/api/results/all/' + vm.code + '/'  +  encodeURIComponent(workerID);
                   }
 
@@ -1349,7 +1349,7 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
                 //if chaining, go to next task if needed
                 if (vm.chaining !=-1) {
 
-                    var workerID = $location.search().workerID;
+                    var workerID = $location.search().workerID || $location.search().participantID;
 
                     //get the next projects in the chain
                     $http.get('/api/project/getNextProjectChain/' + encodeURIComponent(workerID)).then(function(data) {
@@ -1454,7 +1454,7 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
                     //if we have to chain, call DB to get the next project code
                     if (vm.chaining !=-1) {
 
-                        var workerID = $location.search().workerID;
+                        var workerID = $location.search().workerID || $location.search().participantID;
 
                         //get the next projects in the chain
                         $http.get('/api/project/getNextProjectChain/' + encodeURIComponent(workerID)).then(function(data) {
@@ -2259,8 +2259,8 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
                             if (userData) {
                                 var queryline = '/api/results/all/' + vm.code + '/' + userData.id;
                             } else {
-                                var workerID = $location.search().workerID;
-                                var hitID = $location.search().hitID;
+                                var workerID = $location.search().workerID || $location.search().participantID ;
+                                var hitID = $location.search().hitID || $location.search().trialID;
                                 var queryline = '/api/results/all/' + vm.code + '/'  +  encodeURIComponent(workerID);
                             }
 

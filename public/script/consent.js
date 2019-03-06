@@ -1,4 +1,4 @@
-var module = angular.module('consentApp', ['ui.router', 'ngAnimate', 'ngRoute', 'ngMap', 'configApp']);
+var module = angular.module('consentApp', ['ui.router', 'ngAnimate', 'ngRoute', 'ngMap', 'configApp','angular-uuid']);
 module.config(function($stateProvider, $urlRouterProvider) {
 
     var n = new Date();
@@ -16,6 +16,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
         params: {
             pCode: '',
             workerId:'',
+            participantId:'',
+            trialId:'',
             kioskId:'',
             assignmentId:'',
             hitId:'',
@@ -23,7 +25,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
             projectType:'',
             chain:-1,
             genetic: 0,
-            tree:0
+            tree:0,
+            qlearn:0
         },
         controller: 'instructionController'
     });
@@ -34,6 +37,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
         templateUrl: 'templates/consent/example.html',
         params: {
             pCode: '',
+            participantId:'',
+            trialId:'',
             workerId:'',
             kioskId:'',
             assignmentId:'',
@@ -43,7 +48,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
             chain: -1,
             fromChain:0,
             genetic: 0,
-            tree:0
+            tree:0,
+            qlearn:0
         },
         // controller: 'exampleController'
     });
@@ -55,6 +61,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
         params: {
             pCode: '',
             workerId:'',
+            participantId:'',
+            trialId:'',
             kioskId:'',
             assignmentId:'',
             hitId:'',
@@ -63,7 +71,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
             chain: -1,
             fromChain:0,
             genetic: 0,
-            tree:0
+            tree:0,
+            qlearn:0
         },
         // controller: 'exampleController'
     });
@@ -108,6 +117,7 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
         vm.params.fromChain = $stateParams.fromChain || -1;
         var genetic = $stateParams.genetic;
         var genetic_tree = $stateParams.tree;
+        var qlearn = $stateParams.qlearn;
 
 
         vm.googleMapsUrl= "https://maps.googleapis.com/maps/api/js?key="+googleMapAPIKey;
@@ -527,7 +537,7 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
         function start() {
             var reqParams = {};
             for (var i in vm.params) {
-                if (i == 'workerId' || i == 'assignmentId' || i == 'hitId' || i == 'submitTo' || i == 'kioskId') {
+                if (i == 'workerId' || i == 'assignmentId' || i == 'hitId' || i == 'submitTo' || i == 'kioskId' || i=="participantId" || i=="trialId") {
                     reqParams[i] = vm.params[i];
                 }
             }
@@ -550,6 +560,10 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
             //for genetic
             if (parseInt(genetic_tree)){
                 qs += '&tree=' + genetic_tree;
+            }
+            //for genetic
+            if (parseInt(qlearn)){
+                qs += '&qlearn=' + qlearn;
             }
 
 
@@ -717,6 +731,10 @@ module.controller('exampleGeneticController', ['$window', '$scope', '$state', '$
         vm.params.fromChain = $stateParams.fromChain || -1;
         var genetic = $stateParams.genetic;
         var genetic_tree = $stateParams.tree;
+        var qlearn = $stateParams.qlearn;
+        vm.params.participantId= $stateParams.participantId;
+        vm.params.trialId= $stateParams.trialId;
+
         vm.showMapModal = true;
 
 
@@ -1154,8 +1172,11 @@ module.controller('exampleGeneticController', ['$window', '$scope', '$state', '$
 
         function start() {
             var reqParams = {};
+
+
+
             for (var i in vm.params) {
-                if (i == 'workerId' || i == 'assignmentId' || i == 'hitId' || i == 'submitTo' || i == 'kioskId') {
+                if (i == 'workerId' || i == 'assignmentId' || i == 'hitId' || i == 'submitTo' || i == 'kioskId' || i=="participantId" || i=="trialId") {
                     reqParams[i] = vm.params[i];
                 }
             }
@@ -1177,6 +1198,10 @@ module.controller('exampleGeneticController', ['$window', '$scope', '$state', '$
             //for tree
             if (parseInt(genetic_tree)){
                 qs += '&tree=' + genetic_tree;
+            }
+            //for qlearn
+            if (parseInt(qlearn)){
+                qs += '&qlearn=' + qlearn;
             }
 
 
@@ -1285,8 +1310,19 @@ module.controller('mTurkController', ['$window','$scope','$location','$state','$
 
         $scope.params = $location.search();
         $scope.params.project= $stateParams.pCode;
-
         var reqParams = {};
+
+
+        //TODO: if worker_id,assignmentid hit id submit to not in parameters, then we need trialId and to create a worker id as participant id
+
+        if (!$scope.params.hasOwnProperty("workerId") && $scope.params.hasOwnProperty("trialId") ){
+
+            reqParams["participantId"] =  uuid.v4();
+            console.log( reqParams["participantId"]);
+            reqParams["trialId"] = $scope.params.trialId;
+
+        }
+
         for (var i in $scope.params) {
             if (i == 'workerId' || i == 'assignmentId' || i == 'hitId' || i == 'submitTo') {
                 reqParams[i] = $scope.params[i];
@@ -1307,6 +1343,10 @@ module.controller('mTurkController', ['$window','$scope','$location','$state','$
         //if tree in params, pass it
         if ($scope.params.tree == "1"){
             qs += '&tree=1'
+        }
+        //if qlearn in params, pass it
+        if ($scope.params.qlearn == "1"){
+            qs += '&qlearn=1'
         }
 
         window.location.replace('/api/anon/startAnon/' + $scope.params.project + '?' + qs.substr(1));
@@ -1364,6 +1404,19 @@ module.controller('instructionController', ['$window','$scope', '$state','$state
         $scope.params.projectType = $stateParams.projectType;
         var genetic = $scope.params.genetic || 0;
         var genetic_tree = $scope.params.tree || 0;
+        var qlearn = $scope.params.qlearn || 0;
+
+        //Check if coming with mturk parameters or not
+
+        //if coming with different set of parameters
+        $scope.no_turk_params = 0;
+
+        console.log($scope.params);
+
+        if ($scope.params.hasOwnProperty("participantId") && $scope.params.hasOwnProperty("trialId") ){
+            $scope.no_turk_params = 1;
+        }
+
 
 
         //Get the project info to see how many required
@@ -1420,37 +1473,66 @@ module.controller('instructionController', ['$window','$scope', '$state','$state
                 });
             } else {
                 var state_name = 'examples';
-                if (genetic || genetic_tree){
+                if (genetic || genetic_tree || qlearn){
                     state_name = 'examplesGenetic';
                 }
 
-                $state.go(state_name, {
+                var stateP = {
                     pCode: $scope.params.project,
-                    workerId: $scope.params.workerId,
                     projectType:  $scope.params.projectType,
-                    assignmentId: $scope.params.assignmentId,
-                    hitId: $scope.params.hitId,
-                    submitTo: $scope.params.submitTo || 'www.mturk.com',
                     //If we are chaining projects, we must have reached this part with chain=1, otherwise set it to 0
                     chain: $scope.params.chain,
                     fromChain: fromChain,
                     genetic: genetic,
-                    tree: genetic_tree
-                });
+                    tree: genetic_tree,
+                    qlearn:qlearn
+                };
+
+                //adjust parameters depending on mturk platform
+                if ($scope.no_turk_params){
+
+
+                    stateP.participantId = $scope.params.participantId;
+                    stateP.trialId = $scope.params.trialId;
+
+                } else {
+
+                    stateP.workerId = $scope.params.workerId;
+                    stateP.assignmentId = $scope.params.assignmentId;
+                    stateP.hitId = $scope.params.hitId;
+                    stateP.submitTo = $scope.params.submitTo || 'www.mturk.com';
+
+                }
+
+                $state.go(state_name,stateP );
             }
 
         }
 
     }]);
 
-module.controller('consentController', ['$scope', '$http', '$state',
-    function($scope, $http, $state) {
+module.controller('consentController', ['$scope', '$http', '$state',"uuid",
+    function($scope, $http, $state,uuid) {
+
+
+        $scope.no_turk_params = 0;
 
 
         $scope.agree = function() {
             var reqParams = {};
+
+
+            //if coming with different set of parameters, create uuid as worker id
+            if (!$scope.params.hasOwnProperty("workerId") && $scope.params.hasOwnProperty("trialId") ){
+
+                $scope.params["participantId"] =  uuid.v4();
+                $scope.no_turk_params = 1;
+            }
+
+
+
             for (var i in $scope.params) {
-                if (i == 'workerId' || i == 'assignmentId' || i == 'hitId' || i == 'submitTo') {
+                if (i == 'workerId' || i == 'assignmentId' || i == 'hitId' || i == 'submitTo' || i =="participantId" || i=="trialId") {
                     reqParams[i] = $scope.params[i];
                 }
             }
@@ -1478,15 +1560,30 @@ module.controller('consentController', ['$scope', '$http', '$state',
                 qs += '&tree=1';
                 genetic_tree = 1;
             };
+            var qlearn = 0;
+            if ($scope.params.qlearn == "1"){
+                qs += '&qlearn=1';
+                qlearn = 1;
+            };
 
             //console.log(qs.substr(1));
             $http.get('/api/anon/consent/' + $scope.params.project + '?' + qs.substr(1)).then(function(e, data) {
                 $scope.project = e.data.project;
                 var type= JSON.parse($scope.project.template);
                 $scope.projectType = type.selectedTaskType;
-                $state.go('instruction', {workerId: $scope.params.workerId,
-                    assignmentId: $scope.params.assignmentId, hitId:$scope.params.hitId, submitTo: $scope.params.submitTo,
-                    projectType:  $scope.projectType, chain: chain, genetic: genetic,tree:genetic_tree});
+
+                if ($scope.no_turk_params){
+                    $state.go('instruction', {participantId: $scope.params.participantId,
+                         trialId:$scope.params.trialId,
+                        projectType:  $scope.projectType, chain: chain, genetic: genetic,tree:genetic_tree,qlearn:qlearn});
+
+                } else {
+                    $state.go('instruction', {workerId: $scope.params.workerId,
+                        assignmentId: $scope.params.assignmentId, hitId:$scope.params.hitId, submitTo: $scope.params.submitTo,
+                        projectType:  $scope.projectType, chain: chain, genetic: genetic,tree:genetic_tree,qlearn:qlearn});
+                }
+
+
                 // window.location.replace('/api/anon/startAnon/' + $scope.params.project + '?' + qs.substr(1));
             }, function(err) {
                 console.log(err);
