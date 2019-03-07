@@ -378,8 +378,9 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
 
 
     //if one of the two missing, then error!
-    var projectID = req.query.tree;
-    var workerId = req.query.workerId;
+    var projectID = req.query.tree || req.query.qlearn || req.query.genetic || req.query.random;
+    var workerId = req.query.workerId || req.query.participantId;
+
 
 
     if (projectID == undefined){
@@ -390,16 +391,83 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
     } else {
         //make the mturk user object
         var anonUser = {
-            workerId: req.query.user_code,
-            hitId: req.query.hitId || "tileoscope",
+            workerId: workerId,
+            hitId: req.query.hitId || req.query.trialId ||  "tileoscope",
             assignmentId: req.query.assignmentId || "tileoscope",
             submitTo: req.query.submitTo || "tileoscope"
         };
 
-        //make sure there is a tree
-        dynamicDB.getTreeFromCodeTileoscope(projectID).then(function(tree) {
 
-            console.log("Tree exists.")
+        //for cases requiring trees (or generating from pools that are stored in the root of a tree)
+        if (req.query.hasOwnProperty("tree") || req.query.hasOwnProperty("random")){
+            //make sure there is a tree
+            dynamicDB.getTreeFromCodeTileoscope(projectID).then(function(tree) {
+
+                console.log("Tree exists.");
+
+                //check if user exists:
+                anonUserDB.findConsentedMTurkWorker(anonUser.workerId, projectID,anonUser.hitId).then(function(user) {
+                    if (user.id) {
+                        console.log("User exists.Fetching sequence")
+                        //res.status(200).send({user_id:user.id, project_code: projectID});
+                        //retrieve from genetic id
+                        tileDB.getCreatedSequenceTileoscope(user.genetic_id).then(function(genetic_data) {
+
+                            res.setHeader('Access-Control-Allow-Origin', '*');
+
+
+                            res.send(genetic_data[0].seq)
+
+                        }, function(error){
+
+                            res.status(400).send("Error retrieving sequence for existing user.")
+
+                        });
+
+
+                    } else {
+                        //get genetic code from backend
+
+                        console.log("User not found. Creating...");
+
+                        var func = "createUserSequenceFromTreeTileoscope";
+                        if (req.query.hasOwnProperty("random")){
+                            func = "createUserSequenceFromTreeTileoscopeRandom"
+                        }
+
+                        dynamicDB[func](projectID).then(function(genetic_data){
+
+                            console.log(genetic_data);
+                            var genetic_id = genetic_data.genetic_id;
+                            var genetic_seq = genetic_data.seq;
+                            //add them as mturk worker and return genetic sequence
+                            anonUserDB.addMTurkWorker(anonUser, projectID, 1, 1, genetic_id).then(function (userID) {
+                                //find user then return corresponding user id and project code
+                                anonUserDB.findConsentedMTurkWorker(anonUser.workerId, projectID,anonUser.hitId).then(function(user) {
+                                    if (user.id) {
+                                        //res.status(200).send({user_id:user.id, project_code: projectID});
+                                        res.send(genetic_seq)
+                                    }
+                                })
+                            });
+
+                        },function(err) {
+                            console.log('err ', err);
+                            res.status(404).send('Could not generate sequence.');
+                        });
+                    }
+                })
+
+
+
+
+            }, function(err) {
+                console.log('err ', err);
+                res.status(404).send('No tree found.');
+            });
+        }
+        //for for cases that don't require tree
+        else if (req.query.hasOwnProperty("qlearn") || req.query.hasOwnProperty("genetic")){
 
             //check if user exists:
             anonUserDB.findConsentedMTurkWorker(anonUser.workerId, projectID,anonUser.hitId).then(function(user) {
@@ -422,13 +490,18 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
 
 
                 } else {
-                    //get genetic code from backend
+                    //get sequence by picking between randomly generating or qlearn optimal
 
-                    console.log("User not found. Creating...")
+                    console.log("User not found. Creating...");
 
-                    dynamicDB.createUserSequenceFromTreeTileoscope(projectID).then(function(genetic_data){
+                    var func = "createUserSequenceQlearnTileoscope";
+                    if (req.query.hasOwnProperty("genetic")){
+                        func = "pickGeneticSequenceTileoscope"
+                    }
 
-                        console.log(genetic_data)
+                    dynamicDB[func](projectID).then(function(genetic_data){
+
+                        console.log(genetic_data);
                         var genetic_id = genetic_data.genetic_id;
                         var genetic_seq = genetic_data.seq;
                         //add them as mturk worker and return genetic sequence
@@ -450,12 +523,9 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
             })
 
 
+        }
 
 
-        }, function(err) {
-            console.log('err ', err);
-            res.status(404).send('No tree found.');
-        });
     }
 
 });

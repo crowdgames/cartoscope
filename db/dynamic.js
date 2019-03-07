@@ -469,37 +469,27 @@ exports.createUserSequenceFromTreeRandom = function(main_code){
 exports.createUserSequenceQlearn = function(main_code) {
 
     return new Promise(function (resolve, error) {
-
-
         //Randomly pick between making a random sequence and picking the optimal strategy qlearn
-
         var pick_optimal = Math.round(Math.random());
 
         if (pick_optimal){
             console.log("Picking optimal");
 
             exports.pickQlearnOptimalSequence(main_code).then(function(genetic_id) {
-
                 resolve(genetic_id)
-
             })
-
         } else {
             console.log("Creating random");
             exports.createUserSequenceFromTreeRandom(main_code).then(function(genetic_id) {
                 resolve(genetic_id)
             })
-
         }
-
-
-
     });
 
 };
 
 
-//select top K sequences from current main project
+//pick q optimal sequence
 exports.pickQlearnOptimalSequence = function(main_code) {
 
     return new Promise(function(resolve, error) {
@@ -509,6 +499,64 @@ exports.pickQlearnOptimalSequence = function(main_code) {
             .then(
                 function(data) {
                     resolve(data[0].id);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};
+
+
+//pick optimal for Tileoscope
+exports.pickQlearnOptimalSequenceTileoscope = function(main_code) {
+
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT id as genetic_id,seq from tileoscope_task_genetic_sequences where unique_code_main=? and active=1 and method="qlearn_optimal" ',
+            [main_code])
+            .then(
+                function(data) {
+                    resolve(data[0]);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};
+
+
+
+exports.createUserSequenceQlearnTileoscope = function(main_code) {
+
+    return new Promise(function (resolve, error) {
+        //Randomly pick between making a random sequence and picking the optimal strategy qlearn
+        var pick_optimal = Math.round(Math.random());
+
+        if (pick_optimal){
+            console.log("Picking optimal");
+
+            exports.pickQlearnOptimalSequenceTileoscope(main_code).then(function(genetic_id) {
+                resolve(genetic_id);
+            })
+        } else {
+            console.log("Creating random");
+            exports.createUserSequenceFromTreeTileoscopeRandom(main_code).then(function(genetic_id) {
+                resolve(genetic_id)
+            })
+        }
+    });
+
+};
+
+
+//pick an already generated sequence from the db
+exports.pickGeneticSequenceTileoscope = function(main_code) {
+
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT id as genetic_id,seq from tileoscope_task_genetic_sequences where unique_code_main=? and active=1 ORDER BY RAND() LIMIT 1 ',
+            [main_code])
+            .then(
+                function(data) {
+                    resolve(data[0]);
                 }, function(err) {
                     error(err);
                 });
@@ -739,6 +787,81 @@ exports.createUserSequenceFromTreeTileoscope = function(main_code){
                 misc: root_info.misc || "none",
                 active: 1,
                 method: "tree"
+            };
+            var gen_list = [gen_obj];
+            exports.insertGeneticSequences2Tileoscope(gen_list).then(function(insert_data) {
+                //Send genetic id back
+                if (insert_data.insertId) {
+                    resolve({genetic_id:insert_data.insertId,seq:gen_seq_short});
+                } else if (insert_data.affectedRows > 0) {
+                    resolve(0);
+                } else {
+                    error({code: 'Problem with insertion'});
+                }
+
+
+            }, function(err){
+                console.log(err);
+                error(err)
+            })
+
+
+        }, function(err){
+            console.log(err);
+            error(err)
+        })
+
+    });
+
+
+};
+
+exports.createUserSequenceFromTreeTileoscopeRandom = function(main_code){
+
+
+    return new Promise(function(resolve, error) {
+        //will generate a sequence with max horizon 100. should update if not realistic
+        var sequence_length = 10;
+
+        //get tree from main code
+        exports.getTreeFromCodeTileoscope(main_code).then(function(tree) {
+
+
+            //start with root:
+            var parent = "start";
+            var generated_sequence = [];
+            var parent_info = filterResponses(tree,{node:parent});
+            var root_info = parent_info[0];
+            var possible_children_pool = decodeGeneticPoolTileoscope(root_info); //get all possible children from root
+
+
+
+            //repeat for size k, pick random option
+            for (var i = 0; i < sequence_length; i++) {
+
+                var next_step = generateGenome(possible_children_pool); //essentially picks a child at random
+
+                //at this point we have the next step: push it to the total sequence:
+                generated_sequence.push(next_step);
+                //update the parent to be the sequence so far:
+            }
+
+            //after the sequence is complete, convert to short form and return it
+            var gen_seq_short = encodeSequence(generated_sequence).join("-");
+            //create the object of the sequence and add it to the task_genetic_sequences:
+
+            //after the sequence is complete, convert to short form and return it
+            var gen_seq_short = generated_sequence.join("-");
+            //create the object of the sequence and add it to the task_genetic_sequences:
+
+            var gen_obj = {
+                unique_code_main: root_info.unique_code_main,
+                seq: gen_seq_short,
+                pool: root_info.pool,
+                ignore_codes: root_info.ignore_codes,
+                misc: root_info.misc || "none",
+                active: 1,
+                method: "tree_random"
             };
             var gen_list = [gen_obj];
             exports.insertGeneticSequences2Tileoscope(gen_list).then(function(insert_data) {

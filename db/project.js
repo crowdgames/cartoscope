@@ -689,6 +689,26 @@ exports.addSurvey = function(userID, projectID, response) {
   });
 };
 
+exports.addSurveyTileoscope = function(userID, hitID, response) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('INSERT INTO '+databaseName+'.`tileoscope_survey`(`user_id`,`hit_id`,`response`)' +
+            'VALUES (?, ?, ?) on DUPLICATE KEY update response=VALUES(response)',
+            [userID, hitID, JSON.stringify(response)]).then(
+            function(data) {
+                console.log(data)
+                if (data.insertId) {
+                    console.log('In data insert');
+                    resolve(data.insertId);
+                } else {
+                    error({code: 'Problem with insert'});
+                }
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
 exports.getAllProjectsForUser = function(userID) {
   return new Promise(function(resolve, error) {
     var connection = db.get();

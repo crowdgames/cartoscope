@@ -601,6 +601,41 @@ router.post('/:id/survey', [filters.requireLogin], function(req, res, next) {
     }
 });
 
+
+//storing to survey tileoscope
+router.post('/surveyTileoscope', function(req, res, next) {
+
+    console.log(req.body)
+    var workerId = req.body.workerId || req.body.participantId;
+    var hitId = req.body.hitId || req.body.trialId;
+
+    projectDB.addSurveyTileoscope(workerId, hitId, req.body).then(function(data) {
+        console.log('inside function ... '+ data);
+
+            //if participant id, send participant id as hit code, else from env
+            var hitCode = process.env.hitCode;
+            if (req.body.hasOwnProperty("participantId")){
+                hitCode = req.body.participantId;
+            }
+            res.send({hitCode: hitCode, workerId: workerId});
+            },
+                function(err) {
+                    //if for any reason there is an issue adding the survey text, still send hit code
+                    //if participant id, send participant id as hit code, else from env
+                    //if participant id, send participant id as hit code, else from env
+                    var hitCode = process.env.hitCode;
+                    if (req.body.hasOwnProperty("participantId")){
+                        hitCode = req.body.participantId;
+                    }
+                    res.send({hitCode: hitCode, workerId: workerId});
+
+                }
+            );
+
+
+
+});
+
 router.post('/upload', [filters.requireLogin, filters.requiredParamHandler(['file', 'projectID'])],
   function(req, res, next) {
     var body = req.body;

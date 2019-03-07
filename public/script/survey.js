@@ -34,6 +34,13 @@ module.config(function($stateProvider, $urlRouterProvider) {
         controller: 'surveyGAMEontroller'
     });
 
+    $stateProvider.state({
+        name: 'surveyGAMETileoscopeontroller',
+        url: '/surveyGAMETileoscope',
+        templateUrl: 'templates/survey_game.html',
+        controller: 'surveyGAMEontroller'
+    });
+
 
 
 
@@ -607,7 +614,9 @@ module.config(function($stateProvider, $urlRouterProvider) {
 module.controller('appController', ['$scope', '$location', function($scope, $location) {
   $scope.params = $location.search();
   $scope.response = {};
-  if (!$scope.params.code) {
+
+  //do not fail if we have src in the url
+  if (!$scope.params.code && !$scope.params.src) {
     alert('missing project code');
     window.location.replace('/');
   }
@@ -667,7 +676,7 @@ module.controller('surveyController', ['$scope', '$http', '$state', '$location',
               alert('Something unexpected occurred.');
           }
       });
-    }
+    }Î
   };
 
   $scope.transformData = function(response, userType) {
@@ -873,6 +882,29 @@ module.controller('surveyTLXController', ['$scope', '$http', '$state', '$locatio
 module.controller('surveyGAMEontroller', ['$scope', '$http', '$state', '$location','$timeout','$compile',function($scope, $http, $state, $location,$timeout,$compile) {
 
 
+    //TODO: if coming from Tileoscope, need an indication that we are indeed coming from there
+
+    //locatin search, if coming from tileoscope or tileoscope AR
+
+
+    $scope.fromTileoscope = 0;
+    $scope.participantId ="";
+    $scope.trialId = "";
+
+
+    //if coming from tileoscope
+    if ($scope.params.hasOwnProperty("src") ){
+        $scope.fromTileoscope = 1;
+        $scope.participantId = $scope.params.workerId ||  $scope.params.participantId;
+        $scope.trialId = $scope.params.hitId ||  $scope.params.trialId;
+        $scope.userType = "mTurk"
+    } else {
+        $scope.userType = $scope.params.userType;
+    }
+
+
+
+
     //Generate numbers for radio buttons for Likert (7 scales)
     $scope.getNumber = function(){
         var ratings = [];
@@ -884,7 +916,6 @@ module.controller('surveyGAMEontroller', ['$scope', '$http', '$state', '$locatio
 
     $scope.req_answers = false;
 
-    $scope.userType = $scope.params.userType;
     $scope.forms = {};
 
     if ($scope.userType == 'mTurk') {
@@ -905,7 +936,18 @@ module.controller('surveyGAMEontroller', ['$scope', '$http', '$state', '$locatio
 
 
         if (data != -1) {
-            $http.post('/api/project/' + $scope.params.code + '/survey', JSON.stringify(data)).then(function(data) {
+
+            var link = '/api/project/' + $scope.params.code + '/survey';
+
+
+            //TODO: if coming from Tileoscope, add hit id and participant id and save to different table
+            if ($scope.fromTileoscope){
+                link = '/api/project/surveyTileoscope';
+                data.participantId = $scope.participantId;
+                data.trialId = $scope.trialId;
+            }
+
+            $http.post(link, JSON.stringify(data)).then(function(data) {
                 // console.log('data',data.data);
                 //console.log(data.data.hitCode);
                 if (data.data.hitCode) {
