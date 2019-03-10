@@ -61,6 +61,21 @@ exports.submitTileoscopeMove = function(userId, hitId, response) {
 
 
 
+//get all the moves for a specific trial
+exports.getTileoscopeMoves = function(trialId) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT * from tileoscope_moves where hit_id=?  ', [trialId])
+            .then(
+                function(data) {
+                    resolve(data);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};
+
+
 //get the active genetic tree for the given main code
 exports.getCreatedSequenceTileoscope = function(id) {
     return new Promise(function(resolve, error) {

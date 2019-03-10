@@ -411,6 +411,28 @@ router.post('/getTileoscopeUserVotes', function(req, res, next) {
 });
 
 
+
+//Get Tileoscope moves for specific hit
+router.get('/getTileoscopeMoves/:hitId', function(req, res, next) {
+
+
+    //if one of the two missing, then error!
+    var hitId = req.params.hitId;
+
+        //make sure there is a project
+        tileDB.getTileoscopeMoves(hitId).then(function(moves) {
+
+            res.send(moves);
+
+        }, function(err) {
+            console.log('err ', err);
+            res.status(404).send('No trial found.');
+        });
+
+
+});
+
+
 // Get a generated sequence for Tilescope Web
 router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
 
