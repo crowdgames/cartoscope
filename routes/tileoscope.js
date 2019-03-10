@@ -234,6 +234,44 @@ router.post('/submitMatch', function(req, res, next) {
 });
 
 
+
+
+//Register tileoscope User to Cartoscope Code
+router.post('/submitMove', function(req, res, next) {
+
+
+    //if one of the two missing, then error!
+    var hitId = req.body.hitID;
+    var workerId = req.body.userID;
+    var move = req.body.move;
+
+
+
+    if (hitId == undefined){
+        res.status(400).send('Trial ID missing.');
+    }
+    else if (workerId == undefined){
+        res.status(400).send('User code missing.');
+    }  else if (move == undefined){
+        res.status(400).send('Move missing.');
+    }
+
+    else {
+
+
+        //make sure there is a project
+        tileDB.submitTileoscopeMove(workerId,hitId,move).then(function(project) {
+
+            res.status(200).send('Move submitted successfully');
+
+        }, function(err) {
+            console.log('err ', err);
+            res.status(400).send('Error submitting move.');
+        });
+    }
+});
+
+
 //Register tileoscope User to Cartoscope Code
 router.get('/submitMatch', function(req, res, next) {
 
@@ -411,8 +449,8 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
                         tileDB.getCreatedSequenceTileoscope(user.genetic_id).then(function(genetic_data) {
 
                             res.setHeader('Access-Control-Allow-Origin', '*');
-
-                            res.send(genetic_data[0].seq)
+                            var res_obj = {seq:genetic_data[0].seq,method:genetic_data[0].method};
+                            res.send(res_obj)
 
                         }, function(error){
 
@@ -443,7 +481,8 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
                                     if (user.id) {
                                         //res.status(200).send({user_id:user.id, project_code: projectID});
                                         res.setHeader('Access-Control-Allow-Origin', '*');
-                                        res.send(genetic_seq)
+                                        var res_obj = {seq:genetic_data.seq,method:genetic_data.method};
+                                        res.send(res_obj)
                                     }
                                 })
                             });
@@ -475,8 +514,8 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
                     tileDB.getCreatedSequenceTileoscope(user.genetic_id).then(function(genetic_data) {
 
                         res.setHeader('Access-Control-Allow-Origin', '*');
-
-                        res.send(genetic_data[0].seq)
+                        var res_obj = {seq:genetic_data[0].seq,method:genetic_data[0].method};
+                        res.send(res_obj)
 
                     }, function(error){
 
@@ -507,7 +546,8 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
                                 if (user.id) {
                                     //res.status(200).send({user_id:user.id, project_code: projectID});
                                     res.setHeader('Access-Control-Allow-Origin', '*');
-                                    res.send(genetic_seq)
+                                    var res_obj = {seq:genetic_data.seq,method:genetic_data.method};
+                                    res.send(res_obj);
                                 }
                             })
                         });
@@ -560,7 +600,8 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
                                 if (user.id) {
                                     //res.status(200).send({user_id:user.id, project_code: projectID});
                                     res.setHeader('Access-Control-Allow-Origin', '*');
-                                    res.send(genetic_seq)
+                                    var res_obj = {seq:genetic_data.seq,method:genetic_data.method};
+                                    res.send(res_obj)
                                 }
                             })
                         });

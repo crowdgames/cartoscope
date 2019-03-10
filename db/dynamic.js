@@ -537,7 +537,7 @@ exports.pickQlearnOptimalSequenceTileoscope = function(main_code) {
 
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        connection.queryAsync('SELECT id as genetic_id,seq from tileoscope_task_genetic_sequences where unique_code_main=? and active=1 and method="qlearn_optimal" ',
+        connection.queryAsync('SELECT id as genetic_id,seq,method from tileoscope_task_genetic_sequences where unique_code_main=? and active=1 and method="qlearn_optimal" ',
             [main_code])
             .then(
                 function(data) {
@@ -554,11 +554,11 @@ exports.pickGreedySequenceTileoscope = function(main_code) {
 
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        connection.queryAsync('SELECT id as genetic_id,seq from tileoscope_task_genetic_sequences where unique_code_main=? and active=1 and method="greedy" ',
+        connection.queryAsync('SELECT id as genetic_id,seq,method from tileoscope_task_genetic_sequences where unique_code_main=? and active=1 and method="greedy" ',
             [main_code])
             .then(
                 function(data) {
-                    resolve(data[0].id);
+                    resolve(data[0]);
                 }, function(err) {
                     error(err);
                 });
@@ -602,7 +602,7 @@ exports.pickGeneticSequenceTileoscope = function(main_code) {
 
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        connection.queryAsync('SELECT id as genetic_id,seq from tileoscope_task_genetic_sequences where unique_code_main=? and not method like \'tree%\' and not method like \'qlearn%\'  and active=1 ORDER BY RAND() LIMIT 1 ',
+        connection.queryAsync('SELECT id as genetic_id,seq.method from tileoscope_task_genetic_sequences where unique_code_main=? and not method like \'tree%\' and not method like \'qlearn%\'  and active=1 ORDER BY RAND() LIMIT 1 ',
             [main_code])
             .then(
                 function(data) {
@@ -842,7 +842,7 @@ exports.createUserSequenceFromTreeTileoscope = function(main_code){
             exports.insertGeneticSequences2Tileoscope(gen_list).then(function(insert_data) {
                 //Send genetic id back
                 if (insert_data.insertId) {
-                    resolve({genetic_id:insert_data.insertId,seq:gen_seq_short});
+                    resolve({genetic_id:insert_data.insertId,seq:gen_seq_short,method:"tree"});
                 } else if (insert_data.affectedRows > 0) {
                     resolve(0);
                 } else {
@@ -917,7 +917,7 @@ exports.createUserSequenceFromTreeTileoscopeRandom = function(main_code){
             exports.insertGeneticSequences2Tileoscope(gen_list).then(function(insert_data) {
                 //Send genetic id back
                 if (insert_data.insertId) {
-                    resolve({genetic_id:insert_data.insertId,seq:gen_seq_short});
+                    resolve({genetic_id:insert_data.insertId,seq:gen_seq_short,method:"tree_random"});
                 } else if (insert_data.affectedRows > 0) {
                     resolve(0);
                 } else {

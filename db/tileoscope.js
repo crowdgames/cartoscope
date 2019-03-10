@@ -40,6 +40,26 @@ exports.addResponseTileoscope = function(userId, projectId, task_list, response)
 };
 
 
+exports.submitTileoscopeMove = function(userId, hitId, response) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+
+
+        connection.queryAsync('INSERT INTO tileoscope_moves (user_id, hit_id,response) VALUES(?,?,?) ',[userId,hitId,response]).then(
+            function(data) {
+                if (data.insertId) {
+                    resolve(data.affectedRows);
+                } else {
+                    error({code: 'Problem with insert'});
+                }
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
+
 
 //get the active genetic tree for the given main code
 exports.getCreatedSequenceTileoscope = function(id) {
@@ -61,7 +81,7 @@ exports.getCreatedSequenceTileoscope = function(id) {
 exports.pickSequenceFeaturedTileoscope = function() {
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        connection.queryAsync('SELECT id as genetic_id,seq from tileoscope_task_genetic_sequences where method="featured" ORDER BY RAND() LIMIT 1 ')
+        connection.queryAsync('SELECT id as genetic_id,seq,method from tileoscope_task_genetic_sequences where method="featured" ORDER BY RAND() LIMIT 1 ')
             .then(
                 function(data) {
                     resolve(data[0]);
