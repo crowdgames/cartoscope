@@ -54,3 +54,19 @@ exports.getCreatedSequenceTileoscope = function(id) {
                 });
     });
 };
+
+
+
+//get the active genetic tree for the given main code
+exports.pickSequenceFeaturedTileoscope = function() {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT id as genetic_id,seq from tileoscope_task_genetic_sequences where method="featured" ORDER BY RAND() LIMIT 1 ')
+            .then(
+                function(data) {
+                    resolve(data[0]);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};

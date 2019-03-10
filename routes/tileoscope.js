@@ -378,15 +378,12 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
 
 
     //if one of the two missing, then error!
-    var projectID = req.query.tree || req.query.qlearn || req.query.genetic || req.query.random;
+    var projectID = req.query.tree || req.query.qlearn || req.query.genetic || req.query.random || "featured";
     var workerId = req.query.workerId || req.query.participantId;
 
 
 
-    if (projectID == undefined){
-        res.status(400).send('Project code missing.');
-    }
-    else if (workerId == undefined){
+    if (workerId == undefined){
         res.status(400).send('User code missing.');
     } else {
         //make the mturk user object
@@ -500,6 +497,60 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
                     }
 
                     dynamicDB[func](projectID).then(function(genetic_data){
+
+                        console.log(genetic_data);
+                        var genetic_id = genetic_data.genetic_id;
+                        var genetic_seq = genetic_data.seq;
+                        //add them as mturk worker and return genetic sequence
+                        anonUserDB.addMTurkWorker(anonUser, projectID, 1, 1, genetic_id).then(function (userID) {
+                            //find user then return corresponding user id and project code
+                            anonUserDB.findConsentedMTurkWorker(anonUser.workerId, projectID,anonUser.hitId).then(function(user) {
+                                if (user.id) {
+                                    //res.status(200).send({user_id:user.id, project_code: projectID});
+                                    res.send(genetic_seq)
+                                }
+                            })
+                        });
+
+                    },function(err) {
+                        console.log('err ', err);
+                        res.status(404).send('Could not generate sequence.');
+                    });
+                }
+            })
+
+
+        } else {
+
+            console.log("Featured");
+
+            //check if user exists:
+            anonUserDB.findConsentedMTurkWorker(anonUser.workerId, projectID,anonUser.hitId).then(function(user) {
+                if (user.id) {
+                    console.log("User exists.Fetching sequence")
+                    //res.status(200).send({user_id:user.id, project_code: projectID});
+                    //retrieve from genetic id
+                    tileDB.getCreatedSequenceTileoscope(user.genetic_id).then(function(genetic_data) {
+
+                        res.setHeader('Access-Control-Allow-Origin', '*');
+
+
+                        res.send(genetic_data[0].seq)
+
+                    }, function(error){
+
+                        res.status(400).send("Error retrieving sequence for existing user.")
+
+                    });
+
+
+                } else {
+                    //get sequence by picking one of the currently featured ones
+
+                    console.log("User not found. Creating...");
+
+
+                    tileDB.pickSequenceFeaturedTileoscope().then(function(genetic_data){
 
                         console.log(genetic_data);
                         var genetic_id = genetic_data.genetic_id;

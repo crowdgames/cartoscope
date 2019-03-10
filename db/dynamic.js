@@ -470,17 +470,26 @@ exports.createUserSequenceQlearn = function(main_code) {
 
     return new Promise(function (resolve, error) {
         //Randomly pick between making a random sequence and picking the optimal strategy qlearn
-        var pick_optimal = Math.round(Math.random());
 
-        if (pick_optimal){
+
+        //randomly pick betweeen optimal, greedy and generating random
+        // var pick_optimal = Math.round(Math.random());
+        var pick_optimal = randomInt(0,2)
+
+        if (pick_optimal == 0){
             console.log("Picking optimal");
 
             exports.pickQlearnOptimalSequence(main_code).then(function(genetic_id) {
                 resolve(genetic_id)
             })
-        } else {
+        } else if (pick_optimal == 1) {
             console.log("Creating random");
             exports.createUserSequenceFromTreeRandom(main_code).then(function(genetic_id) {
+                resolve(genetic_id)
+            })
+        } else  {
+            console.log("Picking  greedy");
+            exports.pickGreedySequence(main_code).then(function(genetic_id) {
                 resolve(genetic_id)
             })
         }
@@ -495,6 +504,23 @@ exports.pickQlearnOptimalSequence = function(main_code) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
         connection.queryAsync('SELECT id from task_genetic_sequences where unique_code_main=? and active=1 and method="qlearn_optimal" ',
+            [main_code])
+            .then(
+                function(data) {
+                    resolve(data[0].id);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};
+
+
+//pick greedy sequence for qlearn
+exports.pickGreedySequence = function(main_code) {
+
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT id from task_genetic_sequences where unique_code_main=? and active=1 and method="greedy" ',
             [main_code])
             .then(
                 function(data) {
@@ -523,23 +549,47 @@ exports.pickQlearnOptimalSequenceTileoscope = function(main_code) {
 };
 
 
+//pick greedy for qlearn comps Tileoscope
+exports.pickGreedySequenceTileoscope = function(main_code) {
+
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT id as genetic_id,seq from tileoscope_task_genetic_sequences where unique_code_main=? and active=1 and method="greedy" ',
+            [main_code])
+            .then(
+                function(data) {
+                    resolve(data[0].id);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};
+
+
 
 exports.createUserSequenceQlearnTileoscope = function(main_code) {
 
     return new Promise(function (resolve, error) {
         //Randomly pick between making a random sequence and picking the optimal strategy qlearn
-        var pick_optimal = Math.round(Math.random());
+        //var pick_optimal = Math.round(Math.random());
+        var pick_optimal = randomInt(0,2);
 
-        if (pick_optimal){
+        if (pick_optimal == 0){
             console.log("Picking optimal");
 
             exports.pickQlearnOptimalSequenceTileoscope(main_code).then(function(genetic_id) {
                 resolve(genetic_id);
             })
-        } else {
+        } else  if (pick_optimal == 1){
             console.log("Creating random");
             exports.createUserSequenceFromTreeTileoscopeRandom(main_code).then(function(genetic_id) {
                 resolve(genetic_id)
+            })
+        } else {
+            console.log("Picking greedy");
+
+            exports.pickGreedySequenceTileoscope(main_code).then(function(genetic_id) {
+                resolve(genetic_id);
             })
         }
     });
@@ -1459,4 +1509,9 @@ function getCombinationsSize(arr,d) {
     return(sequences)
 }
 
+
+//return random integer [min,max]
+function randomInt(min,max){
+    return (Math.floor(Math.random() * (max - min + 1) ) + min);
+}
 
