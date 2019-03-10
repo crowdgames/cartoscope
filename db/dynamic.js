@@ -602,7 +602,7 @@ exports.pickGeneticSequenceTileoscope = function(main_code) {
 
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        connection.queryAsync('SELECT id as genetic_id,seq from tileoscope_task_genetic_sequences where unique_code_main=? and active=1 ORDER BY RAND() LIMIT 1 ',
+        connection.queryAsync('SELECT id as genetic_id,seq from tileoscope_task_genetic_sequences where unique_code_main=? and not method like \'tree%\' and not method like \'qlearn%\'  and active=1 ORDER BY RAND() LIMIT 1 ',
             [main_code])
             .then(
                 function(data) {
