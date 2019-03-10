@@ -412,7 +412,6 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
 
                             res.setHeader('Access-Control-Allow-Origin', '*');
 
-
                             res.send(genetic_data[0].seq)
 
                         }, function(error){
@@ -443,6 +442,7 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
                                 anonUserDB.findConsentedMTurkWorker(anonUser.workerId, projectID,anonUser.hitId).then(function(user) {
                                     if (user.id) {
                                         //res.status(200).send({user_id:user.id, project_code: projectID});
+                                        res.setHeader('Access-Control-Allow-Origin', '*');
                                         res.send(genetic_seq)
                                     }
                                 })
@@ -476,7 +476,6 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
 
                         res.setHeader('Access-Control-Allow-Origin', '*');
 
-
                         res.send(genetic_data[0].seq)
 
                     }, function(error){
@@ -507,6 +506,7 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
                             anonUserDB.findConsentedMTurkWorker(anonUser.workerId, projectID,anonUser.hitId).then(function(user) {
                                 if (user.id) {
                                     //res.status(200).send({user_id:user.id, project_code: projectID});
+                                    res.setHeader('Access-Control-Allow-Origin', '*');
                                     res.send(genetic_seq)
                                 }
                             })
@@ -533,8 +533,6 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
                     tileDB.getCreatedSequenceTileoscope(user.genetic_id).then(function(genetic_data) {
 
                         res.setHeader('Access-Control-Allow-Origin', '*');
-
-
                         res.send(genetic_data[0].seq)
 
                     }, function(error){
@@ -561,6 +559,7 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
                             anonUserDB.findConsentedMTurkWorker(anonUser.workerId, projectID,anonUser.hitId).then(function(user) {
                                 if (user.id) {
                                     //res.status(200).send({user_id:user.id, project_code: projectID});
+                                    res.setHeader('Access-Control-Allow-Origin', '*');
                                     res.send(genetic_seq)
                                 }
                             })
