@@ -5,7 +5,7 @@
 
 
         <center>
-            <div id="map_canvas" ng-if="successProject1" >
+            <div id="map_canvas" ng-if="successProject1 && proj_data.has_location" >
                 <ui-gmap-google-map center="map1.center" zoom="map1.zoom" draggable="true" options="options" bounds="map1.bounds">
 
                     <ui-gmap-layer namespace="visualization" type="HeatmapLayer" show="map1.showHeat" onCreated="map1.heatLayerCallback"></ui-gmap-layer>
@@ -26,14 +26,14 @@
 
             </div>
 
-            <div class="row" ng-if="successProject1 && !showMarkers">
+            <div class="row" ng-if="successProject1 && !showMarkers && proj_data.has_location">
                 <small><b>Note:</b> Heatmap generated based on image GPS locations
                     <span ng-if="showPoiName">, not {{project_poi_name}} locations</span>
                     </small>
 
             </div>
 
-            <div class="row" ng-if="successProject1">
+            <div class="row" ng-if="successProject1 && proj_data.has_location">
                 <h3>{{question1}}</h3>
                 <div class="col-lg-2 col-md-2"></div>
                 <div ng-hide="showMarkers" class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
