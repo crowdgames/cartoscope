@@ -188,6 +188,7 @@ CREATE TABLE `projects` (
   `inorder` int(11) DEFAULT '0',
   `req_count` int(11) DEFAULT '0',
   `image_source` text,
+   `image_attribution` text DEFAULT NULL,
   `tutorial_link` text,
   `genetic` int(11) DEFAULT '0',
   `genetic_task` int(11) DEFAULT '0',

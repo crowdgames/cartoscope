@@ -213,7 +213,17 @@
         <div class="col-sm-12" id="img">
             <img id="task-img" style="max-height:450px" class="img-responsive img-task" ng-src="{{model.getNextTask()}}" ng-click="model.showBiggerImg()">
         </div>
+    </div>
+    <div class="row" style="text-align: center;" ng-if="model.data.template.selectedTaskType == 'tagging'">
 
+    <div class="col-sm-12" ng-show="model.data.image_source != undefined && model.data.image_attribution != undefined" >
+
+        <p style="color: white;">Image Attribution:
+            <span><a target="_blank" ng-href="{{model.data.image_source}}">{{model.data.image_source}}</a></span>
+            <span  ng-show="model.data.image_source != undefined" style="color: #9cdc1f;cursor: pointer;" data-target="#attrModal" data-toggle="modal">View More Info</span>
+
+        </p>
+    </div>
     </div>
 
 
@@ -314,6 +324,34 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="attrModal"  role="dialog" >
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Attribution</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <div>
+                        <p>
+                            {{model.data.image_attribution}}
+                        </p>
+
+                    </div>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <div class="modal fade" id="tutModal"  role="dialog" >
         <div class="modal-dialog" role="document">
