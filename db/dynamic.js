@@ -871,7 +871,7 @@ exports.createUserSequenceFromTreeTileoscopeRandom = function(main_code){
 
     return new Promise(function(resolve, error) {
         //will generate a sequence with max horizon 100. should update if not realistic
-        var sequence_length = 10;
+        var sequence_length = 50;
 
         //get tree from main code
         exports.getTreeFromCodeTileoscope(main_code).then(function(tree) {
