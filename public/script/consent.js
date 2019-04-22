@@ -118,6 +118,9 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
         var genetic = $stateParams.genetic;
         var genetic_tree = $stateParams.tree;
         var qlearn = $stateParams.qlearn;
+        vm.params.participantId= $stateParams.participantId;
+        vm.params.trialId= $stateParams.trialId;
+
 
 
         vm.googleMapsUrl= "https://maps.googleapis.com/maps/api/js?key="+googleMapAPIKey;
