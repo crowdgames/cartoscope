@@ -19,6 +19,8 @@ var spawn = require('child_process').spawn;
 
 var unzip = require('unzip');
 var Minizip = require('node-minizip');
+var mv = require('mv');
+
 
 var Promise = require('bluebird');
 var filters = require('../constants/filters');
@@ -293,7 +295,15 @@ function downloadLocal(loc,downloadID, projectID) {
 
                         //unzip will require moving everything from the resulting folder to parent folder
 
-                        readDataSetFiles(dirName, downloadID).then(imageCompressionLibWithExif.processData).then(function(data) {
+                        console.log(zip);
+                        console.log(dirName);
+
+                        // mv('source/dir', 'dest/a/b/c/dir', {mkdirp: true}, function(err) {
+                        //
+                        // });
+
+
+                            readDataSetFiles(dirName, downloadID).then(imageCompressionLibWithExif.processData).then(function(data) {
                             console.log('data in read files', data);
                             projectDB.createDataSetTable(downloadID).then(function(d) {
                                 var pArr = [];
@@ -315,7 +325,7 @@ function downloadLocal(loc,downloadID, projectID) {
 
                                 Promise.all(pArr).then(function(data) {
 
-                                    fs.unlink(loc, (err) => {
+                                    fs.unlink(zip, (err) => {
                                         if (err) throw err;
                                         console.log('Compressed file was deleted');
                                     });
@@ -831,7 +841,10 @@ function readDataSetFiles(dirName, dataSetID) {
         //skip all hidden files:
         items.forEach(function (it){
 
-            if (it.charAt(0) != '.' && it.charAt(0) != '_'){
+           // if (it.charAt(0) != '.' && it.charAt(0) != '_'){
+
+            if (it.endsWith('.jpg') || it.endsWith('.png')){
+
                 filtered_items.push(it);
             }
 
