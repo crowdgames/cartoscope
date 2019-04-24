@@ -660,3 +660,69 @@ router.post('/updateGeneticTreeFromRDATA/:mainCode', function(req,res,next){
 
 
 });
+
+
+// get the projects that are AR ready from DB
+router.get('/getTileoscopeARProjects', function(req,res,next){
+
+
+    tileDB.getTileoscopeARProjects().then(function(data) {
+        res.send(data)
+    }, function(error){
+        console.log(error)
+        res.status(404).send(error)
+    })
+
+
+});
+
+
+// get the projects that are AR ready from DB
+router.get('/getTileoscopeARProjectImageList/:mainCode', function(req,res,next){
+
+    var main_code = req.params.mainCode;
+
+    //get dataset id from code
+    projectDB.getDatasetIdFromCode(main_code).then(function(dd) {
+
+            var dataset_id = dd[0].dataset_id;
+            //get dataset id from code
+        tileDB.getTileoscopeProjectImageList(dataset_id).then(function(data) {
+            res.send(data)
+
+        }, function(error){
+            console.log(error)
+            res.status(404).send(error)
+        })
+
+
+    }, function(error){
+        console.log(error)
+        res.status(404).send(error)
+    })
+
+
+});
+
+
+//get specific image from dataset
+router.get('/getImage/:dataset/:name' , function(req, res, next) {
+    res.setHeader('Content-Type', 'image/jpeg');
+    if (fs.existsSync('dataset/' + req.params.dataset + '/' + req.params.name + '.jpg')) {
+        res.sendFile(path.resolve('dataset/' + req.params.dataset + '/' + req.params.name + '.jpg'));
+    } else {
+        res.status(404).send();
+    }
+});
+
+
+//get specific image from dataset
+router.get('/getImageJson/:dataset/:name' , function(req, res, next) {
+    res.setHeader('Content-Type', 'application/json');
+    if (fs.existsSync('dataset/' + req.params.dataset + '/' + req.params.name + '.json')) {
+        res.sendFile(path.resolve('dataset/' + req.params.dataset + '/' + req.params.name + '.json'));
+    } else {
+        res.status(404).send();
+    }
+});
+

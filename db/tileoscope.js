@@ -105,3 +105,37 @@ exports.pickSequenceFeaturedTileoscope = function() {
                 });
     });
 };
+
+
+
+//get all the projects that are Tileoscope Ready
+exports.getTileoscopeARProjects = function() {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT name,description,unique_code,dataset_id,template from projects where ar_ready=1')
+            .then(
+                function(data) {
+                    resolve(data);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};
+
+
+//get all the projects that are Tileoscope Ready
+exports.getTileoscopeProjectImageList = function(dataset_id) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+        var d_id = "dataset_" + dataset_id;
+
+        connection.queryAsync('SELECT name,x,y from '+ d_id)
+            .then(
+                function(data) {
+                    resolve(data);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};

@@ -196,6 +196,20 @@ exports.getProjectFromCode = function(uniqueCode) {
   });
 };
 
+
+exports.getDatasetIdFromCode = function(uniqueCode) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT dataset_id from projects WHERE unique_code=? and published = 1',
+            [uniqueCode]).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
 exports.getProjectFromId = function(id) {
   return new Promise(function(resolve, error) {
     var connection = db.get();
