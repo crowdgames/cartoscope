@@ -28,6 +28,13 @@
             </label>
         </div>
 
+        <!--ask if it is AR READY (cannot apply to ngs types)-->
+        <div style="color: white;margin-top: 10px;" ng-show="project.task.selectedTaskType != 'ngs'">
+            <label style="font-weight: 400">Upload is Tile-o-Scope AR Ready  (Check if uploading tile images along with .json files)
+                <input type="checkbox" ng-model="project.ar_ready" style="margin-left: 20px;" checked="unchecked">
+            </label>
+        </div>
+
 
 
         <span class="txt" ng-if="project.task.selectedTaskType != 'ngs' && uploadMethod == 0 ">

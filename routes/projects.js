@@ -394,6 +394,24 @@ router.post('/updateHasLocation',
         });
     });
 
+
+
+
+router.post('/updateARReady',
+    [filters.requireLogin, filters.requiredParamHandler(['projectID', 'ar_ready']), upload.any()],
+    function(req, res, next) {
+        projectDB.updateARReady(req.body.projectID, req.body.ar_ready).then(function(data) {
+            if (data.affectedRows == 1) {
+                res.send({'status': 'done'});
+            } else {
+                res.status(500).send({error: 'Project not found'});
+            }
+        }, function(err) {
+            console.log(err);
+            res.status(500).send({'error': err.code});
+        });
+    });
+
 router.get('/admins/:id', filters.requireLogin,
   function(req, res, next) {
     projectDB.getAdmins(req.params.id).then(function(data) {

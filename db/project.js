@@ -142,12 +142,25 @@ exports.updateDescription = function(projectId, description) {
 
 
 exports.updateHasLocation = function(projectId, has_location) {
-
-
     return new Promise(function(resolve, error) {
         var connection = db.get();
         connection.queryAsync('UPDATE projects SET has_location=? WHERE id=?',
             [has_location, projectId]).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
+
+
+exports.updateARReady = function(projectId, ar_ready) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('UPDATE projects SET ar_ready=? WHERE id=?',
+            [ar_ready, projectId]).then(
             function(data) {
                 resolve(data);
             }, function(err) {

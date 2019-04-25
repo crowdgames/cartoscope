@@ -1235,6 +1235,8 @@ module.controller('stepFourController', ['$scope', '$state', '$http', 'swalServi
 
   $scope.showUploadProgress = false;
   $scope.project.hasLocation = true;
+  $scope.project.ar_ready = false;
+
   $scope.uploadMethod = 1;
 
 
@@ -1249,9 +1251,20 @@ module.controller('stepFourController', ['$scope', '$state', '$http', 'swalServi
           var msg = response.data.error || 'couldn\'t update location at this time';
           swalService.showErrorMsg(msg);
       })
-
-
   };
+      $scope.update_ar_ready = function(){
+
+          var data = {
+              projectID: $scope.project.id,
+              ar_ready: $scope.project.ar_ready | 0
+          };
+          $http.post('/api/project/updateARReady', data).then(function(data) {
+          }, function(response) {
+              var msg = response.data.error || 'couldn\'t update ar ready at this time';
+              swalService.showErrorMsg(msg);
+          })
+
+      };
 
     $scope.sendDataSet = function() {
       if ($scope.project.dataSetLink) {
