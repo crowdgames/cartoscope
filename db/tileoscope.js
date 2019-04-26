@@ -112,7 +112,7 @@ exports.pickSequenceFeaturedTileoscope = function() {
 exports.getTileoscopeARProjects = function() {
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        connection.queryAsync('SELECT name,description,unique_code,dataset_id,template from projects where ar_ready=1')
+        connection.queryAsync('SELECT name,description,unique_code,dataset_id,has_location,template from projects where ar_ready=1')
             .then(
                 function(data) {
                     resolve(data);

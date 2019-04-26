@@ -138,6 +138,7 @@ router.post('/uploadLocal', fupload.single('file'),
     function(req, res, next) {
 
         var main_project_id = req.body.projectID;
+        var ar_ready = req.body.ar_ready;
 
             assignDownloadID(function (downloadID) {
 
@@ -145,7 +146,7 @@ router.post('/uploadLocal', fupload.single('file'),
                 console.log(req.file)
                 var stored_filename = req.file.path;
                 console.log(stored_filename)
-                downloadLocal(stored_filename, downloadID, main_project_id);
+                downloadLocal(stored_filename, downloadID, main_project_id,ar_ready);
                 res.send({
                     uniqueCode: downloadID
                 });
@@ -174,7 +175,7 @@ router.post('/uploadNGS', fupload.single('file'),
 
 
 
-function downloadLocal(loc,downloadID, projectID) {
+function downloadLocal(loc,downloadID, projectID,ar_ready) {
     projectDB.addDataSetID(projectID, downloadID).then(function() {
         // Status starting Download
         downloadStatus.setStatus(downloadID, 1, function(err, res) {
@@ -247,11 +248,16 @@ function downloadLocal(loc,downloadID, projectID) {
                                     Promise.all(pArr).then(function (data) {
                                         //mailer.mailer(email, 'done', '<b> Done downloading file ' + filename + ' </b>');
                                         console.log("Done downloading file");
-                                        //delete original compressed file:
-                                        fs.unlink(loc, (err) => {
-                                            if (err) throw err;
-                                            console.log('Compressed file was deleted');
-                                        });
+
+                                        //delete original compressed file (keep if ar ready)
+                                        if (!ar_ready){
+                                            fs.unlink(loc, (err) => {
+                                                if (err) throw err;
+                                                console.log('Compressed file was deleted');
+                                            });
+                                        }
+
+
 
 
                                         downloadStatus.setStatus(downloadID, 4, function (err, res) {
@@ -276,6 +282,8 @@ function downloadLocal(loc,downloadID, projectID) {
 
                     //var zip = 'temp/' + downloadID+ '/' + loc;
                     var zip = loc;
+
+                    console.log(loc);
 
                     fs.chmod(zip, 0755, function(err){
                         if(err) throw err;
@@ -325,10 +333,24 @@ function downloadLocal(loc,downloadID, projectID) {
 
                                 Promise.all(pArr).then(function(data) {
 
-                                    fs.unlink(zip, (err) => {
-                                        if (err) throw err;
-                                        console.log('Compressed file was deleted');
-                                    });
+                                    //keep zip file if ar ready, we'll need to serve it
+                                    if (!ar_ready) {
+
+                                        fs.unlink(zip, (err) => {
+                                            if (err) throw err;
+                                            console.log('Compressed file was deleted');
+                                        });
+
+                                    } else {
+
+                                        new_zip = path.join(path.dirname(zip),downloadID + ".zip") ;
+
+                                        //rename zip folder from file_xxxx.zip to dataset_id.zip
+                                        fs.rename(zip, new_zip, function(err) {
+                                            if ( err ) console.log('ERROR: ' + err);
+                                        });
+
+                                    }
 
                                     downloadStatus.setStatus(downloadID, 4, function(err, res) {
                                     });

@@ -1294,9 +1294,11 @@ module.controller('stepFourController', ['$scope', '$state', '$http', 'swalServi
               Upload.upload({
                   url: '/api/test/uploadLocal',
                   method: 'POST',
-                  data: {'file': $scope.file,
+                  data: {
+                    'file': $scope.file,
                   'projectID': $scope.project.id,
-                  'regex': $scope.project.regex || ''}
+                  'regex': $scope.project.regex || '',
+                  'ar_ready': $scope.project.ar_ready}
               }).then(function (resp) {
                   //$scope.showUploadProgress = false;
 

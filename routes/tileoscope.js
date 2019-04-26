@@ -726,3 +726,17 @@ router.get('/getImageJson/:dataset/:name' , function(req, res, next) {
     }
 });
 
+
+
+//get specific dataset zip
+router.get('/getDataset/:dataset/' , function(req, res, next) {
+    res.setHeader('Content-Type', 'application/zip');
+    if (fs.existsSync('dataset/' + req.params.dataset )) {
+
+
+        res.sendFile(path.resolve('temp/' + req.params.dataset + '.zip'));
+    } else {
+        res.status(404).send();
+    }
+});
+
