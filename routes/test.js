@@ -29,6 +29,7 @@ var imageCompressionLibNoExif = require('../scripts/imageCompression');
 
 // var upload = multer({dest: 'uploads/'});
 var projectDB = require('../db/project');
+var tileDB = require('../db/tileoscope');
 var ncp = require('ncp').ncp;
 ncp.limit = 16;
 
@@ -174,6 +175,26 @@ router.post('/uploadNGS', fupload.single('file'),
     });
 
 
+router.post('/uploadTutorialLocal', fupload.single('file'),
+    function(req, res, next) {
+
+        var main_project_id = req.body.projectID;
+        var existing = req.body.existing;
+        var ar_ready = req.body.ar_ready;
+
+
+
+            //proceed to analyze the folder
+            console.log(req.file);
+            var stored_filename = req.file.path;
+            console.log(stored_filename);
+            downloadTutorialLocal(stored_filename, main_project_id,existing,ar_ready);
+            //TODO: Maybe return number of correctly inserted tutorial items?
+            res.send({
+                uniqueCode: main_project_id
+            });
+    })
+
 
 function downloadLocal(loc,downloadID, projectID,ar_ready) {
     projectDB.addDataSetID(projectID, downloadID).then(function() {
@@ -250,12 +271,11 @@ function downloadLocal(loc,downloadID, projectID,ar_ready) {
                                         console.log("Done downloading file");
 
                                         //delete original compressed file (keep if ar ready)
-                                        if (!ar_ready){
                                             fs.unlink(loc, (err) => {
                                                 if (err) throw err;
                                                 console.log('Compressed file was deleted');
                                             });
-                                        }
+
 
 
 
@@ -285,7 +305,7 @@ function downloadLocal(loc,downloadID, projectID,ar_ready) {
 
                     console.log(loc);
 
-                    fs.chmod(zip, 0755, function(err){
+                    fs.chmod(zip, 0o755, function(err){
                         if(err) throw err;
                     });
 
@@ -333,24 +353,11 @@ function downloadLocal(loc,downloadID, projectID,ar_ready) {
 
                                 Promise.all(pArr).then(function(data) {
 
-                                    //keep zip file if ar ready, we'll need to serve it
-                                    if (!ar_ready) {
-
                                         fs.unlink(zip, (err) => {
                                             if (err) throw err;
                                             console.log('Compressed file was deleted');
                                         });
 
-                                    } else {
-
-                                        new_zip = path.join(path.dirname(zip),downloadID + ".zip") ;
-
-                                        //rename zip folder from file_xxxx.zip to dataset_id.zip
-                                        fs.rename(zip, new_zip, function(err) {
-                                            if ( err ) console.log('ERROR: ' + err);
-                                        });
-
-                                    }
 
                                     downloadStatus.setStatus(downloadID, 4, function(err, res) {
                                     });
@@ -366,6 +373,197 @@ function downloadLocal(loc,downloadID, projectID,ar_ready) {
 
 
     });
+}
+
+function downloadTutorialLocal(loc, projectID,existing,ar_ready) {
+
+
+        //TODO: Deal with existing option, it should essentially check the list of names already in the dataset_id table
+
+
+        var downloadDir = 'temp/'; //where the temp file is stored
+        var tutorialDir = 'public/images/Tutorials/'; //where the images should end up
+        var dirName = tutorialDir  + projectID;
+
+        //if it doesn't exist, then create it, else add to it
+        if (!fs.existsSync(dirName)) {
+        fs.mkdirSync(dirName);
+        }
+
+
+        //determine compressed file type
+        var filename = loc;
+        var type = filename.substr(filename.lastIndexOf('.'));
+        console.log(type);
+
+
+        if (type == '.gz' || type == '.tar' ) {
+            console.log('TAR FILE');
+
+            var tarFile = filename;
+            console.log("Will untar");
+
+
+            //only untar images and the csv file to Tutorials?
+            fs.createReadStream(tarFile).pipe(tar.extract(dirName, {
+                ignore: function(name) {
+                    var allowed_extensions = ['.jpg','.png','.csv']
+                    var c_ext = path.extname(name);
+                    return allowed_extensions.indexOf(c_ext) == -1 // ignore everything but images
+                },
+                strip:1})
+                .on('error', function (err) {
+                    console.error('ERROR', err);
+                })
+                .on('finish', function (code) {
+                    //finish: function(code) {
+                    console.log("Finished untaring");
+
+                    //Read the files, find the location for the csv file and read that to get the info
+                    readTutorialItems(dirName, projectID).then(function (data) {
+
+                        console.log('data in tutorial csv', data);
+
+                        //for every item, insert into tutorial items
+                        var pArr = [];
+                        for (var i = 0; i < data.length; i++) {
+
+                            console.log("Data in tutorial item");
+                            console.log(data[i]);
+
+                            var p = projectDB.insertTutorialItems(projectID, data[i]);
+                            //catch and print error but do not cause problem
+                            p.catch(function (err) {
+                                console.log(err)
+                            });
+                            pArr.push(p);
+
+                        }
+                        Promise.all(pArr).then(function (data) {
+                            console.log("Done inserting tutorial items");
+
+                                //delete original compressed file
+                                fs.unlink(loc, (err) => {
+                                    if (err) throw err;
+                                    console.log('Compressed file was deleted');
+                                });
+
+                                //If AR, now we should generate the dataset-info and put it in the folder
+                            if (ar_ready) {
+
+                                tileDB.generateTileoscopeARDatasetInfoJSON(projectID).then(function (json_data) {
+
+                                    var datasetDIR = "dataset/" + data.dataset_id;
+                                    var dataset_file = data.dataset_id + '/Dataset-Info.json';
+                                    var json = JSON.stringify(json_data);
+                                    fs.writeFile(dataset_file, json, 'utf8');
+                                })
+                            }
+
+                        });
+
+
+
+                    }).catch(function (err) {
+                        console.log(err);
+                        console.log("Error inserting tutorial items");
+
+                    });
+
+                    //}
+                    //}))
+                }))
+
+
+        } else if (type == '.zip') {
+            console.log('ZIP FILE');
+
+            //var zip = 'temp/' + downloadID+ '/' + loc;
+            var zip = loc;
+
+            console.log(loc);
+
+            fs.chmod(zip, 0o755, function(err){
+                if(err) throw err;
+            });
+
+
+
+            // var un = fs.createReadStream(zip).pipe(unzip.Extract({ path: dirName+"/"+downloadID }));
+
+            Minizip.unzip(zip, dirName, function(err) {
+                if (err)
+                    console.log(err);
+                else
+                    console.log('unzip successfully.');
+
+
+                console.log(zip);
+                console.log(dirName);
+
+                // mv('source/dir', 'dest/a/b/c/dir', {mkdirp: true}, function(err) {
+                //
+                // });
+
+
+                    //Read the files, find the location for the csv file and read that to get the info
+                    readTutorialItems(dirName, projectID).then(function (data) {
+
+                        console.log('data in tutorial csv', data);
+
+                        //for every item, insert into tutorial items
+                        var pArr = [];
+
+                        for (var i = 0; i < data.length; i++) {
+
+                                var p = projectDB.insertTutorialItems(projectID, data[i]);
+                                //catch and print error but do not cause problem
+                                p.catch(function (err) {
+                                    console.log(err)
+                                });
+                                pArr.push(p);
+
+                            }
+
+                        Promise.all(pArr).then(function (d) {
+
+                            //delete compressed file
+                            fs.unlink(zip, (err) => {
+                                if (err) throw err;
+                                console.log('Compressed file was deleted');
+                            });
+
+                            //TODO: IF AR, then now we can make the dataset-info json
+                            //needs: project info, dataset info and tutorial info
+                            if (ar_ready) {
+
+                                console.log("Creating dataset-info json")
+
+                                tileDB.generateTileoscopeARDatasetInfoJSON(projectID).then(function (json_data) {
+
+                                    var datasetDIR = "dataset/" + json_data.dataset_id;
+                                    var dataset_file = datasetDIR+ '/Dataset-Info.json';
+                                    var json = JSON.stringify(json_data);
+                                    fs.writeFile(dataset_file, json, 'utf8', (err) => {
+                                        if (err) throw err;
+                                        console.log('Compressed file was deleted');
+                                    });
+                                })
+                            }
+
+
+
+                        });
+                    }).catch(function(err) {
+                        console.log(err);
+                        console.log("Error inserting tutorial items");
+                    });
+
+                })
+
+        }
+
+
 }
 
 
@@ -469,7 +667,7 @@ function downloadNGS(loc,downloadID, projectID,map_link) {
 
             var zip = loc;
 
-            fs.chmod(zip, 0755, function(err){
+            fs.chmod(zip, 0o755, function(err){
                 if(err) throw err;
             });
 
@@ -633,7 +831,7 @@ function downloadDrop(loc, downloadID, projectID) {
 
                     var zip = 'temp/' + downloadID+ '/download-drop.zip';
 
-                    fs.chmod(zip, 0755, function(err){
+                    fs.chmod(zip, 0o755, function(err){
                         if(err) throw err;
                     });
 
@@ -887,6 +1085,63 @@ function readDataSetFiles(dirName, dataSetID) {
   p.bind({});
   return p;
 }
+
+
+
+function readTutorialItems(dirName,unique_code) {
+
+
+    var p = new Promise(function(resolve, error) {
+
+        fs.readdir(dirName, function(err, items) {
+            console.log('items', items);
+
+            var csv_file = "";
+
+            //find the csv file
+            items.forEach(function (it){
+
+                if (it.endsWith('.csv')){
+                    csv_file = it;
+                }
+
+            });
+
+            if (!err) {
+                //read the csv file we have
+                csv_path =  path.join(dirName,csv_file);
+                fs.readFile(csv_path, "utf8", function(error, tdata) {
+
+
+                    tutorial_items = d3.csvParse(tdata);
+                    console.log(JSON.stringify(tutorial_items));
+
+                    if (!error) {
+                        this.dirName = dirName;
+                        this.unique_code = unique_code;
+                        resolve(tutorial_items);
+                    } else {
+                        console.log("error: " + error);
+                        error(error);
+                    }
+
+                });
+
+
+            } else {
+                console.log("error: " + err);
+                error(error);
+            }
+
+
+        });
+    });
+    p.bind({});
+    return p;
+
+}
+
+
 
 function readCSVs(files) {
     console.log('files to read csv ', files);

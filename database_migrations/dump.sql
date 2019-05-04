@@ -177,6 +177,7 @@ CREATE TABLE `projects` (
   `unique_code` varchar(255) DEFAULT NULL,
   `template` text,
   `name` varchar(512) DEFAULT NULL,
+   `short_name` varchar(512) DEFAULT NULL,
   `published` int(1) DEFAULT '0',
   `dataset_id` varchar(45) DEFAULT NULL,
   `archived` int(1) DEFAULT '0',

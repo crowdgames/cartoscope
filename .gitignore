@@ -5,6 +5,7 @@ profile_photos/*
 !profile_photos/default.png
 temp/
 dataset/
+ar_zip/
 uploads/
 bower_components/
 *.log

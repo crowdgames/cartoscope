@@ -582,6 +582,20 @@ exports.getDataSetNames = function(datasetId) {
 };
 
 
+exports.getDataSetNamesArray = function(datasetId) {
+    var tableName = 'dataset_' + datasetId;
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT name FROM ' + tableName).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
+
 exports.getDataSetNames2 = function(datasetId) {
     var tableName = 'dataset_' + datasetId;
     return new Promise(function(resolve, error) {
@@ -681,6 +695,59 @@ exports.createDataSetItem = function(datasetID, name, x, y) {
     });
   });
 };
+
+
+//insert tutorial items from csv data
+exports.insertTutorialItems = function(projectId,data){
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+        var image_path = projectId + "/" + data.image_name;
+
+        console.log(image_path)
+
+
+
+        var query = 'INSERT INTO tutorial (unique_code, template, point_selection, points_file';
+        query2 = ' SELECT unique_code, template, point_selection, points_file';
+
+        var obj_keys = Object.keys(data);
+        //add only the relevant keys
+
+        for (i = 0; i < obj_keys.length; i++) {
+
+            var key = obj_keys[i];
+
+            //if it is relevant, add to query
+            if (data[key] != '') {
+
+                query += ', ' + key
+                if (key == "image_name"){
+                    query2 += ", \"" + image_path  + "\" "
+                } else {
+                    query2 += ", \"" + data[key]  + "\" "
+
+                }
+
+            }
+        }
+
+        query += ')' + query2 + ' from projects where unique_code=\"' + projectId + '\"';
+
+
+
+        connection.queryAsync(query).then(
+            function(data) {
+
+                console.log(data)
+                resolve(data);
+            }, function(err) {
+                console.log(err)
+                error(err);
+            });
+    });
+}
+
 
 exports.addDataSetID = function(projectId, dataSetID) {
   return new Promise(function(resolve, error) {

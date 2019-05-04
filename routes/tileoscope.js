@@ -8,6 +8,7 @@ var filters = require('../constants/filters');
 var express = require('express');
 var router = express.Router();
 var fs = require('fs');
+var archiver = require('archiver');
 var json2csv = require('json2csv');
 var d3 = require('d3');
 var CARTO_PORT = process.env.CARTO_PORT || '8081';
@@ -729,14 +730,90 @@ router.get('/getImageJson/:dataset/:name' , function(req, res, next) {
 
 
 //get specific dataset zip
-router.get('/getDataset/:dataset/' , function(req, res, next) {
-    res.setHeader('Content-Type', 'application/zip');
-    if (fs.existsSync('dataset/' + req.params.dataset )) {
+router.get('/getDataset/:code/' , function(req, res, next) {
 
 
-        res.sendFile(path.resolve('temp/' + req.params.dataset + '.zip'));
-    } else {
-        res.status(404).send();
+    var ar_folder = "ar_zip/";
+    //if it doesn't exist, then create it, else add to it
+    if (!fs.existsSync(ar_folder)) {
+        fs.mkdirSync(ar_folder);
     }
+
+    var unique_code = req.params.code;
+
+    projectDB.getProjectFromCode(unique_code).then(function (project_data) {
+
+
+        var project = project_data[0];
+
+        var dataset_id = project.dataset_id;
+        var datasetDIR = "dataset/" + dataset_id;
+        var zip_name = project.unique_code + "_" + project.short_name + '.zip';
+        var full_zip = ar_folder + zip_name;
+
+        // //make sure we don't send anything beyond json and image
+        // if (fs.existsSync(datasetDIR + "/tmp/")) {
+        //     fs.unlinkSync(datasetDIR + "/tmp/");
+        // }
+
+        //if it does not exist, then we have to make it, else fetch it
+        if (!fs.existsSync(full_zip)) {
+
+            var output = fs.createWriteStream(full_zip);
+            var archive = archiver('zip');
+
+
+            output.on('close', function () {
+
+                //we have it, just send it
+                res.setHeader('Content-Type', 'application/zip');
+                res.sendFile(path.resolve(full_zip));
+
+
+            });
+
+            archive.on('error', function(err){
+                res.status(404).send("Could not generate zip");
+            });
+
+            // pipe archive data to the file
+            archive.pipe(output);
+            // append files from a sub-directory, putting its contents at the root of archive
+            archive.directory(datasetDIR, false);
+            archive.finalize();
+
+
+
+        } else {
+            //we have it, just send it
+            res.setHeader('Content-Type', 'application/zip');
+            res.sendFile(path.resolve(full_zip));
+
+        }
+
+
+
+    }, function(error){
+        console.log(error)
+        res.status(404).send(error)
+    })
+
+
+
 });
 
+
+
+//get specific dataset zip
+router.get('/getDatasetInfo/:code' , function(req, res, next) {
+
+
+    var code = req.params.code;
+    tileDB.generateTileoscopeARDatasetInfoJSON(code).then(function(data) {
+        res.send(data)
+
+    }, function(error){
+        console.log(error)
+        res.status(404).send(error)
+    })
+});
