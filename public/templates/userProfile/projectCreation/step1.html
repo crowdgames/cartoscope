@@ -8,6 +8,13 @@
                 <input ng-switch-when="true" ng-model="project.name">
                 <input ng-switch-when="false" ng-model="project.name">
             </div>
+            <div ng-switch on="::project.editing">
+                <span>
+                    Short Name*
+                </span>
+                <input ng-switch-when="true" ng-model="project.short_name">
+                <input ng-switch-when="false" ng-model="project.short_name">
+            </div>
             <div>
                 <span>
                     Description*

@@ -191,6 +191,7 @@ CREATE TABLE `projects` (
   `image_source` text,
    `image_attribution` text DEFAULT NULL,
    `ar_ready` int(11) DEFAULT 0,
+    `ar_status` int(11) DEFAULT 0,
   `tutorial_link` text,
   `genetic` int(11) DEFAULT '0',
   `genetic_task` int(11) DEFAULT '0',
@@ -466,6 +467,8 @@ CREATE TABLE `users` (
   `last_login` datetime DEFAULT NULL,
   `is_active` tinyint(1) DEFAULT '1',
   `short_bio` text,
+   `is_creator` int(11) DEFAULT 0,
+
   PRIMARY KEY (`id`),
   UNIQUE KEY `idusers_UNIQUE` (`id`),
   UNIQUE KEY `email_UNIQUE` (`email`),

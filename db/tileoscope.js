@@ -111,12 +111,42 @@ exports.pickSequenceFeaturedTileoscope = function() {
 };
 
 
+//update project status for ar
+exports.updateARProjectStatus = function(code) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('update projects set ar_status=1 where unique_code=?  ', [code])
+            .then(
+                function(data) {
+                    resolve(data);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};
+
+
+//update project status for ar
+exports.setARStatus = function(code,status) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('update projects set ar_status=? where unique_code=?  ', [status,code])
+            .then(
+                function(data) {
+                    resolve(data);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};
+
+
 
 //get all the projects that are Tileoscope Ready
 exports.getTileoscopeARProjects = function() {
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        connection.queryAsync('SELECT name,description,unique_code,dataset_id,has_location,template from projects where ar_ready=1')
+        connection.queryAsync('SELECT name,description,unique_code,dataset_id,has_location,template from projects where ar_ready=1 and ar_status=1')
             .then(
                 function(data) {
                     resolve(data);
@@ -154,6 +184,9 @@ exports.generateTileoscopeARDatasetInfoJSON = function(unique_code) {
         var dataset_info_json = {
             count: 0,                   //how many images in the set
             code: unique_code,
+            name: '',
+            short_name: '',
+            description: '',
             dataset_id: '',
             filenames: [],              //names of images without extension
             categoriesCount: 0,         //number of categories
@@ -173,6 +206,10 @@ exports.generateTileoscopeARDatasetInfoJSON = function(unique_code) {
 
             var dataset_id = project.dataset_id;
             dataset_info_json.dataset_id = dataset_id;
+            dataset_info_json.name = project.name;
+            dataset_info_json.short_name = project.short_name;
+            dataset_info_json.description = project.description;
+
 
             //get categories and count here from template:
 
@@ -195,15 +232,12 @@ exports.generateTileoscopeARDatasetInfoJSON = function(unique_code) {
             projectDB.getDataSetNames(dataset_id).then(function(image_data) {
 
 
-
                 var image_list = image_data[0].image_list.split(',');
                 dataset_info_json.filenames = image_list;
                 dataset_info_json.count = image_list.length;
 
-
                 //get the tutorial items, images as is should
                 projectDB.getTutorialFromCode(unique_code).then(function(tutorial_items) {
-
 
                     var tut_images = [];
                     var tut_categories = {};
@@ -221,32 +255,35 @@ exports.generateTileoscopeARDatasetInfoJSON = function(unique_code) {
                             tut_image_raw.lastIndexOf("/") + 1,
                             tut_image_raw.lastIndexOf(".")
                         );
-                        tut_images.push(tut_image);
+
 
                         //keep track of how many have more than one images
                         if (tut_categories.hasOwnProperty(tut_answer)) {
 
-                            tut_categories[tut_answer].push(tut_image);
+
+                            tut_categories[tut_answer].push(tut_image)
 
                         } else {
-                            tut_categories[tut_answer] = tut_image;
+                            tut_categories[tut_answer] = [tut_image];
 
                         }
 
                     }
 
-                    console.log(tut_images)
-
-                    dataset_info_json.categoriesSample = tut_images;
 
                     for (cat in tut_categories){
 
-                        //TODO: Right now we are only pushing one pair and breaking
+                        //use the first of each category as the representative
+                        tut_images.push(tut_categories[cat][0]);
+
+                        //TODO: Right now we are only pushing pairs to tutorial
                         if (tut_categories[cat].length == 2) {
                             dataset_info_json.tutorial = tut_categories[cat]
-                            break
                         }
                     }
+
+                    dataset_info_json.categoriesSample = tut_images;
+
 
                     //send everything
                     resolve(dataset_info_json)

@@ -276,6 +276,46 @@ function downloadLocal(loc,downloadID, projectID,ar_ready) {
                                                 console.log('Compressed file was deleted');
                                             });
 
+                                        if (ar_ready){
+
+                                            console.log("Generating JSON Files")
+
+                                            readAttributionsFromCSV(dirName,projectID).then(function (attr_data) {
+
+                                                //for each data, create a file
+                                                var attrArr = [];
+
+                                                for (var i = 0; i < attr_data.length; i++) {
+
+                                                    var p = createAttributionItem(dirName,projectID,attr_data[i]);
+                                                    //catch and print error but do not cause problem
+                                                    p.catch(function (err) {
+                                                        console.log(err)
+                                                    });
+                                                    attrArr.push(p);
+                                                }
+                                                //make sure we are done after all json files created
+                                                Promise.all(attrArr).then(function (data) {
+
+                                                    //json files ready
+                                                    //TODO: MAKE SURE THERE IS A JSON FILE FOR EVERY IMAGE
+                                                    tileDB.setARStatus(projectID, 2, function (err, res) {
+                                                    });
+
+                                                })
+
+
+                                            }).catch(function (err) {
+                                                //mailer.mailer(email, 'done', '<b> Error downloading file ' + filename + ' </b>');
+                                                console.log(err)
+                                                console.log("Error creating attributions file");
+
+                                                tileDB.setARStatus(projectID, 0, function (err, res) {
+                                                });
+
+                                            })
+
+                                        }
 
 
 
@@ -357,6 +397,48 @@ function downloadLocal(loc,downloadID, projectID,ar_ready) {
                                             if (err) throw err;
                                             console.log('Compressed file was deleted');
                                         });
+
+                                    //TODO: IF AR READY, must make the json files if we got a csv with attribution
+                                    if (ar_ready){
+
+                                        console.log("Generating JSON Files")
+
+                                        readAttributionsFromCSV(dirName,projectID).then(function (attr_data) {
+
+                                            //for each data, create a file
+                                            var attrArr = [];
+
+                                            for (var i = 0; i < attr_data.length; i++) {
+
+                                                var p = createAttributionItem(dirName,projectID,attr_data[i]);
+                                                //catch and print error but do not cause problem
+                                                p.catch(function (err) {
+                                                    console.log(err)
+                                                });
+                                                attrArr.push(p);
+                                            }
+                                            //make sure we are done after all json files created
+                                            Promise.all(attrArr).then(function (data) {
+
+                                                //json files ready
+                                                //TODO: MAKE SURE THERE IS A JSON FILE FOR EVERY IMAGE
+                                                tileDB.setARStatus(projectID, 2, function (err, res) {
+                                                });
+
+                                            })
+
+
+                                        }).catch(function (err) {
+                                            //mailer.mailer(email, 'done', '<b> Error downloading file ' + filename + ' </b>');
+                                            console.log(err)
+                                            console.log("Error creating attributions file");
+
+                                            tileDB.setARStatus(projectID, 0, function (err, res) {
+                                            });
+
+                                        })
+
+                                    }
 
 
                                     downloadStatus.setStatus(downloadID, 4, function(err, res) {
@@ -451,12 +533,22 @@ function downloadTutorialLocal(loc, projectID,existing,ar_ready) {
                                 //If AR, now we should generate the dataset-info and put it in the folder
                             if (ar_ready) {
 
+                                console.log("Creating dataset-info json")
+
                                 tileDB.generateTileoscopeARDatasetInfoJSON(projectID).then(function (json_data) {
 
-                                    var datasetDIR = "dataset/" + data.dataset_id;
-                                    var dataset_file = data.dataset_id + '/Dataset-Info.json';
+                                    var datasetDIR = "dataset/" + json_data.dataset_id;
+                                    var dataset_file = datasetDIR+ '/Dataset-Info.json';
                                     var json = JSON.stringify(json_data);
-                                    fs.writeFile(dataset_file, json, 'utf8');
+                                    fs.writeFile(dataset_file, json, 'utf8', (err) => {
+                                        if (err) throw err;
+                                        console.log('dataset-info file was created');
+                                    });
+
+                                    //set ar  status to 1
+                                    tileDB.updateARProjectStatus(projectID).then(function (d) {
+
+                                    });
                                 })
                             }
 
@@ -546,7 +638,12 @@ function downloadTutorialLocal(loc, projectID,existing,ar_ready) {
                                     var json = JSON.stringify(json_data);
                                     fs.writeFile(dataset_file, json, 'utf8', (err) => {
                                         if (err) throw err;
-                                        console.log('Compressed file was deleted');
+                                        console.log('dataset-info file was created');
+                                    });
+
+                                    //set ar  status to 1
+                                    tileDB.updateARProjectStatus(projectID).then(function (d) {
+
                                     });
                                 })
                             }
@@ -1141,6 +1238,95 @@ function readTutorialItems(dirName,unique_code) {
 
 }
 
+
+
+
+function readAttributionsFromCSV(dirName,unique_code) {
+
+
+    var p = new Promise(function(resolve, error) {
+
+
+        //read the file if there
+        csv_path = path.join(dirName,"attributions.csv");
+
+        //if it doesn't exist, then maybe they have json files already
+        //will test after return of function for json files, if not there, then it will not be sent to AR game
+
+        if (!fs.existsSync(csv_path)) {
+            resolve([])
+        };
+
+        //read the csv, make a json file for every item
+        fs.readFile(csv_path, "utf8", function(error, tdata) {
+
+
+            attribution_items = d3.csvParse(tdata);
+
+            if (!error) {
+                this.dirName = dirName;
+                this.unique_code = unique_code;
+                resolve(attribution_items);
+            } else {
+                console.log("error: " + error);
+                error(error);
+            }
+
+        });
+
+
+    });
+    p.bind({});
+    return p;
+
+}
+
+function checkIfJSON(str) {
+    try {
+        j = JSON.parse(str);
+    } catch (e) {
+        return str;
+    }
+    return j;
+}
+
+function createAttributionItem(dirName,unique_code,item) {
+
+
+    var p = new Promise(function(resolve, error) {
+
+        var json_file = path.join(dirName,item.image_name + ".json");
+        //remove image_name key from object
+        delete item.image_name;
+
+        obj_keys = Object.keys(item);
+
+        for (var i = 0; i < obj_keys.length; i++) {
+
+            key = obj_keys[i];
+            //if any field is valid JSON, then make sure it is encoded correctly
+            item[key] = checkIfJSON(item[key]);
+        }
+        
+
+        //write object to file
+        var json = JSON.stringify(item);
+        fs.writeFile(json_file, json, 'utf8', function(err){
+            if (err) {
+                error(err)
+            } else {
+                this.dirName = dirName;
+                this.unique_code = unique_code;
+
+                resolve(item)
+            }
+        });
+
+    });
+    p.bind({});
+    return p;
+
+}
 
 
 function readCSVs(files) {

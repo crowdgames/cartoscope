@@ -844,7 +844,10 @@ module.controller('projectsController', ['$scope', '$state', '$http', '$location
 
 
         //Allow project creation for selected user
-        if ($scope.user.username == projectCreators) {vm.allowProject = true}
+       // if ($scope.user.username == projectCreators) {vm.allowProject = true}
+       // else {vm.allowProject = false}
+
+        if($scope.user.is_creator == 1) {vm.allowProject = true}
         else {vm.allowProject = false}
 
     }]);
@@ -860,7 +863,10 @@ module.controller('projectController', ['$scope', '$state', '$http', '$statePara
         }
 
         //Allow project creation for selected user
-        if ($scope.user.username == projectCreators) {vm.allowProject = true}
+        //if ($scope.user.username == projectCreators) {vm.allowProject = true}
+        //else {vm.allowProject = false}
+
+        if($scope.user.is_creator == 1) {vm.allowProject = true}
         else {vm.allowProject = false}
 
 
@@ -1055,9 +1061,9 @@ module.controller('stepOneController', ['$scope', '$state', '$http', 'swalServic
     });
 
     $scope.validate = function() {
-      if (!$scope.project.name || !$scope.project.description) {
+      if (!$scope.project.name || !$scope.project.description || !$scope.project.short_name) {
         $scope.showErr = true;
-        swalService.showErrorMsg('Please enter a name and description for the project.');
+        swalService.showErrorMsg('Please enter a name, a short name and description for the project.');
       } else {
         $scope.createProject();
       }
@@ -1073,7 +1079,9 @@ module.controller('stepOneController', ['$scope', '$state', '$http', 'swalServic
         }
         fd.append('name', $scope.project.name);
         fd.append('description', $scope.project.description);
-        $http.post('api/project/add', fd, {
+          fd.append('short_name', $scope.project.short_name);
+
+          $http.post('api/project/add', fd, {
           transformRequest: angular.identity,
           headers: {'Content-Type': undefined}
         }).then(function(response) {
@@ -1583,8 +1591,13 @@ module.controller('projectsPageController', ['$scope', 'userData', 'projects', '
     }
 
         //Allow project creation for selected user
-        if ($scope.user.username == projectCreators) {$scope.allowProject = true}
+        // if ($scope.user.username == projectCreators) {$scope.allowProject = true}
+        // else {$scope.allowProject = false}
+
+        if($scope.user.is_creator == 1) {$scope.allowProject = true}
         else {$scope.allowProject = false}
+
+
 
 
   }]);
@@ -1613,7 +1626,10 @@ module.controller('userProfileController', ['$scope','$http', '$state', 'project
 
 
     //Allow project creation for selected user
-    if ($scope.user.username == projectCreators) {$scope.allowProject = true}
+    //if ($scope.user.username == projectCreators) {$scope.allowProject = true}
+    //else {$scope.allowProject = false}
+
+    if($scope.user.is_creator == 1) {$scope.allowProject = true}
     else {$scope.allowProject = false}
 
 

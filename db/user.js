@@ -5,7 +5,7 @@ const saltRounds = 10;
 
 exports.getUser = function(id, isActive, done) {
   var connection = db.get();
-  connection.query('SELECT id,username,email,profile_photo,created_at,updated_at,short_bio, ' +
+  connection.query('SELECT id,username,email,profile_photo,created_at,updated_at,short_bio,is_creator, ' +
     'last_login FROM users where id = ? and is_active=?', [id, isActive ? 1 : 0],
     function(err, result) {
       if (err) {
