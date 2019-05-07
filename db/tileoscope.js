@@ -198,11 +198,12 @@ exports.generateTileoscopeARDatasetInfoJSON = function(unique_code) {
 
         //first get the project, then get the name list, then get the tutorial images
 
-        projectDB.getProjectFromCode(unique_code).then(function(project_data) {
+
+        projectDB.getProjectFromCodeUnPub(unique_code).then(function(project_data) {
 
 
             var project = project_data[0];
-            //console.log(project)
+           // console.log(project);
 
             var dataset_id = project.dataset_id;
             dataset_info_json.dataset_id = dataset_id;

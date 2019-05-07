@@ -1264,7 +1264,7 @@ module.controller('stepFourController', ['$scope', '$state', '$http', 'swalServi
 
           var data = {
               projectID: $scope.project.id,
-              ar_ready: $scope.project.ar_ready | 0
+              ar_ready: $scope.project.ar_ready
           };
           $http.post('/api/project/updateARReady', data).then(function(data) {
           }, function(response) {
@@ -1279,12 +1279,15 @@ module.controller('stepFourController', ['$scope', '$state', '$http', 'swalServi
         $http.post('/api/test/upload', {
           'file': $scope.project.dataSetLink,
           'projectID': $scope.project.id,
-          'regex': $scope.project.regex || ''
+          'regex': $scope.project.regex || '',
+            'ar_ready': $scope.project.ar_ready
         }).then(function(data) {
           if (data.data.uniqueCode) {
             $scope.project.dataSetID = data.data.uniqueCode;
               //update location if unchecked
               $scope.update_hasLocation();
+              $scope.update_ar_ready();
+
 
           }
         }, function(err) {
@@ -1314,6 +1317,7 @@ module.controller('stepFourController', ['$scope', '$state', '$http', 'swalServi
                       $scope.project.dataSetID = resp.data.uniqueCode;
                       //update location if unchecked
                       $scope.update_hasLocation();
+                      $scope.update_ar_ready();
 
                   }
               }, function (resp) {
@@ -1350,6 +1354,7 @@ module.controller('stepFourController', ['$scope', '$state', '$http', 'swalServi
                       $scope.project.dataSetID = resp.data.uniqueCode;
                       //update location if unchecked
                       $scope.update_hasLocation();
+                      //not possible to do ar with NGS!
 
                   }
               }, function (resp) {

@@ -210,6 +210,20 @@ exports.getProjectFromCode = function(uniqueCode) {
 };
 
 
+exports.getProjectFromCodeUnPub = function(uniqueCode) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT * from projects WHERE unique_code=?',
+            [uniqueCode]).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
+
 exports.getDatasetIdFromCode = function(uniqueCode) {
     return new Promise(function(resolve, error) {
         var connection = db.get();

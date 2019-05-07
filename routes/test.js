@@ -537,6 +537,8 @@ function downloadTutorialLocal(loc, projectID,existing,ar_ready) {
 
                                 tileDB.generateTileoscopeARDatasetInfoJSON(projectID).then(function (json_data) {
 
+                                    console.log(json_data);
+
                                     var datasetDIR = "dataset/" + json_data.dataset_id;
                                     var dataset_file = datasetDIR+ '/Dataset-Info.json';
                                     var json = JSON.stringify(json_data);
@@ -632,6 +634,9 @@ function downloadTutorialLocal(loc, projectID,existing,ar_ready) {
                                 console.log("Creating dataset-info json")
 
                                 tileDB.generateTileoscopeARDatasetInfoJSON(projectID).then(function (json_data) {
+
+                                    console.log(json_data);
+
 
                                     var datasetDIR = "dataset/" + json_data.dataset_id;
                                     var dataset_file = datasetDIR+ '/Dataset-Info.json';
@@ -1254,25 +1259,28 @@ function readAttributionsFromCSV(dirName,unique_code) {
         //will test after return of function for json files, if not there, then it will not be sent to AR game
 
         if (!fs.existsSync(csv_path)) {
+            console.log("CSV Not Found")
             resolve([])
-        };
+        } else {
+            //read the csv, make a json file for every item
+            fs.readFile(csv_path, "utf8", function(error, tdata) {
 
-        //read the csv, make a json file for every item
-        fs.readFile(csv_path, "utf8", function(error, tdata) {
+
+                attribution_items = d3.csvParse(tdata);
+
+                if (!error) {
+                    this.dirName = dirName;
+                    this.unique_code = unique_code;
+                    resolve(attribution_items);
+                } else {
+                    console.log("error: " + error);
+                    error(error);
+                }
+
+            });
+        }
 
 
-            attribution_items = d3.csvParse(tdata);
-
-            if (!error) {
-                this.dirName = dirName;
-                this.unique_code = unique_code;
-                resolve(attribution_items);
-            } else {
-                console.log("error: " + error);
-                error(error);
-            }
-
-        });
 
 
     });
@@ -1307,7 +1315,7 @@ function createAttributionItem(dirName,unique_code,item) {
             //if any field is valid JSON, then make sure it is encoded correctly
             item[key] = checkIfJSON(item[key]);
         }
-        
+
 
         //write object to file
         var json = JSON.stringify(item);
