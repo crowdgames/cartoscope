@@ -1446,7 +1446,9 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
                     'file': $scope.file,
                     'projectID': $scope.project.unique_code,
                     'existing': $scope.existingImages,
-                    'ar_ready': $scope.project.ar_ready
+                    'ar_ready': $scope.project.ar_ready,
+                    'dataset_id': $scope.project.dataset_id
+
                 }
             }).then(function (resp) {
                 //$scope.showUploadProgress = false;

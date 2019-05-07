@@ -146,7 +146,7 @@ router.post('/uploadLocal', fupload.single('file'),
                 //proceed to analyze the folder
                 console.log(req.file)
                 var stored_filename = req.file.path;
-                console.log(stored_filename)
+                console.log(stored_filename);
                 downloadLocal(stored_filename, downloadID, main_project_id,ar_ready);
                 res.send({
                     uniqueCode: downloadID
@@ -179,6 +179,7 @@ router.post('/uploadTutorialLocal', fupload.single('file'),
     function(req, res, next) {
 
         var main_project_id = req.body.projectID;
+        var dataset_id = req.body.dataset_id;
         var existing = req.body.existing;
         var ar_ready = req.body.ar_ready;
 
@@ -188,7 +189,7 @@ router.post('/uploadTutorialLocal', fupload.single('file'),
             console.log(req.file);
             var stored_filename = req.file.path;
             console.log(stored_filename);
-            downloadTutorialLocal(stored_filename, main_project_id,existing,ar_ready);
+            downloadTutorialLocal(stored_filename, main_project_id,existing,ar_ready,dataset_id);
             //TODO: Maybe return number of correctly inserted tutorial items?
             res.send({
                 uniqueCode: main_project_id
@@ -457,7 +458,7 @@ function downloadLocal(loc,downloadID, projectID,ar_ready) {
     });
 }
 
-function downloadTutorialLocal(loc, projectID,existing,ar_ready) {
+function downloadTutorialLocal(loc, projectID,existing,ar_ready,dataset_id) {
 
 
         //TODO: Deal with existing option, it should essentially check the list of names already in the dataset_id table
@@ -512,6 +513,8 @@ function downloadTutorialLocal(loc, projectID,existing,ar_ready) {
 
                             console.log("Data in tutorial item");
                             console.log(data[i]);
+
+                            //todo:if existing, then path should be to dataset/dataset_id in the examples, need to do changes in the tutorial pages as well
 
                             var p = projectDB.insertTutorialItems(projectID, data[i]);
                             //catch and print error but do not cause problem
