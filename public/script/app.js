@@ -763,7 +763,8 @@ module.controller('projectCreationController', ['$scope', '$http', '$state', 'sw
       options: []
     };
 
-    $scope.project.privacy = 0;
+    //start with private project by default
+    $scope.project.privacy = 1;
     $scope.showPublish = true;
     $scope.$on('moveNext', function(e, d) {
       var curr = $state.current.name;
@@ -1394,7 +1395,12 @@ module.controller('stepFiveController', ['$scope', '$state', '$http', function($
 
   $scope.startTaskPath = window.location.protocol + '//' + window.location.host + '/api/tasks/startProject/';
 
-  $scope.getPathToStart = function() {
+    //send them to project page instead
+    $scope.startTaskPath = window.location.protocol + '//' + window.location.host + '/kioskProject.html#/kioskStart/';
+
+
+
+    $scope.getPathToStart = function() {
     return $scope.startTaskPath + '' + $scope.project['unique_code'];
   };
 
