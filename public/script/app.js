@@ -763,7 +763,8 @@ module.controller('projectCreationController', ['$scope', '$http', '$state', 'sw
       options: []
     };
 
-    $scope.project.privacy = 0;
+    //start with private project by default
+    $scope.project.privacy = 1;
     $scope.showPublish = true;
     $scope.$on('moveNext', function(e, d) {
       var curr = $state.current.name;
@@ -844,7 +845,10 @@ module.controller('projectsController', ['$scope', '$state', '$http', '$location
 
 
         //Allow project creation for selected user
-        if ($scope.user.username == projectCreators) {vm.allowProject = true}
+       // if ($scope.user.username == projectCreators) {vm.allowProject = true}
+       // else {vm.allowProject = false}
+
+        if($scope.user.is_creator == 1) {vm.allowProject = true}
         else {vm.allowProject = false}
 
     }]);
@@ -860,7 +864,10 @@ module.controller('projectController', ['$scope', '$state', '$http', '$statePara
         }
 
         //Allow project creation for selected user
-        if ($scope.user.username == projectCreators) {vm.allowProject = true}
+        //if ($scope.user.username == projectCreators) {vm.allowProject = true}
+        //else {vm.allowProject = false}
+
+        if($scope.user.is_creator == 1) {vm.allowProject = true}
         else {vm.allowProject = false}
 
 
@@ -1055,9 +1062,9 @@ module.controller('stepOneController', ['$scope', '$state', '$http', 'swalServic
     });
 
     $scope.validate = function() {
-      if (!$scope.project.name || !$scope.project.description) {
+      if (!$scope.project.name || !$scope.project.description || !$scope.project.short_name) {
         $scope.showErr = true;
-        swalService.showErrorMsg('Please enter a name and description for the project.');
+        swalService.showErrorMsg('Please enter a name, a short name and description for the project.');
       } else {
         $scope.createProject();
       }
@@ -1073,7 +1080,9 @@ module.controller('stepOneController', ['$scope', '$state', '$http', 'swalServic
         }
         fd.append('name', $scope.project.name);
         fd.append('description', $scope.project.description);
-        $http.post('api/project/add', fd, {
+          fd.append('short_name', $scope.project.short_name);
+
+          $http.post('api/project/add', fd, {
           transformRequest: angular.identity,
           headers: {'Content-Type': undefined}
         }).then(function(response) {
@@ -1256,7 +1265,7 @@ module.controller('stepFourController', ['$scope', '$state', '$http', 'swalServi
 
           var data = {
               projectID: $scope.project.id,
-              ar_ready: $scope.project.ar_ready | 0
+              ar_ready: $scope.project.ar_ready
           };
           $http.post('/api/project/updateARReady', data).then(function(data) {
           }, function(response) {
@@ -1271,12 +1280,15 @@ module.controller('stepFourController', ['$scope', '$state', '$http', 'swalServi
         $http.post('/api/test/upload', {
           'file': $scope.project.dataSetLink,
           'projectID': $scope.project.id,
-          'regex': $scope.project.regex || ''
+          'regex': $scope.project.regex || '',
+            'ar_ready': $scope.project.ar_ready
         }).then(function(data) {
           if (data.data.uniqueCode) {
             $scope.project.dataSetID = data.data.uniqueCode;
               //update location if unchecked
               $scope.update_hasLocation();
+              $scope.update_ar_ready();
+
 
           }
         }, function(err) {
@@ -1286,7 +1298,6 @@ module.controller('stepFourController', ['$scope', '$state', '$http', 'swalServi
         swalService.showErrorMsg('Please enter a data set url');
       }
     };
-
 
 
       $scope.sendDataSetLocal = function() {
@@ -1307,6 +1318,7 @@ module.controller('stepFourController', ['$scope', '$state', '$http', 'swalServi
                       $scope.project.dataSetID = resp.data.uniqueCode;
                       //update location if unchecked
                       $scope.update_hasLocation();
+                      $scope.update_ar_ready();
 
                   }
               }, function (resp) {
@@ -1343,6 +1355,7 @@ module.controller('stepFourController', ['$scope', '$state', '$http', 'swalServi
                       $scope.project.dataSetID = resp.data.uniqueCode;
                       //update location if unchecked
                       $scope.update_hasLocation();
+                      //not possible to do ar with NGS!
 
                   }
               }, function (resp) {
@@ -1382,7 +1395,12 @@ module.controller('stepFiveController', ['$scope', '$state', '$http', function($
 
   $scope.startTaskPath = window.location.protocol + '//' + window.location.host + '/api/tasks/startProject/';
 
-  $scope.getPathToStart = function() {
+    //send them to project page instead
+    $scope.startTaskPath = window.location.protocol + '//' + window.location.host + '/kioskProject.html#/kioskStart/';
+
+
+
+    $scope.getPathToStart = function() {
     return $scope.startTaskPath + '' + $scope.project['unique_code'];
   };
 
@@ -1398,7 +1416,7 @@ module.controller('stepFiveController', ['$scope', '$state', '$http', function($
   };
 }]);
 
-module.controller('stepSixController', ['$scope', '$state', '$http', function($scope, $state, $http) {
+module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', 'swalService', function($scope, $state, $http, Upload, swalService) {
 
   $scope.$on('validate', function(e) {
     $scope.validate();
@@ -1407,6 +1425,71 @@ module.controller('stepSixController', ['$scope', '$state', '$http', function($s
   $scope.validate = function() {
     $scope.$emit('moveNext');
   };
+
+    $scope.showUploadProgress = false;
+
+
+    $scope.existingImages = 0;
+
+
+    //TODO: SET TO 1 once this functionality is ready
+    $scope.supportExisting = 0;
+
+    $scope.received_code = 0;
+
+    console.log($scope.project);
+
+
+
+    $scope.sendTutorialLocal = function() {
+
+        console.log("Sending Tutorial Items")
+        if ($scope.file) {
+            Upload.upload({
+                url: '/api/test/uploadTutorialLocal',
+                method: 'POST',
+                data: {
+                    'file': $scope.file,
+                    'projectID': $scope.project.unique_code,
+                    'existing': $scope.existingImages,
+                    'ar_ready': $scope.project.ar_ready,
+                    'dataset_id': $scope.project.dataset_id
+
+                }
+            }).then(function (resp) {
+                //$scope.showUploadProgress = false;
+
+                console.log('Success! Tutorial uploaded.');
+                //TODO: RESPONSE
+                if (resp.data.uniqueCode) {
+
+                    $scope.received_code = 1;
+
+
+
+                }
+            }, function (resp) {
+                $scope.showUploadProgress = false;
+
+                alert('Something wrong with the uploaded data set');
+            }, function (evt) {
+                $scope.showUploadProgress = true;
+
+                $scope.progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+                $scope.uploadProgressStyle = {"width" : $scope.progressPercentage.toString() + "%"};
+
+            });
+        } else {
+            swalService.showErrorMsg('Please enter a valid compressed folder');
+        }
+    };
+
+
+
+
+
+
+
 }]);
 
 module.controller('defaultController', ['$scope', 'userData', '$window', function($scope, userData, $window) {
@@ -1521,8 +1604,13 @@ module.controller('projectsPageController', ['$scope', 'userData', 'projects', '
     }
 
         //Allow project creation for selected user
-        if ($scope.user.username == projectCreators) {$scope.allowProject = true}
+        // if ($scope.user.username == projectCreators) {$scope.allowProject = true}
+        // else {$scope.allowProject = false}
+
+        if($scope.user.is_creator == 1) {$scope.allowProject = true}
         else {$scope.allowProject = false}
+
+
 
 
   }]);
@@ -1551,7 +1639,10 @@ module.controller('userProfileController', ['$scope','$http', '$state', 'project
 
 
     //Allow project creation for selected user
-    if ($scope.user.username == projectCreators) {$scope.allowProject = true}
+    //if ($scope.user.username == projectCreators) {$scope.allowProject = true}
+    //else {$scope.allowProject = false}
+
+    if($scope.user.is_creator == 1) {$scope.allowProject = true}
     else {$scope.allowProject = false}
 
 
