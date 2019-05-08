@@ -786,6 +786,8 @@ router.get('/getDataset/:code/' , function(req, res, next) {
 
 
         } else {
+
+            console.log("Fetching created zip")
             //we have it, just send it
             res.setHeader('Content-Type', 'application/zip');
             res.sendFile(path.resolve(full_zip));
