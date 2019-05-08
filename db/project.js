@@ -20,11 +20,11 @@ exports.isCodeUnique = function(uniqueCode, done) {
     });
 };
 
-exports.addProject = function(name, userID, desc, picID, uniqueCode, done) {
+exports.addProject = function(name, userID, desc, picID, uniqueCode, short_name) {
   return new Promise(function(resolve, reject) {
     var connection = db.get();
-    connection.queryAsync('INSERT INTO projects (name,creatorID,description,cover_pic,unique_code) VALUES(?,?,?,?,?)',
-      [name, userID, desc, picID, uniqueCode]).then(
+    connection.queryAsync('INSERT INTO projects (name,creatorID,description,cover_pic,unique_code,short_name) VALUES(?,?,?,?,?,?)',
+      [name, userID, desc, picID, uniqueCode,short_name]).then(
       function(result) {
         resolve(result);
       }).catch(function(err) {
@@ -170,11 +170,11 @@ exports.updateARReady = function(projectId, ar_ready) {
 };
 
 
-exports.updateDescriptionName = function(projectId, description,name) {
+exports.updateDescriptionName = function(projectId, description,name,short_name) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        connection.queryAsync('UPDATE projects SET description=? , name=? WHERE id=?',
-            [description,name, projectId]).then(
+        connection.queryAsync('UPDATE projects SET description=? , name=?, short_name=? WHERE id=?',
+            [description,name, short_name,projectId]).then(
             function(data) {
                 resolve(data);
             }, function(err) {
