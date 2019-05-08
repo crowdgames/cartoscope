@@ -767,8 +767,10 @@ router.get('/getDataset/:code/' , function(req, res, next) {
             output.on('close', function () {
 
                 //we have it, just send it
-                res.setHeader('Content-Type', 'application/zip');
-                res.sendFile(path.resolve(full_zip));
+                //res.setHeader('Content-Type', 'application/zip');
+                //res.sendFile(path.resolve(full_zip));
+                res.download(full_zip, zip_name);
+
 
 
             });
@@ -789,8 +791,9 @@ router.get('/getDataset/:code/' , function(req, res, next) {
 
             console.log("Fetching created zip")
             //we have it, just send it
-            res.setHeader('Content-Type', 'application/zip');
-            res.sendFile(path.resolve(full_zip));
+            //res.setHeader('Content-Type', 'application/zip');
+            //res.sendFile(path.resolve(full_zip));
+            res.download(full_zip, zip_name);
 
         }
 
