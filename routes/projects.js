@@ -274,7 +274,7 @@ router.post('/add', [upload.any(), filters.requireLogin, filters.requiredParamHa
   function(req, res, next) {
     var body = req.body;
     var filename = 'default';
-    // console.log('body ', body);
+     console.log('body ', body);
     
     if (req.files && req.files.length > 0) {
       filename = req.files[0].filename;
@@ -290,7 +290,7 @@ router.post('/add', [upload.any(), filters.requireLogin, filters.requiredParamHa
         if (isValidImage(result)) {
           fs.renameSync(req.files[0].path, 'profile_photos/' + filename);
           generateUniqueProjectCode().then(function(projectCode) {
-            projectDB.addProject(body.name, req.session.passport.user.id, body.description, filename, projectCode).then(
+            projectDB.addProject(body.name, req.session.passport.user.id, body.description, filename, projectCode,body.short_name).then(
               function(result) {
                 console.log('result '+ result);
                 res.send({id: result.insertId, code: projectCode});
@@ -307,7 +307,7 @@ router.post('/add', [upload.any(), filters.requireLogin, filters.requiredParamHa
       
     } else {
       generateUniqueProjectCode().then(function(projectCode) {
-        projectDB.addProject(body.name, req.session.passport.user.id, body.description, filename, projectCode).then(
+        projectDB.addProject(body.name, req.session.passport.user.id, body.description, filename, projectCode,body.short_name).then(
           function(result) {
             res.send({id: result.insertId, code: projectCode});
           }, function(err) {
@@ -367,7 +367,7 @@ router.post('/updateDescription',
 router.post('/updateDescriptionName',
     [filters.requireLogin, filters.requiredParamHandler(['projectID', 'description']), upload.any()],
     function(req, res, next) {
-        projectDB.updateDescriptionName(req.body.projectID, req.body.description,req.body.name).then(function(data) {
+        projectDB.updateDescriptionName(req.body.projectID, req.body.description,req.body.name,req.body.short_name).then(function(data) {
             if (data.affectedRows == 1) {
                 res.send({'status': 'done'});
             } else {
