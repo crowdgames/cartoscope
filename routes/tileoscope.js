@@ -748,8 +748,9 @@ router.get('/getDataset/:code/' , function(req, res, next) {
 
         var dataset_id = project.dataset_id;
         var datasetDIR = "dataset/" + dataset_id;
-        var zip_name = project.unique_code + "_" + project.short_name + '.zip';
+        var zip_name = project.unique_code + "|" + project.short_name + '.zip';
         var full_zip = ar_folder + zip_name;
+        console.log(full_zip)
 
         // //make sure we don't send anything beyond json and image
         // if (fs.existsSync(datasetDIR + "/tmp/")) {
