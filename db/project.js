@@ -763,6 +763,20 @@ exports.insertTutorialItems = function(projectId,data){
 }
 
 
+exports.deleteTutorialItemsFromCode = function(projectCode) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('delete from tutorial where unique_code=?',
+            [ projectCode]).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
+
 exports.addDataSetID = function(projectId, dataSetID) {
   return new Promise(function(resolve, error) {
     var connection = db.get();

@@ -278,8 +278,12 @@ exports.generateTileoscopeARDatasetInfoJSON = function(unique_code) {
                         tut_images.push(tut_categories[cat][0]);
 
                         //TODO: Right now we are only pushing pairs to tutorial
-                        if (tut_categories[cat].length == 2) {
-                            dataset_info_json.tutorial = tut_categories[cat]
+                        if (tut_categories[cat].length >= 2) {
+
+                            console.log("Adding images")
+                            dataset_info_json.tutorial.push(tut_categories[cat][0]);
+                            dataset_info_json.tutorial.push(tut_categories[cat][1]);
+
                         }
                     }
 

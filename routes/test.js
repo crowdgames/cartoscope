@@ -189,12 +189,22 @@ router.post('/uploadTutorialLocal', fupload.single('file'),
             console.log(req.file);
             var stored_filename = req.file.path;
             console.log(stored_filename);
-            downloadTutorialLocal(stored_filename, main_project_id,existing,ar_ready,dataset_id);
-            //TODO: Maybe return number of correctly inserted tutorial items?
-            res.send({
-                uniqueCode: main_project_id
-            });
-    })
+
+
+            //delete the current tutorial entries then proceed:
+            projectDB.deleteTutorialItemsFromCode(main_project_id).then(function (d) {
+
+                downloadTutorialLocal(stored_filename, main_project_id,existing,ar_ready,dataset_id);
+                //TODO: Maybe return number of correctly inserted tutorial items?
+                res.send({
+                    uniqueCode: main_project_id
+                });
+            }).catch(function(err) {
+                res.status(400).send(err)
+                })
+
+
+    });
 
 
 function downloadLocal(loc,downloadID, projectID,ar_ready) {
