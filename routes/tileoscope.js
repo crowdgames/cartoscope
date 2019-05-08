@@ -757,8 +757,7 @@ router.get('/getDataset/:code/' , function(req, res, next) {
         //     fs.unlinkSync(datasetDIR + "/tmp/");
         // }
 
-        //if it does not exist, then we have to make it, else fetch it
-        if (!fs.existsSync(full_zip)) {
+        
 
             var output = fs.createWriteStream(full_zip);
             var archive = archiver('zip');
@@ -787,15 +786,7 @@ router.get('/getDataset/:code/' , function(req, res, next) {
 
 
 
-        } else {
 
-            console.log("Fetching created zip")
-            //we have it, just send it
-            //res.setHeader('Content-Type', 'application/zip');
-            //res.sendFile(path.resolve(full_zip));
-            res.download(full_zip, zip_name);
-
-        }
 
 
 
