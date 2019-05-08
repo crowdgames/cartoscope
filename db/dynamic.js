@@ -515,12 +515,12 @@ exports.pickQlearnOptimalSequence = function(main_code) {
 };
 
 
-//pick greedy sequence for qlearn
+//pick greedy sequence for qlearn (pick a random of the greedy ones!)
 exports.pickGreedySequence = function(main_code) {
 
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        connection.queryAsync('SELECT id from task_genetic_sequences where unique_code_main=? and active=1 and method="greedy" ',
+        connection.queryAsync('SELECT id from task_genetic_sequences where unique_code_main=? and active=1 and method="greedy" ORDER BY RAND() LIMIT 1 ',
             [main_code])
             .then(
                 function(data) {
@@ -554,7 +554,7 @@ exports.pickGreedySequenceTileoscope = function(main_code) {
 
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        connection.queryAsync('SELECT id as genetic_id,seq,method from tileoscope_task_genetic_sequences where unique_code_main=? and active=1 and method="greedy" ',
+        connection.queryAsync('SELECT id as genetic_id,seq,method from tileoscope_task_genetic_sequences where unique_code_main=? and active=1 and method="greedy" ORDER BY RAND() LIMIT 1 ',
             [main_code])
             .then(
                 function(data) {
