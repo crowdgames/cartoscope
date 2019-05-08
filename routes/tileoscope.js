@@ -793,7 +793,9 @@ router.get('/getDataset/:code/' , function(req, res, next) {
             //we have it, just send it
             //res.setHeader('Content-Type', 'application/zip');
             //res.sendFile(path.resolve(full_zip));
-            res.download(full_zip, zip_name);
+            //res.download(full_zip, zip_name);
+            res.attachment(full_zip);
+            res.end('Downloaded', 'UTF-8')
 
         }
 
