@@ -146,7 +146,7 @@ exports.setARStatus = function(code,status) {
 exports.getTileoscopeARProjects = function() {
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        connection.queryAsync('SELECT name,description,unique_code,dataset_id,has_location,template from projects where ar_ready=1 and ar_status=1')
+        connection.queryAsync('SELECT name,short_name,description,unique_code,dataset_id,has_location,template from projects where ar_ready=1 and ar_status=1')
             .then(
                 function(data) {
                     resolve(data);
@@ -155,6 +155,8 @@ exports.getTileoscopeARProjects = function() {
                 });
     });
 };
+
+
 
 
 //get all the projects that are Tileoscope Ready
@@ -184,6 +186,7 @@ exports.generateTileoscopeARDatasetInfoJSON = function(unique_code) {
         var dataset_info_json = {
             count: 0,                   //how many images in the set
             code: unique_code,
+            has_location: 0,
             name: '',
             short_name: '',
             description: '',
@@ -210,6 +213,7 @@ exports.generateTileoscopeARDatasetInfoJSON = function(unique_code) {
             dataset_info_json.name = project.name;
             dataset_info_json.short_name = project.short_name;
             dataset_info_json.description = project.description;
+            dataset_info_json.has_location = project.has_location;
 
 
             //get categories and count here from template:

@@ -668,9 +668,18 @@ router.get('/getTileoscopeARProjects', function(req,res,next){
 
 
     tileDB.getTileoscopeARProjects().then(function(data) {
-        res.send(data)
+
+        var d = [];
+        data.forEach(function(item){
+            if (item.short_name && item.unique_code){
+                d.push(item.unique_code + '_' + item.short_name)
+            }
+        });
+
+        var obj = {'names':d};
+        res.send(obj)
     }, function(error){
-        console.log(error)
+        console.log(error);
         res.status(404).send(error)
     })
 
@@ -748,7 +757,7 @@ router.get('/getDataset/:code/' , function(req, res, next) {
 
         var dataset_id = project.dataset_id;
         var datasetDIR = "dataset/" + dataset_id;
-        var zip_name = project.unique_code + "|" + project.short_name + '.zip';
+        var zip_name = project.unique_code + "_" + project.short_name + '.zip';
         var full_zip = ar_folder + zip_name;
         console.log(full_zip)
 
