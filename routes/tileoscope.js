@@ -738,6 +738,37 @@ router.get('/getImageJson/:dataset/:name' , function(req, res, next) {
 
 
 
+
+//generate dataset info for existing code
+router.get('/generateDatasetInfo/:code' , function(req, res, next) {
+
+
+    tileDB.generateTileoscopeARDatasetInfoJSON(req.params.code).then(function(data) {
+
+        var datasetDIR = "dataset/" + json_data.dataset_id;
+        var dataset_file = datasetDIR+ '/Dataset-Info.json';
+        var json = JSON.stringify(json_data);
+        fs.writeFile(dataset_file, json, 'utf8', (err) => {
+            if (err) throw err;
+            console.log('dataset-info file was created');
+        });
+
+        //set ar  status to 1
+        tileDB.updateARProjectStatus(projectID).then(function (d) {
+
+        });
+
+    }, function(error){
+        console.log(error)
+        res.status(404).send(error)
+    })
+});
+
+
+
+
+
+
 //get specific dataset zip
 router.get('/getDataset/:code/' , function(req, res, next) {
 

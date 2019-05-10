@@ -71,9 +71,17 @@ exports.processData = function(files) {
 function reduceImage(baseDir, fileName, target) {
   return new Promise(function(resolve, reject) {
 
+      console.log(fileName)
+
+      var target_file = fileName.substring(0, fileName.lastIndexOf(".") + 1) + 'jpg';
+
+      console.log(target_file)
+      console.log(target)
+
       sharp( path.join(baseDir,fileName))
           .resize(resizeSize, resizeSize)
-          .toFile(path.join(target,fileName), function(err) {
+          .toFormat('jpeg')
+          .toFile(path.join(target,target_file), function(err) {
               if (err){
                   //console.log("OOPS")
                   //console.log(err)
@@ -82,8 +90,8 @@ function reduceImage(baseDir, fileName, target) {
               } else {
                   //console.log("Finished: " + path.join(target,fileName))
                   resolve({
-                      compressed: target + '/' + fileName,
-                      fileName: fileName
+                      compressed: path.join(target,target_file),
+                      fileName: target_file
                   })
               }
           });
