@@ -496,7 +496,7 @@ exports.importSettingsFromProject = function(new_code, pObj,short_name){
 exports.duplicateShortName = function(project) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        connection.queryAsync('SELECT short_name FROM '+databaseName+'.projects WHERE short_name LIKE \'' + project.short_name + '%\' order by short_name desc LIMIT 1',
+        connection.queryAsync('SELECT short_name FROM '+databaseName+'.projects WHERE short_name LIKE \'' + project.short_name + '%\' order by short_name desc LIMIT 1'
             ).then(
             function(data) {
 
