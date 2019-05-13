@@ -249,16 +249,26 @@ router.get('/duplicateProject/:pCode', [ filters.requireLogin],
             generateUniqueProjectCode().then(function (unique_code_new) {
                 console.log("New Code is:" + unique_code_new);
                 //add all information from previous project here:
-                projectDB.importSettingsFromProject(unique_code_new, project_info).then(function (project_code) {
-                    //return all ok here and send new project code:
-                    res.send({
-                        new_code: project_code,
-                        old_code: unique_code,
-                        info: "Tutorial not set"
-                    });
+
+                //Must make sure the short name is unique somehow
+                projectDB.duplicateShortName(project_info).then(function (new_short_name) {
+                    
+                    projectDB.importSettingsFromProject(unique_code_new, project_info,new_short_name).then(function (project_code) {
+                        //return all ok here and send new project code:
+                        res.send({
+                            new_code: project_code,
+                            old_code: unique_code,
+                            info: "Tutorial not set"
+                        });
+                    }, function (err) {
+                        res.status(400).send('Duplication Failed: Project info could not be migrated ');
+                    })
+
                 }, function (err) {
-                    res.status(400).send('Duplication Failed: Project info could not be migrated ');
+                    res.status(400).send('Duplication Failed: Project short name could not be duplicated ');
                 })
+
+
 
             }, function (err) {
                 res.status(400).send('Duplication Failed: Project could not be found');

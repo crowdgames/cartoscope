@@ -1058,6 +1058,9 @@ module.controller('projectController', ['$scope', '$state', '$http', '$statePara
 module.controller('stepOneController', ['$scope', '$state', '$http', 'swalService',
   function($scope, $state, $http, swalService) {
 
+
+    var invalid_characters = ['\\','/',':','?','\"','<','>','|'];
+
     $scope.$on('validate', function(e) {
       $scope.validate();
     });
@@ -1066,7 +1069,12 @@ module.controller('stepOneController', ['$scope', '$state', '$http', 'swalServic
       if (!$scope.project.name || !$scope.project.description || !$scope.project.short_name) {
         $scope.showErr = true;
         swalService.showErrorMsg('Please enter a name, a short name and description for the project.');
-      } else {
+      } else if (  invalid_characters.some(el => $scope.project.short_name.includes(el))) {
+          $scope.showErr = true;
+          swalService.showErrorMsg('Short name cannot contain the following characters: \n' + invalid_characters.join(','));
+      }
+
+      else {
         $scope.createProject();
       }
     };
@@ -1093,6 +1101,10 @@ module.controller('stepOneController', ['$scope', '$state', '$http', 'swalServic
           $scope.$emit('moveNext');
         }, function(response) {
           var msg = response.data.error || 'Couldn\'t create the project';
+          //if we got a duplicate entry, it's because of the short name
+          if (msg == "ER_DUP_ENTRY") {
+            msg = 'A project with the same short name already exists!'
+          }
           swalService.showErrorMsg(msg);
         });
       }

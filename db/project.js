@@ -459,13 +459,15 @@ exports.addUserTutorialSequence = function(worker_id,hitID,unique_code,sequence)
 };
 
 
-exports.importSettingsFromProject = function(new_code, pObj){
+exports.importSettingsFromProject = function(new_code, pObj,short_name){
     return new Promise(function(resolve, error) {
         var connection = db.get();
         var obj_list = [];
         //from pObj, pop id,created_at and last_modified: should not be altered
         var old_unique_code = pObj["unique_code"];
         delete pObj["unique_code"];
+        delete pObj["short_name"];
+
         delete pObj["id"];
         delete pObj["created_at"];
         delete pObj["last_modified"];
@@ -474,8 +476,8 @@ exports.importSettingsFromProject = function(new_code, pObj){
         for (key in pObj){
             obj_list.push(key)
         }
-        var query = "INSERT INTO projects ( " + obj_list.toString() + ",unique_code)" +
-        " SELECT " + obj_list.toString() +  " ,\"" + new_code + "\"" +
+        var query = "INSERT INTO projects ( " + obj_list.toString() + ",unique_code,short_name)" +
+        " SELECT " + obj_list.toString() +  " ,\"" + new_code + "\", \"" + short_name + '\"' +
         " from projects where unique_code=\"" + old_unique_code + "\"";
 
         //end query with project
@@ -489,6 +491,31 @@ exports.importSettingsFromProject = function(new_code, pObj){
     });
 };
 
+
+//duplicate short name by adding a number next to it. Get the latest and increase number
+exports.duplicateShortName = function(project) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT short_name FROM '+databaseName+'.projects WHERE short_name LIKE \'' + project.short_name + '%\' order by short_name desc LIMIT 1',
+            ).then(
+            function(data) {
+
+                var prev_name = data[0].short_name;
+                var split_array = prev_name.split(project.short_name);
+                var num = 2;
+                if (split_array[1] != "") {
+                    num = parseInt(split_array[1]) + 1;
+                };
+                var new_name = project.short_name + num.toString();
+
+
+                resolve(new_name);
+            }, function(err) {
+                console.log(err);
+                error(err);
+            });
+    });
+};
 
 
 exports.getNumberOfContributers = function(project) {

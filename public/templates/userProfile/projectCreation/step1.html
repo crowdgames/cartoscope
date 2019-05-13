@@ -12,7 +12,8 @@
                 <span>
                     Short Name*
                 </span>
-                <input ng-switch-when="true" ng-model="project.short_name">
+                <!--Make sure short name cannot be edited once added-->
+                <input ng-switch-when="true" ng-model="project.short_name" readonly>
                 <input ng-switch-when="false" ng-model="project.short_name">
             </div>
             <div>
