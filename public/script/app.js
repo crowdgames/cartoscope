@@ -645,8 +645,8 @@ module.controller('appController', ['$scope', '$http', 'userData', '$window', fu
 
 }]);
 
-module.controller('projectEditController', ['$scope', '$http', '$state', 'swalService', 'project',
-  function($scope, $http, $state, swalService, project) {
+module.controller('projectEditController', ['$scope', '$http', '$state','$timeout', 'swalService', 'project',
+  function($scope, $http, $state,$timeout, swalService, project) {
     $scope.project = project;
 
     if (!$scope.project.editing) {
@@ -672,9 +672,19 @@ module.controller('projectEditController', ['$scope', '$http', '$state', 'swalSe
     };
 
     $scope.goNext = function() {
-      if ($state.current && $state.current.name == 'root.projectCreation.step6') {
+
+
+
+        if ($state.current && $state.current.name == 'root.projectCreation.step6') {
         $scope.openPublishPopup();
-      } else {
+      } if ($state.current && $state.current.name == 'root.projectEdit.step6') {
+
+            // $timeout( function(){
+                $state.go('root.getAllProjects');
+            // }, 100 );
+
+
+        } else {
         $scope.$broadcast('validate');
       }
     };
@@ -719,7 +729,11 @@ module.controller('projectEditController', ['$scope', '$http', '$state', 'swalSe
           $scope.showPublish = false;
           $scope.project.published = true;
           $('#publishPopup').modal('hide');
-          $state.go('root.getAllProjects');
+
+            $timeout( function(){
+                $state.go('root.getAllProjects');
+            }, 1000 );
+
         }, function(response) {
           var msg = response.data.error || 'Couldn\'t publish your project, please try again';
           swalService.showErrorMsg(msg);
@@ -730,8 +744,8 @@ module.controller('projectEditController', ['$scope', '$http', '$state', 'swalSe
 
   }]);
 
-module.controller('projectCreationController', ['$scope', '$http', '$state', 'swalService', 'projectCreators',
-  function($scope, $http, $state, swalService, projectCreators) {
+module.controller('projectCreationController', ['$scope', '$http', '$state', '$timeout', 'swalService', 'projectCreators',
+  function($scope, $http, $state,$timeout, swalService, projectCreators) {
     $scope.goTo = function(to) {
       if ($scope.project.id) {
         $state.go(to);
@@ -751,6 +765,8 @@ module.controller('projectCreationController', ['$scope', '$http', '$state', 'sw
     };
 
     $scope.goNext = function() {
+
+
       if ($state.current && $state.current.name == 'root.projectCreation.step6') {
         $scope.openPublishPopup();
       } else {
@@ -806,6 +822,12 @@ module.controller('projectCreationController', ['$scope', '$http', '$state', 'sw
         $http.post('/api/project/publish', {projectID: $scope.project.id}).then(function(data) {
           $scope.showPublish = false;
           $('#publishPopup').modal('hide');
+
+
+            $timeout( function(){
+                $state.go('root.getAllProjects');
+            }, 1000 );
+
         }, function(response) {
           var msg = response.data.error || 'Couldn\'t publish your project, please try again';
           swalService.showErrorMsg(msg);
@@ -1450,7 +1472,7 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
 
     $scope.received_code = 0;
 
-    console.log($scope.project);
+   // console.log($scope.project);
 
 
 

@@ -252,7 +252,7 @@ router.get('/duplicateProject/:pCode', [ filters.requireLogin],
 
                 //Must make sure the short name is unique somehow
                 projectDB.duplicateShortName(project_info).then(function (new_short_name) {
-                    
+
                     projectDB.importSettingsFromProject(unique_code_new, project_info,new_short_name).then(function (project_code) {
                         //return all ok here and send new project code:
                         res.send({
