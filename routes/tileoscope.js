@@ -2,10 +2,13 @@ var resultDB = require('../db/results');
 var anonUserDB = require('../db/anonUser');
 var projectDB = require('../db/project');
 var tileDB = require('../db/tileoscope');
+var dynamicDB = require('../db/dynamic');
+
 var filters = require('../constants/filters');
 var express = require('express');
 var router = express.Router();
 var fs = require('fs');
+var archiver = require('archiver');
 var json2csv = require('json2csv');
 var d3 = require('d3');
 var CARTO_PORT = process.env.CARTO_PORT || '8081';
@@ -232,6 +235,44 @@ router.post('/submitMatch', function(req, res, next) {
 });
 
 
+
+
+//Register tileoscope User to Cartoscope Code
+router.post('/submitMove', function(req, res, next) {
+
+
+    //if one of the two missing, then error!
+    var hitId = req.body.hitID;
+    var workerId = req.body.userID;
+    var move = req.body.move;
+
+
+
+    if (hitId == undefined){
+        res.status(400).send('Trial ID missing.');
+    }
+    else if (workerId == undefined){
+        res.status(400).send('User code missing.');
+    }  else if (move == undefined){
+        res.status(400).send('Move missing.');
+    }
+
+    else {
+
+
+        //make sure there is a project
+        tileDB.submitTileoscopeMove(workerId,hitId,move).then(function(project) {
+
+            res.status(200).send('Move submitted successfully');
+
+        }, function(err) {
+            console.log('err ', err);
+            res.status(400).send('Error submitting move.');
+        });
+    }
+});
+
+
 //Register tileoscope User to Cartoscope Code
 router.get('/submitMatch', function(req, res, next) {
 
@@ -368,4 +409,448 @@ router.post('/getTileoscopeUserVotes', function(req, res, next) {
         });
     }
 
+});
+
+
+
+//Get Tileoscope moves for specific hit
+router.get('/getTileoscopeMoves/:hitId', function(req, res, next) {
+
+
+    //if one of the two missing, then error!
+    var hitId = req.params.hitId;
+
+        //make sure there is a project
+        tileDB.getTileoscopeMoves(hitId).then(function(moves) {
+
+            res.send(moves);
+
+        }, function(err) {
+            console.log('err ', err);
+            res.status(404).send('No trial found.');
+        });
+
+
+});
+
+
+// Get a generated sequence for Tilescope Web
+router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
+
+
+    //if one of the two missing, then error!
+    var projectID = req.query.tree || req.query.qlearn || req.query.genetic || req.query.random || "featured";
+    var workerId = req.query.workerId || req.query.participantId;
+
+
+
+    if (workerId == undefined){
+        res.status(400).send('User code missing.');
+    } else {
+        //make the mturk user object
+        var anonUser = {
+            workerId: workerId,
+            hitId: req.query.hitId || req.query.trialId ||  "tileoscope",
+            assignmentId: req.query.assignmentId || "tileoscope",
+            submitTo: req.query.submitTo || "tileoscope"
+        };
+
+
+        //for cases requiring trees (or generating from pools that are stored in the root of a tree)
+        if (req.query.hasOwnProperty("tree") || req.query.hasOwnProperty("random")){
+            //make sure there is a tree
+            dynamicDB.getTreeFromCodeTileoscope(projectID).then(function(tree) {
+
+                console.log("Tree exists.");
+
+                //check if user exists:
+                anonUserDB.findConsentedMTurkWorker(anonUser.workerId, projectID,anonUser.hitId).then(function(user) {
+                    if (user.id) {
+                        console.log("User exists.Fetching sequence")
+                        //res.status(200).send({user_id:user.id, project_code: projectID});
+                        //retrieve from genetic id
+                        tileDB.getCreatedSequenceTileoscope(user.genetic_id).then(function(genetic_data) {
+
+                            res.setHeader('Access-Control-Allow-Origin', '*');
+                            var res_obj = {seq:genetic_data[0].seq,method:genetic_data[0].method};
+                            res.send(res_obj)
+
+                        }, function(error){
+
+                            res.status(400).send("Error retrieving sequence for existing user.")
+
+                        });
+
+
+                    } else {
+                        //get genetic code from backend
+
+                        console.log("User not found. Creating...");
+
+                        var func = "createUserSequenceFromTreeTileoscope";
+                        if (req.query.hasOwnProperty("random")){
+                            func = "createUserSequenceFromTreeTileoscopeRandom"
+                        }
+
+                        dynamicDB[func](projectID).then(function(genetic_data){
+
+                            console.log(genetic_data);
+                            var genetic_id = genetic_data.genetic_id;
+                            var genetic_seq = genetic_data.seq;
+                            //add them as mturk worker and return genetic sequence
+                            anonUserDB.addMTurkWorker(anonUser, projectID, 1, 1, genetic_id).then(function (userID) {
+                                //find user then return corresponding user id and project code
+                                anonUserDB.findConsentedMTurkWorker(anonUser.workerId, projectID,anonUser.hitId).then(function(user) {
+                                    if (user.id) {
+                                        //res.status(200).send({user_id:user.id, project_code: projectID});
+                                        res.setHeader('Access-Control-Allow-Origin', '*');
+                                        var res_obj = {seq:genetic_data.seq,method:genetic_data.method};
+                                        res.send(res_obj)
+                                    }
+                                })
+                            });
+
+                        },function(err) {
+                            console.log('err ', err);
+                            res.status(404).send('Could not generate sequence.');
+                        });
+                    }
+                })
+
+
+
+
+            }, function(err) {
+                console.log('err ', err);
+                res.status(404).send('No tree found.');
+            });
+        }
+        //for for cases that don't require tree
+        else if (req.query.hasOwnProperty("qlearn") || req.query.hasOwnProperty("genetic")){
+
+            //check if user exists:
+            anonUserDB.findConsentedMTurkWorker(anonUser.workerId, projectID,anonUser.hitId).then(function(user) {
+                if (user.id) {
+                    console.log("User exists.Fetching sequence")
+                    //res.status(200).send({user_id:user.id, project_code: projectID});
+                    //retrieve from genetic id
+                    tileDB.getCreatedSequenceTileoscope(user.genetic_id).then(function(genetic_data) {
+
+                        res.setHeader('Access-Control-Allow-Origin', '*');
+                        var res_obj = {seq:genetic_data[0].seq,method:genetic_data[0].method};
+                        res.send(res_obj)
+
+                    }, function(error){
+
+                        res.status(400).send("Error retrieving sequence for existing user.")
+
+                    });
+
+
+                } else {
+                    //get sequence by picking between randomly generating or qlearn optimal
+
+                    console.log("User not found. Creating...");
+
+                    var func = "createUserSequenceQlearnTileoscope";
+                    if (req.query.hasOwnProperty("genetic")){
+                        func = "pickGeneticSequenceTileoscope"
+                    }
+
+                    dynamicDB[func](projectID).then(function(genetic_data){
+
+                        console.log(genetic_data);
+                        var genetic_id = genetic_data.genetic_id;
+                        var genetic_seq = genetic_data.seq;
+                        //add them as mturk worker and return genetic sequence
+                        anonUserDB.addMTurkWorker(anonUser, projectID, 1, 1, genetic_id).then(function (userID) {
+                            //find user then return corresponding user id and project code
+                            anonUserDB.findConsentedMTurkWorker(anonUser.workerId, projectID,anonUser.hitId).then(function(user) {
+                                if (user.id) {
+                                    //res.status(200).send({user_id:user.id, project_code: projectID});
+                                    res.setHeader('Access-Control-Allow-Origin', '*');
+                                    var res_obj = {seq:genetic_data.seq,method:genetic_data.method};
+                                    res.send(res_obj);
+                                }
+                            })
+                        });
+
+                    },function(err) {
+                        console.log('err ', err);
+                        res.status(404).send('Could not generate sequence.');
+                    });
+                }
+            })
+
+
+        } else {
+
+            console.log("Featured");
+
+            //check if user exists:
+            anonUserDB.findConsentedMTurkWorker(anonUser.workerId, projectID,anonUser.hitId).then(function(user) {
+                if (user.id) {
+                    console.log("User exists.Fetching sequence")
+                    //res.status(200).send({user_id:user.id, project_code: projectID});
+                    //retrieve from genetic id
+                    tileDB.getCreatedSequenceTileoscope(user.genetic_id).then(function(genetic_data) {
+
+                        res.setHeader('Access-Control-Allow-Origin', '*');
+                        res.send(genetic_data[0].seq)
+
+                    }, function(error){
+
+                        res.status(400).send("Error retrieving sequence for existing user.")
+
+                    });
+
+
+                } else {
+                    //get sequence by picking one of the currently featured ones
+
+                    console.log("User not found. Creating...");
+
+
+                    tileDB.pickSequenceFeaturedTileoscope().then(function(genetic_data){
+
+                        console.log(genetic_data);
+                        var genetic_id = genetic_data.genetic_id;
+                        var genetic_seq = genetic_data.seq;
+                        //add them as mturk worker and return genetic sequence
+                        anonUserDB.addMTurkWorker(anonUser, projectID, 1, 1, genetic_id).then(function (userID) {
+                            //find user then return corresponding user id and project code
+                            anonUserDB.findConsentedMTurkWorker(anonUser.workerId, projectID,anonUser.hitId).then(function(user) {
+                                if (user.id) {
+                                    //res.status(200).send({user_id:user.id, project_code: projectID});
+                                    res.setHeader('Access-Control-Allow-Origin', '*');
+                                    var res_obj = {seq:genetic_data.seq,method:genetic_data.method};
+                                    res.send(res_obj)
+                                }
+                            })
+                        });
+
+                    },function(err) {
+                        console.log('err ', err);
+                        res.status(404).send('Could not generate sequence.');
+                    });
+                }
+            })
+
+
+        }
+
+
+    }
+
+});
+
+
+// update the tree using the data provided (source: R code)
+router.post('/updateGeneticTreeFromRDATA/:mainCode', function(req,res,next){
+
+
+    var main_code = req.params.mainCode;
+    var updated_tree = req.body.tree
+
+    dynamicDB.updateTreeFromDATATileoscope(updated_tree).then(function(data) {
+        res.status(200).send("Tileoscope Tree updated from R data sucessfully")
+    }, function(error){
+        console.log(error)
+        res.status(404).send(error)
+    })
+
+
+});
+
+
+// get the projects that are AR ready from DB
+router.get('/getTileoscopeARProjects', function(req,res,next){
+
+
+    tileDB.getTileoscopeARProjects().then(function(data) {
+
+        var d = [];
+        data.forEach(function(item){
+            if (item.short_name && item.unique_code){
+                d.push(item.unique_code + '_' + item.short_name)
+            }
+        });
+
+        var obj = {'names':d};
+        res.send(obj)
+    }, function(error){
+        console.log(error);
+        res.status(404).send(error)
+    })
+
+
+});
+
+
+// get the projects that are AR ready from DB
+router.get('/getTileoscopeARProjectImageList/:mainCode', function(req,res,next){
+
+    var main_code = req.params.mainCode;
+
+    //get dataset id from code
+    projectDB.getDatasetIdFromCode(main_code).then(function(dd) {
+
+            var dataset_id = dd[0].dataset_id;
+            //get dataset id from code
+        tileDB.getTileoscopeProjectImageList(dataset_id).then(function(data) {
+            res.send(data)
+
+        }, function(error){
+            console.log(error)
+            res.status(404).send(error)
+        })
+
+
+    }, function(error){
+        console.log(error)
+        res.status(404).send(error)
+    })
+
+
+});
+
+
+//get specific image from dataset
+router.get('/getImage/:dataset/:name' , function(req, res, next) {
+    res.setHeader('Content-Type', 'image/jpeg');
+    if (fs.existsSync('dataset/' + req.params.dataset + '/' + req.params.name + '.jpg')) {
+        res.sendFile(path.resolve('dataset/' + req.params.dataset + '/' + req.params.name + '.jpg'));
+    } else {
+        res.status(404).send();
+    }
+});
+
+
+//get specific image from dataset
+router.get('/getImageJson/:dataset/:name' , function(req, res, next) {
+    res.setHeader('Content-Type', 'application/json');
+    if (fs.existsSync('dataset/' + req.params.dataset + '/' + req.params.name + '.json')) {
+        res.sendFile(path.resolve('dataset/' + req.params.dataset + '/' + req.params.name + '.json'));
+    } else {
+        res.status(404).send();
+    }
+});
+
+
+
+
+//generate dataset info for existing code
+router.get('/generateDatasetInfo/:code' , function(req, res, next) {
+
+
+    tileDB.generateTileoscopeARDatasetInfoJSON(req.params.code).then(function(data) {
+
+        var datasetDIR = "dataset/" + json_data.dataset_id;
+        var dataset_file = datasetDIR+ '/Dataset-Info.json';
+        var json = JSON.stringify(json_data);
+        fs.writeFile(dataset_file, json, 'utf8', (err) => {
+            if (err) throw err;
+            console.log('dataset-info file was created');
+        });
+
+        //set ar  status to 1
+        tileDB.updateARProjectStatus(projectID).then(function (d) {
+
+        });
+
+    }, function(error){
+        console.log(error)
+        res.status(404).send(error)
+    })
+});
+
+
+
+
+
+
+//get specific dataset zip
+router.get('/getDataset/:code/' , function(req, res, next) {
+
+
+    var ar_folder = "ar_zip/";
+    //if it doesn't exist, then create it, else add to it
+    if (!fs.existsSync(ar_folder)) {
+        fs.mkdirSync(ar_folder);
+    }
+
+    var unique_code = req.params.code;
+
+    projectDB.getProjectFromCode(unique_code).then(function (project_data) {
+
+
+        var project = project_data[0];
+
+        var dataset_id = project.dataset_id;
+        var datasetDIR = "dataset/" + dataset_id;
+        var zip_name = project.unique_code + "_" + project.short_name + '.zip';
+        var full_zip = ar_folder + zip_name;
+        console.log(full_zip)
+
+        // //make sure we don't send anything beyond json and image
+        // if (fs.existsSync(datasetDIR + "/tmp/")) {
+        //     fs.unlinkSync(datasetDIR + "/tmp/");
+        // }
+
+
+
+            var output = fs.createWriteStream(full_zip);
+            var archive = archiver('zip');
+
+
+            output.on('close', function () {
+
+                //we have it, just send it
+                //res.setHeader('Content-Type', 'application/zip');
+                //res.sendFile(path.resolve(full_zip));
+                res.download(full_zip, zip_name);
+
+
+
+            });
+
+            archive.on('error', function(err){
+                res.status(404).send("Could not generate zip");
+            });
+
+            // pipe archive data to the file
+            archive.pipe(output);
+            // append files from a sub-directory, putting its contents at the root of archive
+            archive.directory(datasetDIR, false);
+            archive.finalize();
+
+
+
+
+
+
+
+    }, function(error){
+        console.log(error)
+        res.status(404).send(error)
+    })
+
+
+
+});
+
+
+
+//get specific dataset zip
+router.get('/getDatasetInfo/:code' , function(req, res, next) {
+
+
+    var code = req.params.code;
+    tileDB.generateTileoscopeARDatasetInfoJSON(code).then(function(data) {
+        res.send(data)
+
+    }, function(error){
+        console.log(error)
+        res.status(404).send(error)
+    })
 });

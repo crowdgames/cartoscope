@@ -1,11 +1,11 @@
 <div class="container" ng-controller="gridMapProjectController">
         <h1 style="color: black">Results & Contributions</h1>
-        <p> Below you can see how other people have contributed to the project. You can see results
+        <p ng-if=" proj_data.has_location"> Below you can see how other people have contributed to the project. You can see results
             by answer by clicking on the buttons below. Zoom in for more detailed results.</p>
 
 
         <center>
-            <div id="map_canvas" ng-if="successProject1" >
+            <div id="map_canvas" ng-if="successProject1 && proj_data.has_location" >
                 <ng-map   center="[{{map1.center.latitude}},{{map1.center.longitude}} ]"
                         map-type-id="ROADMAP"
                         zoom="{{map1.zoom}}"
@@ -59,7 +59,7 @@
                 </ng-map>
 
             </div>
-            <div class="row" ng-if="successProject1 && !showMarkers && projType !='ngs' ">
+            <div class="row" ng-if="successProject1 && !showMarkers && projType !='ngs' && proj_data.has_location">
                 <small><b>Note:</b> <span ng-if="gridMap">GridMap</span><span ng-if="!gridMap">HeatMap</span> generated based on image GPS locations
                     <span ng-if="showPoiName">, not {{project_poi_name}} locations</span>
                     </small>
@@ -72,7 +72,7 @@
 
             </div>
 
-            <div class="row" ng-if="successProject1">
+            <div class="row" ng-if="successProject1 && proj_data.has_location">
                 <h3>{{question1}}</h3>
                 <div class="col-lg-2 col-md-2"></div>
                 <div ng-hide="showMarkers" class="col-lg-8 col-md-8 col-sm-12 col-xs-12">

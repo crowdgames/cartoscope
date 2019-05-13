@@ -177,6 +177,7 @@ CREATE TABLE `projects` (
   `unique_code` varchar(255) DEFAULT NULL,
   `template` text,
   `name` varchar(512) DEFAULT NULL,
+   `short_name` varchar(512) DEFAULT NULL,
   `published` int(1) DEFAULT '0',
   `dataset_id` varchar(45) DEFAULT NULL,
   `archived` int(1) DEFAULT '0',
@@ -188,6 +189,9 @@ CREATE TABLE `projects` (
   `inorder` int(11) DEFAULT '0',
   `req_count` int(11) DEFAULT '0',
   `image_source` text,
+   `image_attribution` text DEFAULT NULL,
+   `ar_ready` int(11) DEFAULT 0,
+    `ar_status` int(11) DEFAULT 0,
   `tutorial_link` text,
   `genetic` int(11) DEFAULT '0',
   `genetic_task` int(11) DEFAULT '0',
@@ -238,6 +242,41 @@ CREATE TABLE `survey` (
 ) ENGINE=InnoDB AUTO_INCREMENT=212 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+
+--
+-- Table structure for table `tileoscope_survey`
+--
+
+DROP TABLE IF EXISTS `tileoscope_survey`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tileoscope_survey` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(128) DEFAULT NULL,
+  `hit_id` varchar(128) DEFAULT NULL,
+  `response` varchar(1024) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique` (`user_id`,`hit_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=212 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+
+--
+-- Table structure for table `tileoscope_moves`
+--
+
+DROP TABLE IF EXISTS `tileoscope_moves`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tileoscope_moves` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(128) DEFAULT NULL,
+  `hit_id` varchar(128) DEFAULT NULL,
+  `response` TEXT DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=212 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 
 
@@ -331,6 +370,53 @@ CREATE TABLE `genetic_tree` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
+-- tileoscope genetic sequences
+
+DROP TABLE IF EXISTS `tileoscope_task_genetic_sequences`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tileoscope_task_genetic_sequences` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `unique_code_main` varchar(255) DEFAULT NULL,
+  `seq` text,
+  `active` int(11) DEFAULT '0',
+  `pool` text DEFAULT NULL,
+  `misc` varchar(255) DEFAULT NULL,
+  `fitness_function` FLOAT DEFAULT NULL,
+  `fitness_function2` FLOAT DEFAULT NULL,
+  `method` varchar(255) DEFAULT NULL,
+  `generated_from` varchar(255) DEFAULT NULL,
+  `ignore_codes` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+
+-- table for tree storage (tileoscope)
+
+DROP TABLE IF EXISTS `tileoscope_genetic_tree`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tileoscope_genetic_tree` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `unique_code_main` varchar(255) DEFAULT NULL,
+  `active` int(11) DEFAULT '0',
+  `parent` varchar(255),
+  `node` varchar(255),
+  `pool` text DEFAULT NULL,
+  `misc` varchar(255) DEFAULT NULL,
+  `fitness_function` FLOAT DEFAULT NULL,
+  `fitness_function_mean` FLOAT DEFAULT NULL,
+  `people` int(11) DEFAULT '0',
+  `ignore_codes` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+ UNIQUE KEY (`unique_code_main`, `node`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+-- tree forced
+
 DROP TABLE IF EXISTS `tree_forced`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -381,6 +467,8 @@ CREATE TABLE `users` (
   `last_login` datetime DEFAULT NULL,
   `is_active` tinyint(1) DEFAULT '1',
   `short_bio` text,
+   `is_creator` int(11) DEFAULT 0,
+
   PRIMARY KEY (`id`),
   UNIQUE KEY `idusers_UNIQUE` (`id`),
   UNIQUE KEY `email_UNIQUE` (`email`),

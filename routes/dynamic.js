@@ -284,6 +284,34 @@ router.get('/createUserSequenceFromTreeForcedDepth/:mainCode/:depth', function(r
 });
 
 
+//create a random sequence of size 100 based on root tree for options
+//testing endpoint. The functionality is used when creating an entry in mturk workers in the mturk path
+router.get('/createUserSequenceFromTreeRandom/:mainCode', function(req,res,next){
+
+    var main_code = req.params.mainCode;
+    dynamicDB.createUserSequenceFromTreeRandom(main_code).then(function(generated_genetic_id) {
+        res.status(200).send({genetic_id: generated_genetic_id})
+    }, function(error){
+        console.log(error)
+        res.status(404).send(error)
+    })
+});
+
+
+//pick randomly between optimal and random generating
+//testing endpoint. The functionality is used when creating an entry in mturk workers in the mturk path
+router.get('/createUserSequenceFromTreeRandom/:mainCode', function(req,res,next){
+
+    var main_code = req.params.mainCode;
+    dynamicDB.createUserSequenceQlearn(main_code).then(function(generated_genetic_id) {
+        res.status(200).send({genetic_id: generated_genetic_id})
+    }, function(error){
+        console.log(error)
+        res.status(404).send(error)
+    })
+});
+
+
 // update the tree using the data provided (source: R code)
 // testing endpoint. The functionality is used when creating an entry in mturk workers in the mturk path
 router.post('/updateGeneticTreeFromRDATA/:mainCode', function(req,res,next){

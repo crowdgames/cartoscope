@@ -20,11 +20,11 @@ exports.isCodeUnique = function(uniqueCode, done) {
     });
 };
 
-exports.addProject = function(name, userID, desc, picID, uniqueCode, done) {
+exports.addProject = function(name, userID, desc, picID, uniqueCode, short_name) {
   return new Promise(function(resolve, reject) {
     var connection = db.get();
-    connection.queryAsync('INSERT INTO projects (name,creatorID,description,cover_pic,unique_code) VALUES(?,?,?,?,?)',
-      [name, userID, desc, picID, uniqueCode]).then(
+    connection.queryAsync('INSERT INTO projects (name,creatorID,description,cover_pic,unique_code,short_name) VALUES(?,?,?,?,?,?)',
+      [name, userID, desc, picID, uniqueCode,short_name]).then(
       function(result) {
         resolve(result);
       }).catch(function(err) {
@@ -142,8 +142,6 @@ exports.updateDescription = function(projectId, description) {
 
 
 exports.updateHasLocation = function(projectId, has_location) {
-
-
     return new Promise(function(resolve, error) {
         var connection = db.get();
         connection.queryAsync('UPDATE projects SET has_location=? WHERE id=?',
@@ -157,11 +155,26 @@ exports.updateHasLocation = function(projectId, has_location) {
 };
 
 
-exports.updateDescriptionName = function(projectId, description,name) {
+
+exports.updateARReady = function(projectId, ar_ready) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        connection.queryAsync('UPDATE projects SET description=? , name=? WHERE id=?',
-            [description,name, projectId]).then(
+        connection.queryAsync('UPDATE projects SET ar_ready=? WHERE id=?',
+            [ar_ready, projectId]).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
+
+exports.updateDescriptionName = function(projectId, description,name,short_name) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('UPDATE projects SET description=? , name=?, short_name=? WHERE id=?',
+            [description,name, short_name,projectId]).then(
             function(data) {
                 resolve(data);
             }, function(err) {
@@ -194,6 +207,34 @@ exports.getProjectFromCode = function(uniqueCode) {
         error(err);
       });
   });
+};
+
+
+exports.getProjectFromCodeUnPub = function(uniqueCode) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT * from projects WHERE unique_code=?',
+            [uniqueCode]).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
+
+exports.getDatasetIdFromCode = function(uniqueCode) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT dataset_id from projects WHERE unique_code=? and published = 1',
+            [uniqueCode]).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
 };
 
 exports.getProjectFromId = function(id) {
@@ -313,12 +354,12 @@ exports.getTutorialSequenceRandom = function(uniqueCode) {
     });
 };
 
-
+//pick from sequences that were not a result of tree or qlearn
 exports.getTutorialSequenceRandomGenetic = function(uniqueCode) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
         //get a random sequence
-        var queryString = 'SELECT id from task_genetic_sequences WHERE active=1 and unique_code_main = \'' + uniqueCode + '\' ORDER BY RAND() LIMIT 1';
+        var queryString = 'SELECT id from task_genetic_sequences WHERE active=1 and not method like \'tree%\' and not method like \'qlearn%\' and unique_code_main = \'' + uniqueCode + '\' ORDER BY RAND() LIMIT 1';
         connection.queryAsync(queryString).then(
             function(data) {
                 if (data.length > 0) {
@@ -418,13 +459,15 @@ exports.addUserTutorialSequence = function(worker_id,hitID,unique_code,sequence)
 };
 
 
-exports.importSettingsFromProject = function(new_code, pObj){
+exports.importSettingsFromProject = function(new_code, pObj,short_name){
     return new Promise(function(resolve, error) {
         var connection = db.get();
         var obj_list = [];
         //from pObj, pop id,created_at and last_modified: should not be altered
         var old_unique_code = pObj["unique_code"];
         delete pObj["unique_code"];
+        delete pObj["short_name"];
+
         delete pObj["id"];
         delete pObj["created_at"];
         delete pObj["last_modified"];
@@ -433,8 +476,8 @@ exports.importSettingsFromProject = function(new_code, pObj){
         for (key in pObj){
             obj_list.push(key)
         }
-        var query = "INSERT INTO projects ( " + obj_list.toString() + ",unique_code)" +
-        " SELECT " + obj_list.toString() +  " ,\"" + new_code + "\"" +
+        var query = "INSERT INTO projects ( " + obj_list.toString() + ",unique_code,short_name)" +
+        " SELECT " + obj_list.toString() +  " ,\"" + new_code + "\", \"" + short_name + '\"' +
         " from projects where unique_code=\"" + old_unique_code + "\"";
 
         //end query with project
@@ -448,6 +491,31 @@ exports.importSettingsFromProject = function(new_code, pObj){
     });
 };
 
+
+//duplicate short name by adding a number next to it. Get the latest and increase number
+exports.duplicateShortName = function(project) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT short_name FROM '+databaseName+'.projects WHERE short_name LIKE \'' + project.short_name + '%\' order by short_name desc LIMIT 1'
+            ).then(
+            function(data) {
+
+                var prev_name = data[0].short_name;
+                var split_array = prev_name.split(project.short_name);
+                var num = 2;
+                if (split_array[1] != "") {
+                    num = parseInt(split_array[1]) + 1;
+                };
+                var new_name = project.short_name + num.toString();
+
+
+                resolve(new_name);
+            }, function(err) {
+                console.log(err);
+                error(err);
+            });
+    });
+};
 
 
 exports.getNumberOfContributers = function(project) {
@@ -546,6 +614,20 @@ exports.getDataSetNames = function(datasetId) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
         connection.queryAsync('SELECT GROUP_CONCAT(name) AS image_list FROM ' + tableName).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
+
+exports.getDataSetNamesArray = function(datasetId) {
+    var tableName = 'dataset_' + datasetId;
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT name FROM ' + tableName).then(
             function(data) {
                 resolve(data);
             }, function(err) {
@@ -655,6 +737,73 @@ exports.createDataSetItem = function(datasetID, name, x, y) {
   });
 };
 
+
+//insert tutorial items from csv data
+exports.insertTutorialItems = function(projectId,data){
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+        var image_path = projectId + "/" + data.image_name;
+
+        console.log(image_path)
+
+
+
+        var query = 'INSERT INTO tutorial (unique_code, template, point_selection, points_file';
+        query2 = ' SELECT unique_code, template, point_selection, points_file';
+
+        var obj_keys = Object.keys(data);
+        //add only the relevant keys
+
+        for (i = 0; i < obj_keys.length; i++) {
+
+            var key = obj_keys[i];
+
+            //if it is relevant, add to query
+            if (data[key] != '') {
+
+                query += ', ' + key
+                if (key == "image_name"){
+                    query2 += ", \"" + image_path  + "\" "
+                } else {
+                    query2 += ", \"" + data[key]  + "\" "
+
+                }
+
+            }
+        }
+
+        query += ')' + query2 + ' from projects where unique_code=\"' + projectId + '\"';
+
+
+
+        connection.queryAsync(query).then(
+            function(data) {
+
+                console.log(data)
+                resolve(data);
+            }, function(err) {
+                console.log(err)
+                error(err);
+            });
+    });
+}
+
+
+exports.deleteTutorialItemsFromCode = function(projectCode) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('delete from tutorial where unique_code=?',
+            [ projectCode]).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
+
 exports.addDataSetID = function(projectId, dataSetID) {
   return new Promise(function(resolve, error) {
     var connection = db.get();
@@ -687,6 +836,26 @@ exports.addSurvey = function(userID, projectID, response) {
         error(err);
       });
   });
+};
+
+exports.addSurveyTileoscope = function(userID, hitID, response) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('INSERT INTO '+databaseName+'.`tileoscope_survey`(`user_id`,`hit_id`,`response`)' +
+            'VALUES (?, ?, ?) on DUPLICATE KEY update response=VALUES(response)',
+            [userID, hitID, JSON.stringify(response)]).then(
+            function(data) {
+                console.log(data)
+                if (data.insertId) {
+                    console.log('In data insert');
+                    resolve(data.insertId);
+                } else {
+                    error({code: 'Problem with insert'});
+                }
+            }, function(err) {
+                error(err);
+            });
+    });
 };
 
 exports.getAllProjectsForUser = function(userID) {

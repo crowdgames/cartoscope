@@ -359,10 +359,12 @@ router.get('/csv_heatmap/:projectCode', function(req, res, next) {
                     //res.attachment('results_'+projectCode +'.csv');
                     res.send(csv_results);
                 }, function(err) {
-                    res.status(400).send('results could not be generated!!!');
+                    console.log(err)
+                    res.status(400).send(err);
                 });
             });
         }, function(err) {
+            console.log(err)
             res.status(400).send('Results could not be generated!!!');
         });
     }, function(err) {

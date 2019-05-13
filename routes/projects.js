@@ -249,16 +249,26 @@ router.get('/duplicateProject/:pCode', [ filters.requireLogin],
             generateUniqueProjectCode().then(function (unique_code_new) {
                 console.log("New Code is:" + unique_code_new);
                 //add all information from previous project here:
-                projectDB.importSettingsFromProject(unique_code_new, project_info).then(function (project_code) {
-                    //return all ok here and send new project code:
-                    res.send({
-                        new_code: project_code,
-                        old_code: unique_code,
-                        info: "Tutorial not set"
-                    });
+
+                //Must make sure the short name is unique somehow
+                projectDB.duplicateShortName(project_info).then(function (new_short_name) {
+
+                    projectDB.importSettingsFromProject(unique_code_new, project_info,new_short_name).then(function (project_code) {
+                        //return all ok here and send new project code:
+                        res.send({
+                            new_code: project_code,
+                            old_code: unique_code,
+                            info: "Tutorial not set"
+                        });
+                    }, function (err) {
+                        res.status(400).send('Duplication Failed: Project info could not be migrated ');
+                    })
+
                 }, function (err) {
-                    res.status(400).send('Duplication Failed: Project info could not be migrated ');
+                    res.status(400).send('Duplication Failed: Project short name could not be duplicated ');
                 })
+
+
 
             }, function (err) {
                 res.status(400).send('Duplication Failed: Project could not be found');
@@ -274,7 +284,7 @@ router.post('/add', [upload.any(), filters.requireLogin, filters.requiredParamHa
   function(req, res, next) {
     var body = req.body;
     var filename = 'default';
-    // console.log('body ', body);
+     console.log('body ', body);
     
     if (req.files && req.files.length > 0) {
       filename = req.files[0].filename;
@@ -290,7 +300,7 @@ router.post('/add', [upload.any(), filters.requireLogin, filters.requiredParamHa
         if (isValidImage(result)) {
           fs.renameSync(req.files[0].path, 'profile_photos/' + filename);
           generateUniqueProjectCode().then(function(projectCode) {
-            projectDB.addProject(body.name, req.session.passport.user.id, body.description, filename, projectCode).then(
+            projectDB.addProject(body.name, req.session.passport.user.id, body.description, filename, projectCode,body.short_name).then(
               function(result) {
                 console.log('result '+ result);
                 res.send({id: result.insertId, code: projectCode});
@@ -307,7 +317,7 @@ router.post('/add', [upload.any(), filters.requireLogin, filters.requiredParamHa
       
     } else {
       generateUniqueProjectCode().then(function(projectCode) {
-        projectDB.addProject(body.name, req.session.passport.user.id, body.description, filename, projectCode).then(
+        projectDB.addProject(body.name, req.session.passport.user.id, body.description, filename, projectCode,body.short_name).then(
           function(result) {
             res.send({id: result.insertId, code: projectCode});
           }, function(err) {
@@ -367,7 +377,7 @@ router.post('/updateDescription',
 router.post('/updateDescriptionName',
     [filters.requireLogin, filters.requiredParamHandler(['projectID', 'description']), upload.any()],
     function(req, res, next) {
-        projectDB.updateDescriptionName(req.body.projectID, req.body.description,req.body.name).then(function(data) {
+        projectDB.updateDescriptionName(req.body.projectID, req.body.description,req.body.name,req.body.short_name).then(function(data) {
             if (data.affectedRows == 1) {
                 res.send({'status': 'done'});
             } else {
@@ -383,6 +393,24 @@ router.post('/updateHasLocation',
     [filters.requireLogin, filters.requiredParamHandler(['projectID', 'has_location']), upload.any()],
     function(req, res, next) {
         projectDB.updateHasLocation(req.body.projectID, req.body.has_location).then(function(data) {
+            if (data.affectedRows == 1) {
+                res.send({'status': 'done'});
+            } else {
+                res.status(500).send({error: 'Project not found'});
+            }
+        }, function(err) {
+            console.log(err);
+            res.status(500).send({'error': err.code});
+        });
+    });
+
+
+
+
+router.post('/updateARReady',
+    [filters.requireLogin, filters.requiredParamHandler(['projectID', 'ar_ready']), upload.any()],
+    function(req, res, next) {
+        projectDB.updateARReady(req.body.projectID, req.body.ar_ready).then(function(data) {
             if (data.affectedRows == 1) {
                 res.send({'status': 'done'});
             } else {
@@ -523,35 +551,117 @@ router.get('/:id/unarchive', function(req, res, next) {
   });
 });
 
+//
+// //fix for issues with codes!
+// router.post('/:id/survey', [filters.requireLogin], function(req, res, next) {
+//   if (req.session.passport.user.anonymous) {
+//     projectDB.getSingleProjectFromCode(req.params.id).then(function(project) {
+//         projectDB.addSurvey(req.session.passport.user.id, project.id, req.body).then(
+//         function(data) {
+//           console.log('inside function ... '+ data);
+//           if(req.session.passport.user.type == "mTurk"){
+//               anonUserDB.addHitCode(req.session.passport.user.id, req.params.id).then(function(data) {
+//                   res.send({hitCode: data, workerId: req.session.passport.user.id});
+//               }, function(err) {
+//                   res.status(500).send({error: err.code || 'Could not generate hit code. Please contact us'});
+//               });
+//           } else  if(req.session.passport.user.type == "kiosk"){
+//               //req.logout();
+//               res.send({heatMap: 'heatMap', workerId: req.session.passport.user.id});
+//           }
+//         },
+//         function(err) {
+//           res.status(500).send({error: err.code});
+//         }
+//       );
+//
+//     }, function(err) {
+//       console.log(err)
+//       res.status(500).send({error: err.code});
+//     });
+//   } else {
+//     res.status(401).send({error: 'Only anonymous users can complete the survey'});
+//   }
+// });
+
+
+//fix for issues with codes!
 router.post('/:id/survey', [filters.requireLogin], function(req, res, next) {
-  if (req.session.passport.user.anonymous) {
-    projectDB.getSingleProjectFromCode(req.params.id).then(function(project) {
-        projectDB.addSurvey(req.session.passport.user.id, project.id, req.body).then(
-        function(data) {
-          console.log('inside function ... '+ data);
-          if(req.session.passport.user.type == "mTurk"){
-              anonUserDB.addHitCode(req.session.passport.user.id, req.params.id).then(function(data) {
-                  res.send({hitCode: data, workerId: req.session.passport.user.id});
-              }, function(err) {
-                  res.status(500).send({error: err.code || 'Could not generate hit code. Please contact us'});
-              });
-          } else  if(req.session.passport.user.type == "kiosk"){
-              //req.logout();
-              res.send({heatMap: 'heatMap', workerId: req.session.passport.user.id});
-          }
-        },
-        function(err) {
-          res.status(500).send({error: err.code});
-        }
-      );
-      
-    }, function(err) {
-      console.log(err)
-      res.status(500).send({error: err.code});
-    });
-  } else {
-    res.status(401).send({error: 'Only anonymous users can complete the survey'});
-  }
+    if (req.session.passport.user.anonymous) {
+        projectDB.getSingleProjectFromCode(req.params.id).then(function(project) {
+            projectDB.addSurvey(req.session.passport.user.id, project.id, req.body).then(
+                function(data) {
+                    console.log('inside function ... '+ data);
+                    if(req.session.passport.user.type == "mTurk"){
+
+                        //if participant id, send participant id as hit code, else from env
+                        var hitCode = process.env.hitCode;
+                        if (req.session.passport.user.hasOwnProperty("participantID")){
+                            hitCode = req.session.passport.user.participantID;
+                        }
+
+                        res.send({hitCode: hitCode, workerId: req.session.passport.user.id});
+
+
+                    } else  if(req.session.passport.user.type == "kiosk"){
+                        //req.logout();
+                        res.send({heatMap: 'heatMap', workerId: req.session.passport.user.id});
+                    }
+                },
+                function(err) {
+                    //if for any reason there is an issue adding the survey text, still send hit code
+                    //if participant id, send participant id as hit code, else from env
+                    var hitCode = process.env.hitCode;
+                    if (req.session.passport.user.hasOwnProperty("participantID")){
+                        hitCode = req.session.passport.user.participantID;
+                    }
+                    res.send({hitCode: hitCode, workerId: req.session.passport.user.id});
+
+                }
+            );
+
+        }, function(err) {
+            console.log(err)
+            res.status(500).send({error: err.code});
+        });
+    } else {
+        res.status(401).send({error: 'Only anonymous users can complete the survey'});
+    }
+});
+
+
+//storing to survey tileoscope
+router.post('/surveyTileoscope', function(req, res, next) {
+
+    console.log(req.body)
+    var workerId = req.body.workerId || req.body.participantId;
+    var hitId = req.body.hitId || req.body.trialId;
+
+    projectDB.addSurveyTileoscope(workerId, hitId, req.body).then(function(data) {
+        console.log('inside function ... '+ data);
+
+            //if participant id, send participant id as hit code, else from env
+            var hitCode = process.env.hitCode;
+            if (req.body.hasOwnProperty("participantId")){
+                hitCode = req.body.participantId;
+            }
+            res.send({hitCode: hitCode, workerId: workerId});
+            },
+                function(err) {
+                    //if for any reason there is an issue adding the survey text, still send hit code
+                    //if participant id, send participant id as hit code, else from env
+                    //if participant id, send participant id as hit code, else from env
+                    var hitCode = process.env.hitCode;
+                    if (req.body.hasOwnProperty("participantId")){
+                        hitCode = req.body.participantId;
+                    }
+                    res.send({hitCode: hitCode, workerId: workerId});
+
+                }
+            );
+
+
+
 });
 
 router.post('/upload', [filters.requireLogin, filters.requiredParamHandler(['file', 'projectID'])],

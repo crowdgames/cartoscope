@@ -19,24 +19,39 @@ var salt = process.env.CARTO_SALT;
 var CARTO_MAILER_NOTIFY = process.env.CARTO_MAILER_NOTIFY;
 
 
+
 router.get('/startAnon/:pCode',
-  [filters.requiredParamHandler(['workerId', 'assignmentId', 'hitId', 'submitTo'])],
+  // [filters.requiredParamHandler(['workerId', 'assignmentId', 'hitId', 'submitTo'])],
   function(req, res, next) {
   //console.log('req.query ', req.query);
-    var workerId = req.query.workerId;
+    var workerId = req.query.workerId || req.query.participantId;
     var projectID = req.params.pCode;
-    var hitId = req.query.hitId;
+    var hitId = req.query.hitId || req.query.trialId;
     var assignmentId = req.query.assignmentId;
     var chain = req.query.chain;
     var fromChain = req.query.fromChain;
     var genetic = req.query.genetic; //whether the task is genetic
       var genetic_tree = req.query.tree; //whether the task is MCTS tree
+      var qlearn = req.query.qlearn; //whether we are doing qlearn
+      var no_turk_params = 0;
+
+      if (req.query.hasOwnProperty("participantId")){
+          no_turk_params = 1;
+      }
 
 
     projectDB.getSingleProjectFromCode(projectID).then(function(project) {
       req.logout();
       anonUserDB.findConsentedMTurkWorker(workerId, projectID,hitId).then(function(user) {
         if (user.id) {
+
+            //if no turk params, add these to user object
+            if (no_turk_params){
+                user.participantID = workerId;
+                user.trialID = hitId;
+            }
+
+
             loginAnonUser(req, user).then(function(data) {
                 var red_link = '/api/tasks/startProject/' + req.params.pCode + '?chain=' + chain;
                 //if genetic, we need to add genetic ID to user
@@ -47,12 +62,17 @@ router.get('/startAnon/:pCode',
                 if (genetic_tree){
                     red_link += '&tree=1';
                 }
+                //if qlearn, pick between random and optimal
+                if (qlearn){
+                    red_link += '&qlearn=1';
+                }
             res.redirect(red_link);
           });
         } else {
 
             //if coming from chain, loginUser without hashing,create the progress then continue
             //ONLY AT MTURK!
+            //TODO: NOT WORKING FOR MTURK EXTERNAL WITHOUT PARAMETERS
             if (fromChain) {
 
                 console.log("Will add without hash");
@@ -279,9 +299,14 @@ router.get('/consentKiosk/:pCode',
     });
 
 router.get('/consent/:pCode',
-  [filters.requiredParamHandler(['workerId', 'assignmentId', 'hitId', 'submitTo'])],
+  // [filters.requiredParamHandler(['workerId', 'assignmentId', 'hitId', 'submitTo'])],
   function(req, res, next) {
     var selectedProject={};
+
+
+    var workerId = req.query.workerId || req.query.participantId;
+    var hitId = req.query.hitId || req.query.trialId;
+
     projectDB.getSingleProjectFromCode(req.params.pCode).then(function(project) {
         selectedProject = project;
 
@@ -289,7 +314,7 @@ router.get('/consent/:pCode',
 
         //here check for genetic:
         console.log(req.query)
-        if (!req.query.genetic && !req.query.tree){
+        if (!req.query.genetic && !req.query.tree && !req.query.qlearn){
             console.log("regular user")
             return anonUserDB.addMTurkWorker(req.query, req.params.pCode, 1, 1,0);
         } else {
@@ -302,7 +327,7 @@ router.get('/consent/:pCode',
                         if (userID != null) {
                             //log the user here!
                             //find user then login
-                            anonUserDB.findConsentedMTurkWorker(req.query.workerId, req.params.pCode,req.query.hitId).then(function(user) {
+                            anonUserDB.findConsentedMTurkWorker(workerId, req.params.pCode,hitId).then(function(user) {
                                 if (user.id) {
                                     loginAnonUser(req, user).then(function (d) {
                                         res.status(200).send({project: selectedProject});
@@ -312,11 +337,11 @@ router.get('/consent/:pCode',
                         }
                     });
                 })
-            } else {
+            } else if (req.query.tree){
                 //must assign genetic sequence first and add id and log in user
                 console.log("create genetic sequence from tree");
 
-                var SEQ_DEPTH = 4; //TODO: Change from hardcoded to variable
+                //var SEQ_DEPTH = 6; //TODO: Change from hardcoded to variable
 
                 //dynamicDB.createUserSequenceFromTreeForcedK(req.params.pCode,SEQ_DEPTH).then(function (genetic_id) {
                 dynamicDB.createUserSequenceFromTree(req.params.pCode).then(function (genetic_id) {
@@ -325,7 +350,7 @@ router.get('/consent/:pCode',
                         if (userID != null) {
                             //log the user here!
                             //find user then login
-                            anonUserDB.findConsentedMTurkWorker(req.query.workerId, req.params.pCode,req.query.hitId).then(function(user) {
+                            anonUserDB.findConsentedMTurkWorker(workerId, req.params.pCode,hitId).then(function(user) {
                                 if (user.id) {
                                     loginAnonUser(req, user).then(function (d) {
                                         res.status(200).send({project: selectedProject});
@@ -335,6 +360,29 @@ router.get('/consent/:pCode',
                         }
                     });
                 })
+            } else if (req.query.qlearn){
+
+                //must randomly assign either qlearn optimal or random
+                console.log("Randomly assign qlearn random vs optimal");
+                dynamicDB.createUserSequenceQlearn(req.params.pCode).then(function (genetic_id) {
+
+                    console.log(genetic_id);
+
+                    anonUserDB.addMTurkWorker(req.query, req.params.pCode, 1, 1, genetic_id).then(function (userID) {
+                        if (userID != null) {
+                            //log the user here!
+                            //find user then login
+                            anonUserDB.findConsentedMTurkWorker(workerId, req.params.pCode,hitId).then(function(user) {
+                                if (user.id) {
+                                    loginAnonUser(req, user).then(function (d) {
+                                        res.status(200).send({project: selectedProject});
+                                    })
+                                }
+                            })
+                        }
+                    });
+                })
+
             }
 
         }
@@ -449,9 +497,14 @@ function loginAnonUser(req, user) {
     delete user.assignmentId;
     delete user.hitId;
     delete user.siteID;
+    delete user.trialId;
     user.id = user.workerID;
+
+
     delete user.workerId;
-    //console.log(user);
+    delete user.participantId;
+
+      //console.log(user);
     req.logIn(user, function(err) {
       if (err) {
        // console.log('in error logIn');

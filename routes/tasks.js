@@ -406,19 +406,33 @@ router.get('/startProject/:project', [filters.requireLogin], function(req, res, 
   var chain = req.query.chain;
   var genetic = req.query.genetic;
   var genetic_tree = req.query.tree;
+  var qlearn = req.query.qlearn;
   projectDB.getSingleProjectFromCode(req.params.project).then(checkDataSetReady).then(function(project) {
     if (user.anonymous) {
+        console.log("Start project user");
+        console.log(user);
       if (user.consented) {
         projectDB.findProgress(project, user.id, 1).then(function(data) {
           if ('progress' in data) {
 
               var partial_link = '/task.html#/?code=';
             //send genetic to task
-              if (genetic || genetic_tree){
+              if (genetic || genetic_tree || qlearn){
                   partial_link = '/task.html#/genetic?code=';
               };
-            var red_link = partial_link + req.params.project+ '&type='+req.session.passport.user.type +
-                '&workerID=' + user.workerID + '&hitID=' + user.hitID + '&assignmentID='+ user.assignmentID +'&chain=' + chain;
+
+              //if coming from no params, fix url
+
+              if (user.hasOwnProperty("participantID")) {
+
+                  var red_link = partial_link + req.params.project+ '&type='+req.session.passport.user.type +
+                      '&participantID=' + user.participantID + '&trialID=' + user.trialID + '&assignmentID='+ user.assignmentID +'&chain=' + chain;
+              } else {
+                  var red_link = partial_link + req.params.project+ '&type='+req.session.passport.user.type +
+                      '&workerID=' + user.workerID + '&hitID=' + user.hitID + '&assignmentID='+ user.assignmentID +'&chain=' + chain;
+              }
+
+
 
 
 

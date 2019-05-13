@@ -81,7 +81,7 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
         $scope.projects = [];
       });
       $scope.getRandomClass = function() {
-        
+
         var rand = Math.floor(Math.random() * 4);
         if(rand === 0){
           return "project-box-bkg1";
@@ -103,7 +103,7 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
       $scope.goToProject = function(code) {
           $window.location.href = '/kioskProject.html#/kioskStart/' + code;
         };
-      
+
       window.makeLinkActive = function(link){
         $("#nav-link").find(".active").removeClass("active");
         if(link === "top"){
@@ -119,42 +119,42 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
           $("#contact-us-link").addClass("active");
         }
       };
-      
+
       var controller = new ScrollMagic.Controller();
-  
+
       var topPanel = new ScrollMagic.Scene({
         triggerElement: "#logo-img",
         triggerHook: 0
       }).addTo(controller);
-  
+
       topPanel.on("start", function() {
         window.makeLinkActive("top");
       });
-      
-      
+
+
       var projectPanel = new ScrollMagic.Scene({
         triggerElement: "#projects-panel",
         triggerHook: 0
       }).addTo(controller);
-  
+
       projectPanel.on("start", function() {
         window.makeLinkActive("projects");
       });
-      
+
       var abtUsPanel = new ScrollMagic.Scene({
         triggerElement: "#about-us-panel",
         triggerHook: 0
       }).addTo(controller);
-  
+
       abtUsPanel.on("start", function() {
         window.makeLinkActive("abt-us");
       });
-      
+
       var contactUsPanel = new ScrollMagic.Scene({
         triggerElement: "#contact-us",
         triggerHook: 0.75
       }).addTo(controller);
-      
+
       contactUsPanel.on("start", function() {
         window.makeLinkActive("contact-us");
       });
@@ -322,7 +322,8 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
               var data = {
                   description: $scope.project.description,
                   projectID: $scope.project.id,
-                  name: $scope.project.name
+                  name: $scope.project.name,
+                  short_name: $scope.project.short_name
               };
 
               $http.post('/api/project/updateDescriptionName', data).then(function(data) {
@@ -644,8 +645,8 @@ module.controller('appController', ['$scope', '$http', 'userData', '$window', fu
 
 }]);
 
-module.controller('projectEditController', ['$scope', '$http', '$state', 'swalService', 'project',
-  function($scope, $http, $state, swalService, project) {
+module.controller('projectEditController', ['$scope', '$http', '$state','$timeout', 'swalService', 'project',
+  function($scope, $http, $state,$timeout, swalService, project) {
     $scope.project = project;
 
     if (!$scope.project.editing) {
@@ -671,9 +672,19 @@ module.controller('projectEditController', ['$scope', '$http', '$state', 'swalSe
     };
 
     $scope.goNext = function() {
-      if ($state.current && $state.current.name == 'root.projectCreation.step6') {
+
+
+
+        if ($state.current && $state.current.name == 'root.projectCreation.step6') {
         $scope.openPublishPopup();
-      } else {
+      } if ($state.current && $state.current.name == 'root.projectEdit.step6') {
+
+            // $timeout( function(){
+                $state.go('root.getAllProjects');
+            // }, 100 );
+
+
+        } else {
         $scope.$broadcast('validate');
       }
     };
@@ -718,7 +729,11 @@ module.controller('projectEditController', ['$scope', '$http', '$state', 'swalSe
           $scope.showPublish = false;
           $scope.project.published = true;
           $('#publishPopup').modal('hide');
-          $state.go('root.getAllProjects');
+
+            $timeout( function(){
+                $state.go('root.getAllProjects');
+            }, 1000 );
+
         }, function(response) {
           var msg = response.data.error || 'Couldn\'t publish your project, please try again';
           swalService.showErrorMsg(msg);
@@ -729,8 +744,8 @@ module.controller('projectEditController', ['$scope', '$http', '$state', 'swalSe
 
   }]);
 
-module.controller('projectCreationController', ['$scope', '$http', '$state', 'swalService', 'projectCreators',
-  function($scope, $http, $state, swalService, projectCreators) {
+module.controller('projectCreationController', ['$scope', '$http', '$state', '$timeout', 'swalService', 'projectCreators',
+  function($scope, $http, $state,$timeout, swalService, projectCreators) {
     $scope.goTo = function(to) {
       if ($scope.project.id) {
         $state.go(to);
@@ -750,6 +765,8 @@ module.controller('projectCreationController', ['$scope', '$http', '$state', 'sw
     };
 
     $scope.goNext = function() {
+
+
       if ($state.current && $state.current.name == 'root.projectCreation.step6') {
         $scope.openPublishPopup();
       } else {
@@ -763,7 +780,8 @@ module.controller('projectCreationController', ['$scope', '$http', '$state', 'sw
       options: []
     };
 
-    $scope.project.privacy = 0;
+    //start with private project by default
+    $scope.project.privacy = 1;
     $scope.showPublish = true;
     $scope.$on('moveNext', function(e, d) {
       var curr = $state.current.name;
@@ -804,6 +822,12 @@ module.controller('projectCreationController', ['$scope', '$http', '$state', 'sw
         $http.post('/api/project/publish', {projectID: $scope.project.id}).then(function(data) {
           $scope.showPublish = false;
           $('#publishPopup').modal('hide');
+
+
+            $timeout( function(){
+                $state.go('root.getAllProjects');
+            }, 1000 );
+
         }, function(response) {
           var msg = response.data.error || 'Couldn\'t publish your project, please try again';
           swalService.showErrorMsg(msg);
@@ -844,7 +868,10 @@ module.controller('projectsController', ['$scope', '$state', '$http', '$location
 
 
         //Allow project creation for selected user
-        if ($scope.user.username == projectCreators) {vm.allowProject = true}
+       // if ($scope.user.username == projectCreators) {vm.allowProject = true}
+       // else {vm.allowProject = false}
+
+        if($scope.user.is_creator == 1) {vm.allowProject = true}
         else {vm.allowProject = false}
 
     }]);
@@ -860,7 +887,10 @@ module.controller('projectController', ['$scope', '$state', '$http', '$statePara
         }
 
         //Allow project creation for selected user
-        if ($scope.user.username == projectCreators) {vm.allowProject = true}
+        //if ($scope.user.username == projectCreators) {vm.allowProject = true}
+        //else {vm.allowProject = false}
+
+        if($scope.user.is_creator == 1) {vm.allowProject = true}
         else {vm.allowProject = false}
 
 
@@ -1050,15 +1080,23 @@ module.controller('projectController', ['$scope', '$state', '$http', '$statePara
 module.controller('stepOneController', ['$scope', '$state', '$http', 'swalService',
   function($scope, $state, $http, swalService) {
 
+
+    var invalid_characters = ['\\','/',':','?','\"','<','>','|'];
+
     $scope.$on('validate', function(e) {
       $scope.validate();
     });
 
     $scope.validate = function() {
-      if (!$scope.project.name || !$scope.project.description) {
+      if (!$scope.project.name || !$scope.project.description || !$scope.project.short_name) {
         $scope.showErr = true;
-        swalService.showErrorMsg('Please enter a name and description for the project.');
-      } else {
+        swalService.showErrorMsg('Please enter a name, a short name and description for the project.');
+      } else if (  invalid_characters.some(el => $scope.project.short_name.includes(el))) {
+          $scope.showErr = true;
+          swalService.showErrorMsg('Short name cannot contain the following characters: \n' + invalid_characters.join(','));
+      }
+
+      else {
         $scope.createProject();
       }
     };
@@ -1073,7 +1111,9 @@ module.controller('stepOneController', ['$scope', '$state', '$http', 'swalServic
         }
         fd.append('name', $scope.project.name);
         fd.append('description', $scope.project.description);
-        $http.post('api/project/add', fd, {
+          fd.append('short_name', $scope.project.short_name);
+
+          $http.post('api/project/add', fd, {
           transformRequest: angular.identity,
           headers: {'Content-Type': undefined}
         }).then(function(response) {
@@ -1083,6 +1123,10 @@ module.controller('stepOneController', ['$scope', '$state', '$http', 'swalServic
           $scope.$emit('moveNext');
         }, function(response) {
           var msg = response.data.error || 'Couldn\'t create the project';
+          //if we got a duplicate entry, it's because of the short name
+          if (msg == "ER_DUP_ENTRY") {
+            msg = 'A project with the same short name already exists!'
+          }
           swalService.showErrorMsg(msg);
         });
       }
@@ -1237,6 +1281,8 @@ module.controller('stepFourController', ['$scope', '$state', '$http', 'swalServi
 
   $scope.showUploadProgress = false;
   $scope.project.hasLocation = true;
+  $scope.project.ar_ready = false;
+
   $scope.uploadMethod = 1;
 
 
@@ -1251,21 +1297,35 @@ module.controller('stepFourController', ['$scope', '$state', '$http', 'swalServi
           var msg = response.data.error || 'couldn\'t update location at this time';
           swalService.showErrorMsg(msg);
       })
-
-
   };
+      $scope.update_ar_ready = function(){
+
+          var data = {
+              projectID: $scope.project.id,
+              ar_ready: $scope.project.ar_ready
+          };
+          $http.post('/api/project/updateARReady', data).then(function(data) {
+          }, function(response) {
+              var msg = response.data.error || 'couldn\'t update ar ready at this time';
+              swalService.showErrorMsg(msg);
+          })
+
+      };
 
     $scope.sendDataSet = function() {
       if ($scope.project.dataSetLink) {
         $http.post('/api/test/upload', {
           'file': $scope.project.dataSetLink,
           'projectID': $scope.project.id,
-          'regex': $scope.project.regex || ''
+          'regex': $scope.project.regex || '',
+            'ar_ready': $scope.project.ar_ready
         }).then(function(data) {
           if (data.data.uniqueCode) {
             $scope.project.dataSetID = data.data.uniqueCode;
               //update location if unchecked
               $scope.update_hasLocation();
+              $scope.update_ar_ready();
+
 
           }
         }, function(err) {
@@ -1290,9 +1350,11 @@ module.controller('stepFourController', ['$scope', '$state', '$http', 'swalServi
               Upload.upload({
                   url: url_link,
                   method: 'POST',
-                  data: {'file': $scope.file,
+                  data: {
+                    'file': $scope.file,
                   'projectID': $scope.project.id,
-                  'regex': $scope.project.regex || ''}
+                  'regex': $scope.project.regex || '',
+                  'ar_ready': $scope.project.ar_ready}
               }).then(function (resp) {
                   //$scope.showUploadProgress = false;
 
@@ -1301,6 +1363,7 @@ module.controller('stepFourController', ['$scope', '$state', '$http', 'swalServi
                       $scope.project.dataSetID = resp.data.uniqueCode;
                       //update location if unchecked
                       $scope.update_hasLocation();
+                      $scope.update_ar_ready();
 
                   }
               }, function (resp) {
@@ -1337,6 +1400,7 @@ module.controller('stepFourController', ['$scope', '$state', '$http', 'swalServi
                       $scope.project.dataSetID = resp.data.uniqueCode;
                       //update location if unchecked
                       $scope.update_hasLocation();
+                      //not possible to do ar with NGS!
 
                   }
               }, function (resp) {
@@ -1376,7 +1440,12 @@ module.controller('stepFiveController', ['$scope', '$state', '$http', function($
 
   $scope.startTaskPath = window.location.protocol + '//' + window.location.host + '/api/tasks/startProject/';
 
-  $scope.getPathToStart = function() {
+    //send them to project page instead
+    $scope.startTaskPath = window.location.protocol + '//' + window.location.host + '/kioskProject.html#/kioskStart/';
+
+
+
+    $scope.getPathToStart = function() {
     return $scope.startTaskPath + '' + $scope.project['unique_code'];
   };
 
@@ -1392,7 +1461,7 @@ module.controller('stepFiveController', ['$scope', '$state', '$http', function($
   };
 }]);
 
-module.controller('stepSixController', ['$scope', '$state', '$http', function($scope, $state, $http) {
+module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', 'swalService', function($scope, $state, $http, Upload, swalService) {
 
   $scope.$on('validate', function(e) {
     $scope.validate();
@@ -1401,6 +1470,71 @@ module.controller('stepSixController', ['$scope', '$state', '$http', function($s
   $scope.validate = function() {
     $scope.$emit('moveNext');
   };
+
+    $scope.showUploadProgress = false;
+
+
+    $scope.existingImages = 0;
+
+
+    //TODO: SET TO 1 once this functionality is ready
+    $scope.supportExisting = 0;
+
+    $scope.received_code = 0;
+
+   // console.log($scope.project);
+
+
+
+    $scope.sendTutorialLocal = function() {
+
+        console.log("Sending Tutorial Items")
+        if ($scope.file) {
+            Upload.upload({
+                url: '/api/test/uploadTutorialLocal',
+                method: 'POST',
+                data: {
+                    'file': $scope.file,
+                    'projectID': $scope.project.unique_code,
+                    'existing': $scope.existingImages,
+                    'ar_ready': $scope.project.ar_ready,
+                    'dataset_id': $scope.project.dataset_id
+
+                }
+            }).then(function (resp) {
+                //$scope.showUploadProgress = false;
+
+                console.log('Success! Tutorial uploaded.');
+                //TODO: RESPONSE
+                if (resp.data.uniqueCode) {
+
+                    $scope.received_code = 1;
+
+
+
+                }
+            }, function (resp) {
+                $scope.showUploadProgress = false;
+
+                alert('Something wrong with the uploaded data set');
+            }, function (evt) {
+                $scope.showUploadProgress = true;
+
+                $scope.progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+                $scope.uploadProgressStyle = {"width" : $scope.progressPercentage.toString() + "%"};
+
+            });
+        } else {
+            swalService.showErrorMsg('Please enter a valid compressed folder');
+        }
+    };
+
+
+
+
+
+
+
 }]);
 
 module.controller('defaultController', ['$scope', 'userData', '$window', function($scope, userData, $window) {
@@ -1515,8 +1649,13 @@ module.controller('projectsPageController', ['$scope', 'userData', 'projects', '
     }
 
         //Allow project creation for selected user
-        if ($scope.user.username == projectCreators) {$scope.allowProject = true}
+        // if ($scope.user.username == projectCreators) {$scope.allowProject = true}
+        // else {$scope.allowProject = false}
+
+        if($scope.user.is_creator == 1) {$scope.allowProject = true}
         else {$scope.allowProject = false}
+
+
 
 
   }]);
@@ -1545,7 +1684,10 @@ module.controller('userProfileController', ['$scope','$http', '$state', 'project
 
 
     //Allow project creation for selected user
-    if ($scope.user.username == projectCreators) {$scope.allowProject = true}
+    //if ($scope.user.username == projectCreators) {$scope.allowProject = true}
+    //else {$scope.allowProject = false}
+
+    if($scope.user.is_creator == 1) {$scope.allowProject = true}
     else {$scope.allowProject = false}
 
 
@@ -1963,7 +2105,7 @@ module.directive('ngEnter', function() {
 module.directive('scrollTo', function() {
   return function($scope, element, attrs) {
     var bodyElem = $("html,body");
-    
+
     if(attrs['scrollTo'] === "end"){
       $(element).click(function() {
         bodyElem.animate({scrollTop:$(document).height()},100);
@@ -1980,15 +2122,15 @@ module.directive('scrollTo', function() {
       $(element).click(function() {
         var currentTop = bodyElem.scrollTop();
         var top = $(attrs['scrollTo']).offset().top;
-      
+
         if(currentTop > top){
           top -=20;
         }
-      
+
         bodyElem.animate({scrollTop:top},100);
         return false;
       });
     }
-    
+
   };
 });

@@ -109,11 +109,21 @@ exports.addMTurkWorker = function(anonUser, projectID, siteID, consented,genetic
   return new Promise(function(resolve, reject) {
     var connection = db.get();
 
+
+    //cover both external links (no params) and mturk with params
+    var workerId = anonUser.workerId || anonUser.participantId;
+    var hitId =  anonUser.hitId || anonUser.trialId;
+    var assignmentId = anonUser.assignmentId || anonUser.participantId;
+    var submitTo = anonUser.submitTo || "www.mturk.com";
+
+    console.log(workerId);
+    console.log(hitId);
+
     connection.queryAsync('INSERT INTO `mturk_workers` ' +
       '(`workerID`, `projectID`,`assignmentID`,`hitID`,`submitTo`,`siteID`,`consented`,`genetic_id`) VALUES ' +
       '(?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `consented`=?',
-      [bcrypt.hashSync(anonUser.workerId + anonUser.hitId, salt), projectID, anonUser.assignmentId,
-        anonUser.hitId, anonUser.submitTo, siteID, consented, genetic_id, consented]).then(
+      [bcrypt.hashSync(workerId + hitId, salt), projectID, assignmentId,
+          hitId, submitTo, siteID, consented, genetic_id, consented]).then(
       function(data) {
         if (data.insertId) {
           resolve(data.insertId);

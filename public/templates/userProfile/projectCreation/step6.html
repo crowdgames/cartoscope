@@ -1,4 +1,109 @@
-<div>
+<div class="step-4">
 
-<div style="color: white"> COMING SOON!...</div>
+    <div class="holder">
+
+        <span class="txt" >Tutorial</span>
+
+
+        <div class="buttons"  >
+
+            <div class="upload-button" ng-class="{'active': existingImages == 0}" ng-click="existingImages = 0">
+                <span class="title"><i class="fa fa-check-circle sel-check"></i>External Images</span>
+                <span class="msg">Upload other images for the tutorial.</span>
+            </div>
+
+            <div class="upload-button" ng-class="{'active': existingImages == 1}" ng-click="existingImages = 1" ng-disabled="supportExisting">
+                <span class="title"><i class="fa fa-check-circle sel-check"></i>Choose Existing</span>
+                <span class="msg"> Choose tutorial images from the uploaded dataset.  </span>
+                <span class="msg" ng-show="!supportExisting"> (Coming Soon!) </span>
+
+            </div>
+
+
+            <div style="clear: both;">
+
+            </div>
+
+        </div>
+
+
+        <div ng-show="(!existingImages) || (existingImages && supportExisting)">
+
+
+        <br>
+
+        <div class="txt">
+            <span ng-show="existingImages == 0" >
+                You must upload a .zip or .tar file containing the images you would like to use as tutorial items AND
+                a .csv file with the following information:
+            </span>
+            <span ng-show="existingImages == 1" >You must upload a .csv file with the following information:</span>
+
+            <span ng-show="project.task.selectedTaskType == 'ngs'" >poi_name,</span>
+            image_name,answer,explanation
+            <span ng-show="project.task.selectedTaskType != 'tagging'" >x,y,zoom</span>
+
+
+
+        </div>
+
+            <div class="txt" ng-show="project.ar_ready == 1">
+
+                For Tile-o-Scope AR: Please ensure that at least one category has two examples images, as pairs are required for the AR tutorial!
+
+            </div>
+
+        <br>
+
+
+
+        <div >
+
+            <span class="txt">
+            Upload File
+            </span>
+            <br>
+
+            <form >
+                <button class="btn" ngf-select="" ng-model="file" >Select File</button> <span class="txt">{{file.name}}</span>
+                <br>
+                <br>
+                <button type="submit" class="invite-btn" ng-click="sendTutorialLocal()" ng-disabled="received_code">IMPORT</button>
+            </form>
+
+            <span class="msg">
+                <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                <span class="txt">
+                  You can leave this page after uploading.
+                </span>
+            </span>
+        </div>
+
+
+
+        <div>
+            <!--<span ng-show="project.dataSetID" class="txt">-->
+            <!--Data set successfully uploaded. You can check the progress <a href="{{getProgressUrl()}}"-->
+            <!--target="_blank">here</a>-->
+            <!--</span>-->
+            <div  ng-show="showUploadProgress">
+                <div class="progress" style="width:50%;margin-left: 1%;">
+                    <div  class="progress-bar progress-bar-striped " role="progressbar" aria-valuenow="{{progressPercentage}}"
+                          aria-valuemin="0" aria-valuemax="100" ng-style="uploadProgressStyle">
+                    </div>
+                </div>
+                <span ng-hide="received_code" class="txt"> Upload Progress </span>
+                <span ng-show="received_code" class="txt">
+                Data set successfully uploaded. You can check the progress <a href="{{getProgressUrl()}}"
+                                                                              target="_blank">here</a>
+                </span>
+            </div>
+        </div>
+
+
+    </div>
+
+    </div>
+
+
 </div>
