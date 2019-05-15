@@ -77,7 +77,9 @@
                 <button class="btn" ngf-select="" ng-model="file" >Select File</button> <span class="txt">{{file.name}}</span>
                 <br>
                 <br>
-                <button type="submit" class="invite-btn" ng-click="sendDataSetLocal()" ng-disabled="project.dataSetID">IMPORT</button>
+                <button ng-show="project.task.selectedTaskType != 'slider'" type="submit" class="invite-btn" ng-click="sendDataSetLocal(0)" ng-disabled="project.dataSetID">IMPORT</button>
+                <button ng-show="project.task.selectedTaskType == 'slider'" type="submit" class="invite-btn" ng-click="sendDataSetLocal(1)" ng-disabled="project.dataSetID">IMPORT</button>
+
             </form>
 
             <span class="msg">

@@ -23,6 +23,10 @@
                  style="display:flex;justify-content: center;align-items: center;">
                 <img src="../../../images/placeholder-map.jpg" alt="placeholder image" style="width:250px;height:250px;padding:10px;">
             </div>
+            <div ng-if="project.task.selectedTaskType == 'slider'" class="col-md-8"
+                 style="display:flex;justify-content: center;align-items: center;">
+                <img src="../../../images/placeholder-image.png" alt="placeholder image" style="width:250px;height:250px;padding:10px;">
+            </div>
 
             <div class="question-box">
                 <input ng-model="project.task.question" placeholder="Type your question here"/>

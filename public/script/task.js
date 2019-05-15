@@ -1,7 +1,7 @@
 /**
  * Created by kiprasad on 26/09/16.
  */
-var module = angular.module('taskApp', ['ui.router', 'ngMap','configApp']);
+var module = angular.module('taskApp', ['ui.router', 'ngMap','configApp','ngJuxtapose']);
 
 var latCenter;
 var lngCenter;
@@ -190,6 +190,11 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       $scope.showSurvButton = false;
 
 
+      //init slider obj
+      $scope.slider_obj = {};
+
+
+
 
       vm.showChainQuestions = 0;
       //if -1, then we never asked for chaining, do not show the questions
@@ -215,6 +220,36 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           var y = vm.getLng();
           var url = link + '#' + zoom + '/'+  x + '/' + y;
           return  $sce.trustAsResourceUrl(url)
+      };
+
+
+
+      vm.makeSliderObj = function(){
+
+          $scope.slider_obj
+
+          $scope.slider_obj.beforeImageUrl = vm.getNextTask();
+          $scope.slider_obj.beforeImageLabel = 'Before';
+          $scope.slider_obj.beforeImageAlt = 'Before Image';
+
+          $scope.slider_obj.afterImageUrl = vm.getBeforeImage();
+          $scope.slider_obj.afterImageLabel = 'After';
+          $scope.slider_obj.afterImageAlt = 'After Image';
+
+
+
+      }
+
+
+      //get before image, either
+      vm.getBeforeImage = getBeforeImage;
+      function getBeforeImage() {
+          if (!vm.dataset || vm.tasks.length == 0) {
+              return null;
+          } else {
+              vm.image = vm.tasks[0].name;
+              return '/api/tasks/getImage/' + vm.dataset + '/before_' + vm.tasks[0].name;
+          }
       };
 
 
@@ -914,6 +949,12 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           }
 
 
+          //if slider, make the slider obj
+          if (vm.data.template.selectedTaskType == "slider"){
+              vm.makeSliderObj()
+          }
+
+
           //Set progress bar:
           $scope.next_per = (vm.data.progress / vm.data.size).toFixed(2) *100;
           $scope.mturkbarStyle = {"width" : $scope.next_per.toString() + "%"};
@@ -1249,6 +1290,20 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
             var y = vm.getLng();
             var url = link + '#' + zoom + '/'+  x + '/' + y;
             return  $sce.trustAsResourceUrl(url)
+        };
+
+
+        //for slider tasks:
+
+        //get before image, either
+        vm.getBeforeImage = getBeforeImage;
+        function getBeforeImage() {
+            if (!vm.dataset || vm.tasks.length == 0) {
+                return null;
+            } else {
+                vm.image = vm.tasks[0].name;
+                return '/api/tasks/getImage/' + vm.dataset + '/before_' + vm.tasks[0].name;
+            }
         };
 
 

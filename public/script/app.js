@@ -81,7 +81,7 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
         $scope.projects = [];
       });
       $scope.getRandomClass = function() {
-        
+
         var rand = Math.floor(Math.random() * 4);
         if(rand === 0){
           return "project-box-bkg1";
@@ -103,7 +103,7 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
       $scope.goToProject = function(code) {
           $window.location.href = '/kioskProject.html#/kioskStart/' + code;
         };
-      
+
       window.makeLinkActive = function(link){
         $("#nav-link").find(".active").removeClass("active");
         if(link === "top"){
@@ -119,42 +119,42 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
           $("#contact-us-link").addClass("active");
         }
       };
-      
+
       var controller = new ScrollMagic.Controller();
-  
+
       var topPanel = new ScrollMagic.Scene({
         triggerElement: "#logo-img",
         triggerHook: 0
       }).addTo(controller);
-  
+
       topPanel.on("start", function() {
         window.makeLinkActive("top");
       });
-      
-      
+
+
       var projectPanel = new ScrollMagic.Scene({
         triggerElement: "#projects-panel",
         triggerHook: 0
       }).addTo(controller);
-  
+
       projectPanel.on("start", function() {
         window.makeLinkActive("projects");
       });
-      
+
       var abtUsPanel = new ScrollMagic.Scene({
         triggerElement: "#about-us-panel",
         triggerHook: 0
       }).addTo(controller);
-  
+
       abtUsPanel.on("start", function() {
         window.makeLinkActive("abt-us");
       });
-      
+
       var contactUsPanel = new ScrollMagic.Scene({
         triggerElement: "#contact-us",
         triggerHook: 0.75
       }).addTo(controller);
-      
+
       contactUsPanel.on("start", function() {
         window.makeLinkActive("contact-us");
       });
@@ -1170,7 +1170,9 @@ module.controller('stepTwoController', ['$scope', '$state', '$stateParams', '$ht
       task2 : {name: 'Mapping image to map', value:'mapping', note: 'In this task you will zoom ' +
       'in and drag a map on the left to match the image on the right'},
         task3 : {name: 'NGS Map', value:'ngs', note: 'In this task you will use a provided NGS map ' +
-                'to answer questions regarding locations'}
+                'to answer questions regarding locations'},
+        task4 : {name: 'Slider Task', value:'slider', note: 'In this task you will view before ' +
+                'and after photos and answer questions regarding the after photo.'}
     };
 
       $scope.project.task.selectedTaskType = $scope.project.task.selectedTaskType || 'tagging';
@@ -1335,16 +1337,25 @@ module.controller('stepFourController', ['$scope', '$state', '$http', 'swalServi
     };
 
 
-      $scope.sendDataSetLocal = function() {
+
+      $scope.sendDataSetLocal = function(is_slider) {
           if ($scope.file) {
+
+            var url_link = '/api/test/uploadLocal';
+            // if (is_slider){
+            //     url_link = '/api/test/uploadLocalSlider'
+            // }
+
+
               Upload.upload({
-                  url: '/api/test/uploadLocal',
+                  url: url_link,
                   method: 'POST',
                   data: {
                     'file': $scope.file,
                   'projectID': $scope.project.id,
                   'regex': $scope.project.regex || '',
-                  'ar_ready': $scope.project.ar_ready}
+                  'ar_ready': $scope.project.ar_ready,
+                  'is_slider': is_slider}
               }).then(function (resp) {
                   //$scope.showUploadProgress = false;
 
@@ -2095,7 +2106,7 @@ module.directive('ngEnter', function() {
 module.directive('scrollTo', function() {
   return function($scope, element, attrs) {
     var bodyElem = $("html,body");
-    
+
     if(attrs['scrollTo'] === "end"){
       $(element).click(function() {
         bodyElem.animate({scrollTop:$(document).height()},100);
@@ -2112,15 +2123,15 @@ module.directive('scrollTo', function() {
       $(element).click(function() {
         var currentTop = bodyElem.scrollTop();
         var top = $(attrs['scrollTo']).offset().top;
-      
+
         if(currentTop > top){
           top -=20;
         }
-      
+
         bodyElem.animate({scrollTop:top},100);
         return false;
       });
     }
-    
+
   };
 });
