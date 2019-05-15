@@ -140,6 +140,7 @@ router.post('/uploadLocal', fupload.single('file'),
 
         var main_project_id = req.body.projectID;
         var ar_ready = req.body.ar_ready;
+        var remove_before = req.body.is_slider;
 
             assignDownloadID(function (downloadID) {
 
@@ -147,32 +148,14 @@ router.post('/uploadLocal', fupload.single('file'),
                 console.log(req.file)
                 var stored_filename = req.file.path;
                 console.log(stored_filename);
-                downloadLocal(stored_filename, downloadID, main_project_id,ar_ready);
+                downloadLocal(stored_filename, downloadID, main_project_id,ar_ready,remove_before);
                 res.send({
                     uniqueCode: downloadID
                 });
             })
-    })
+    });
 
 
-//filters.requireLogin
-router.post('/uploadLocalSlider', fupload.single('file'),
-    function(req, res, next) {
-
-        var main_project_id = req.body.projectID;
-
-        assignDownloadID(function (downloadID) {
-
-            //proceed to analyze the folder
-            console.log(req.file)
-            var stored_filename = req.file.path;
-            console.log(stored_filename)
-            downloadLocal(stored_filename, downloadID, main_project_id,1);
-            res.send({
-                uniqueCode: downloadID
-            });
-        })
-    })
 
 
 
@@ -227,7 +210,7 @@ router.post('/uploadTutorialLocal', fupload.single('file'),
     });
 
 
-function downloadLocal(loc,downloadID, projectID,ar_ready) {
+function downloadLocal(loc,downloadID, projectID,ar_ready,remove_before) {
     projectDB.addDataSetID(projectID, downloadID).then(function() {
         // Status starting Download
         downloadStatus.setStatus(downloadID, 1, function(err, res) {
@@ -422,10 +405,20 @@ function downloadLocal(loc,downloadID, projectID,ar_ready) {
 
                                     //make sure we don't try to add entry with issues
 
-                                    if (!isNaN(x) && !isNaN(y)) {
+                                    var is_before = 0;
+
+                                    if (remove_before){
+                                        if (name.startsWith("before_")){
+                                            is_before = 1;
+                                        }
+                                    }
+
+                                    //only add item if we have valid coords or we have slider task and is before image
+                                    if (!isNaN(x) && !isNaN(y) && !is_before) {
                                         var p = projectDB.createDataSetItem(downloadID, name, x, y);
-                                        p.catch(function(err) {
-                                            return null;
+                                        //catch and print error but do not cause problem
+                                        p.catch(function (err) {
+                                            console.log(err)
                                         });
                                         pArr.push(p);
                                     }
@@ -441,7 +434,7 @@ function downloadLocal(loc,downloadID, projectID,ar_ready) {
                                     //TODO: IF AR READY, must make the json files if we got a csv with attribution
                                     if (ar_ready){
 
-                                        console.log("Generating JSON Files")
+                                        console.log("Generating JSON Files");
 
                                         readAttributionsFromCSV(dirName,projectID).then(function (attr_data) {
 
@@ -583,7 +576,7 @@ function downloadTutorialLocal(loc, projectID,existing,ar_ready,dataset_id) {
 
                                     var datasetDIR = "dataset/" + json_data.dataset_id;
                                     var dataset_file = datasetDIR+ '/Dataset-Info.json';
-                                    var json = JSON.stringify(json_data);
+                                    var json = JSON.stringify(json_data,null,2);
                                     fs.writeFile(dataset_file, json, 'utf8', (err) => {
                                         if (err) throw err;
                                         console.log('dataset-info file was created');
@@ -682,7 +675,7 @@ function downloadTutorialLocal(loc, projectID,existing,ar_ready,dataset_id) {
 
                                     var datasetDIR = "dataset/" + json_data.dataset_id;
                                     var dataset_file = datasetDIR+ '/Dataset-Info.json';
-                                    var json = JSON.stringify(json_data);
+                                    var json = JSON.stringify(json_data,null,2);
                                     fs.writeFile(dataset_file, json, 'utf8', (err) => {
                                         if (err) throw err;
                                         console.log('dataset-info file was created');

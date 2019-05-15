@@ -235,6 +235,7 @@ router.post('/submitMatch', function(req, res, next) {
 });
 
 
+//TODO: Batch submit matches when user comes back online
 
 
 //Register tileoscope User to Cartoscope Code
@@ -268,6 +269,40 @@ router.post('/submitMove', function(req, res, next) {
         }, function(err) {
             console.log('err ', err);
             res.status(400).send('Error submitting move.');
+        });
+    }
+});
+
+
+//Submit Tile-o-Scope AR action
+router.post('/submitTileoscopeARAction', function(req, res, next) {
+
+
+    //if one of the two missing, then error!
+    var session_id = req.body.session_id;
+    var action = req.body.action;
+    var short_name = req.body.short_name;
+
+
+
+    if (session_id == undefined){
+        res.status(400).send('Session ID missing.');
+    }
+    else if (action == undefined){
+        res.status(400).send('Action info missing.');
+    }
+
+    else {
+
+
+        //make sure there is a project
+        tileDB.submitTileoscopeARAction(session_id,short_name,action).then(function(project) {
+
+            res.status(200).send('Tile-o-Scope AR Action submitted successfully');
+
+        }, function(err) {
+            console.log('err ', err);
+            res.status(400).send('Error submitting Tile-o-Scope AR action.');
         });
     }
 });
@@ -747,7 +782,7 @@ router.get('/generateDatasetInfo/:code' , function(req, res, next) {
 
         var datasetDIR = "dataset/" + json_data.dataset_id;
         var dataset_file = datasetDIR+ '/Dataset-Info.json';
-        var json = JSON.stringify(json_data);
+        var json = JSON.stringify(json_data,null,2);
         fs.writeFile(dataset_file, json, 'utf8', (err) => {
             if (err) throw err;
             console.log('dataset-info file was created');
@@ -847,7 +882,11 @@ router.get('/getDatasetInfo/:code' , function(req, res, next) {
 
     var code = req.params.code;
     tileDB.generateTileoscopeARDatasetInfoJSON(code).then(function(data) {
-        res.send(data)
+
+        var json = JSON.stringify(data,null,2);
+
+
+        res.send(json)
 
     }, function(error){
         console.log(error)

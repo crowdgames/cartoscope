@@ -64,6 +64,26 @@ exports.submitTileoscopeMove = function(userId, hitId, response) {
 };
 
 
+exports.submitTileoscopeARAction = function(session_id, short_name, response) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+
+
+        connection.queryAsync('INSERT INTO tileoscope_ar_actions (session_id, dataset,action) VALUES(?,?,?) ',[sesion_id,short_name,response]).then(
+            function(data) {
+                if (data.insertId) {
+                    resolve(data.affectedRows);
+                } else {
+                    error({code: 'Problem with insert'});
+                }
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
+
 
 //get all the moves for a specific trial
 exports.getTileoscopeMoves = function(trialId) {
@@ -184,18 +204,18 @@ exports.generateTileoscopeARDatasetInfoJSON = function(unique_code) {
 
 
         var dataset_info_json = {
-            count: 0,                   //how many images in the set
-            code: unique_code,
-            has_location: 0,
-            name: '',
-            short_name: '',
-            description: '',
-            dataset_id: '',
-            filenames: [],              //names of images without extension
             categoriesCount: 0,         //number of categories
             categoriesLabel: [],        //categories
             categoriesSample: [],       //representative image for each category (from tutorial table)
-            tutorial: []                //TODO: at least one pair of images of the same category
+            code: unique_code,
+            count: 0,                   //how many images in the set
+            dataset_id: '',
+            description: '',
+            filenames: [],              //names of images without extension
+            has_location: 0,
+            name: '',
+            short_name: '',
+            tutorial: []                //at least one pair of images of the same category
         };
 
 

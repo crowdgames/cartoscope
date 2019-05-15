@@ -1342,9 +1342,9 @@ module.controller('stepFourController', ['$scope', '$state', '$http', 'swalServi
           if ($scope.file) {
 
             var url_link = '/api/test/uploadLocal';
-            if (is_slider){
-                url_link = '/api/test/uploadLocalSlider'
-            }
+            // if (is_slider){
+            //     url_link = '/api/test/uploadLocalSlider'
+            // }
 
 
               Upload.upload({
@@ -1354,7 +1354,8 @@ module.controller('stepFourController', ['$scope', '$state', '$http', 'swalServi
                     'file': $scope.file,
                   'projectID': $scope.project.id,
                   'regex': $scope.project.regex || '',
-                  'ar_ready': $scope.project.ar_ready}
+                  'ar_ready': $scope.project.ar_ready,
+                  'is_slider': is_slider}
               }).then(function (resp) {
                   //$scope.showUploadProgress = false;
 

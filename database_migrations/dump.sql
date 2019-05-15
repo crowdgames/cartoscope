@@ -263,6 +263,24 @@ CREATE TABLE `tileoscope_survey` (
 
 
 --
+-- Table structure for table `tileoscope_ar_actions`
+--
+
+DROP TABLE IF EXISTS `tileoscope_ar_actions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tileoscope_ar_actions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `session_id` varchar(128) DEFAULT NULL,
+  `short_name` varchar(128) DEFAULT NULL,
+  `action` TEXT DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=212 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+
+--
 -- Table structure for table `tileoscope_moves`
 --
 
@@ -277,6 +295,7 @@ CREATE TABLE `tileoscope_moves` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=212 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
 
 
 
