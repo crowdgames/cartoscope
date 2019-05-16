@@ -572,52 +572,55 @@ exports.createUserSequenceQlearnTileoscope = function(main_code) {
     return new Promise(function (resolve, error) {
         //Randomly pick between making a random sequence and picking the optimal strategy qlearn
         //var pick_optimal = Math.round(Math.random());
-        var pick_optimal = randomInt(0,2);
+        var pick_optimal = randomInt(0, 2);
 
-        if (pick_optimal == 0){
+        if (pick_optimal == 0) {
             console.log("Picking optimal");
 
-            exports.pickQlearnOptimalSequenceTileoscope(main_code).then(function(genetic_id) {
+            exports.pickQlearnOptimalSequenceTileoscope(main_code).then(function (genetic_id) {
+
                 resolve(genetic_id);
             })
-        } else  if (pick_optimal == 1){
+        } else if (pick_optimal == 1) {
             console.log("Creating random");
-            exports.createUserSequenceFromTreeTileoscopeRandom(main_code).then(function(genetic_id) {
+            exports.createUserSequenceFromTreeTileoscopeRandom(main_code).then(function (genetic_id) {
                 resolve(genetic_id)
             })
         } else {
             console.log("Picking greedy");
 
-            exports.pickGreedySequenceTileoscope(main_code).then(function(genetic_id) {
+            exports.pickGreedySequenceTileoscope(main_code).then(function (genetic_id) {
 
                 //if we have greedy, then we get one, else randomly pick from the other two
-                if (genetic_id){
+                if (genetic_id) {
                     resolve(genetic_id);
 
                 } else {
 
                     console.log("NO GREEDY. Repick")
-                    var pick_optimal = randomInt(0,1);
+                    var pick_optimal = randomInt(0, 1);
 
-                    if (pick_optimal == 0){
+                    if (pick_optimal == 0) {
                         console.log("Picking optimal");
 
-                        exports.pickQlearnOptimalSequenceTileoscope(main_code).then(function(genetic_id) {
+                        exports.pickQlearnOptimalSequenceTileoscope(main_code).then(function (genetic_id) {
                             resolve(genetic_id);
                         })
-                    } else  if (pick_optimal == 1){
+                    } else if (pick_optimal == 1) {
                         console.log("Creating random");
-                        exports.createUserSequenceFromTreeTileoscopeRandom(main_code).then(function(genetic_id) {
+                        exports.createUserSequenceFromTreeTileoscopeRandom(main_code).then(function (genetic_id) {
                             resolve(genetic_id)
                         })
 
-                     }
+                    }
 
+
+                }
+            });
 
         }
-    });
-
-};
+    })
+}
 
 
 //pick an already generated sequence from the db
