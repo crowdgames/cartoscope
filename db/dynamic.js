@@ -589,8 +589,31 @@ exports.createUserSequenceQlearnTileoscope = function(main_code) {
             console.log("Picking greedy");
 
             exports.pickGreedySequenceTileoscope(main_code).then(function(genetic_id) {
-                resolve(genetic_id);
-            })
+
+                //if we have greedy, then we get one, else randomly pick from the other two
+                if (genetic_id){
+                    resolve(genetic_id);
+
+                } else {
+
+                    console.log("NO GREEDY. Repick")
+                    var pick_optimal = randomInt(0,1);
+
+                    if (pick_optimal == 0){
+                        console.log("Picking optimal");
+
+                        exports.pickQlearnOptimalSequenceTileoscope(main_code).then(function(genetic_id) {
+                            resolve(genetic_id);
+                        })
+                    } else  if (pick_optimal == 1){
+                        console.log("Creating random");
+                        exports.createUserSequenceFromTreeTileoscopeRandom(main_code).then(function(genetic_id) {
+                            resolve(genetic_id)
+                        })
+
+                     }
+
+
         }
     });
 
