@@ -70,7 +70,7 @@ exports.submitTileoscopeARAction = function(session_id, short_name, response) {
 
 
 
-        connection.queryAsync('INSERT INTO tileoscope_ar_actions (session_id, dataset,action) VALUES(?,?,?) ',[sesion_id,short_name,response]).then(
+        connection.queryAsync('INSERT INTO tileoscope_ar_actions (session_id, short_name,action) VALUES(?,?,?) ',[session_id,short_name,response]).then(
             function(data) {
                 if (data.insertId) {
                     resolve(data.affectedRows);

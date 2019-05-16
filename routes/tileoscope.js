@@ -1,11 +1,16 @@
+
+
 var resultDB = require('../db/results');
 var anonUserDB = require('../db/anonUser');
 var projectDB = require('../db/project');
 var tileDB = require('../db/tileoscope');
 var dynamicDB = require('../db/dynamic');
+var Promise = require('bluebird');
 
 var filters = require('../constants/filters');
 var express = require('express');
+var multer = require('multer');
+var path = require('path');
 var router = express.Router();
 var fs = require('fs');
 var archiver = require('archiver');
@@ -14,6 +19,25 @@ var d3 = require('d3');
 var CARTO_PORT = process.env.CARTO_PORT || '8081';
 var path = require('path');
 module.exports = router;
+
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+
+
+        console.log("in storage disk")
+
+        var path_to_store = path.join(__dirname, '../', 'temp');
+        cb(null, path_to_store)
+    },
+    filename: function (req, file, cb) {
+        console.log(file)
+        var extArray = file.originalname.split(".");
+        var extension = extArray[extArray.length - 1];
+        cb(null, file.fieldname + '_' + Date.now()+ '.' +extension)
+    }
+})
+const fupload = multer({ storage: storage });
 
 
 //API Calls for Tileoscope and Tileoscope AR games
@@ -235,7 +259,6 @@ router.post('/submitMatch', function(req, res, next) {
 });
 
 
-//TODO: Batch submit matches when user comes back online
 
 
 //Register tileoscope User to Cartoscope Code
@@ -509,6 +532,102 @@ router.get('/getARActionsByDataset/:dataset', function(req, res, next) {
 
 
 });
+
+
+//TODO: Batch submit matches when user comes back online
+
+
+//filters.requireLogin
+router.post('/uploadOfflineActionsAR', fupload.single('file'),
+    function(req, res, next) {
+
+        var session_id = req.body.projectID;
+        console.log(req.file)
+        var stored_filename = req.file.path;
+        console.log(stored_filename);
+
+
+        readLines(stored_filename).then(function (actions) {
+
+
+            //proceed to analyze the actions
+            pArr = [];
+
+            actions.forEach(function(item){
+
+                try {
+                    var action = JSON.parse((item));
+                    var session_id = action.sessionid;
+                    var isMatch = action.isMatch;
+                    var short_name = action.short_name;
+
+                    //at all times, must add the action
+                    var p = tileDB.submitTileoscopeARAction(session_id,short_name,item);
+                    //catch and print error but do not cause problem
+                    p.catch(function (err) {
+                        console.log(err)
+                    });
+                    pArr.push(p);
+
+                    if (isMatch){
+                        //TODO: add it as vote as well for the map!
+                    }
+
+                } catch (e) {
+                    console.log("not valid json");
+                }
+
+            });
+
+            Promise.all(pArr).then(function (data) {
+                console.log("Done adding updates");
+
+                //delete original  file
+                fs.unlink(stored_filename, (err) => {
+                    // if (err) throw err;
+                    console.log('Original file was deleted');
+                    res.status(200).send("Offline actions updated succesfuly")
+
+                });
+
+
+            });
+
+
+
+        })
+    });
+
+//read json line by line
+function readLines(fName){
+    return new Promise(function(resolve, reject) {
+        console.log("Will read json: " + fName);
+        var lines = [];
+        //read json file using d3
+
+        if (fName.endsWith('.json')){
+            fs.readFile(fName, 'utf8', function (err, data) {
+
+                if (err) {
+                    reject(err)
+                }
+
+                var array = data.toString().split("\n");
+                for(i in array) {
+                    lines.push(array[i])
+                }
+                resolve(lines)
+            });
+        } else {
+            resolve([])
+        }
+
+    }).catch(function(err) {
+        console.log("HERE")
+        reject(err);
+    });
+
+}
 
 
 // Get a generated sequence for Tilescope Web
