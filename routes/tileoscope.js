@@ -469,6 +469,48 @@ router.get('/getTileoscopeMoves/:hitId', function(req, res, next) {
 });
 
 
+//Get Tileoscope AR actions for specific session id
+router.get('/getARActionsBySessionID/:session_id', function(req, res, next) {
+
+
+    //if one of the two missing, then error!
+    var session_id = req.params.session_id;
+
+    //make sure there is a project
+    tileDB.getTileoscopeARActionsBySessionId(session_id).then(function(actions) {
+
+        res.send(actions);
+
+    }, function(err) {
+        console.log('err ', err);
+        res.status(404).send('No trial found.');
+    });
+
+
+});
+
+
+//Get Tileoscope AR actions for specific session id
+router.get('/getARActionsByDataset/:dataset', function(req, res, next) {
+
+
+    //if one of the two missing, then error!
+    var dataset = req.params.dataset;
+
+    //make sure there is a project
+    tileDB.getTileoscopeARActionsByDataset(dataset).then(function(actions) {
+
+        res.send(actions);
+
+    }, function(err) {
+        console.log('err ', err);
+        res.status(404).send('No trial found.');
+    });
+
+
+});
+
+
 // Get a generated sequence for Tilescope Web
 router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
 

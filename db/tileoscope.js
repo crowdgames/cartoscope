@@ -85,6 +85,36 @@ exports.submitTileoscopeARAction = function(session_id, short_name, response) {
 
 
 
+//get all the actions for a specific session
+exports.getTileoscopeARActionsBySessionId = function(session_id) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT * from tileoscope_ar_actions where session_id=?  ', [session_id])
+            .then(
+                function(data) {
+                    resolve(data);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};
+
+
+//get all the actions for a specific dataset
+exports.getTileoscopeARActionsByDataset = function(dataset) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT * from tileoscope_ar_actions where short_name=?  ', [short_name])
+            .then(
+                function(data) {
+                    resolve(data);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};
+
+
 //get all the moves for a specific trial
 exports.getTileoscopeMoves = function(trialId) {
     return new Promise(function(resolve, error) {
