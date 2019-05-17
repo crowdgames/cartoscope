@@ -591,6 +591,7 @@ exports.createUserSequenceQlearnTileoscope = function(main_code) {
 
             exports.pickGreedySequenceTileoscope(main_code).then(function (genetic_id) {
 
+
                 //if we have greedy, then we get one, else randomly pick from the other two
                 if (genetic_id) {
                     resolve(genetic_id);

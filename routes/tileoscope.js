@@ -302,9 +302,9 @@ router.post('/submitTileoscopeARAction', function(req, res, next) {
 
 
     //if one of the two missing, then error!
-    var session_id = req.body.session_id;
+    var session_id = req.body.sessionid;
     var action = req.body.action;
-    var short_name = req.body.short_name;
+    var short_name = req.body.datasetName;
 
 
 
@@ -319,9 +319,44 @@ router.post('/submitTileoscopeARAction', function(req, res, next) {
 
 
         //make sure there is a project
-        tileDB.submitTileoscopeARAction(session_id,short_name,action).then(function(project) {
+        tileDB.submitTileoscopeARAction(session_id,short_name,action).then(function(d) {
 
-            res.status(200).send('Tile-o-Scope AR Action submitted successfully');
+
+            //if correct, need to convert to vote
+            try {
+                var item = JSON.parse((action));
+                var session_id = item.sessionid;
+                var isMatch = item.isMatch;
+                var short_name = item.datasetName;
+                var code = item.code;
+                var user_code = session_id; //user code is the session id
+                var matches = item.ImageIds;
+                var category = item.MatchCategory;
+
+                if (isMatch && short_name && code && code != "_"){
+                    //Tadd it as vote as well for the map!
+                    tileDB.convertActionToMatch(code,user_code,matches,category).then(function(d) {
+
+                        res.status(200).send('Tile-o-Scope AR Action submitted successfully');
+
+
+                    }, function(err) {
+                        console.log('err ', err);
+                        res.status(400).send('Error submitting Tile-o-Scope AR action.');
+                    });
+
+                } else {
+                    res.status(200).send('Tile-o-Scope AR Action submitted successfully');
+
+                }
+
+            } catch (e) {
+                console.log("not valid json");
+                res.status(400).send('Not valid JSON');
+
+            }
+
+
 
         }, function(err) {
             console.log('err ', err);
@@ -559,7 +594,11 @@ router.post('/uploadOfflineActionsAR', fupload.single('file'),
                     var action = JSON.parse((item));
                     var session_id = action.sessionid;
                     var isMatch = action.isMatch;
-                    var short_name = action.short_name;
+                    var short_name = action.datasetName;
+                    var code = action.code;
+                    var user_code = session_id; //user code is the session id
+                    var matches = action.ImageIds;
+                    var category = action.MatchCategory;
 
                     //at all times, must add the action
                     var p = tileDB.submitTileoscopeARAction(session_id,short_name,item);
@@ -569,8 +608,13 @@ router.post('/uploadOfflineActionsAR', fupload.single('file'),
                     });
                     pArr.push(p);
 
-                    if (isMatch){
+                    if (isMatch && short_name && code){
                         //TODO: add it as vote as well for the map!
+                        var p2 = tileDB.convertActionToMatch(code,user_code,matches,category);
+                        p2.catch(function (err) {
+                            console.log(err)
+                        });
+                        pArr.push(p2);
                     }
 
                 } catch (e) {
@@ -945,7 +989,9 @@ router.get('/generateDatasetInfo/:code' , function(req, res, next) {
         var dataset_file = datasetDIR+ '/Dataset-Info.json';
         var json = JSON.stringify(json_data,null,2);
         fs.writeFile(dataset_file, json, 'utf8', (err) => {
-            if (err) throw err;
+            if (err) {
+                res.status(404).send(err)
+            }
             console.log('dataset-info file was created');
         });
 

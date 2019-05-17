@@ -84,6 +84,101 @@ exports.submitTileoscopeARAction = function(session_id, short_name, response) {
 };
 
 
+exports.convertActionToMatch = function(projectID,workerId,matches,category_raw) {
+
+    return new Promise(function(resolve, error) {
+
+        if (projectID == undefined){
+            error('Project code missing.');
+        }
+        else if (workerId == undefined){
+            error('User code missing.');
+        }
+        else if (matches == undefined){
+            error('Matches missing.');
+        }
+        else if (category_raw == undefined){
+            error('Category missing.');
+        }
+        else {
+
+            var image_array = matches.split(",");
+
+
+            //make the mturk user object
+            var anonUser = {
+                workerId: workerId,
+                hitId:  "tileoscope_AR",
+                assignmentId:  "tileoscope_AR",
+                submitTo:  "tileoscope_AR"
+            };
+
+            //make sure there is a project
+            projectDB.getSingleProjectFromCode(projectID).then(function(project) {
+
+                var template = JSON.parse(project.template); //we need this to convert text answer to number answer
+                var templ_options = template.options;
+                var answers = [];
+                templ_options.forEach(function(item){
+
+                    answers.push(item.text.toLowerCase());
+                });
+
+                var category =  category_raw.replace(/_/gi," ").toLowerCase();
+                var answer_decoded = answers.indexOf(category);
+
+                //if answer invalid, return error
+                if (answer_decoded == -1){
+                    error('Invalid category.');
+                } else {
+                    //find user then return corresponding user id and project code
+                    anonUserDB.findConsentedMTurkWorker(anonUser.workerId, projectID, anonUser.hitId).then(function (user) {
+                        if (user.id) {
+                            //each vote needs: project_id, user_id, task_id (the image) and the response
+                            tileDB.addResponseTileoscope(user.id, project.id, image_array, answer_decoded) .then(function (data) {
+                                // console.log('data inserted', data);
+                                resolve({user_id:user.id, project_code: projectID,items_added:data});
+                            }).catch(function(err) {
+                                console.log(err)
+                                error({err: err.code || 'Could not submit response'});
+                            });
+                        } else {
+
+                           //TODO: must first register user
+                            anonUserDB.addMTurkWorker(anonUser, projectID, 1, 1, 0).then(function (userID) {
+                                //find user then return corresponding user id and project code
+                                anonUserDB.findConsentedMTurkWorker(anonUser.workerId, projectID,anonUser.hitId).then(function(user) {
+                                    if (user.id) {
+                                        //each vote needs: project_id, user_id, task_id (the image) and the response
+                                        tileDB.addResponseTileoscope(user.id, project.id, image_array, answer_decoded) .then(function (data) {
+                                            // console.log('data inserted', data);
+                                            resolve({user_id:user.id, project_code: projectID,items_added:data});
+                                        }).catch(function(err) {
+                                            console.log(err);
+                                            error({err: err.code || 'Could not submit response'});
+                                        });
+                                    }
+                                })
+                            });
+                        }
+                    });
+
+                }
+
+            }, function(err) {
+                console.log('err ', err);
+                error({err: err.code || 'Project not found'});
+            });
+        }
+
+    });
+
+
+
+
+};
+
+
 
 //get all the actions for a specific session
 exports.getTileoscopeARActionsBySessionId = function(session_id) {
