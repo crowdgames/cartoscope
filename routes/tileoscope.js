@@ -309,10 +309,10 @@ router.post('/submitTileoscopeARAction', function(req, res, next) {
 
 
     if (session_id == undefined){
-        res.status(400).send('Session ID missing.');
+        res.status(404).send('Session ID missing.');
     }
     else if (action == undefined){
-        res.status(400).send('Action info missing.');
+        res.status(404).send('Action info missing.');
     }
 
     else {
@@ -608,7 +608,7 @@ router.post('/uploadOfflineActionsAR', fupload.single('file'),
                     });
                     pArr.push(p);
 
-                    if (isMatch && short_name && code){
+                    if (isMatch && short_name && code && code != '_'){
                         //TODO: add it as vote as well for the map!
                         var p2 = tileDB.convertActionToMatch(code,user_code,matches,category);
                         p2.catch(function (err) {
