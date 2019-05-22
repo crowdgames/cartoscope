@@ -629,7 +629,11 @@ exports.getDataSetNamesArray = function(datasetId) {
         var connection = db.get();
         connection.queryAsync('SELECT name FROM ' + tableName).then(
             function(data) {
-                resolve(data);
+                var arr = [];
+                data.forEach(function(item){
+                    arr.push(item.name);
+                });
+                resolve(arr);
             }, function(err) {
                 error(err);
             });
