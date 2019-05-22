@@ -996,7 +996,7 @@ router.get('/generateDatasetInfo/:code' , function(req, res, next) {
         });
 
         //set ar  status to 1
-        tileDB.updateARProjectStatus(projectID).then(function (d) {
+        tileDB.updateARProjectStatus(req.params.code).then(function (d) {
             res.send(data)
         });
 
