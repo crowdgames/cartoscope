@@ -995,7 +995,7 @@ router.get('/generateDatasetInfo/:code' , function(req, res, next) {
             console.log('dataset-info file was created');
             //set ar  status to 1
             tileDB.updateARProjectStatus(req.params.code).then(function (d) {
-                res.send(data)
+                res.send(json_data)
             });
         });
 
