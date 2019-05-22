@@ -983,7 +983,7 @@ router.get('/getImageJson/:dataset/:name' , function(req, res, next) {
 router.get('/generateDatasetInfo/:code' , function(req, res, next) {
 
 
-    tileDB.generateTileoscopeARDatasetInfoJSON(req.params.code).then(function(data) {
+    tileDB.generateTileoscopeARDatasetInfoJSON(req.params.code).then(function(json_data) {
 
         var datasetDIR = "dataset/" + json_data.dataset_id;
         var dataset_file = datasetDIR+ '/Dataset-Info.json';
