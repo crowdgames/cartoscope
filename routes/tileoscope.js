@@ -993,12 +993,13 @@ router.get('/generateDatasetInfo/:code' , function(req, res, next) {
                 res.status(404).send(err)
             }
             console.log('dataset-info file was created');
+            //set ar  status to 1
+            tileDB.updateARProjectStatus(req.params.code).then(function (d) {
+                res.send(data)
+            });
         });
 
-        //set ar  status to 1
-        tileDB.updateARProjectStatus(req.params.code).then(function (d) {
-            res.send(data)
-        });
+
 
     }, function(error){
         console.log(error)
