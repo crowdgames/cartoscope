@@ -379,11 +379,11 @@ exports.generateTileoscopeARDatasetInfoJSON = function(unique_code) {
             dataset_info_json.categoriesLabel = categories;
 
             //get all the filenames from the table
-            projectDB.getDataSetNames(dataset_id).then(function(image_data) {
+            projectDB.getDataSetNamesArray(dataset_id).then(function(image_data) {
 
                 console.log(image_data);
 
-                var image_list = image_data[0].image_list.split(',');
+                var image_list = image_data.split(',');
                 dataset_info_json.filenames = image_list;
                 dataset_info_json.count = image_list.length;
 
