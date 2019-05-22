@@ -383,6 +383,7 @@ exports.generateTileoscopeARDatasetInfoJSON = function(unique_code) {
 
 
                 var image_list = image_data[0].image_list.split(',');
+                console.log(image_list);
                 dataset_info_json.filenames = image_list;
                 dataset_info_json.count = image_list.length;
 
