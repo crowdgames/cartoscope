@@ -899,8 +899,26 @@ router.post('/updateGeneticTreeFromRDATA/:mainCode', function(req,res,next){
         res.status(404).send(error)
     })
 
+});
+
+
+
+
+// update the tree using the data provided (source: R code)
+router.post('/resetTreeTileoscope/:mainCode', function(req,res,next){
+
+
+    var main_code = req.params.mainCode;
+
+    tileDB.resetTreeTileoscope(main_code).then(function(data) {
+        res.status(200).send("Tileoscope Tree updated from R data successfully")
+    }, function(error){
+        console.log(error)
+        res.status(404).send(error)
+    })
 
 });
+
 
 
 // get the projects that are AR ready from DB
