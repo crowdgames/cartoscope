@@ -890,14 +890,19 @@ router.post('/updateGeneticTreeFromRDATA/:mainCode', function(req,res,next){
 
 
     var main_code = req.params.mainCode;
-    var updated_tree = req.body.tree
+    var updated_tree = req.body.tree;
 
-    dynamicDB.updateTreeFromDATATileoscope(updated_tree).then(function(data) {
-        res.status(200).send("Tileoscope Tree updated from R data sucessfully")
-    }, function(error){
-        console.log(error)
-        res.status(404).send(error)
+    //delete tree before and add new
+    tileDB.resetTreeTileoscope(main_code).then(function (d) {
+        dynamicDB.updateTreeFromDATATileoscope(updated_tree).then(function(data) {
+            res.status(200).send("Tileoscope Tree updated from R data sucessfully")
+        }, function(error){
+            console.log(error)
+            res.status(404).send(error)
+        })
     })
+
+
 
 });
 
