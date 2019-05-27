@@ -345,6 +345,22 @@ router.get('/retrieveTree/:mainCode', function(req,res,next){
 });
 
 
+
+
+//
+//retrieve the Tileoscope Tree
+router.get('/retrieveTreeTileoscope/:mainCode', function(req,res,next){
+
+    var main_code = req.params.mainCode;
+    dynamicDB.getTreeFromCodeTileoscope(main_code).then(function(tree) {
+        res.send(tree)
+    }, function(error){
+        console.log(error)
+        res.status(404).send(error)
+    })
+});
+
+
 //create a sequence of size 100 based on current tree state and MONTE CARLO
 //testing endpoint. The functionality is used when creating an entry in mturk workers in the mturk path
 router.get('/populateTreeForced/:mainCode/:depth', function(req,res,next){
