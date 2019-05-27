@@ -256,6 +256,23 @@ exports.pickSequenceFeaturedTileoscope = function() {
 };
 
 
+
+
+//reset the tree for a specific code
+exports.resetTreeTileoscope = function(code) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('delete from tileoscope_genetic_tree where unique_code_main=?',[code])
+            .then(
+                function(data) {
+                    resolve(data);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};
+
+
 //update project status for ar
 exports.updateARProjectStatus = function(code) {
     return new Promise(function(resolve, error) {
