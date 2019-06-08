@@ -1,7 +1,9 @@
 var db = require('../db/db');
 var Promise = require('bluebird');
 var databaseName = process.env.CARTO_DB_NAME;
+var path = require('path');
 
+var spawn = require("child_process").spawn;
 
 //get the gene pool
 exports.getGenePool = function(projectId) {
@@ -392,6 +394,21 @@ exports.getTreeFromCodeTileoscope = function(projectCode) {
     });
 };
 
+
+//get the active genetic tree for the given main code
+exports.getTreeRootFromCodeTileoscope = function(projectCode) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT * from tileoscope_genetic_tree where active=1 and unique_code_main=? and node=\"start\"  ', [projectCode])
+            .then(
+                function(data) {
+                    resolve(data);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};
+
 //based on tree with pool, generate sequence
 exports.createUserSequenceFromTreeRandom = function(main_code){
 
@@ -549,6 +566,69 @@ exports.pickQlearnOptimalSequenceTileoscope = function(main_code) {
 };
 
 
+
+//pick optimal for Tileoscope
+exports.generateQlearnOptimalSequenceTileoscope = function(main_code) {
+
+    return new Promise(function(resolve, error) {
+
+
+        //get tree from main code
+        exports.getTreeRootFromCodeTileoscope(main_code).then(function(tree) {
+
+
+            //run python script to generate it
+            var process = spawn('python',[path.resolve(__dirname + '/../scripts/emh-test-weighted.py'),
+                path.resolve(__dirname + '/../scripts/seeds/'+ main_code + '_worker_paths_random.csv')]
+            );
+
+
+            process.stdout.on('data', function(data) {
+
+
+                console.log(data.toString());
+                var gen_obj = {
+                    unique_code_main: main_code,
+                    seq: data.toString(),
+                    pool: tree[0].pool,
+                    ignore_codes: tree[0].ignore_codes,
+                    misc: tree[0].misc || "none",
+                    active: 1,
+                    method: "qlearn"
+                };
+                var gen_list = [gen_obj];
+                exports.insertGeneticSequences2Tileoscope(gen_list).then(function(insert_data) {
+                    //Send genetic id back
+                    if (insert_data.insertId) {
+                        resolve({genetic_id:insert_data.insertId,seq:data.toString(),method:"qlearnG"});
+                    } else if (insert_data.affectedRows > 0) {
+                        resolve(0);
+                    } else {
+                        error({code: 'Problem with insertion'});
+                    }
+
+
+                }, function(err){
+                    console.log(err);
+                    error(err)
+                })
+            } )
+
+
+        },function(err){
+            error(err)
+
+        })
+
+
+
+
+
+
+    });
+};
+
+
 //pick greedy for qlearn comps Tileoscope
 exports.pickGreedySequenceTileoscope = function(main_code) {
 
@@ -567,17 +647,21 @@ exports.pickGreedySequenceTileoscope = function(main_code) {
 
 
 
-exports.createUserSequenceQlearnTileoscope = function(main_code) {
+exports.createUserSequenceQlearnTileoscope = function(main_code,generate) {
 
     return new Promise(function (resolve, error) {
         //Randomly pick between making a random sequence and picking the optimal strategy qlearn
         //var pick_optimal = Math.round(Math.random());
         var pick_optimal = randomInt(0, 2);
+        var opt_func = "pickQlearnOptimalSequenceTileoscope";
+        if (generate){
+            opt_func = "pickQlearnOptimalSequenceTileoscope"
+        }
 
         if (pick_optimal == 0) {
             console.log("Picking optimal");
 
-            exports.pickQlearnOptimalSequenceTileoscope(main_code).then(function (genetic_id) {
+            exports[opt_func](main_code).then(function (genetic_id) {
 
                 resolve(genetic_id);
             })
@@ -604,7 +688,7 @@ exports.createUserSequenceQlearnTileoscope = function(main_code) {
                     if (pick_optimal == 0) {
                         console.log("Picking optimal");
 
-                        exports.pickQlearnOptimalSequenceTileoscope(main_code).then(function (genetic_id) {
+                        exports[opt_func](main_code).then(function (genetic_id) {
                             resolve(genetic_id);
                         })
                     } else if (pick_optimal == 1) {
@@ -625,7 +709,7 @@ exports.createUserSequenceQlearnTileoscope = function(main_code) {
 
 
 //pick an already generated sequence from the db
-exports.pickGeneticSequenceTileoscope = function(main_code) {
+exports.pickGeneticSequenceTileoscope = function(main_code,dm) {
 
     return new Promise(function(resolve, error) {
         var connection = db.get();

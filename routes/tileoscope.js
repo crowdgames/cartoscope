@@ -530,15 +530,11 @@ router.get('/getTileoscopeMoves/:hitId', function(req, res, next) {
 //Get Tileoscope AR actions for specific session id
 router.get('/getARActionsBySessionID/:session_id', function(req, res, next) {
 
-
     //if one of the two missing, then error!
     var session_id = req.params.session_id;
-
     //make sure there is a project
     tileDB.getTileoscopeARActionsBySessionId(session_id).then(function(actions) {
-
         res.send(actions);
-
     }, function(err) {
         console.log('err ', err);
         res.status(404).send('No trial found.');
@@ -546,6 +542,26 @@ router.get('/getARActionsBySessionID/:session_id', function(req, res, next) {
 
 
 });
+
+
+
+
+//Get Tileoscope AR actions for specific session id
+router.get('/generateQlearnOptimalSequenceTileoscope/:main_code', function(req, res, next) {
+
+    //if one of the two missing, then error!
+    var main_code = req.params.main_code;
+    //make sure there is a project
+    dynamicDB.generateQlearnOptimalSequenceTileoscope(main_code).then(function(data) {
+        res.send(data);
+    }, function(err) {
+        console.log('err ', err);
+        res.status(404).send('No trial found.');
+    });
+
+
+});
+
 
 
 //Get Tileoscope AR actions for specific session id
@@ -679,7 +695,7 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
 
 
     //if one of the two missing, then error!
-    var projectID = req.query.tree || req.query.qlearn || req.query.genetic || req.query.random || "featured";
+    var projectID = req.query.tree || req.query.qlearn ||req.query.qlearng  || req.query.genetic || req.query.random || "featured";
     var workerId = req.query.workerId || req.query.participantId;
 
 
@@ -766,7 +782,7 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
             });
         }
         //for for cases that don't require tree
-        else if (req.query.hasOwnProperty("qlearn") || req.query.hasOwnProperty("genetic")){
+        else if (req.query.hasOwnProperty("qlearn") || req.query.hasOwnProperty("qlearng") || req.query.hasOwnProperty("genetic")){
 
             //check if user exists:
             anonUserDB.findConsentedMTurkWorker(anonUser.workerId, projectID,anonUser.hitId).then(function(user) {
@@ -791,13 +807,17 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
                     //get sequence by picking between randomly generating or qlearn optimal
 
                     console.log("User not found. Creating...");
+                    var gen_q = 0;
 
                     var func = "createUserSequenceQlearnTileoscope";
                     if (req.query.hasOwnProperty("genetic")){
                         func = "pickGeneticSequenceTileoscope"
                     }
+                    if (req.query.hasOwnProperty("qlearng")) {
+                        gen_q = 1
+                    }
 
-                    dynamicDB[func](projectID).then(function(genetic_data){
+                    dynamicDB[func](projectID,gen_q).then(function(genetic_data){
 
                         console.log(genetic_data);
                         var genetic_id = genetic_data.genetic_id;
