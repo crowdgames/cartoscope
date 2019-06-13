@@ -109,8 +109,8 @@ if True:
             try_Q = 0.0
             if try_key in Q:
                 try_Q = Q[try_key]
-                norm_w += try_Q
-                pick_w.append(try_Q)
+                norm_w += try_Q*try_Q
+                pick_w.append(try_Q*try_Q)
                 pick_act.append(try_act)
         #normalize weights of choices
         pick_w[:] = [x / norm_w for x in pick_w]
