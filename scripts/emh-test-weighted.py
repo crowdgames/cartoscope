@@ -20,6 +20,12 @@ LOOKUP_REV = {
 ACTIONS = ['E', 'M', 'H']
 
 
+WEIGHTS = {
+    'E': 0,
+    'M': 1 ,
+    'H': 1.2
+    }
+
 _rewards = {}
 for action in ACTIONS:
     _rewards[action] = []
@@ -57,6 +63,8 @@ for ii in range(300000):
 
     state = ''.join([e[0] for e in example[:-1]])
     action, value = example[-1]
+    #multiply by weights
+    value = value * WEIGHTS[action]
 
     if pt == len(traj) - 1:
         next_state = 'X'

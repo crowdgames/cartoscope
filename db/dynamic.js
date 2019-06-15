@@ -655,7 +655,7 @@ exports.createUserSequenceQlearnTileoscope = function(main_code,generate) {
         var pick_optimal = randomInt(0, 2);
         var opt_func = "pickQlearnOptimalSequenceTileoscope";
         if (generate){
-            opt_func = "pickQlearnOptimalSequenceTileoscope"
+            opt_func = "generateQlearnOptimalSequenceTileoscope"
         }
 
         if (pick_optimal == 0) {
