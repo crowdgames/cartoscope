@@ -301,6 +301,7 @@ router.post('/submitMove', function(req, res, next) {
 router.post('/submitTileoscopeARAction', function(req, res, next) {
 
 
+    console.log(req.body)
     //if one of the two missing, then error!
     var session_id = req.body.sessionid;
     var action = req.body.action;
@@ -334,6 +335,7 @@ router.post('/submitTileoscopeARAction', function(req, res, next) {
                 var category = item.MatchCategory;
 
                 if (isMatch && short_name && code && code != "_"){
+                    console.log("Add vote as Carttoscope")
                     //Tadd it as vote as well for the map!
                     tileDB.convertActionToMatch(code,user_code,matches,category).then(function(d) {
 
@@ -346,6 +348,8 @@ router.post('/submitTileoscopeARAction', function(req, res, next) {
                     });
 
                 } else {
+                  console.log("Don't add vote as Carttoscope")
+
                     res.status(200).send('Tile-o-Scope AR Action submitted successfully');
 
                 }
