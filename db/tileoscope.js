@@ -103,7 +103,13 @@ exports.convertActionToMatch = function(projectID,workerId,matches,category_raw)
         else {
 
             console.log(matches)
-            var image_array = matches.split(",");
+            if (type of matches  == 'string') {
+              var image_array = matches.split(",");
+
+            } else {
+              var image_array = matches;
+
+            }
 
 
             //make the mturk user object
