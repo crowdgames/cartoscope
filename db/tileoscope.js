@@ -102,6 +102,7 @@ exports.convertActionToMatch = function(projectID,workerId,matches,category_raw)
         }
         else {
 
+            console.log(matches)
             var image_array = matches.split(",");
 
 
