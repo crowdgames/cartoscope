@@ -4,6 +4,7 @@ var databaseName = process.env.CARTO_DB_NAME;
 
 //other db functions
 var projectDB = require('../db/project');
+var anonUserDB = require('../db/anonUser');
 
 
 
