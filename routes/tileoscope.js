@@ -327,7 +327,7 @@ router.post('/submitTileoscopeARAction', function(req, res, next) {
             try {
                 var item = JSON.parse((action));
                 var session_id = item.sessionid;
-                var isMatch = item.isMatch;
+                var isMatch = item.IsMatch;
                 var short_name = item.datasetName;
                 var code = item.code;
                 var user_code = session_id; //user code is the session id
