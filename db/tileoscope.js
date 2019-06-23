@@ -103,7 +103,7 @@ exports.convertActionToMatch = function(projectID,workerId,matches,category_raw)
         else {
 
             console.log(matches)
-            if (type of matches  == 'string') {
+            if (typeof matches  == 'string') {
               var image_array = matches.split(",");
 
             } else {
