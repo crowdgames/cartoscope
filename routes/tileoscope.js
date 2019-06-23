@@ -334,6 +334,10 @@ router.post('/submitTileoscopeARAction', function(req, res, next) {
                 var matches = item.ImageIds;
                 var category = item.MatchCategory;
 
+                console.log(isMatch)
+                console.log(short_name)
+                console.log(code)
+
                 if (isMatch && short_name && code && code != "_"){
                     console.log("Add vote as Carttoscope")
                     //Tadd it as vote as well for the map!
