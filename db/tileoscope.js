@@ -4,6 +4,7 @@ var databaseName = process.env.CARTO_DB_NAME;
 
 //other db functions
 var projectDB = require('../db/project');
+var anonUserDB = require('../db/anonUser');
 
 
 
@@ -102,7 +103,14 @@ exports.convertActionToMatch = function(projectID,workerId,matches,category_raw)
         }
         else {
 
-            var image_array = matches.split(",");
+            console.log(matches)
+            if (typeof matches  == 'string') {
+              var image_array = matches.split(",");
+
+            } else {
+              var image_array = matches;
+
+            }
 
 
             //make the mturk user object
@@ -135,7 +143,7 @@ exports.convertActionToMatch = function(projectID,workerId,matches,category_raw)
                     anonUserDB.findConsentedMTurkWorker(anonUser.workerId, projectID, anonUser.hitId).then(function (user) {
                         if (user.id) {
                             //each vote needs: project_id, user_id, task_id (the image) and the response
-                            tileDB.addResponseTileoscope(user.id, project.id, image_array, answer_decoded) .then(function (data) {
+                            exports.addResponseTileoscope(user.id, project.id, image_array, answer_decoded) .then(function (data) {
                                 // console.log('data inserted', data);
                                 resolve({user_id:user.id, project_code: projectID,items_added:data});
                             }).catch(function(err) {
@@ -150,7 +158,7 @@ exports.convertActionToMatch = function(projectID,workerId,matches,category_raw)
                                 anonUserDB.findConsentedMTurkWorker(anonUser.workerId, projectID,anonUser.hitId).then(function(user) {
                                     if (user.id) {
                                         //each vote needs: project_id, user_id, task_id (the image) and the response
-                                        tileDB.addResponseTileoscope(user.id, project.id, image_array, answer_decoded) .then(function (data) {
+                                        exports.addResponseTileoscope(user.id, project.id, image_array, answer_decoded) .then(function (data) {
                                             // console.log('data inserted', data);
                                             resolve({user_id:user.id, project_code: projectID,items_added:data});
                                         }).catch(function(err) {

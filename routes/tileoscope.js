@@ -326,7 +326,7 @@ router.post('/submitTileoscopeARAction', function(req, res, next) {
             try {
                 var item = JSON.parse((action));
                 var session_id = item.sessionid;
-                var isMatch = item.isMatch;
+                var isMatch = item.IsMatch;
                 var short_name = item.datasetName;
                 var code = item.code;
                 var user_code = session_id; //user code is the session id
@@ -334,7 +334,10 @@ router.post('/submitTileoscopeARAction', function(req, res, next) {
                 var category = item.MatchCategory;
 
                 if (isMatch && short_name && code && code != "_"){
+                    console.log("Add vote as Cartoscope")
                     //Tadd it as vote as well for the map!
+                    console.log(item)
+
                     tileDB.convertActionToMatch(code,user_code,matches,category).then(function(d) {
 
                         res.status(200).send('Tile-o-Scope AR Action submitted successfully');
@@ -346,6 +349,8 @@ router.post('/submitTileoscopeARAction', function(req, res, next) {
                     });
 
                 } else {
+                  console.log("Don't add vote as Carttoscope")
+
                     res.status(200).send('Tile-o-Scope AR Action submitted successfully');
 
                 }
