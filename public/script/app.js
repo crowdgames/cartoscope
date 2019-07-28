@@ -1088,7 +1088,7 @@ module.controller('stepOneController', ['$scope', '$state', '$http', 'swalServic
     });
 
     $scope.validate = function() {
-      if (!$scope.project.name || !$scope.project.description || !$scope.project.short_name) {
+      if (!$scope.project.name || !$scope.project.description || !$scope.project.short_name || !$scope.project.short_name_friendly) {
         $scope.showErr = true;
         swalService.showErrorMsg('Please enter a name, a short name and description for the project.');
       } else if (  invalid_characters.some(el => $scope.project.short_name.includes(el))) {
@@ -1112,6 +1112,7 @@ module.controller('stepOneController', ['$scope', '$state', '$http', 'swalServic
         fd.append('name', $scope.project.name);
         fd.append('description', $scope.project.description);
           fd.append('short_name', $scope.project.short_name);
+          fd.append('short_name_friendly', $scope.project.short_name_friendly);
 
           $http.post('api/project/add', fd, {
           transformRequest: angular.identity,

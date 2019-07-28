@@ -300,7 +300,7 @@ router.post('/add', [upload.any(), filters.requireLogin, filters.requiredParamHa
         if (isValidImage(result)) {
           fs.renameSync(req.files[0].path, 'profile_photos/' + filename);
           generateUniqueProjectCode().then(function(projectCode) {
-            projectDB.addProject(body.name, req.session.passport.user.id, body.description, filename, projectCode,body.short_name).then(
+            projectDB.addProject(body.name, req.session.passport.user.id, body.description, filename, projectCode,body.short_name,body.short_name_friendly).then(
               function(result) {
                 console.log('result '+ result);
                 res.send({id: result.insertId, code: projectCode});

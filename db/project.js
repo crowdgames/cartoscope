@@ -20,11 +20,11 @@ exports.isCodeUnique = function(uniqueCode, done) {
     });
 };
 
-exports.addProject = function(name, userID, desc, picID, uniqueCode, short_name) {
+exports.addProject = function(name, userID, desc, picID, uniqueCode, short_name, short_name_friendly) {
   return new Promise(function(resolve, reject) {
     var connection = db.get();
-    connection.queryAsync('INSERT INTO projects (name,creatorID,description,cover_pic,unique_code,short_name) VALUES(?,?,?,?,?,?)',
-      [name, userID, desc, picID, uniqueCode,short_name]).then(
+    connection.queryAsync('INSERT INTO projects (name,creatorID,description,cover_pic,unique_code,short_name,short_name_friendly) VALUES(?,?,?,?,?,?,?)',
+      [name, userID, desc, picID, uniqueCode,short_name,short_name_friendly]).then(
       function(result) {
         resolve(result);
       }).catch(function(err) {

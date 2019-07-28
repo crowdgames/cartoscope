@@ -16,6 +16,14 @@
                 <input ng-switch-when="true" ng-model="project.short_name" readonly>
                 <input ng-switch-when="false" ng-model="project.short_name">
             </div>
+            <div ng-switch on="::project.editing">
+                <span>
+                    Short Name (Friendly)*
+                </span>
+                <!--Short name friendly can always be edited-->
+                <input ng-switch-when="true" ng-model="project.short_name_friendly" >
+                <input ng-switch-when="false" ng-model="project.short_name_friendly">
+            </div>
             <div>
                 <span>
                     Description*
