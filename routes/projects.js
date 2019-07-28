@@ -377,7 +377,7 @@ router.post('/updateDescription',
 router.post('/updateDescriptionName',
     [filters.requireLogin, filters.requiredParamHandler(['projectID', 'description']), upload.any()],
     function(req, res, next) {
-        projectDB.updateDescriptionName(req.body.projectID, req.body.description,req.body.name,req.body.short_name).then(function(data) {
+        projectDB.updateDescriptionName(req.body.projectID, req.body.description,req.body.name,req.body.short_name, req.body.short_name_friendly).then(function(data) {
             if (data.affectedRows == 1) {
                 res.send({'status': 'done'});
             } else {

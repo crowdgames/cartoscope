@@ -323,7 +323,8 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
                   description: $scope.project.description,
                   projectID: $scope.project.id,
                   name: $scope.project.name,
-                  short_name: $scope.project.short_name
+                  short_name: $scope.project.short_name,
+                  short_name_friendly: $scope.project.short_name_friendly
               };
 
               $http.post('/api/project/updateDescriptionName', data).then(function(data) {

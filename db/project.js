@@ -170,11 +170,11 @@ exports.updateARReady = function(projectId, ar_ready) {
 };
 
 
-exports.updateDescriptionName = function(projectId, description,name,short_name) {
+exports.updateDescriptionName = function(projectId, description,name,short_name,short_name_friendly) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        connection.queryAsync('UPDATE projects SET description=? , name=?, short_name=? WHERE id=?',
-            [description,name, short_name,projectId]).then(
+        connection.queryAsync('UPDATE projects SET description=? , name=?, short_name=?, short_name_friendly=? WHERE id=?',
+            [description,name, short_name,short_name_friendly,projectId]).then(
             function(data) {
                 resolve(data);
             }, function(err) {
