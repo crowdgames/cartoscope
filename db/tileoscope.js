@@ -253,7 +253,7 @@ exports.getCreatedSequenceTileoscope = function(id) {
 exports.pickSequenceFeaturedTileoscope = function() {
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        connection.queryAsync('SELECT id as genetic_id,seq,method from tileoscope_task_genetic_sequences where method="featured" ORDER BY RAND() LIMIT 1 ')
+        connection.queryAsync('SELECT id as genetic_id,seq,method from tileoscope_task_genetic_sequences where method="featured" and active=1 ORDER BY RAND() LIMIT 1 ')
             .then(
                 function(data) {
                     resolve(data[0]);
