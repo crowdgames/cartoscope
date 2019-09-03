@@ -250,10 +250,15 @@ exports.getCreatedSequenceTileoscope = function(id) {
 
 
 //get the active genetic tree for the given main code
-exports.pickSequenceFeaturedTileoscope = function() {
+exports.pickSequenceFeaturedTileoscope = function(isMemory) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        connection.queryAsync('SELECT id as genetic_id,seq,method from tileoscope_task_genetic_sequences where method="featured" and active=1 ORDER BY RAND() LIMIT 1 ')
+
+        var ft = "featured"
+        if (isMemory){
+            ft += "_memory"
+        }
+        connection.queryAsync('SELECT id as genetic_id,seq,method from tileoscope_task_genetic_sequences where method="'+ ft +'" and active=1 ORDER BY RAND() LIMIT 1 ')
             .then(
                 function(data) {
                     resolve(data[0]);

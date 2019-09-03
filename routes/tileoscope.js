@@ -705,6 +705,7 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
 
 
 
+
     if (workerId == undefined){
         res.status(400).send('User code missing.');
     } else {
@@ -876,7 +877,8 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
                     console.log("User not found. Creating...");
 
 
-                    tileDB.pickSequenceFeaturedTileoscope().then(function(genetic_data){
+
+                    tileDB.pickSequenceFeaturedTileoscope(req.query.hasOwnProperty('memory')).then(function(genetic_data){
 
                         console.log(genetic_data);
                         var genetic_id = genetic_data.genetic_id;
