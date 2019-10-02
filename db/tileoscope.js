@@ -555,7 +555,7 @@ exports.updateTileoscopeARDatasetInfoJSONFile = function(unique_code) {
                 }
                 console.log('dataset-info file was created');
                 //set ar  status to 1
-                exports.updateARProjectStatus(req.params.code).then(function (d) {
+                exports.updateARProjectStatus(unique_code).then(function (d) {
                     resolve(json_data)
                 });
             });
