@@ -388,7 +388,8 @@ exports.generateTileoscopeARDatasetInfoJSON = function(unique_code) {
             name: '',
             short_name: '',
             short_name_friendly: '',
-            tutorial: []                //at least one pair of images of the same category
+            tutorial: [],                //at least one pair of images of the same category
+            tutorial_explanations: [] //explanations for each tutorial item to be used
         };
 
 
@@ -499,7 +500,7 @@ exports.generateTileoscopeARDatasetInfoJSON = function(unique_code) {
                     dataset_info_json.categoriesSample = tut_images;
 
                     //add tutorial explanation stuff here
-                    dataset_info_json.tutorial_explanation = tut_explanation_array;
+                    dataset_info_json.tutorial_explanations = tut_explanation_array;
 
 
                     //send everything
