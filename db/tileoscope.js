@@ -440,9 +440,13 @@ exports.generateTileoscopeARDatasetInfoJSON = function(unique_code) {
                     var tut_images = [];
                     var tut_categories = {};
 
+                    var tut_explanation_array = [];
+
+
                     for(item in tutorial_items){
 
                         var tut = tutorial_items[item];
+
 
                         //console.log(tut)
 
@@ -466,6 +470,14 @@ exports.generateTileoscopeARDatasetInfoJSON = function(unique_code) {
 
                         }
 
+                        //PUSH INTO DATASET INFO THE TUTORIAL INFO AS WELL!
+                        var expl_item = {};
+                        expl_item.image_name = tut_image;
+                        expl_item.answer = tut_answer;
+                        expl_item.explanation = tut.explanation;
+                        expl_item.image_attribution = tut.image_attribution;
+                        tut_explanation_array.push(expl_item);
+
                     }
 
 
@@ -485,6 +497,9 @@ exports.generateTileoscopeARDatasetInfoJSON = function(unique_code) {
                     }
 
                     dataset_info_json.categoriesSample = tut_images;
+
+                    //add tutorial explanation stuff here
+                    dataset_info_json.tutorial_explanation = tut_explanation_array;
 
 
                     //send everything
