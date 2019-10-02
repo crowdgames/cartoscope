@@ -233,6 +233,21 @@ exports.getTileoscopeMoves = function(trialId) {
 };
 
 
+//get tutorial items for unique code
+exports.getTutorialItems = function(unique_code) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT unique_code,answer,explanation,image_name,image_attribution from tutorial where unique_code=?  ', [unique_code])
+            .then(
+                function(data) {
+                    resolve(data);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};
+
+
 //get the active genetic tree for the given main code
 exports.getCreatedSequenceTileoscope = function(id) {
     return new Promise(function(resolve, error) {
@@ -246,6 +261,8 @@ exports.getCreatedSequenceTileoscope = function(id) {
                 });
     });
 };
+
+
 
 
 

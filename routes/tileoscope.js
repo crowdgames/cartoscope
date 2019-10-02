@@ -563,8 +563,21 @@ router.get('/generateQlearnOptimalSequenceTileoscope/:main_code', function(req, 
         console.log('err ', err);
         res.status(404).send('No trial found.');
     });
+});
 
 
+
+//Get Tileoscope AR tutorial for specific code
+router.get('/getTutorialItems/:main_code', function(req, res, next) {
+
+    var main_code = req.params.main_code;
+    //make sure there is a project
+    tileDB.getTutorialItems(main_code).then(function(data) {
+        res.send(data);
+    }, function(err) {
+        console.log('err ', err);
+        res.status(404).send('No tutorial items found.');
+    });
 });
 
 

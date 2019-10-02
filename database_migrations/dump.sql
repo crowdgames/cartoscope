@@ -320,6 +320,7 @@ CREATE TABLE `tutorial` (
   `y` varchar(45) DEFAULT NULL,
   `zoom` varchar(45) DEFAULT NULL,
   `image_source` text DEFAULT NULL,
+  `image_attribution` text DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
