@@ -535,3 +535,35 @@ exports.generateTileoscopeARDatasetInfoJSON = function(unique_code) {
 
     });
 };
+
+
+exports.updateTileoscopeARDatasetInfoJSONFile = function(unique_code) {
+
+    return new Promise(function(resolve, error) {
+
+
+        exports.generateTileoscopeARDatasetInfoJSON(unique_code).then(function (json_data) {
+
+            var datasetDIR = "dataset/" + json_data.dataset_id;
+            var dataset_file = datasetDIR + '/Dataset-Info.json';
+            var json = JSON.stringify(json_data, null, 2);
+            fs.writeFile(dataset_file, json, 'utf8', (err) => {
+                if (err) {
+                    error(err)
+                }
+                console.log('dataset-info file was created');
+                //set ar  status to 1
+                exports.updateARProjectStatus(req.params.code).then(function (d) {
+                    resolve(json_data)
+                });
+            });
+
+        }, function (error) {
+            console.log(error);
+            error(err)
+        })
+
+
+    })
+
+};

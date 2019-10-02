@@ -1092,16 +1092,19 @@ router.get('/getDataset/:code/' , function(req, res, next) {
 
         var project = project_data[0];
 
-        var dataset_id = project.dataset_id;
-        var datasetDIR = "dataset/" + dataset_id;
-        var zip_name = project.unique_code + "_" + project.short_name + '.zip';
-        var full_zip = ar_folder + zip_name;
-        console.log(full_zip)
+        //need to get the latest dataset info written to file  first
+        tileDB.updateTileoscopeARDatasetInfoJSONFile(unique_code).then(function(d){
 
-        // //make sure we don't send anything beyond json and image
-        // if (fs.existsSync(datasetDIR + "/tmp/")) {
-        //     fs.unlinkSync(datasetDIR + "/tmp/");
-        // }
+            var dataset_id = project.dataset_id;
+            var datasetDIR = "dataset/" + dataset_id;
+            var zip_name = project.unique_code + "_" + project.short_name + '.zip';
+            var full_zip = ar_folder + zip_name;
+            console.log(full_zip);
+
+            // //make sure we don't send anything beyond json and image
+            // if (fs.existsSync(datasetDIR + "/tmp/")) {
+            //     fs.unlinkSync(datasetDIR + "/tmp/");
+            // }
 
 
 
@@ -1117,7 +1120,6 @@ router.get('/getDataset/:code/' , function(req, res, next) {
                 res.download(full_zip, zip_name);
 
 
-
             });
 
             archive.on('error', function(err){
@@ -1130,10 +1132,7 @@ router.get('/getDataset/:code/' , function(req, res, next) {
             archive.directory(datasetDIR, false);
             archive.finalize();
 
-
-
-
-
+        })
 
 
     }, function(error){
