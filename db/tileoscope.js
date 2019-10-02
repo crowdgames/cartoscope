@@ -1,4 +1,6 @@
 var db = require('../db/db');
+var fs = require('fs');
+
 var Promise = require('bluebird');
 var databaseName = process.env.CARTO_DB_NAME;
 
