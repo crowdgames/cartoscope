@@ -548,6 +548,8 @@ function downloadTutorialLocal(loc, projectID,existing,ar_ready,dataset_id) {
 
                             //todo:if existing, then path should be to dataset/dataset_id in the examples, need to do changes in the tutorial pages as well
 
+
+
                             var p = projectDB.insertTutorialItems(projectID, data[i]);
                             //catch and print error but do not cause problem
                             p.catch(function (err) {

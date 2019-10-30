@@ -749,7 +749,12 @@ exports.insertTutorialItems = function(projectId,data){
 
         var image_path = projectId + "/" + data.image_name;
 
-        console.log(image_path)
+        //if tutorial image not in dataset, then do not include project id path
+        if (data.hasOwnProperty("in_dataset") && data.in_dataset.toLowerCase() == "no"){
+            image_path =  data.image_name;
+        }
+
+        console.log(image_path);
 
 
 
