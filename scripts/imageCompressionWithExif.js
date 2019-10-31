@@ -9,7 +9,7 @@ var path = require('path');
 var ExifImage = require('exif').ExifImage;
 // set resizeSize for compression
 var resizeSize = 640;
-var sharp = require('sharp')
+var sharp = require('sharp');
 
 
 exports.processData = function(files) {
@@ -68,35 +68,61 @@ exports.processData = function(files) {
   );
 };
 
-function reduceImage(baseDir, fileName, target) {
-  return new Promise(function(resolve, reject) {
+exports.reduceImageDirect = function(source,dest) {
+    return new Promise(function(resolve, reject) {
 
-      console.log(fileName)
 
-      var target_file = fileName.substring(0, fileName.lastIndexOf(".") + 1) + 'jpg';
+        sharp( source)
+            .resize(resizeSize, resizeSize)
+            .toFormat('jpeg')
+            .toFile(dest, function(err) {
+                if (err){
+                    //console.log("OOPS")
+                    //console.log(err)
+                    reject(err)
 
-      console.log(target_file)
-      console.log(target)
-
-      sharp( path.join(baseDir,fileName))
-          .resize(resizeSize, resizeSize)
-          .toFormat('jpeg')
-          .toFile(path.join(target,target_file), function(err) {
-              if (err){
-                  //console.log("OOPS")
-                  //console.log(err)
-                  reject(err)
-
-              } else {
-                  //console.log("Finished: " + path.join(target,fileName))
-                  resolve({
-                      compressed: path.join(target,target_file),
-                      fileName: target_file
-                  })
-              }
-          });
+                } else {
+                    //console.log("Finished: " + path.join(target,fileName))
+                    resolve({
+                        compressed: source,
+                        fileName: dest
+                    })
+                }
+            });
     })
 }
+
+
+function reduceImage(baseDir, fileName, target) {
+    return new Promise(function(resolve, reject) {
+
+        console.log(fileName)
+
+        var target_file = fileName.substring(0, fileName.lastIndexOf(".") + 1) + 'jpg';
+
+        console.log(target_file)
+        console.log(target)
+
+        sharp( path.join(baseDir,fileName))
+            .resize(resizeSize, resizeSize)
+            .toFormat('jpeg')
+            .toFile(path.join(target,target_file), function(err) {
+                if (err){
+                    //console.log("OOPS")
+                    //console.log(err)
+                    reject(err)
+
+                } else {
+                    //console.log("Finished: " + path.join(target,fileName))
+                    resolve({
+                        compressed: path.join(target,target_file),
+                        fileName: target_file
+                    })
+                }
+            });
+    })
+}
+
 
 
 function reduceImage2(baseDir, fileName, target) {

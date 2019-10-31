@@ -493,9 +493,6 @@ function downloadLocal(loc,downloadID, projectID,ar_ready,remove_before) {
 function downloadTutorialLocal(loc, projectID,existing,ar_ready,dataset_id) {
 
 
-        //TODO: Deal with existing option, it should essentially check the list of names already in the dataset_id table
-
-
         var downloadDir = 'temp/'; //where the temp file is stored
         var tutorialDir = 'public/images/Tutorials/'; //where the images should end up
         var dirName = tutorialDir  + projectID;
@@ -541,13 +538,24 @@ function downloadTutorialLocal(loc, projectID,existing,ar_ready,dataset_id) {
 
                         //for every item, insert into tutorial items
                         var pArr = [];
+
+                        //keep a list of images that need to be moved
+                        var tutorial_images_to_move  = [];
+
                         for (var i = 0; i < data.length; i++) {
 
-                            console.log("Data in tutorial item");
-                            console.log(data[i]);
 
-                            //todo:if existing, then path should be to dataset/dataset_id in the examples, need to do changes in the tutorial pages as well
 
+                            if (data[i].hasOwnProperty("in_dataset") && parseInt(data[i].in_dataset) == 0){
+                                tutorial_images_to_move.push(data[i].image_name );
+                                // add a json file directly to folder
+                                console.log("add json file")
+                                var p_json = generateJSONforTutorialItem(data[i],dataset_id);
+                                p_json.catch(function (err) {
+                                    console.log(err)
+                                });
+                                pArr.push(p_json);
+                            }
 
 
                             var p = projectDB.insertTutorialItems(projectID, data[i]);
@@ -570,7 +578,7 @@ function downloadTutorialLocal(loc, projectID,existing,ar_ready,dataset_id) {
                                 //If AR, now we should generate the dataset-info and put it in the folder
                             if (ar_ready) {
 
-                                console.log("Creating dataset-info json")
+                                console.log("Creating dataset-info json");
 
                                 tileDB.generateTileoscopeARDatasetInfoJSON(projectID).then(function (json_data) {
 
@@ -586,6 +594,9 @@ function downloadTutorialLocal(loc, projectID,existing,ar_ready,dataset_id) {
 
                                     //set ar  status to 1
                                     tileDB.updateARProjectStatus(projectID).then(function (d) {
+
+                                        //HERE: copy tutorial items
+                                        addTutorialItemsDatasetFolder(tutorial_images_to_move,projectID,dataSetID)
 
                                     });
                                 })
@@ -644,8 +655,21 @@ function downloadTutorialLocal(loc, projectID,existing,ar_ready,dataset_id) {
 
                         //for every item, insert into tutorial items
                         var pArr = [];
+                        var tutorial_images_to_move = [];
 
                         for (var i = 0; i < data.length; i++) {
+
+
+                            if (data[i].hasOwnProperty("in_dataset") && parseInt(data[i].in_dataset) == 0){
+                                tutorial_images_to_move.push(data[i].image_name );
+                                console.log("add json file")
+
+                                var p_json = generateJSONforTutorialItem(data[i],dataset_id);
+                                p_json.catch(function (err) {
+                                    console.log(err)
+                                });
+                                pArr.push(p_json);
+                            }
 
                                 var p = projectDB.insertTutorialItems(projectID, data[i]);
                                 //catch and print error but do not cause problem
@@ -685,6 +709,9 @@ function downloadTutorialLocal(loc, projectID,existing,ar_ready,dataset_id) {
 
                                     //set ar  status to 1
                                     tileDB.updateARProjectStatus(projectID).then(function (d) {
+
+                                        //HERE: copy tutorial items
+                                        addTutorialItemsDatasetFolder(tutorial_images_to_move,projectID,json_data.dataset_id)
 
                                     });
                                 })
@@ -1481,5 +1508,105 @@ function deleteFolderRecursive(path) {
     fs.rmdirSync(path);
   }
 };
+
+
+
+
+
+//move tutorial images from Tutorials to dataset and make square
+function addTutorialItemsDatasetFolder(image_list,projectID,datasetID) {
+    return new Promise(function(resolve, reject) {
+        var tutorialDir = 'public/images/Tutorials/'; //where the tutorial images should be
+        var datasetDIR = "dataset/" + datasetID + '/';
+        var items_move = [];
+        var pArr = [];
+
+        //MOVE TO DATASET FOLDER TO BE INCLUDED WITH AR FILES
+        image_list.forEach(function(item){
+                var src_im = tutorialDir + item;
+                var dest_im = datasetDIR + item;
+                //move image
+                items_move.push(dest_im);
+                var p = imageCompressionLibNoExif.reduceImageDirect(src_im,dest_im);
+                //var p = cpFile(src_im, dest_im);
+                p.catch(function(err) {
+                    return null;
+                });
+                pArr.push(p);
+        });
+        Promise.all(pArr).then(function(data) {
+                resolve(data)
+        });
+    })
+}
+
+function generateJSONforTutorialItem(tut,datasetID){
+
+    return new Promise(function(resolve, reject) {
+
+
+
+        //TODO REMOVE EXTENSION
+        var im_full = tut.image_name;
+        var image_name = im_full.substr(0, im_full.lastIndexOf("."));
+        var datasetDIR = "dataset/" + datasetID + '/';
+        var json_file = datasetDIR + image_name + '.json';
+        console.log(json_file)
+
+        //TODO: REMOVE extension
+        var json_template = {
+            'attribution': tut.image_attribution || '_',
+            'category': tut.answer,
+            'category_hint': tut.answer,
+            'id': image_name,
+            'source': {
+                'url': '_',
+                'name': '_',
+                'key' : '_',
+                'image_key': '_'
+            }
+        };
+
+        console.log(json_template);
+        //write object to file
+        var json = JSON.stringify(json_template,null,2);
+        fs.writeFile(json_file, json, 'utf8', function(err){
+            if (err) {
+                error(err)
+            } else {
+                resolve(tut)
+            }
+        });
+
+
+    })
+
+
+
+}
+
+function cpFile(source, target) {
+
+    return new Promise(function(resolve, reject) {
+
+        var rd = fs.createReadStream(source);
+        rd.on("error", function(err) {
+            reject(err);
+        });
+        var wr = fs.createWriteStream(target);
+        wr.on("error", function(err) {
+            reject(err);
+        });
+        wr.on("close", function(ex) {
+            resolve({source: source, dest: target});
+        });
+        rd.pipe(wr);
+
+
+    })
+
+
+}
+
 
 module.exports = router;

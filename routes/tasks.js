@@ -401,6 +401,16 @@ router.get('/getImage/:dataset/:name', [filters.requireLogin], function(req, res
   }
 });
 
+
+router.get('/getImageFree/:dataset/:name', function(req, res, next) {
+    res.setHeader('Content-Type', 'image/jpeg');
+    if (fs.existsSync('dataset/' + req.params.dataset + '/' + req.params.name )) {
+        res.sendFile(path.resolve('dataset/' + req.params.dataset + '/' + req.params.name ));
+    } else {
+        res.status(404).send();
+    }
+});
+
 router.get('/startProject/:project', [filters.requireLogin], function(req, res, next) {
   var user = req.session.passport.user;
   var chain = req.query.chain;

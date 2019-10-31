@@ -597,6 +597,7 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
             var query = '/api/project/getTutorial/';
             $scope.genetic  = data.data[0].genetic;
 
+
             if ($scope.genetic == 1) {
                 var query = '/api/project/getTutorialSequence/';
             }
@@ -674,8 +675,18 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
 
                     });
 
+
+                    //if tutorial image in dataset, fetch from dataset
+                    var tutpath = '../../images/Tutorials/';
+                    if (item.hasOwnProperty('in_dataset') &&  item.in_dataset == 1){
+                        tutpath = '/api/tasks/getImageFree/' + data.data[0].dataset_id + '/'
+                    }
+
+                    console.log(tutpath + item.image_name);
+
+
                     var obj = {
-                        image: '../../images/Tutorials/' + item.image_name,
+                        image: tutpath + item.image_name,
                         answer: item.answer,
                         text: item.explanation,
                         color: sel_col,

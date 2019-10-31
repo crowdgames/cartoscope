@@ -2015,73 +2015,91 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
 
         }
 
-        $http.get('/api/project/getTutorial/' + vm.params.project).then(function(tdata) {
+
+        //Get project info here to check for genetic
+        $http.get('/api/tasks/getInfoFree/' + vm.params.project).then(function(data) {
+
+            $http.get('/api/project/getTutorial/' + vm.params.project).then(function(tdata) {
 
 
-            // tutorial data
-            var tutData = tdata.data;
+                // tutorial data
+                var tutData = tdata.data;
 
-            var template  = JSON.parse(tutData[0].template);
-            vm.question = template.question;
-            vm.counter = 0;
-            //get question from results
-            vm.goTo = tutData.length -1;
-
-
-            vm.showMarkers = parseInt(tutData[0].point_selection);
-            vm.points_file = tutData[0].points_file;
-
-            vm.tutorial = [];
-            vm.tutorialMapping = [];
-
-            tutData.forEach(function(item) {
+                var template  = JSON.parse(tutData[0].template);
+                vm.question = template.question;
+                vm.counter = 0;
+                //get question from results
+                vm.goTo = tutData.length -1;
 
 
-                var tmpl = JSON.parse(item.template);
-                var opt = [];
-                var sel_col = '';
-                var sel_num = -1;
-                tmpl.options.forEach(function(choice) {
-                    if (choice.text != 'QQQ'){
-                        opt.push({'name':choice.text,'color': button_cols[choice.color]});
-                        if (choice.text.toLowerCase() === item.answer.toLowerCase()) {
-                            sel_col = button_cols[choice.color];
-                            sel_num = parseInt(choice.color) ;
+                vm.showMarkers = parseInt(tutData[0].point_selection);
+                vm.points_file = tutData[0].points_file;
 
+                vm.tutorial = [];
+                vm.tutorialMapping = [];
+
+                tutData.forEach(function(item) {
+
+
+                    var tmpl = JSON.parse(item.template);
+                    var opt = [];
+                    var sel_col = '';
+                    var sel_num = -1;
+                    tmpl.options.forEach(function(choice) {
+                        if (choice.text != 'QQQ'){
+                            opt.push({'name':choice.text,'color': button_cols[choice.color]});
+                            if (choice.text.toLowerCase() === item.answer.toLowerCase()) {
+                                sel_col = button_cols[choice.color];
+                                sel_num = parseInt(choice.color) ;
+
+                            }
                         }
+                    });
+
+                    //if tutorial image in dataset, fetch from dataset
+                    var tutpath = '../../images/Tutorials/';
+
+
+
+                    if (item.hasOwnProperty('in_dataset') &&  item.in_dataset == 1){
+                        //tutpath = '../../../dataset/' + data.data[0].dataset_id + '/';
+                        tutpath = '/api/tasks/getImageFree/' + data.data[0].dataset_id + '/'
                     }
+                    console.log(tutpath + item.image_name);
+
+                    var obj = {
+                        image: tutpath + item.image_name,
+                        answer: item.answer,
+                        text: item.explanation,
+                        color: sel_col,
+                        options: opt,
+                        lat: parseFloat(item.x) ,
+                        lng: parseFloat(item.y),
+                        zoom: item.zoom ||  18,
+                        heading: 0,
+                        tilt: 0,
+                        col_number : parseInt(sel_num),
+                        poi_name : item.poi_name || '',
+                        image_source: item.image_source
+                    };
+                    if( vm.params.projectType != 'mapping') {
+
+                        vm.tutorial.push(obj)
+                    } else {
+                        vm.tutorialMapping.push(obj)
+                    }
+
                 });
 
-                var obj = {
-                    image: '../../images/Tutorials/' + item.image_name,
-                    answer: item.answer,
-                    text: item.explanation,
-                    color: sel_col,
-                    options: opt,
-                    lat: parseFloat(item.x) ,
-                    lng: parseFloat(item.y),
-                    zoom: item.zoom ||  18,
-                    heading: 0,
-                    tilt: 0,
-                    col_number : parseInt(sel_num),
-                    poi_name : item.poi_name || '',
-                    image_source: item.image_source
-                };
-                if( vm.params.projectType != 'mapping') {
+                if(vm.params.projectType == 'mapping'){
 
-                    vm.tutorial.push(obj)
-                } else {
-                    vm.tutorialMapping.push(obj)
+                    vm.map_init();
                 }
 
             });
+        })
 
-            if(vm.params.projectType == 'mapping'){
 
-                vm.map_init();
-            }
-
-        });
 
 }]);
 

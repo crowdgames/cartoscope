@@ -6,6 +6,8 @@ var Promise = require('bluebird');
 var spawn = require('child_process').spawn;
 var path = require('path');
 var resizeSize = 640;
+var resizeSize = 640;
+var sharp = require('sharp')
 
 
 exports.processData = function(files) {
@@ -82,6 +84,33 @@ function reduceImage(baseDir, fileName, target) {
     });
   });
 }
+
+
+exports.reduceImageDirect = function(source,dest) {
+    return new Promise(function(resolve, reject) {
+
+
+        sharp( source)
+            .resize(resizeSize, resizeSize)
+            .toFormat('jpeg')
+            .toFile(dest, function(err) {
+                if (err){
+                    //console.log("OOPS")
+                    //console.log(err)
+                    reject(err)
+
+                } else {
+                    //console.log("Finished: " + path.join(target,fileName))
+                    resolve({
+                        compressed: source,
+                        fileName: dest
+                    })
+                }
+            });
+    })
+}
+
+
 
 function readXY(fname) {
   return new Promise(function(resolve, error) {

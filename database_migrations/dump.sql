@@ -321,6 +321,7 @@ CREATE TABLE `tutorial` (
   `zoom` varchar(45) DEFAULT NULL,
   `image_source` text DEFAULT NULL,
   `image_attribution` text DEFAULT NULL,
+  `in_dataset` INT(11) DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;

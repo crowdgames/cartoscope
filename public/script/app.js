@@ -1292,7 +1292,7 @@ module.controller('stepFourController', ['$scope', '$state', '$http', 'swalServi
 
       var data = {
           projectID: $scope.project.id,
-          has_location: $scope.hasLocation | 0
+          has_location: $scope.hasLocation || 0
       };
       $http.post('/api/project/updateHasLocation', data).then(function(data) {
       }, function(response) {

@@ -747,10 +747,11 @@ exports.insertTutorialItems = function(projectId,data){
     return new Promise(function(resolve, error) {
         var connection = db.get();
 
+
         var image_path = projectId + "/" + data.image_name;
 
-        //if tutorial image not in dataset, then do not include project id path
-        if (data.hasOwnProperty("in_dataset") && data.in_dataset.toLowerCase() == "no"){
+        //if tutorial image not in dataset, then do not include project id path and let the example page take care of that
+        if (data.hasOwnProperty("in_dataset") && parseInt(data.in_dataset) == 1){
             image_path =  data.image_name;
         }
 
@@ -771,7 +772,9 @@ exports.insertTutorialItems = function(projectId,data){
             //if it is relevant, add to query
             if (data[key] != '') {
 
-                query += ', ' + key
+                query += ', ' + key;
+
+
                 if (key == "image_name"){
                     query2 += ", \"" + image_path  + "\" "
                 } else {
