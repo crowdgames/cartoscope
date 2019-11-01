@@ -99,12 +99,6 @@ app.use('/api/tileoscope', tileoscope);
 
 
 
-//serve html pages
-app.get('*', function(req, res) {
-    res.sendfile('./public/index.html'); // load the single view file (angular will handle the page changes on the front-end)
-});
-
-
 
 //healthy gulf event
 app.get('/hg', function(req, res) {
@@ -112,6 +106,14 @@ app.get('/hg', function(req, res) {
     var link = "kioskProject.html#/kioskStart/" + project_code;
     res.sendfile('./public/' + link); // send to project page
 });
+
+//serve html pages
+app.get('*', function(req, res) {
+    res.sendfile('./public/index.html'); // load the single view file (angular will handle the page changes on the front-end)
+});
+
+
+
 
 
 
