@@ -105,6 +105,16 @@ app.get('*', function(req, res) {
 });
 
 
+
+//healthy gulf event
+app.get('/hg', function(req, res) {
+    var project_code = "ASNWK1dZEY1z";
+    var link = "kioskProject.html#/kioskStart/" + project_code;
+    res.sendfile('./public/' + link); // send to project page
+});
+
+
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
