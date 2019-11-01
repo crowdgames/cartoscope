@@ -102,7 +102,7 @@ app.use('/api/tileoscope', tileoscope);
 
 //healthy gulf event
 app.get('/hg', function(req, res) {
-    var project_code = "ASNWK1dZEY1z";
+    var project_code = "2WAHryw6B11R";
     var link = "kioskProject.html#/kioskStart/" + project_code;
     res.redirect('./' + link); // send to project page
 });
