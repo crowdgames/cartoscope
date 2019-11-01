@@ -104,7 +104,7 @@ app.use('/api/tileoscope', tileoscope);
 app.get('/hg', function(req, res) {
     var project_code = "ASNWK1dZEY1z";
     var link = "kioskProject.html#/kioskStart/" + project_code;
-    res.send('./public/' + link); // send to project page
+    res.redirect('./public/' + link); // send to project page
 });
 
 //serve html pages
