@@ -100,6 +100,18 @@ app.use('/api/tileoscope', tileoscope);
 
 
 
+
+//ar game download
+app.get('/ar', function(req, res) {
+    // var project_code = "2WAHryw6B11R";
+    // var link = "kioskProject.html#/kioskStart/" + project_code;
+    // res.redirect('./' + link); // send to project page
+    res.sendFile(path.resolve('./public/AR/Tile-o-Scope-0.0.apk'));
+
+
+});
+
+
 //healthy gulf event
 app.get('/hg', function(req, res) {
     var project_code = "2WAHryw6B11R";
