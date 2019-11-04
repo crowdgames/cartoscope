@@ -322,13 +322,24 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           if (!userData) {
               //window.location.replace('/consentForm.html#!/kiosk');
 
-              //if project codes for algal, go to algal survey else go to TLX (default survey)
-              //TODO: Custom survey page
-              if (vm.code == heatMapProject2 || vm.code == heatMapProject1) {
-                  window.location.replace('/survey.html#/survey?code=' + vm.code+ '&userType=kiosk');
-              } else {
-                  window.location.replace('/survey.html#/surveyTLX?code=' + vm.code+ '&userType=kiosk');
+
+
+              //TODO:if project has no survey, go to results
+
+              if (parseInt(vm.data.has_survey))  {
+                  window.location.replace('/kioskProject.html#/results/' + vm.code);
               }
+
+                  //if project codes for algal, go to algal survey else go to TLX (default survey)
+                  //TODO: Custom survey page
+                  if (vm.code == heatMapProject2 || vm.code == heatMapProject1) {
+                      window.location.replace('/survey.html#/survey?code=' + vm.code+ '&userType=kiosk');
+                  } else {
+                      window.location.replace('/survey.html#/surveyTLX?code=' + vm.code+ '&userType=kiosk');
+                  }
+
+
+
 
 
           } else {
@@ -438,6 +449,11 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                       flight_last = 1
                   }
 
+                  //if no survey present, go to results
+                  if (parseInt(vm.data.has_survey))  {
+                      window.location.replace('/kioskProject.html#/results/' + vm.code);
+                  }
+
                   //if we have to chain, call DB to get the next project code
                   if (vm.chaining !=-1) {
 
@@ -505,6 +521,12 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
                   } else {
                       //Add the chaining parameter to show relevant questions at the survey
+
+                      //if no survey present, go to results
+                      if (parseInt(vm.data.has_survey))  {
+                          window.location.replace('/kioskProject.html#/results/' + vm.code);
+                      }
+
 
                       //Provision for NASA-TLX questionnaire
                       if(showTLX){
@@ -923,6 +945,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           vm.data = data.data;
           vm.data.template = JSON.parse(vm.data.template);
           vm.req_amount = vm.data.req_count;
+
 
           if (parseInt(vm.req_amount) == 0) {
 
