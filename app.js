@@ -107,7 +107,7 @@ app.get('/ar', function(req, res) {
     // var link = "kioskProject.html#/kioskStart/" + project_code;
     // res.redirect('./' + link); // send to project page
     //res.sendFile(path.resolve('./public/AR/Tile-o-Scope-0.0.apk'));
-    res.sendFile('https://drive.google.com/open?id=1-iiiuU_KfkUDYtNGIlJnLcQh0NJ5u-d4');
+    res.redirect('https://drive.google.com/open?id=1-iiiuU_KfkUDYtNGIlJnLcQh0NJ5u-d4');
 
 
 });
