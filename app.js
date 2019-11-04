@@ -112,9 +112,9 @@ app.get('/ar', function(req, res) {
 });
 
 
-//healthy gulf event
+//healthy gulf event: algal Blooms
 app.get('/hg', function(req, res) {
-    var project_code = "2WAHryw6B11R";
+    var project_code = "ChAkLfwYIBgo";
     var link = "kioskProject.html#/kioskStart/" + project_code;
     res.redirect('./' + link); // send to project page
 });
