@@ -319,6 +319,10 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       };
 
       function handleEnd($window){
+
+
+
+
           if (!userData) {
               //window.location.replace('/consentForm.html#!/kiosk');
 
@@ -326,10 +330,10 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
               //TODO:if project has no survey, go to results
 
-              if (parseInt(vm.data.has_survey))  {
+              if (!parseInt(vm.data.has_survey))  {
                   window.location.replace('/kioskProject.html#/results/' + vm.code);
               }
-
+              else {
                   //if project codes for algal, go to algal survey else go to TLX (default survey)
                   //TODO: Custom survey page
                   if (vm.code == heatMapProject2 || vm.code == heatMapProject1) {
@@ -337,6 +341,9 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   } else {
                       window.location.replace('/survey.html#/surveyTLX?code=' + vm.code+ '&userType=kiosk');
                   }
+              }
+
+
 
 
 
@@ -439,6 +446,9 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       };
 
       function skipToSurvey() {
+
+
+
           //console.log('Scope code', $scope.code);
           var skip = confirm('Are you sure ?');
           if (skip == true) {
@@ -450,99 +460,97 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   }
 
                   //if no survey present, go to results
-                  if (parseInt(vm.data.has_survey))  {
+                  if (!parseInt(vm.data.has_survey))  {
                       window.location.replace('/kioskProject.html#/results/' + vm.code);
-                  }
+                  } else {
+                      //if we have to chain, call DB to get the next project code
+                      if (vm.chaining !=-1) {
 
-                  //if we have to chain, call DB to get the next project code
-                  if (vm.chaining !=-1) {
+                          var workerID = $location.search().workerID || $location.search().participantID ;
 
-                      var workerID = $location.search().workerID || $location.search().participantID ;
+                          //get the next projects in the chain
+                          $http.get('/api/project/getNextProjectChain/' + encodeURIComponent(workerID)).then(function(data) {
 
-                      //get the next projects in the chain
-                      $http.get('/api/project/getNextProjectChain/' + encodeURIComponent(workerID)).then(function(data) {
-
-                          var next_codes = data.data;
-
-
-                          //if out of projects, go to survey
-                          if (next_codes.length == 0) {
-
-                              //Provision for NASA-TLX questionnaire
-                              //TODO: SWITCH BACK TO TLX IF NEEDED!
-                              if(showTLX){
-                                  window.location.replace('/survey.html#/surveyTLX?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-
-                              } else if (showGAME){
-                                  window.location.replace('/survey.html#/surveyGAME?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
+                              var next_codes = data.data;
 
 
-                              } else{
-                                  window.location.replace('/survey.html#/survey?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
+                              //if out of projects, go to survey
+                              if (next_codes.length == 0) {
 
-                              }
-                          } else {
+                                  //Provision for NASA-TLX questionnaire
+                                  //TODO: SWITCH BACK TO TLX IF NEEDED!
+                                  if(showTLX){
+                                      window.location.replace('/survey.html#/surveyTLX?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
 
-                              //pick the next at random
-                              var random_pick = next_codes[Math.floor(Math.random() * next_codes.length)];
-                              var next_code = random_pick.unique_code;
+                                  } else if (showGAME){
+                                      window.location.replace('/survey.html#/surveyGAME?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
 
-                              var parms = $location.search();
-                              var qs = '';
-                              for (i in parms) {
 
-                                  if (i =='code'){
-                                      qs += '&' + i + '=' + next_code;
-                                      continue;
+                                  } else{
+                                      window.location.replace('/survey.html#/survey?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
+
                                   }
-                                  else if (i== "chain") {
-                                      if (next_codes.length == 1) {
-                                          qs += '&' + i + '=0';
-                                          continue;
-                                      } else {
-                                          qs += '&' + i + '=1';
+                              } else {
+
+                                  //pick the next at random
+                                  var random_pick = next_codes[Math.floor(Math.random() * next_codes.length)];
+                                  var next_code = random_pick.unique_code;
+
+                                  var parms = $location.search();
+                                  var qs = '';
+                                  for (i in parms) {
+
+                                      if (i =='code'){
+                                          qs += '&' + i + '=' + next_code;
                                           continue;
                                       }
-                                  } else {
-                                      qs += '&' + i + '=' + parms[i];
-                                      continue;
+                                      else if (i== "chain") {
+                                          if (next_codes.length == 1) {
+                                              qs += '&' + i + '=0';
+                                              continue;
+                                          } else {
+                                              qs += '&' + i + '=1';
+                                              continue;
+                                          }
+                                      } else {
+                                          qs += '&' + i + '=' + parms[i];
+                                          continue;
+                                      }
                                   }
+                                  qs+= '&fromChain=1';
+                                  //go to next task
+                                  window.location.replace('/consentForm.html#/instruction?'+ qs.substr(1))
+
                               }
-                              qs+= '&fromChain=1';
-                              //go to next task
-                             window.location.replace('/consentForm.html#/instruction?'+ qs.substr(1))
+
+                          }, function(err) {
+                              alert('Error trying to find next project in the chain.');
+                          });
+
+
+                      }
+                      else {
+                          //Add the chaining parameter to show relevant questions at the survey
+
+
+                          //Provision for NASA-TLX questionnaire
+                          if(showTLX){
+                              window.location.replace('/survey.html#/surveyTLX?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
+
+                          }
+                          else if (showGAME){
+                              window.location.replace('/survey.html#/surveyGAME?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
+
+
+                          } else{
+                              window.location.replace('/survey.html#/survey?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
 
                           }
 
-                      }, function(err) {
-                          alert('Error trying to find next project in the chain.');
-                      });
-
-
-                  } else {
-                      //Add the chaining parameter to show relevant questions at the survey
-
-                      //if no survey present, go to results
-                      if (parseInt(vm.data.has_survey))  {
-                          window.location.replace('/kioskProject.html#/results/' + vm.code);
                       }
-
-
-                      //Provision for NASA-TLX questionnaire
-                      if(showTLX){
-                          window.location.replace('/survey.html#/surveyTLX?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-
-                      }
-                      else if (showGAME){
-                          window.location.replace('/survey.html#/surveyGAME?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-
-
-                      } else{
-                          window.location.replace('/survey.html#/survey?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-
-                      }
-
                   }
+
+
 
                   } else {
                   window.location.replace('/UserProfile.html');
