@@ -11,20 +11,20 @@
 
             </span>
             <ul class="no-style-ul right" id="nav-link">
-                <li class="nav-link-btn active" id="top-link">
-                    <a scroll-to="top">HOME</a>
+                <li class="nav-link-btn " id="top-link">
+                    <a href="/home">HOME</a>
                 </li>
-                <li class="nav-link-btn" id="projects-link">
-                    <a scroll-to="#projects-panel">PROJECTS</a>
-                </li>
+                <!--<li class="nav-link-btn" id="projects-link">-->
+                    <!--<a scroll-to="#projects-panel">PROJECTS</a>-->
+                <!--</li>-->
                 <li class="nav-link-btn" id="abt-us-link">
                     <a scroll-to="#about-us-panel">ABOUT</a>
                 </li>
                 <li class="nav-link-btn" id="contact-us-link">
                     <a scroll-to="end">CONTACT</a>
                 </li>
-                <li class="nav-link-btn" id="ar-link">
-                    <a ui-sref="newHomePageAR">AR <sup >NEW</sup></a>
+                <li class="nav-link-btn active" id="ar-link">
+                    <a scroll-to="top">AR <sup >NEW</sup></a>
                 </li>
                 <li class="nav-link-btn" data-toggle="modal" data-target="#exampleModal">
                     <a>TERMS AND CONDITIONS</a>
@@ -35,37 +35,43 @@
 
     <div class="top-panel">
         <div class="logo-img" >
-            <img id="logo-img" src="images/cartoscope-logo.png">
-            <p>Cartoscope is a platform for citizen science mapping. By sorting, labelling, and locating images, you can contribute to a variety of projects, including disaster response. Each member’s contribution adds up!</p>
-
-            <label>
-                <button ng-click="goToFeatured()">GET STARTED CONTRIBUTING</button>
-            </label>
-
-            <label>
-                Check out some of our existing projects
-            </label>
-
-            <div class="green-triangle-btm">
-                <img src="images/green-triangle-btm.png">
-            </div>
-        </div>
-
-
-    </div>
-
-    <div class="projects-panel" id="projects-panel">
-
-        <div class="project-box" ng-repeat="project in projects" ng-class="getRandomClass()" ng-click="goToProject(project.unique_code)">
-            <span class="title">
-                {{project.name}}
-            </span>
-            <p class="desc">
-                {{project.description}}
+            <img id="logo-img" src="images/tileoscope_ar_logo_b.png" style="width: 30%;">
+            <!--<p>Cartoscope is a platform for citizen science mapping.-->
+                <!--By sorting, labelling, and locating images, you can contribute to a variety of projects,-->
+                <!--including disaster response. Each member’s contribution adds up!-->
+            <!--</p>-->
+            <p>
+                Tile-o-Scope AR is a multi-person, co-located citizen science game toolkit that can be played
+                using physical tags and a mobile device such as a phone or tablet.
+                The game utilizes augmented reality (AR) technology to read physical tags
+                and show images on the device in their place, which can then be sorted,
+                by pointing the device over the physical tags to reveal the corresponding images on the screen,
+                and grouping similar images into categories.
             </p>
+            <!--<p>-->
+                <!--Tile-o-Scope~AR does not enforce a specific set of game rules, but is simply defined by the mechanics of matching images to a category.-->
+                <!--Our toolkit is targeted towards smaller scale community groups, that can utilize the open-ended nature of the design to play a variety of games.-->
+                <!--These can range from adaptations of known games, such as Memory, to completely new games that they can craft themselves,-->
+                <!--tailored to the problem they are trying to solve, using their own or local data.-->
+            <!--</p>-->
 
+
+
+
+            <label>
+                <button ng-click="goToAR()"><i class="fab fa-android"></i> DOWNLOAD GAME .APK (Android)</button>
+                <button ng-click="goToARTags()"> <i class="fas fa-qrcode"></i> DOWNLOAD TAGS</button>
+
+            </label>
+
+
+            <br>
         </div>
+
+
     </div>
+
+
 
     <div class="about-us-panel" id="about-us-panel">
         <div class="body">

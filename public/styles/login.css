@@ -255,6 +255,12 @@ html .modal-kill-btn button {
   min-height: 60px;
   display: flex;
 }
+
+
+.new_home .navbar .sup {
+  color: #9cdc1f
+}
+
 .new-home .navbar .container-fluid {
   display: flex;
   width: 100%;
@@ -267,6 +273,14 @@ html .modal-kill-btn button {
   justify-content: center;
   margin-bottom: 0;
 }
+
+
+.new-home .navbar .container-fluid .no-style-ul sup {
+  color: #9cdc1f
+}
+
+
+
 .new-home .navbar .container-fluid .no-style-ul .new-project-link-btn .new-project-link {
   border: 2px solid #9cdc1f;
   padding: 4px 4px;

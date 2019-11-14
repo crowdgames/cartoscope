@@ -161,7 +161,81 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
     }]
   });
 
-  $stateProvider.state({
+    $stateProvider.state({
+        name: 'newHomePageAR',
+        url: '/home_ar',
+        templateUrl: 'new_homepage_ar.html',
+        controller: ['$scope', '$http', '$location', '$window', function($scope, $http, $location,$window) {
+
+            //Go to featured project
+            $scope.goToAR = function() {
+                //$window.location.href = '/ar'
+                $window.open(
+                    '/ar_apk',
+                    '_blank' // <- This is what makes it open in a new window.
+                );
+            };
+
+            //Go to featured project
+            $scope.goToARTags = function() {
+                //$window.location.href = '/ar'
+                $window.open(
+                    '/ar_tags',
+                    '_blank' // <- This is what makes it open in a new window.
+                );
+            };
+
+            //Go to project subpage
+            $scope.goToProject = function(code) {
+                $window.location.href = '/kioskProject.html#/kioskStart/' + code;
+            };
+
+
+
+            var controller = new ScrollMagic.Controller();
+
+            var topPanel = new ScrollMagic.Scene({
+                triggerElement: "#logo-img",
+                triggerHook: 0
+            }).addTo(controller);
+
+            topPanel.on("start", function() {
+                window.makeLinkActive("top");
+            });
+
+
+            var projectPanel = new ScrollMagic.Scene({
+                triggerElement: "#projects-panel",
+                triggerHook: 0
+            }).addTo(controller);
+
+            projectPanel.on("start", function() {
+                window.makeLinkActive("projects");
+            });
+
+            var abtUsPanel = new ScrollMagic.Scene({
+                triggerElement: "#about-us-panel",
+                triggerHook: 0
+            }).addTo(controller);
+
+            abtUsPanel.on("start", function() {
+                window.makeLinkActive("abt-us");
+            });
+
+            var contactUsPanel = new ScrollMagic.Scene({
+                triggerElement: "#contact-us",
+                triggerHook: 0.75
+            }).addTo(controller);
+
+            contactUsPanel.on("start", function() {
+                window.makeLinkActive("contact-us");
+            });
+        }]
+    });
+
+
+
+    $stateProvider.state({
     name: 'noLoggedIn',
     url: '/login',
     templateUrl: 'logon.html',
