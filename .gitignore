@@ -10,7 +10,7 @@ uploads/
 bower_components/
 *.log
 public/bower_components/
-public/images/
+public/images/Tutorials
 public/Tiles/
 .vs/Cartoscope/v15/.suo
 build/config.gypi
