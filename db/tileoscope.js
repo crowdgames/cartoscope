@@ -206,7 +206,7 @@ exports.getTileoscopeARActionsBySessionId = function(session_id) {
 
 
 //get all the actions for a specific dataset
-exports.getTileoscopeARActionsByDataset = function(dataset) {
+exports.getTileoscopeARActionsByDataset = function(short_name) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
         connection.queryAsync('SELECT action from tileoscope_ar_actions where short_name=?  ', [short_name])
