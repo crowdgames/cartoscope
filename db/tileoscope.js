@@ -209,7 +209,7 @@ exports.getTileoscopeARActionsBySessionId = function(session_id) {
 exports.getTileoscopeARActionsByDataset = function(dataset) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        connection.queryAsync('SELECT * from tileoscope_ar_actions where short_name=?  ', [short_name])
+        connection.queryAsync('SELECT action from tileoscope_ar_actions where short_name=?  ', [short_name])
             .then(
                 function(data) {
                     resolve(data);
@@ -569,3 +569,4 @@ exports.updateTileoscopeARDatasetInfoJSONFile = function(unique_code) {
     })
 
 };
+
