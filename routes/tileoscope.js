@@ -875,7 +875,9 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
                     tileDB.getCreatedSequenceTileoscope(user.genetic_id).then(function(genetic_data) {
 
                         res.setHeader('Access-Control-Allow-Origin', '*');
-                        res.send(genetic_data[0].seq)
+                        var res_obj = {seq:genetic_data[0].seq,method:"featured"};
+                        res.send(res_obj);
+                        // res.send(genetic_data[0].seq)
 
                     }, function(error){
 
