@@ -51,8 +51,6 @@ exports.submitTileoscopeMove = function(userId, hitId, response) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
 
-
-
         connection.queryAsync('INSERT INTO tileoscope_moves (user_id, hit_id,response) VALUES(?,?,?) ',[userId,hitId,response]).then(
             function(data) {
                 if (data.insertId) {
@@ -65,6 +63,44 @@ exports.submitTileoscopeMove = function(userId, hitId, response) {
             });
     });
 };
+
+exports.submitTileoscopePath = function(userId, hitId, response) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+
+        var seq = response.seq;
+        var tiles_collected = response.tiles_collected;
+        var times_completed = response.times_completed;
+
+
+        connection.queryAsync('INSERT INTO tileoscope_paths (user_id, hit_id,seq,tiles_collected,times_completed) VALUES(?,?,?,?,?) ' +
+            'ON DUPLICATE KEY UPDATE seq=VALUES(seq),tiles_collected=VALUES(tiles_collected),times_completed=VALUES(times_completed)',[userId,hitId,seq,tiles_collected,times_completed]).then(
+            function(data) {
+                if (data.insertId) {
+                    resolve(data.affectedRows);
+                } else {
+                    error({code: 'Problem with insert'});
+                }
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
+exports.getTileoscopePath = function(userId, hitId) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+        connection.queryAsync('select * from tileoscope_paths where user_id=? and hitId=? ',[userId,hitId]).then(
+                function(data) {
+                    resolve(data);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};
+
 
 
 exports.submitTileoscopeARAction = function(session_id, short_name, response) {

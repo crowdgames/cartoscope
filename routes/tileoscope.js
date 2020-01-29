@@ -297,6 +297,77 @@ router.post('/submitMove', function(req, res, next) {
 });
 
 
+
+//Store path stats for qlearn purposes
+router.post('/submitPath', function(req, res, next) {
+
+
+    //if one of the two missing, then error!
+    var hitId = req.body.hitID;
+    var workerId = req.body.userID;
+    var path = req.body.path;
+
+
+
+    if (hitId == undefined){
+        res.status(400).send('Trial ID missing.');
+    }
+    else if (workerId == undefined){
+        res.status(400).send('User code missing.');
+    }  else if (move == undefined){
+        res.status(400).send('Move missing.');
+    }
+
+    else {
+
+        //get the current path so far
+        tileDB.getTileoscopePath(workerId,hitId).then(function(old_path_data){
+
+                //if we had some before, add them
+                if (path_data.length) {
+
+                    var tiles_collected = old_path_data.total_tiles + "," + path.total_tiles;
+                    var new_seq = old_path_data.seq + ","  +  path.level_id;
+                    var times_completed = old_path_data.times_completed + ","  +  path.times_completed;
+
+                } else {
+                    var tiles_collected = path.total_tiles;
+                    var new_seq = path.level_id;
+                    var times_completed = path.times_times_completed;
+                }
+
+                var new_path_obj = {
+                    'tiles_collected': tiles_collected,
+                    'seq' : new_seq,
+                    'times_completed' : times_completed
+                };
+
+
+
+            //make sure there is a project
+            tileDB.submitTileoscopePath(workerId,hitId,new_path_obj).then(function(project) {
+
+                res.status(200).send('Path updated successfully');
+
+            }, function(err) {
+                console.log('err ', err);
+                res.status(400).send('Error submitting move.');
+            });
+
+
+
+        }, function(err) {
+            console.log('err ', err);
+            res.status(400).send('Error getting  tile path.');
+        })
+
+
+
+    }
+});
+
+
+
 //Submit Tile-o-Scope AR action
 router.post('/submitTileoscopeARAction', function(req, res, next) {
 
