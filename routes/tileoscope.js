@@ -305,7 +305,7 @@ router.post('/submitPath', function(req, res, next) {
     //if one of the two missing, then error!
     var hitId = req.body.hitID;
     var workerId = req.body.userID;
-    var path = req.body.path;
+    var path_t = JSON.parse(req.body.path);
 
 
 
@@ -314,7 +314,7 @@ router.post('/submitPath', function(req, res, next) {
     }
     else if (workerId == undefined){
         res.status(400).send('User code missing.');
-    }  else if (path == undefined){
+    }  else if (path_t == undefined){
         res.status(400).send('Move missing.');
     }
 
@@ -326,14 +326,14 @@ router.post('/submitPath', function(req, res, next) {
                 //if we had some before, add them
                 if (path_data.length) {
 
-                    var tiles_collected = old_path_data.total_tiles + "," + path.total_tiles;
-                    var new_seq = old_path_data.seq + ","  +  path.level_id;
-                    var times_completed = old_path_data.times_completed + ","  +  path.times_completed;
+                    var tiles_collected = old_path_data.total_tiles + "," + path_t.total_tiles;
+                    var new_seq = old_path_data.seq + ","  +  path_t.level_id;
+                    var times_completed = old_path_data.times_completed + ","  +  path_t.times_completed;
 
                 } else {
-                    var tiles_collected = path.total_tiles;
-                    var new_seq = path.level_id;
-                    var times_completed = path.times_times_completed;
+                    var tiles_collected = path_t.total_tiles;
+                    var new_seq = path_t.level_id;
+                    var times_completed = path_t.times_times_completed;
                 }
 
                 var new_path_obj = {
