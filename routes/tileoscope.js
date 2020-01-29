@@ -328,12 +328,12 @@ router.post('/submitPath', function(req, res, next) {
 
                     var tiles_collected = old_path_data.total_tiles + "," + path_t.total_tiles;
                     var new_seq = old_path_data.seq + ","  +  path_t.level_id;
-                    var times_completed = old_path_data.times_completed + ","  +  path_t.times_completed;
+                    var times_completed = old_path_data.times_completed + ","  +  path_t.completion_time;
 
                 } else {
                     var tiles_collected = path_t.total_tiles;
                     var new_seq = path_t.level_id;
-                    var times_completed = path_t.times_times_completed;
+                    var times_completed = path_t.completion_time;
                 }
 
                 var new_path_obj = {
