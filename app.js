@@ -109,7 +109,22 @@ app.get('/ar_apk', function(req, res) {
 
 //ar game download
 app.get('/ar_tags', function(req, res) {
-    res.redirect('https://drive.google.com/open?id=1atzdysgVCC_jaEe5JAd83kld2oRGpfeZ');
+    var filePath = "public/files/cartoscope_ar_games_rules.pdf";
+
+    fs.readFile( filePath , function (err,data){
+        res.contentType("application/pdf");
+        res.send(data);
+    });});
+
+
+//ar game instructions
+app.get('/ar_games', function(req, res) {
+    var filePath = "public/files/cartoscope_ar_tags_print.pdf";
+
+    fs.readFile( filePath , function (err,data){
+        res.contentType("application/pdf");
+        res.send(data);
+    });
 });
 
 

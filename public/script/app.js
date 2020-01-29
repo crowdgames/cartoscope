@@ -176,11 +176,21 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
                 );
             };
 
-            //Go to featured project
+            //Go to tags pdf
             $scope.goToARTags = function() {
                 //$window.location.href = '/ar'
                 $window.open(
                     '/ar_tags',
+                    '_blank' // <- This is what makes it open in a new window.
+                );
+            };
+
+
+            //Go to featured project
+            $scope.goToARGames = function() {
+                //$window.location.href = '/ar'
+                $window.open(
+                    '/ar_games',
                     '_blank' // <- This is what makes it open in a new window.
                 );
             };
