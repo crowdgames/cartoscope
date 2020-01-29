@@ -314,7 +314,7 @@ router.post('/submitPath', function(req, res, next) {
     }
     else if (workerId == undefined){
         res.status(400).send('User code missing.');
-    }  else if (move == undefined){
+    }  else if (path == undefined){
         res.status(400).send('Move missing.');
     }
 
