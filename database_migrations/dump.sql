@@ -304,9 +304,12 @@ CREATE TABLE `tileoscope_paths` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` varchar(128) DEFAULT NULL,
   `hit_id` varchar(128) DEFAULT NULL,
+  `method` varchar(255) DEFAULT NULL,
   `seq` TEXT DEFAULT NULL,
   `tiles_collected` TEXT DEFAULT NULL,
   `times_completed` TEXT DEFAULT NULL,
+  `number_moves` TEXT DEFAULT NULL,
+
   PRIMARY KEY (`id`),
    UNIQUE KEY `unique_index` (`user_id`,`hit_id`)
 

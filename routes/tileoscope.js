@@ -333,17 +333,23 @@ router.post('/submitPath', function(req, res, next) {
                     var tiles_collected = old_path_data[0].tiles_collected + "," + path_t.total_tiles;
                     var new_seq = old_path_data[0].seq + ","  +  path_t.level_id;
                     var times_completed = old_path_data[0].times_completed + ","  +  path_t.completion_time;
+                    var number_moves = old_path_data[0].number_moves + ","  +  path_t.number_moves;
+
 
                 } else {
                     var tiles_collected = path_t.total_tiles;
                     var new_seq = path_t.level_id;
                     var times_completed = path_t.completion_time;
+                    var number_moves =  path_t.number_moves;
+
                 }
 
                 var new_path_obj = {
                     'tiles_collected': tiles_collected,
                     'seq' : new_seq,
-                    'times_completed' : times_completed
+                    'times_completed' : times_completed,
+                    'number_moves' : number_moves,
+                    'method' : path_t.method
                 };
 
 
