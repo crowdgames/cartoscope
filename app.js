@@ -108,7 +108,7 @@ app.get('/ar_apk', function(req, res) {
 
 
 //ar game download
-app.get('/ar_tags', function(req, res) {
+app.get('/ar_games', function(req, res) {
     var filePath = "public/files/cartoscope_ar_games_rules.pdf";
 
     fs.readFile( filePath , function (err,data){
@@ -118,7 +118,7 @@ app.get('/ar_tags', function(req, res) {
 
 
 //ar game instructions
-app.get('/ar_games', function(req, res) {
+app.get('/ar_tags', function(req, res) {
     var filePath = "public/files/cartoscope_ar_tags_print.pdf";
 
     fs.readFile( filePath , function (err,data){
