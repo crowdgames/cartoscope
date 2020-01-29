@@ -92,7 +92,7 @@ exports.getTileoscopePath = function(userId, hitId) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
 
-        connection.queryAsync('select * from tileoscope_paths where user_id=? and hitId=? ',[userId,hitId]).then(
+        connection.queryAsync('select * from tileoscope_paths where user_id=? and hit_id=? ',[userId,hitId]).then(
                 function(data) {
                     resolve(data);
                 }, function(err) {
