@@ -305,6 +305,10 @@ router.post('/submitPath', function(req, res, next) {
     //if one of the two missing, then error!
     var hitId = req.body.hitID;
     var workerId = req.body.userID;
+
+
+    console.log(req.body.path);
+
     var path_t = JSON.parse(req.body.path);
 
 
@@ -324,7 +328,7 @@ router.post('/submitPath', function(req, res, next) {
         tileDB.getTileoscopePath(workerId,hitId).then(function(old_path_data){
 
                 //if we had some before, add them
-                if (path_data.length) {
+                if (old_path_data.length) {
 
                     var tiles_collected = old_path_data.total_tiles + "," + path_t.total_tiles;
                     var new_seq = old_path_data.seq + ","  +  path_t.level_id;
