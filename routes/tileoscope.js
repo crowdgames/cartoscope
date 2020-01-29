@@ -330,9 +330,9 @@ router.post('/submitPath', function(req, res, next) {
                 //if we had some before, add them
                 if (old_path_data.length) {
 
-                    var tiles_collected =  path_t.total_tiles + "," + old_path_data.total_tiles;
-                    var new_seq = path_t.level_id + ","  +  old_path_data.seq  ;
-                    var times_completed = path_t.completion_time  + ","  + old_path_data.times_completed ;
+                    var tiles_collected = old_path_data.tiles_collected + "," + path_t.total_tiles;
+                    var new_seq = old_path_data.seq + ","  +  path_t.level_id;
+                    var times_completed = old_path_data.times_completed + ","  +  path_t.completion_time;
 
                 } else {
                     var tiles_collected = path_t.total_tiles;
