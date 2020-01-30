@@ -132,8 +132,8 @@ exports.QlearnAlgorithm = function(player_paths) {
             var rand_pos = randomInt(0, player_paths.length - 1);
             var rand_traj_raw = player_paths[rand_pos];
             //data is in string format separated by commas. convert to array
-            var rand_traj_seq = rand_traj_raw.seq.split(',');
-            var rand_traj_tiles = rand_traj_raw.tiles_collected.split(',');
+            var rand_traj_seq = rand_traj_raw.seq.split('-');
+            var rand_traj_tiles = rand_traj_raw.tiles_collected.split('-');
 
             //pick our example: it should be in the form of
             // state (empty, 1,2...STATE LEN),
