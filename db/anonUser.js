@@ -109,7 +109,6 @@ exports.addMTurkWorker = function(anonUser, projectID, siteID, consented,genetic
   return new Promise(function(resolve, reject) {
     var connection = db.get();
 
-
     //cover both external links (no params) and mturk with params
     var workerId = anonUser.workerId || anonUser.participantId;
     var hitId =  anonUser.hitId || anonUser.trialId;
@@ -136,6 +135,40 @@ exports.addMTurkWorker = function(anonUser, projectID, siteID, consented,genetic
         reject(err);
       });
   });
+};
+
+
+//update worker if already exists to new genetic_id
+exports.addMTurkWorkerUpdateSequence = function(anonUser, projectID, siteID, consented,genetic_id) {
+    return new Promise(function(resolve, reject) {
+        var connection = db.get();
+
+        //cover both external links (no params) and mturk with params
+        var workerId = anonUser.workerId || anonUser.participantId;
+        var hitId =  anonUser.hitId || anonUser.trialId;
+        var assignmentId = anonUser.assignmentId || anonUser.participantId;
+        var submitTo = anonUser.submitTo || "www.mturk.com";
+
+        console.log(workerId);
+        console.log(hitId);
+
+        connection.queryAsync('INSERT INTO `mturk_workers` ' +
+            '(`workerID`, `projectID`,`assignmentID`,`hitID`,`submitTo`,`siteID`,`consented`,`genetic_id`) VALUES ' +
+            '(?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `consented`=?, `genetic_id`=?\'',
+            [bcrypt.hashSync(workerId + hitId, salt), projectID, assignmentId,
+                hitId, submitTo, siteID, consented, genetic_id, consented,genetic_id]).then(
+            function(data) {
+                if (data.insertId) {
+                    resolve(data.insertId);
+                } else if (data.affectedRows > 0) {
+                    resolve(0);
+                } else {
+                    reject('Problem with insertion');
+                }
+            }, function(err) {
+                reject(err);
+            });
+    });
 };
 
 
