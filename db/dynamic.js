@@ -619,12 +619,6 @@ exports.generateQlearnOptimalSequenceTileoscope = function(main_code) {
             error(err)
 
         })
-
-
-
-
-
-
     });
 };
 

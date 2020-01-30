@@ -5,6 +5,7 @@ var anonUserDB = require('../db/anonUser');
 var projectDB = require('../db/project');
 var tileDB = require('../db/tileoscope');
 var dynamicDB = require('../db/dynamic');
+var qlearnDB = require('../db/qlearn');
 var Promise = require('bluebird');
 
 var filters = require('../constants/filters');
@@ -325,15 +326,15 @@ router.post('/submitPath', function(req, res, next) {
     else {
 
         //get the current path so far
-        tileDB.getTileoscopePath(workerId,hitId).then(function(old_path_data){
+        tileDB.getTileoscopePathUser(workerId,hitId).then(function(old_path_data){
 
                 //if we had some before, add them
                 if (old_path_data.length) {
 
-                    var tiles_collected = old_path_data[0].tiles_collected + "," + path_t.total_tiles;
-                    var new_seq = old_path_data[0].seq + ","  +  path_t.level_id;
-                    var times_completed = old_path_data[0].times_completed + ","  +  path_t.completion_time;
-                    var number_moves = old_path_data[0].number_moves + ","  +  path_t.number_moves;
+                    var tiles_collected = old_path_data[0].tiles_collected + "-" + path_t.total_tiles;
+                    var new_seq = old_path_data[0].seq + "-"  +  path_t.level_id;
+                    var times_completed = old_path_data[0].times_completed + "-"  +  path_t.completion_time;
+                    var number_moves = old_path_data[0].number_moves + "-"  +  path_t.number_moves;
 
 
                 } else {
@@ -943,14 +944,49 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
             })
 
 
-        } else {
+        }
+
+
+        else if (req.query.hasOwnProperty("qlearnO")) {
+
+            //if in online case of qlearn, we need to generate a sequence every time we get asked and update the table accordingly
+            var f_online = "generateQlearnOptimalSequenceTileoscopeOnline";
+
+            qlearnDB[f_online](projectID).then(function(genetic_data){
+
+                console.log(genetic_data);
+                var genetic_id = genetic_data.genetic_id;
+                var genetic_seq = genetic_data.seq;
+                //add them as mturk worker and return genetic sequence
+                //TODO: If they exist update the genetic id!
+                anonUserDB.addMTurkWorkerUpdateSequence(anonUser, projectID, 1, 1, genetic_id).then(function (userID) {
+                    //find user then return corresponding user id and project code
+                    anonUserDB.findConsentedMTurkWorker(anonUser.workerId, projectID,anonUser.hitId).then(function(user) {
+                        if (user.id) {
+                            //res.status(200).send({user_id:user.id, project_code: projectID});
+                            res.setHeader('Access-Control-Allow-Origin', '*');
+                            var res_obj = {seq:genetic_data.seq,method:genetic_data.method};
+                            res.send(res_obj);
+                        }
+                    })
+                });
+
+            },function(err) {
+                console.log('err ', err);
+                res.status(404).send('Could not generate sequence.');
+            });
+
+
+        }
+
+        else {
 
             console.log("Featured");
 
             //check if user exists:
             anonUserDB.findConsentedMTurkWorker(anonUser.workerId, projectID,anonUser.hitId).then(function(user) {
                 if (user.id) {
-                    console.log("User exists.Fetching sequence")
+                    console.log("User exists.Fetching sequence");
                     //res.status(200).send({user_id:user.id, project_code: projectID});
                     //retrieve from genetic id
                     tileDB.getCreatedSequenceTileoscope(user.genetic_id).then(function(genetic_data) {

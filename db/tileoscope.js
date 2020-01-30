@@ -90,7 +90,7 @@ exports.submitTileoscopePath = function(userId, hitId, response) {
     });
 };
 
-exports.getTileoscopePath = function(userId, hitId) {
+exports.getTileoscopePathUser = function(userId, hitId) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
 
@@ -100,6 +100,20 @@ exports.getTileoscopePath = function(userId, hitId) {
                 }, function(err) {
                     error(err);
                 });
+    });
+};
+
+//get all paths for hit id (same as unique code)
+exports.getTileoscopePaths = function(hitId) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+        connection.queryAsync('select * from tileoscope_paths where hit_id=? ',[hitId]).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
     });
 };
 
