@@ -154,7 +154,7 @@ exports.addMTurkWorkerUpdateSequence = function(anonUser, projectID, siteID, con
 
         connection.queryAsync('INSERT INTO `mturk_workers` ' +
             '(`workerID`, `projectID`,`assignmentID`,`hitID`,`submitTo`,`siteID`,`consented`,`genetic_id`) VALUES ' +
-            '(?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `consented`=?, `genetic_id`=?\'',
+            '(?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `consented`=?, `genetic_id`=?',
             [bcrypt.hashSync(workerId + hitId, salt), projectID, assignmentId,
                 hitId, submitTo, siteID, consented, genetic_id, consented,genetic_id]).then(
             function(data) {

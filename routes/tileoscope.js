@@ -378,6 +378,23 @@ router.post('/submitPath', function(req, res, next) {
 });
 
 
+router.get('/getQlearnOnlineSequence/:main_code', function(req, res, next) {
+
+    //make sure there is a project
+    qlearnDB.generateQlearnOptimalSequenceTileoscopeOnline(req.params.main_code).then(function(seq) {
+
+        console.log(seq)
+        res.send(seq)
+
+    }, function (err) {
+
+        res.status(400).send('Error getting sequence: ' + err);
+
+    })
+
+})
+
+
 
 //Submit Tile-o-Scope AR action
 router.post('/submitTileoscopeARAction', function(req, res, next) {
@@ -795,7 +812,7 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
 
 
     //if one of the two missing, then error!
-    var projectID = req.query.tree || req.query.qlearn ||req.query.qlearng  || req.query.genetic || req.query.random || "featured";
+    var projectID = req.query.tree || req.query.qlearn ||req.query.qlearng  || req.query.qlearnO || req.query.genetic || req.query.random || "featured";
     var workerId = req.query.workerId || req.query.participantId;
 
 
@@ -958,7 +975,9 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
                 var genetic_id = genetic_data.genetic_id;
                 var genetic_seq = genetic_data.seq;
                 //add them as mturk worker and return genetic sequence
-                //TODO: If they exist update the genetic id!
+                //BUT! If they exist update the genetic id!
+                console.log(genetic_id);
+
                 anonUserDB.addMTurkWorkerUpdateSequence(anonUser, projectID, 1, 1, genetic_id).then(function (userID) {
                     //find user then return corresponding user id and project code
                     anonUserDB.findConsentedMTurkWorker(anonUser.workerId, projectID,anonUser.hitId).then(function(user) {
