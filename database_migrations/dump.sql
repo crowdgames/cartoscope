@@ -334,7 +334,7 @@ CREATE TABLE `tileoscope_cairns` (
   `time_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `number_moves` TEXT DEFAULT NULL,
   PRIMARY KEY (`id`),
-   UNIQUE KEY `unique_index` (`user_id`,`level_sid`,`level_number`)
+   UNIQUE KEY `unique_index` (`user_id`,`level_id`,`level_number`)
 
 ) ENGINE=InnoDB AUTO_INCREMENT=212 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
