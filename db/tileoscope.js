@@ -65,11 +65,16 @@ exports.submitTileoscopeMove = function(userId, hitId, response) {
 };
 
 
-exports.submitTileoscopeCairn = function(userId, hitId, response) {
+exports.submitTileoscopeCairn = function(userId, hitId, move) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
 
-        connection.queryAsync('INSERT INTO `tileoscope_cairns` (user_id, hit_id,level_id,level_number,message) VALUES(?,?,?,?,?) ',[userId,hitId,move.level_sid,move.level,move.move]).then(
+        var level_id = move.level_id;
+        var level_number = parseInt(move.level);
+        var message = move.move;
+
+
+        connection.queryAsync('INSERT INTO `tileoscope_cairns` (user_id, hit_id,level_id,level_number,message) VALUES(?,?,?,?,?) ',[userId,hitId,level_id,level_number,message]).then(
             function(data) {
                 if (data.insertId) {
                     resolve(data.affectedRows);
