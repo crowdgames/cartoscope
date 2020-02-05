@@ -64,6 +64,24 @@ exports.submitTileoscopeMove = function(userId, hitId, response) {
     });
 };
 
+
+exports.submitTileoscopeCairn = function(userId, hitId, response) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+        connection.queryAsync('INSERT INTO `tileoscope_cairns` (user_id, hit_id,level_id,level_number,message) VALUES(?,?,?,?,?) ',[userId,hitId,move.level_sid,move.level,move.move]).then(
+            function(data) {
+                if (data.insertId) {
+                    resolve(data.affectedRows);
+                } else {
+                    error({code: 'Problem with insert'});
+                }
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
 exports.submitTileoscopePath = function(userId, hitId, response) {
     return new Promise(function(resolve, error) {
         var connection = db.get();

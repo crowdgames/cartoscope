@@ -288,6 +288,25 @@ router.post('/submitMove', function(req, res, next) {
         //make sure there is a project
         tileDB.submitTileoscopeMove(workerId,hitId,move).then(function(project) {
 
+
+            //TODO: if move was cairn, must add that to table as well
+
+            if (move.hasOwnProperty('level_id') && move.level_id.startsWith('CAIRN')){
+
+                //make sure there is a project
+                tileDB.submitTileoscopeCairn(workerId,hitId,move).then(function(project) {
+
+                    res.status(200).send('Move and cairn submitted successfully');
+
+                }, function (err) {
+                    res.status(400).send('Error submitting cairn.');
+
+                });
+
+            } else {
+                res.status(200).send('Move submitted successfully');
+            }
+
             res.status(200).send('Move submitted successfully');
 
         }, function(err) {
