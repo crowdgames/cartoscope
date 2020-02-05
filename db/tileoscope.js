@@ -135,6 +135,20 @@ exports.getTileoscopePaths = function(hitId) {
     });
 };
 
+//get recent cairns for that hit id
+exports.getRecentCairns = function(hitId,num) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+        connection.queryAsync('select * from tileoscope_cairns where hit_id=? order by id desc limit ? ',[hitId,num]).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
 
 
 exports.submitTileoscopeARAction = function(session_id, short_name, response) {

@@ -401,18 +401,26 @@ router.get('/getQlearnOnlineSequence/:main_code', function(req, res, next) {
 
     //make sure there is a project
     qlearnDB.generateQlearnOptimalSequenceTileoscopeOnline(req.params.main_code).then(function(seq) {
-
         console.log(seq)
         res.send(seq)
-
     }, function (err) {
-
         res.status(400).send('Error getting sequence: ' + err);
-
     })
+});
 
-})
 
+
+//get most recent cairns submitted in that hit_id
+router.get('/getRecentCairns/:main_code', function(req, res, next) {
+    var num_recent = 3;
+    //make sure there is a project
+    tileDB.getRecentCairns(req.params.main_code,num_recent).then(function(cairns) {
+        console.log(cairns)
+        res.send(cairns)
+    }, function (err) {
+        res.status(400).send('Error getting latest cairns: ' + err);
+    })
+});
 
 
 //Submit Tile-o-Scope AR action
