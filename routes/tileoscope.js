@@ -303,18 +303,17 @@ router.post('/submitMove', function(req, res, next) {
                     res.status(200).send('Move and cairn submitted successfully');
 
                 }, function (err) {
-                    res.status(400).send('Error submitting cairn.');
                     console.log(err)
+                    res.status(400).send('Error submitting cairn.');
+
 
                 });
 
             } else {
 
-
                 res.status(200).send('Move submitted successfully');
             }
 
-            res.status(200).send('Move submitted successfully');
 
         }, function(err) {
             console.log('err ', err);

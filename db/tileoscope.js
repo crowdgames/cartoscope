@@ -81,9 +81,10 @@ exports.submitTileoscopeCairn = function(userId, hitId, move) {
         connection.queryAsync('INSERT INTO `tileoscope_cairns` (user_id, hit_id,level_id,level_number,message) VALUES(?,?,?,?,?) ',[userId,hitId,level_id,level_number,message]).then(
             function(data) {
                 if (data.insertId) {
+                    console.log("Success")
                     resolve(data.affectedRows);
                 } else {
-                    error({code: 'Problem with insert'});
+                    error('Problem with insert');
                 }
             }, function(err) {
                 console.log(err)
