@@ -332,7 +332,6 @@ CREATE TABLE `tileoscope_cairns` (
   `level_number` int(11),
   `message` TEXT DEFAULT NULL,
   `time_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  `number_moves` TEXT DEFAULT NULL,
   PRIMARY KEY (`id`),
    UNIQUE KEY `unique_index` (`user_id`,`level_id`,`level_number`)
 
