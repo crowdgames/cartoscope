@@ -1176,7 +1176,15 @@ router.get('/getTileoscopeARProjectsFull', function(req,res,next){
 
     tileDB.getTileoscopeARProjects().then(function(data) {
 
-        res.send(data)
+        var data_with_links = [];
+
+        //add link to website
+        data.forEach(function(item){
+            item.cartoscope_page_link = 'http://cartosco.pe/kioskProject.html#/kioskStart/' + item.unique_code ;
+            data_with_links.push(item)
+        });
+
+        res.send(data_with_links)
     }, function(error){
         console.log(error);
         res.status(404).send(error)
