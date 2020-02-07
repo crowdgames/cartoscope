@@ -429,6 +429,19 @@ router.get('/getRecentCairns/:main_code', function(req, res, next) {
 });
 
 
+//get table
+router.get('/fetchQTableByCode/:main_code', function(req, res, next) {
+
+
+    tileDB.fetchQTableByCode(req.params.main_code).then(function(q_table) {
+        console.log(q_table)
+        res.send(q_table)
+    }, function (err) {
+        res.status(400).send('Error getting q_table: ' + err);
+    })
+});
+
+
 //Submit Tile-o-Scope AR action
 router.post('/submitTileoscopeARAction', function(req, res, next) {
 
@@ -1140,7 +1153,6 @@ router.post('/resetTreeTileoscope/:mainCode', function(req,res,next){
 // get the projects that are AR ready from DB
 router.get('/getTileoscopeARProjects', function(req,res,next){
 
-
     tileDB.getTileoscopeARProjects().then(function(data) {
 
         var d = [];
@@ -1156,8 +1168,19 @@ router.get('/getTileoscopeARProjects', function(req,res,next){
         console.log(error);
         res.status(404).send(error)
     })
+});
 
 
+// get the projects that are AR ready from DB (full info for all)
+router.get('/getTileoscopeARProjectsFull', function(req,res,next){
+
+    tileDB.getTileoscopeARProjects().then(function(data) {
+
+        res.send(data)
+    }, function(error){
+        console.log(error);
+        res.status(404).send(error)
+    })
 });
 
 
