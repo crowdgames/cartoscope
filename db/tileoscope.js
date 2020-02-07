@@ -450,7 +450,7 @@ exports.setARStatus = function(code,status) {
 exports.getTileoscopeARProjects = function() {
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        connection.queryAsync('SELECT name,short_name,description,unique_code,dataset_id,has_location,template from projects where ar_ready=1 and ar_status=1')
+        connection.queryAsync('SELECT name,short_name,short_name_friendly, description, short_description,unique_code,dataset_id,has_location,template from projects where ar_ready=1 and ar_status=1')
             .then(
                 function(data) {
                     resolve(data);
