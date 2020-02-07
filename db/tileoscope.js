@@ -522,7 +522,7 @@ exports.generateTileoscopeARDatasetInfoJSON = function(unique_code) {
             dataset_info_json.short_name = project.short_name;
             dataset_info_json.short_name_friendly = project.short_name_friendly;
             dataset_info_json.description = project.description;
-            dataset_info_json.short_description = project.short_description;
+            dataset_info_json.short_description = project.short_description || project.description;
 
             dataset_info_json.has_location = project.has_location;
 
