@@ -172,6 +172,7 @@ CREATE TABLE `projects` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `creatorID` int(11) DEFAULT NULL,
   `description` varchar(2048) DEFAULT NULL,
+  `short_description` varchar(2048) DEFAULT NULL,
   `cover_pic` varchar(255) DEFAULT NULL,
   `access_type` int(11) DEFAULT '0',
   `unique_code` varchar(255) DEFAULT NULL,
@@ -316,6 +317,23 @@ CREATE TABLE `tileoscope_paths` (
 ) ENGINE=InnoDB AUTO_INCREMENT=212 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+
+DROP TABLE IF EXISTS `tileoscope_qtable`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tileoscope_qtable` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `unique_code_main` varchar(128) DEFAULT NULL,
+  `q_action` varchar(255) DEFAULT NULL,
+  `q_state` TEXT DEFAULT NULL,
+  `q_value` int(11) NULL,
+  `last_updated` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=212 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+--   UNIQUE KEY `unique_index` (`unique_code_main`,`id`, `q_action`)
 
 --
 -- Table structure for cairn messages in tileoscope

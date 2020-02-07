@@ -146,6 +146,21 @@ exports.getTileoscopePaths = function(hitId) {
     });
 };
 
+
+//get all paths that have been updated after the last time we updated the Qtable
+exports.getTileoscopePathsRecent = function(hitId,timestamp) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+        connection.queryAsync('select * from tileoscope_paths where hit_id=? and UNIX_TIMESTAMP(last_updated) > UNIX_TIMESTAMP(?)',[hitId,timestamp]).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
 //get recent cairns for that hit id
 exports.getRecentCairns = function(hitId,num) {
     return new Promise(function(resolve, error) {
@@ -480,6 +495,8 @@ exports.generateTileoscopeARDatasetInfoJSON = function(unique_code) {
             count: 0,                   //how many images in the set
             dataset_id: '',
             description: '',
+            short_description: '',      //short description to show
+            cartoscope_page_link: '',         //link to project page on Cartoscope
             filenames: [],              //names of images without extension
             has_location: 0,
             name: '',
@@ -505,7 +522,11 @@ exports.generateTileoscopeARDatasetInfoJSON = function(unique_code) {
             dataset_info_json.short_name = project.short_name;
             dataset_info_json.short_name_friendly = project.short_name_friendly;
             dataset_info_json.description = project.description;
+            dataset_info_json.short_description = project.short_description;
+
             dataset_info_json.has_location = project.has_location;
+
+            dataset_info_json.cartoscope_page_link = 'http://cartosco.pe/kioskProject.html#/kioskStart/' + unique_code ;
 
 
             //get categories and count here from template:
