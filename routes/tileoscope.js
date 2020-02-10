@@ -309,7 +309,7 @@ router.post('/submitMove', function(req, res, next) {
 
                         var c_arry = [];
                         cairns.forEach(function(item){
-                            c_arry.puhs(item.message);
+                            c_arry.push(item.message);
                         });
 
                         res.send(c_arry.join('-'));
