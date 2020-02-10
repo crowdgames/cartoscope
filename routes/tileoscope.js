@@ -307,7 +307,12 @@ router.post('/submitMove', function(req, res, next) {
                     //get the recnt ones
                     tileDB.getRecentCairns(hitId,num_recent,workerId).then(function(cairns) {
 
-                        res.send(cairns.join('-'));
+                        var c_arry = [];
+                        cairns.forEach(function(item){
+                            c_arry.puhs(item.message);
+                        });
+
+                        res.send(c_arry.join('-'));
 
 
                     }, function(err){
