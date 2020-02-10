@@ -271,6 +271,8 @@ router.post('/submitMove', function(req, res, next) {
     var workerId = req.body.userID;
     var move = req.body.move;
 
+    var num_recent = 3;
+
 
 
     if (hitId == undefined){
@@ -300,9 +302,24 @@ router.post('/submitMove', function(req, res, next) {
                 //make sure there is a project
                 tileDB.submitTileoscopeCairn(workerId,hitId,move_parsed).then(function(dd) {
 
-                    res.status(200).send('Move and cairn submitted successfully');
+                    //res.status(200).send('Move and cairn submitted successfully');
 
-                }, function (err) {
+                    //get the recnt ones
+                    tileDB.getRecentCairns(hitId,num_recent,workerId).then(function(cairns) {
+
+                        res.send(cairns.join('-'));
+
+
+                    }, function(err){
+                        res.status(400).send(err);
+
+                    })
+
+
+
+
+
+                    }, function (err) {
                     console.log(err)
                     res.status(400).send('Error submitting cairn.');
 
@@ -416,13 +433,16 @@ router.get('/getQlearnOnlineSequence/:main_code', function(req, res, next) {
 
 
 
-//get most recent cairns submitted in that hit_id
-router.get('/getRecentCairns/:main_code', function(req, res, next) {
+//get most recent cairns submitted in that hit_id (but not the user's
+router.get('/getRecentCairns/:main_code/:user_id', function(req, res, next) {
     var num_recent = 3;
     //make sure there is a project
-    tileDB.getRecentCairns(req.params.main_code,num_recent).then(function(cairns) {
+    tileDB.getRecentCairns(req.params.main_code,num_recent,req.params.user_id).then(function(cairns) {
         console.log(cairns)
-        res.send(cairns)
+
+        //send them as string sequence separated by -
+
+        res.send(cairns.join('-'))
     }, function (err) {
         res.status(400).send('Error getting latest cairns: ' + err);
     })

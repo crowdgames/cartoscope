@@ -162,11 +162,11 @@ exports.getTileoscopePathsRecent = function(hitId,timestamp) {
 };
 
 //get recent cairns for that hit id
-exports.getRecentCairns = function(hitId,num) {
+exports.getRecentCairns = function(hitId,num,user_id) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
 
-        connection.queryAsync('select * from tileoscope_cairns where hit_id=? order by id desc limit ? ',[hitId,num]).then(
+        connection.queryAsync('select * from tileoscope_cairns where hit_id=? and  user_id!=? order by id desc limit ? ',[hitId,user_id,num]).then(
             function(data) {
                 resolve(data);
             }, function(err) {
