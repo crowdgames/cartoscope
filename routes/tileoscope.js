@@ -1182,8 +1182,8 @@ router.get('/getTileoscopeARProjects', function(req,res,next){
 
         var d = [];
         data.forEach(function(item){
-            if (item.short_name && item.unique_code){
-                d.push(item.unique_code + '_' + item.short_name)
+            if (item.short_name_friendly && item.unique_code){
+                d.push(item.unique_code + '_' + item.short_name_friendly)
             }
         });
 
