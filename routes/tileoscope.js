@@ -382,6 +382,7 @@ router.post('/submitPath', function(req, res, next) {
                     var new_seq = old_path_data[0].seq + "-"  +  path_t.level_id;
                     var times_completed = old_path_data[0].times_completed + "-"  +  path_t.completion_time;
                     var number_moves = old_path_data[0].number_moves + "-"  +  path_t.number_moves;
+                    var number_mistakes = old_path_data[0].number_mistakes + "-"  +  path_t.number_mistakes;
 
 
                 } else {
@@ -389,6 +390,7 @@ router.post('/submitPath', function(req, res, next) {
                     var new_seq = path_t.level_id;
                     var times_completed = path_t.completion_time;
                     var number_moves =  path_t.number_moves;
+                    var number_mistakes = path_t.number_mistakes
 
                 }
 
@@ -397,6 +399,7 @@ router.post('/submitPath', function(req, res, next) {
                     'seq' : new_seq,
                     'times_completed' : times_completed,
                     'number_moves' : number_moves,
+                    'number_mistakes' : number_mistakes,
                     'method' : path_t.method
                 };
 
@@ -1037,10 +1040,16 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
 
         else if (req.query.hasOwnProperty("qlearnO")) {
 
+
+            var player_mistakes = -1;
+            if (req.query.hasOwnProperty('player_mistakes')){
+                player_mistakes = parseInt(req.query.player_mistakes);
+            }
+
             //if in online case of qlearn, we need to generate a sequence every time we get asked and update the table accordingly
             var f_online = "generateQlearnOptimalSequenceTileoscopeOnline";
 
-            qlearnDB[f_online](projectID).then(function(genetic_data){
+            qlearnDB[f_online](projectID,player_mistakes).then(function(genetic_data){
 
                 console.log(genetic_data);
                 var genetic_id = genetic_data.genetic_id;

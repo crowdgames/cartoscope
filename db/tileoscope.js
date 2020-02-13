@@ -103,10 +103,10 @@ exports.submitTileoscopePath = function(userId, hitId, response) {
         var tiles_collected = response.tiles_collected;
         var times_completed = response.times_completed;
         var number_moves = response.number_moves;
+        var number_mistakes = response.number_mistakes;
 
-
-        connection.queryAsync('INSERT INTO tileoscope_paths (user_id, hit_id,method, seq,tiles_collected,times_completed,number_moves) VALUES(?,?,?,?,?,?,?) ' +
-            'ON DUPLICATE KEY UPDATE seq=VALUES(seq),tiles_collected=VALUES(tiles_collected),times_completed=VALUES(times_completed),number_moves=VALUES(number_moves)',[userId,hitId,method,seq,tiles_collected,times_completed,number_moves]).then(
+        connection.queryAsync('INSERT INTO tileoscope_paths (user_id, hit_id,method, seq,tiles_collected,times_completed,number_moves,number_mistakes) VALUES(?,?,?,?,?,?,?,?) ' +
+            'ON DUPLICATE KEY UPDATE seq=VALUES(seq),tiles_collected=VALUES(tiles_collected),times_completed=VALUES(times_completed),number_moves=VALUES(number_moves),number_mistakes=VALUES(number_mistakes)',[userId,hitId,method,seq,tiles_collected,times_completed,number_moves,number_mistakes]).then(
             function(data) {
                 if (data.insertId) {
                     resolve(data.affectedRows);

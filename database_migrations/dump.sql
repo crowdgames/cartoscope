@@ -310,6 +310,7 @@ CREATE TABLE `tileoscope_paths` (
   `tiles_collected` TEXT DEFAULT NULL,
   `times_completed` TEXT DEFAULT NULL,
   `number_moves` TEXT DEFAULT NULL,
+   `number_mistakes` TEXT DEFAULT NULL,
   `last_updated` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
    UNIQUE KEY `unique_index` (`user_id`,`hit_id`)
@@ -326,7 +327,8 @@ CREATE TABLE `tileoscope_qtable` (
   `unique_code_main` varchar(128) DEFAULT NULL,
   `q_action` varchar(255) DEFAULT NULL,
   `q_state` TEXT DEFAULT NULL,
-  `q_value` int(11) NULL,
+  `q_player_mistakes`  varchar(128) DEFAULT NULL,
+  `q_value` float DEFAULT NULL,
   `last_updated` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=212 DEFAULT CHARSET=latin1;
