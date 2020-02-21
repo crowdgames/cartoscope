@@ -551,7 +551,8 @@ exports.generateTileoscopeARDatasetInfoJSON = function(unique_code) {
 
             for (item in categories_raw){
                 categories.push(categories_raw[item].text);
-                cat_colors.push(cat_colors_scheme[item.color]);
+                var cat_num = categories_raw[item].color;
+                cat_colors.push(cat_colors_scheme[cat_num]);
 
             }
             var categories_count = categories.length;
