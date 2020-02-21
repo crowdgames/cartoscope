@@ -487,9 +487,19 @@ exports.generateTileoscopeARDatasetInfoJSON = function(unique_code) {
     return new Promise(function(resolve, error) {
 
 
+        var cat_colors_scheme = {
+            1: '#9cdc1f',
+            2: '#FFF200',
+            3: '#F7941D',
+            4: '#DC1F3A',
+            5: '#0072BC',
+            6: '#8560A8'
+        }
+
         var dataset_info_json = {
             categoriesCount: 0,         //number of categories
             categoriesLabel: [],        //categories
+            categoriesColors: [],       //categories colors
             categoriesSample: [],       //representative image for each category (from tutorial table)
             code: unique_code,
             count: 0,                   //how many images in the set
@@ -537,9 +547,12 @@ exports.generateTileoscopeARDatasetInfoJSON = function(unique_code) {
             var template_raw = JSON.parse(project.template);
             var categories_raw = template_raw.options;
             var categories =  [];
+            var cat_colors = [];
 
             for (item in categories_raw){
-                categories.push(categories_raw[item].text)
+                categories.push(categories_raw[item].text);
+                cat_colors.push(cat_colors_scheme[item.color]);
+
             }
             var categories_count = categories.length;
 
@@ -548,6 +561,8 @@ exports.generateTileoscopeARDatasetInfoJSON = function(unique_code) {
 
             dataset_info_json.categoriesCount = categories_count;
             dataset_info_json.categoriesLabel = categories;
+            dataset_info_json.categoriesColors = cat_colors;
+
 
             //get all the filenames from the table
             projectDB.getDataSetNamesArray(dataset_id).then(function(image_list) {
