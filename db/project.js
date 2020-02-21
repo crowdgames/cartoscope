@@ -20,11 +20,11 @@ exports.isCodeUnique = function(uniqueCode, done) {
     });
 };
 
-exports.addProject = function(name, userID, desc, picID, uniqueCode, short_name, short_name_friendly) {
+exports.addProject = function(name, userID, desc, picID, uniqueCode, short_name, short_name_friendly, short_description, is_inaturalist) {
   return new Promise(function(resolve, reject) {
     var connection = db.get();
-    connection.queryAsync('INSERT INTO projects (name,creatorID,description,cover_pic,unique_code,short_name,short_name_friendly) VALUES(?,?,?,?,?,?,?)',
-      [name, userID, desc, picID, uniqueCode,short_name,short_name_friendly]).then(
+    connection.queryAsync('INSERT INTO projects (name,creatorID,description,cover_pic,unique_code,short_name,short_name_friendly,short_description, is_inaturalist) VALUES(?,?,?,?,?,?,?,?,?)',
+      [name, userID, desc, picID, uniqueCode,short_name,short_name_friendly,short_description,is_inaturalist]).then(
       function(result) {
         resolve(result);
       }).catch(function(err) {
@@ -170,11 +170,11 @@ exports.updateARReady = function(projectId, ar_ready) {
 };
 
 
-exports.updateDescriptionName = function(projectId, description,name,short_name,short_name_friendly) {
+exports.updateDescriptionName = function(projectId, description,name,short_name,short_name_friendly,short_description,is_inaturalist) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        connection.queryAsync('UPDATE projects SET description=? , name=?, short_name=?, short_name_friendly=? WHERE id=?',
-            [description,name, short_name,short_name_friendly,projectId]).then(
+        connection.queryAsync('UPDATE projects SET description=? , name=?, short_name=?, short_name_friendly=?, short_description=?, is_inaturalist=? WHERE id=?',
+            [description,name, short_name,short_name_friendly, short_description, is_inaturalist,projectId]).then(
             function(data) {
                 resolve(data);
             }, function(err) {

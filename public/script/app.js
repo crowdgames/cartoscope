@@ -408,7 +408,11 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
                   projectID: $scope.project.id,
                   name: $scope.project.name,
                   short_name: $scope.project.short_name,
-                  short_name_friendly: $scope.project.short_name_friendly
+                  short_name_friendly: $scope.project.short_name_friendly,
+                  short_description: $scope.project.short_description,
+                  is_inaturalist: $scope.project.is_inaturalist,
+
+
               };
 
               $http.post('/api/project/updateDescriptionName', data).then(function(data) {
@@ -1173,7 +1177,7 @@ module.controller('stepOneController', ['$scope', '$state', '$http', 'swalServic
     });
 
     $scope.validate = function() {
-      if (!$scope.project.name || !$scope.project.description || !$scope.project.short_name || !$scope.project.short_name_friendly) {
+      if (!$scope.project.name || !$scope.project.description || !$scope.project.short_name || !$scope.project.short_name_friendly || !$scope.project.short_description) {
         $scope.showErr = true;
         swalService.showErrorMsg('Please enter a name, a short name and description for the project.');
       } else if (  invalid_characters.some(el => $scope.project.short_name.includes(el))) {
@@ -1198,6 +1202,9 @@ module.controller('stepOneController', ['$scope', '$state', '$http', 'swalServic
         fd.append('description', $scope.project.description);
           fd.append('short_name', $scope.project.short_name);
           fd.append('short_name_friendly', $scope.project.short_name_friendly);
+          fd.append('short_description', $scope.project.short_description);
+          fd.append('is_inaturalist', $scope.project.is_inaturalist);
+
 
           $http.post('api/project/add', fd, {
           transformRequest: angular.identity,

@@ -4,6 +4,9 @@
             <div ng-switch on="::project.editing">
                 <span>
                     Project Name*
+                    <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
+                       data-placement="right" style="margin-left: 10px;color: #9cdc1f;"
+                       title="The full title of your project. This will be shown in the project page in Cartoscope."></i>
                 </span>
                 <input ng-switch-when="true" ng-model="project.name">
                 <input ng-switch-when="false" ng-model="project.name">
@@ -19,6 +22,9 @@
             <div ng-switch on="::project.editing">
                 <span>
                     Short Name (Friendly)*
+                    <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
+                       data-placement="right" style="margin-left: 10px;color: #9cdc1f;"
+                       title="A short title for your project. This is used in Tile-o-Scope AR."></i>
                 </span>
                 <!--Short name friendly can always be edited-->
                 <input ng-switch-when="true" ng-model="project.short_name_friendly" >
@@ -27,9 +33,58 @@
             <div>
                 <span>
                     Description*
+                    <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
+                       data-placement="right" style="margin-left: 10px;color: #9cdc1f;"
+                       title="A full description of your project."></i>
                 </span>
                 <textarea ng-model="project.description"></textarea>
             </div>
+            <div>
+                <span>
+                    Short Description*
+                    <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
+                                          data-placement="right" style="margin-left: 10px;color: #9cdc1f;"
+                                          title="Make it short and sweet! In one or two sentences,
+                                           summarize the goal of the project.
+                                           Short descriptions are used in Tile-o-Scope AR."></i>
+
+                </span>
+                <textarea ng-model="project.short_description"></textarea>
+            </div>
+            <!--<div>-->
+                <!--<span>-->
+                    <!--Is this an iNaturalist project?-->
+                    <!--<i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"-->
+                       <!--data-placement="right" style="margin-left: 10px;color: #9cdc1f;"-->
+                       <!--title="Checking this box enables features like reporting identifications back to iNaturalist.-->
+                                <!--Please make sure that the images you upload come with the required .json files."></i>-->
+                <!--</span>-->
+            <!--</div>-->
+            <!--<div>-->
+                <!--<input type="checkbox" ng-model="project.is_inaturalist" style="float: left;"  checked="unchecked">-->
+            <!--</div>-->
+                <span class="txt">Image Source
+                    <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
+                       data-placement="right" style="margin-left: 10px;color: #9cdc1f;"
+                       title="Whether you require additional functionalities for iNaturalist projects."></i>
+
+                </span>
+            <div class="buttons">
+
+                <div class="inaturalist-button" style="float: left;" ng-class="{'active': project.is_inaturalist == 1}" ng-click="project.is_inaturalist = 1">
+                    <span class="title"><i class="fa fa-check-circle sel-check"></i>iNaturalist Project</span>
+                    <span class="msg">Enables features like reporting identifications back to iNaturalist. Make sure all images are
+                    accompanied by a .json file with necessary information.</span>
+                </div>
+
+                <div class="inaturalist-button" ng-class="{'active': project.is_inaturalist == 0}" ng-click="project.is_inaturalist = 0">
+                    <span class="title"><i class="fa fa-check-circle sel-check"></i>Other Source</span>
+                    <span class="msg"> Images from other sources that don't require additional information. </span>
+                </div>
+            </div>
+                <div style="clear: both;">
+
+                </div>
 
         </div>
         <div class="col-md-6">

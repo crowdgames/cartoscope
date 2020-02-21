@@ -293,31 +293,33 @@ router.post('/add', [upload.any(), filters.requireLogin, filters.requiredParamHa
       magic.detectFile(req.files[0].path, function(err, result) {
         if (err) {
             console.log('result err'+ err);
-          res.status(500).send({error: 'problem with the uploaded image, please try again'});
+            res.status(500).send({error: 'problem with the uploaded image, please try again'});
           fs.unlink(req.files[0].path);
         }
         
         if (isValidImage(result)) {
           fs.renameSync(req.files[0].path, 'profile_photos/' + filename);
           generateUniqueProjectCode().then(function(projectCode) {
-            projectDB.addProject(body.name, req.session.passport.user.id, body.description, filename, projectCode,body.short_name,body.short_name_friendly).then(
+            projectDB.addProject(body.name, req.session.passport.user.id, body.description, filename, projectCode,body.short_name,body.short_name_friendly, body.short_description, body.is_inaturalist).then(
               function(result) {
                 console.log('result '+ result);
                 res.send({id: result.insertId, code: projectCode});
               }, function(err) {
+                  console.log(err)
                 res.status(500).send({error: err.code});
               });
           });
           
         } else {
-          res.status(500).send({error: 'problem with the uploaded image, please try again'});
+            console.log(err);
+            res.status(500).send({error: 'problem with the uploaded image, please try again'});
           fs.unlink(req.files[0].path);
         }
       });
       
     } else {
       generateUniqueProjectCode().then(function(projectCode) {
-        projectDB.addProject(body.name, req.session.passport.user.id, body.description, filename, projectCode,body.short_name).then(
+        projectDB.addProject(body.name, req.session.passport.user.id, body.description, filename, projectCode,body.short_name,body.short_name_friendly,body.short_description, body.is_inaturalist).then(
           function(result) {
             res.send({id: result.insertId, code: projectCode});
           }, function(err) {
@@ -377,7 +379,7 @@ router.post('/updateDescription',
 router.post('/updateDescriptionName',
     [filters.requireLogin, filters.requiredParamHandler(['projectID', 'description']), upload.any()],
     function(req, res, next) {
-        projectDB.updateDescriptionName(req.body.projectID, req.body.description,req.body.name,req.body.short_name, req.body.short_name_friendly).then(function(data) {
+        projectDB.updateDescriptionName(req.body.projectID, req.body.description,req.body.name,req.body.short_name, req.body.short_name_friendly,req.body.short_description,req.body.is_inaturalist).then(function(data) {
             if (data.affectedRows == 1) {
                 res.send({'status': 'done'});
             } else {

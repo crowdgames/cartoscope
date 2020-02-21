@@ -407,6 +407,46 @@ button {
   position: absolute;
   z-index: -1;
 }
+
+.project-creation-parent .tab-body .steps-view .step-1 .buttons {
+  margin-top: 5px;
+}
+
+.project-creation-parent .tab-body .steps-view .step-1 .buttons .inaturalist-button {
+  height: 135px;
+  /*background: #9cdc1f;*/
+  background: #26272a;
+  border-radius: 10px;
+  border: 3px solid #9cdc1f;
+  color: #9cdc1f;
+  margin-right: 20px;
+  float: left;
+  width: 300px;
+  padding: 20px 20px;
+  cursor: pointer;
+}
+.project-creation-parent .tab-body .steps-view .step-1 .buttons .inaturalist-button .title {
+  color: white;
+  font-size: 12px;
+  display: block;
+}
+.project-creation-parent .tab-body .steps-view .step-1 .buttons .inaturalist-button .sel-check {
+  display: none;
+}
+.project-creation-parent .tab-body .steps-view .step-1 .buttons .inaturalist-button .msg {
+  font-size: 9px;
+}
+.project-creation-parent .tab-body .steps-view .step-1 .buttons .inaturalist-button.active {
+  /*background: #26272a;*/
+  background: #9cdc1f;
+  color: #26272a;
+}
+.project-creation-parent .tab-body .steps-view .step-1 .buttons .inaturalist-button.active .sel-check {
+  display: inline;
+  margin-right: 5px;
+}
+
+
 .project-creation-parent .tab-body .steps-view .step-2 {
   margin: 5px;
   background: #26272a;

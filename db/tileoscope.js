@@ -503,7 +503,8 @@ exports.generateTileoscopeARDatasetInfoJSON = function(unique_code) {
             short_name: '',
             short_name_friendly: '',
             tutorial: [],                //at least one pair of images of the same category
-            tutorial_explanations: [] //explanations for each tutorial item to be used
+            tutorial_explanations: [], //explanations for each tutorial item to be used
+            is_inaturalist: 0
         };
 
 
@@ -525,6 +526,8 @@ exports.generateTileoscopeARDatasetInfoJSON = function(unique_code) {
             dataset_info_json.short_description = project.short_description || project.description;
 
             dataset_info_json.has_location = project.has_location;
+            dataset_info_json.is_inaturalist = project.is_inaturalist;
+
 
             dataset_info_json.cartoscope_page_link = 'http://cartosco.pe/kioskProject.html#/kioskStart/' + unique_code ;
 
