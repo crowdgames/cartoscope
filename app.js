@@ -7,6 +7,8 @@ var bodyParser = require('body-parser');
 var compression = require('compression');
 var passport = require('passport');
 var fs = require('fs');
+var os = require('os');
+
 var users = require('./routes/users');
 var login = require('./routes/login');
 var projectsApi = require('./routes/projects');
@@ -16,6 +18,7 @@ var anonApi = require('./routes/anonUser');
 var results = require('./routes/results');
 var dynamicr = require('./routes/dynamic');
 var tileoscope = require('./routes/tileoscope');
+var inaturalist = require('./routes/inaturalist');
 
 
 
@@ -96,7 +99,7 @@ app.use('/api/test', require('./routes/test'));
 app.use('/api/results', results);
 app.use('/api/dynamic', dynamicr);
 app.use('/api/tileoscope', tileoscope);
-
+app.use('/api/inat', inaturalist);
 
 
 
@@ -125,6 +128,67 @@ app.get('/ar_tags', function(req, res) {
         res.contentType("application/pdf");
         res.send(data);
     });
+});
+
+
+//go to inat report page after authorization with code attached
+app.get('/inat_auth', function(req, res) {
+
+    var session_id = req.session.passport.ar_session_id;
+    var access_code = req.query.code;
+    // req.session.passport = {};
+
+
+    console.log(session_id);
+
+    var core_site = 'https://cartosco.pe';
+
+    if(os.hostname().indexOf("local") > -1){
+        core_site = 'http://localhost:8081';
+    }
+
+    var site = "https://www.inaturalist.org";
+    var app_id = process.env.INAT_APP_ID ;
+    var app_secret = process.env.INAT_SECRET ;
+    var postData = JSON.stringify({
+        'client_id': app_id,
+        'client_secret': app_secret,
+        'code': access_code,
+        'redirect_uri': core_site + '/inat_auth',
+        'grant_type': "authorization_code"
+    });
+
+
+
+    var options = {
+        hostname: 'inaturalist.org',
+        port: 443,
+        path: '/oauth/token',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Content-Length': postData.length
+        }
+    };
+
+    var request = https.request(options, function(resp) {
+        resp.setEncoding('utf8');
+        resp.on('data', function (chunk) {
+
+            var access_token = JSON.parse(chunk).access_token;
+            var redirect_uri = '/#/inat_report_view/' + session_id + '/' + access_token ;
+            res.redirect(redirect_uri)
+        });
+    });
+
+    request.on('error', function(e) {
+        console.log('problem with request: ' + e.message);
+    });
+
+    // write data to request body
+    request.write(postData);
+    request.end();
+
 });
 
 

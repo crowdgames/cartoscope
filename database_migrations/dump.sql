@@ -284,6 +284,30 @@ CREATE TABLE `tileoscope_ar_actions` (
 
 
 --
+-- Table structure for table `inaturalist_reports`
+--
+
+DROP TABLE IF EXISTS `inaturalist_reports`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `inaturalist_reports` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `session_id` varchar(128) DEFAULT NULL,
+  `user_id` varchar(128) DEFAULT NULL,
+  `unique_code` varchar(128) DEFAULT NULL,
+  `dataset_id` varchar(128) DEFAULT NULL,
+  `image_name` varchar(128) DEFAULT NULL,
+  `category` varchar(128) DEFAULT NULL,
+  `observation_id` int(11) DEFAULT NULL,
+  `taxon_id` int(11) DEFAULT NULL,
+  `reported` int(11) DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=212 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+
+--
 -- Table structure for table `tileoscope_moves`
 --
 

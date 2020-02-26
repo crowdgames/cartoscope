@@ -243,6 +243,12 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
         }]
     });
 
+    $stateProvider.state({
+        name: 'inatReportProject',
+        url: '/inat_report_view/:session_id/:code',
+        templateUrl: '../templates/inatReport.html',
+        controller: 'inatReportController'
+    });
 
 
     $stateProvider.state({
@@ -678,6 +684,8 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
       }]
     }
   });
+
+
 
   $urlRouterProvider.otherwise('/home');
 });
@@ -1878,6 +1886,97 @@ module.controller('userProfileController', ['$scope','$http', '$state', 'project
 
 
 }]);
+
+
+
+
+module.controller('inatReportController',
+    function($scope, $http, $state,$stateParams) {
+
+
+        $scope.reported_so_far = 0;
+
+        $scope.have_images = 0;
+        $scope.progress_b = 0;
+        $scope.reporting = 0;
+        $scope.success_report = 0;
+        $scope.session_id = $stateParams.session_id;
+        $scope.access_token = $stateParams.code;
+
+        //header for posting identifications added here
+        var auth_header = {
+            "Authorization": "Bearer " + $scope.access_token,
+            "Content-Type": "application/json"};
+
+
+
+        //get images from this session_id that will have to be reported back
+        $http.get('/api/inat/getAvailableImagesReport/' +  $scope.session_id).then(function(pdata) {
+
+            $scope.report_data = pdata.data;
+
+            if ($scope.report_data.length){
+                //TODO: make an array that has state of checkbox (start it at checked, image, and category
+                $scope.have_images = 1;
+            }
+        });
+
+
+        $scope.reportToINAT = function(){
+            console.log("Will report");
+
+            $scope.reporting = 1;
+            $scope.identifications = [];
+            $scope.carto_ids = [];
+            //how many will we report?
+            $scope.report_count = $scope.report_data.filter((obj) => obj.checked === true).length;
+
+            $scope.report_data.forEach(function(item){
+
+                console.log(item);
+
+                if (item.checked){
+                    $scope.sendReport({
+                        "observation_id": item.observation_id,
+                        "taxon_id": item.taxon_id,
+                        "current": true,
+                        "body": "Identified using Cartoscope."
+                    });
+                    $scope.carto_ids.push(item.id);
+                }
+
+            });
+
+
+        }
+
+        $scope.sendReport = function(bd){
+            var body = {'identification': bd};
+
+            //post to iNaturalist:
+            $http.post('https://api.inaturalist.org/v1/identifications', body, {headers: auth_header}).then(function(data){
+                console.log(data);
+                $scope.reported_so_far = $scope.reported_so_far + 1;
+                var pb = $scope.reported_so_far / $scope.report_count;
+                $scope.progress_b = Math.round((pb * 100)) ;
+
+
+                if ($scope.reported_so_far == $scope.report_count) {
+                    $scope.success_report = 1;
+
+                    //Should we track which ones have been reported? if yes, uncomment
+                    //$http.post('/api/inat/updateReportedRecords', {'id_array': $scope.carto_ids});
+                }
+
+
+            }, function (err) {
+                console.log(err)
+            })
+        }
+
+
+    });
+
 
 module.directive('fileModel', ['$parse', '$timeout', function($parse, $timeout) {
   return {

@@ -136,6 +136,19 @@ body {
     max-height:10%;
 }
 
+.inat_report_thumbnail {
+    border: 1px solid #ddd;
+    transition: box-shadow .3s;
+
+    border-radius: 4px;
+    padding: 5px;
+    width: 50px;"
+}
+
+.inat_report_thumbnail:hover {
+    box-shadow: 0 0 11px rgba(33,33,33,.2);
+}
+
 @media (orientation: portrait) and (max-width: 786px) {
     .consent-button {
         left: 0;

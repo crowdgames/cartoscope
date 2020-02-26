@@ -6,7 +6,9 @@ var projectDB = require('../db/project');
 var tileDB = require('../db/tileoscope');
 var dynamicDB = require('../db/dynamic');
 var qlearnDB = require('../db/qlearn');
+var inatDB = require('../db/inaturalist');
 var Promise = require('bluebird');
+
 
 var filters = require('../constants/filters');
 var express = require('express');
@@ -480,7 +482,6 @@ router.post('/submitTileoscopeARAction', function(req, res, next) {
     var short_name = req.body.datasetName;
 
 
-
     if (session_id == undefined){
         res.status(404).send('Session ID missing.');
     }
@@ -507,14 +508,24 @@ router.post('/submitTileoscopeARAction', function(req, res, next) {
                 var category = item.MatchCategory;
 
                 if (isMatch && short_name && code && code != "_"){
-                    console.log("Add vote as Cartoscope")
-                    //Tadd it as vote as well for the map!
-                    console.log(item)
-
+                    console.log("Add vote as Cartoscope");
+                    //add it as vote as well for the map!
                     tileDB.convertActionToMatch(code,user_code,matches,category).then(function(d) {
 
-                        res.status(200).send('Tile-o-Scope AR Action submitted successfully');
+                        //Check here if we have iNaturalist functionality:
+                        if (item.hasOwnProperty('is_inaturalist') && parseInt(item.is_inaturalist) === 1 ){
 
+                            console.log("iNat functionality detected. Proceed to store potential reports.")
+                            var obs_ids = item.ObservationIds;
+                            var tax_ids = item.TaxonIds;
+                            var dataset_id = item.dataset_id;
+                            inatDB.convertMatchToReports(session_id,user_code,code,dataset_id,matches,category,obs_ids,tax_ids).then(function(dd) {
+                                res.status(200).send('Tile-o-Scope AR Action submitted successfully.' + dd + ' iNaturalist Reports stored.');
+                            })
+                        } else {
+                            res.status(200).send('Tile-o-Scope AR Action submitted successfully');
+
+                        }
 
                     }, function(err) {
                         console.log('err ', err);
@@ -522,7 +533,7 @@ router.post('/submitTileoscopeARAction', function(req, res, next) {
                     });
 
                 } else {
-                  console.log("Don't add vote as Carttoscope")
+                  console.log("Don't add vote as Cartoscope");
 
                     res.status(200).send('Tile-o-Scope AR Action submitted successfully');
 

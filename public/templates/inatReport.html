@@ -1,0 +1,103 @@
+<div class="container new-home" >
+
+    <div class="row">
+        <h1> iNaturalist Report Results</h1>
+
+        <p ng-show="have_images">
+            Below are all the  images you have matched along with the category you matched them to.
+            If you do not wish to report back a specific image to iNaturalist, you may unselect it by
+            unchecking its corresponding checkbox. When you are ready, click the Report Results button
+            to send your identifications to iNaturalist.
+        </p>
+        <p ng-show="!have_images">
+            You currently have no images that can be reported back to iNaturalist. Check back later!
+
+
+        </p>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+
+
+        <table class="table" id="inatReportTable" cellspacing="0" width="100%">
+        <thead>
+        <tr>
+            <th md-column style="text-align:center" scope="col">Will Report</th>
+            <th md-column style="text-align:center" scope="col">Image</th>
+            <th md-column style="text-align:center" scope="col">Category</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="item in report_data">
+            <td style="text-align:center">
+                <input class="form-check-input" type="checkbox" ng-model="item.checked" >
+            </td>
+            <td style="text-align:center">
+                <a target="_blank" href="{{item.image_path}}">
+                <img
+                   class="inat_report_thumbnail"
+                    ng-src="{{item.image_path}}"/>
+                </a>
+            </td>
+            <td style="text-align:center">
+                <span class="badge badge-dark">{{item.category}}</span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+
+        </div>
+        <div class="col-md-3"></div>
+
+    </div>
+
+    <div class="row" ng-if="have_images && !reporting">
+        <center>
+        <div>
+            <button class="submit-button" ng-click="reportToINAT()" style="margin-top: 20px;
+            border-radius: 8px;
+            background-color: #9cdc1f;
+            color: #000;
+            font-size: 18px;
+            text-align: center;
+            outline: none;
+            border: none;
+            padding: 10px 25px;">Report Results to iNaturalist</button>
+        </div>
+        </center>
+
+    </div>
+
+    <div class="row" ng-show="reporting">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <center>
+                <h4> Current Progress: {{progress_b}}%</h4>
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped" role="progressbar" style="width: {{progress_b}}%" aria-valuenow="{{progress_b}}" aria-valuemin="0" aria-valuemax="100">
+                    </div>
+                </div>
+            </center>
+        </div>
+        <div class="col-md-3"></div>
+
+
+    </div>
+
+    <div class="row">
+        <center>
+        <div ng-show="success_report">
+            <h4> Identifications reported succesfully!</h4>
+        </div>
+        </center>
+    </div>
+
+
+
+
+
+
+</div>
