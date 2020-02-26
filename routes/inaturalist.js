@@ -22,12 +22,13 @@ var CARTO_PORT = process.env.CARTO_PORT || '8081';
 var path = require('path');
 var os = require('os');
 
+var site = "https://www.inaturalist.org";
+var app_id = process.env.INAT_APP_ID ;
+
 module.exports = router;
 
 //inat specifics:
 
-var site = "https://www.inaturalist.org";
-var app_id = process.env.INAT_APP_ID ;
 
 
 
@@ -42,8 +43,7 @@ router.get('/loginInaturalist/:sessionId', function(req, res, next) {
      // var redirect_uri = core_site + '/inat_report?session_id=' + sessionID;
     var redirect_uri = core_site + '/inat_auth';
 
-    console.log(app_id);
-    console.log(process.env.CARTO_DB_NAME);
+    console.log(process.env.INAT_APP_ID);
 
     var  inat_login_url = site + '/oauth/authorize?client_id=' + app_id + '&redirect_uri=' +  encodeURI(redirect_uri) + '&response_type=code';
     req.session.passport.ar_session_id = sessionID;
