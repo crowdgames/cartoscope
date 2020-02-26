@@ -42,9 +42,7 @@ router.get('/loginInaturalist/:sessionId', function(req, res, next) {
     var sessionID = req.params.sessionId;
      // var redirect_uri = core_site + '/inat_report?session_id=' + sessionID;
     var redirect_uri = core_site + '/inat_auth';
-
-    console.log(process.env)
-
+    
 
     var  inat_login_url = site + '/oauth/authorize?client_id=' + app_id + '&redirect_uri=' +  encodeURI(redirect_uri) + '&response_type=code';
     req.session.passport.ar_session_id = sessionID;

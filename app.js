@@ -139,7 +139,6 @@ app.get('/inat_auth', function(req, res) {
     // req.session.passport = {};
 
 
-    console.log(session_id);
 
     var core_site = 'https://cartosco.pe';
 
