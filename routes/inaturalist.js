@@ -28,15 +28,6 @@ module.exports = router;
 
 var site = "https://www.inaturalist.org";
 var app_id = process.env.INAT_APP_ID ;
-var app_secret = process.env.INAT_SECRET ;
-
-// var url = "#{site}/oauth/authorize?client_id=#{app_id}&redirect_uri=#{redirect_uri}&response_type=code"
-
-//REQUEST AN AUTHORIZATION CODE
-//Your web app should redirect the user to this url. They should see a screen
-//offering them the choice to authorize your app. If they aggree, they will be
-//redirected to your redirect_uri with a "code" parameter
-
 
 
 router.get('/loginInaturalist/:sessionId', function(req, res, next) {
