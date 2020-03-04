@@ -1960,12 +1960,21 @@ module.controller('inatReportController',
                 var pb = $scope.reported_so_far / $scope.report_count;
                 $scope.progress_b = Math.round((pb * 100)) ;
 
+                var ident_id = data.data.id;
+                //report that we have it now
+                $http.post('/api/inat/updateReportedRecords',
+                    {
+                        'identification_id': ident_id,
+                        'session_id': $scope.session_id,
+                        'report_id': item.id
+
+                });
+
+
 
                 if ($scope.reported_so_far == $scope.report_count) {
                     $scope.success_report = 1;
 
-                    //Should we track which ones have been reported? if yes, uncomment
-                    //$http.post('/api/inat/updateReportedRecords', {'id_array': $scope.carto_ids});
                 }
 
 

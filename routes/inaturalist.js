@@ -42,7 +42,7 @@ router.get('/loginInaturalist/:sessionId', function(req, res, next) {
     var sessionID = req.params.sessionId;
      // var redirect_uri = core_site + '/inat_report?session_id=' + sessionID;
     var redirect_uri = core_site + '/inat_auth';
-    
+
 
     var  inat_login_url = site + '/oauth/authorize?client_id=' + app_id + '&redirect_uri=' +  encodeURI(redirect_uri) + '&response_type=code';
     req.session.passport.ar_session_id = sessionID;
@@ -113,10 +113,9 @@ router.post('/submitInatRecord', function(req, res, next) {
 router.post('/updateReportedRecords', function(req, res, next) {
 
 
-    var id_array = req.body.id_array;
 
-     if (req.body.hasOwnProperty('id_array') && req.body.id_array.length > 0){
-         inatDB.updateRecordsINatReportsByIds(id_array).then(function(d){
+     if (req.body.hasOwnProperty('identification_id') && req.body.hasOwnProperty('session_id') && req.body.hasOwnProperty('report_id') ){
+         inatDB.updateRecordsINatReportsByIds(req.body).then(function(d){
              res.status(200).send('iNat images updated as reported.');
 
          }, function (err) {

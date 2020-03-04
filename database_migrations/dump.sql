@@ -300,7 +300,7 @@ CREATE TABLE `inaturalist_reports` (
   `category` varchar(128) DEFAULT NULL,
   `observation_id` int(11) DEFAULT NULL,
   `taxon_id` int(11) DEFAULT NULL,
-  `reported` int(11) DEFAULT 0,
+  `identification_id` int(11) DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=212 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;

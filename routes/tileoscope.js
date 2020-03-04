@@ -515,7 +515,7 @@ router.post('/submitTileoscopeARAction', function(req, res, next) {
                         //Check here if we have iNaturalist functionality:
                         if (item.hasOwnProperty('is_inaturalist') && parseInt(item.is_inaturalist) === 1 ){
 
-                            console.log("iNat functionality detected. Proceed to store potential reports.")
+                            console.log("iNat functionality detected. Proceed to store potential reports.");
                             var obs_ids = item.ObservationIds;
                             var tax_ids = item.TaxonIds;
                             var dataset_id = item.dataset_id;

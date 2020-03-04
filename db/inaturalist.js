@@ -96,6 +96,7 @@ exports.convertMatchToReports = function(session_id,user_id,unique_code,dataset_
                     'observation_id': obs_ids[i],
                     'taxon_id' : tax_ids[i]
                 };
+                console.log(item);
                 var p = exports.recordINatReportSingle(item);
                 p.catch(function (err) {
                     // console.log(err)
@@ -120,20 +121,14 @@ exports.convertMatchToReports = function(session_id,user_id,unique_code,dataset_
 };
 
 //update a single image as reported
-exports.updateRecordsINatReportsByIds = function(id_array) {
+exports.updateRecordsINatReportsById = function(obj) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
 
-        var id_array_string = id_array.join();
 
-        connection.queryAsync('update `inaturalist_reports` set reported=1 where id IN (?)',[id_array_string]).then(
+        connection.queryAsync('update `inaturalist_reports` set identification_id=? where id=?',[obj.identification_id,obj.report_id]).then(
             function(data) {
-                if (data.insertId) {
-                    console.log("Success");
-                    resolve(data.affectedRows);
-                } else {
-                    error('Problem with insert');
-                }
+                resolve(data);
             }, function(err) {
                 console.log(err);
                 error(err);
