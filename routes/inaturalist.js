@@ -115,7 +115,7 @@ router.post('/updateReportedRecords', function(req, res, next) {
 
 
      if (req.body.hasOwnProperty('identification_id') && req.body.hasOwnProperty('session_id') && req.body.hasOwnProperty('report_id') ){
-         inatDB.updateRecordsINatReportsByIds(req.body).then(function(d){
+         inatDB.updateRecordsINatReportsById(req.body).then(function(d){
              res.status(200).send('iNat images updated as reported.');
 
          }, function (err) {
