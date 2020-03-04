@@ -414,7 +414,6 @@ router.get('/getImageFree/:dataset/:name', function(req, res, next) {
 router.get('/getImageFreeSim/:dataset/:name', function(req, res, next) {
     res.setHeader('Content-Type', 'image/jpeg');
     if (fs.existsSync('dataset/' + req.params.dataset + '/' + req.params.name )) {
-        console.log('File exists');
         res.sendFile(path.resolve('dataset/' + req.params.dataset + '/' + req.params.name ));
     } else {
         //find the closest name:

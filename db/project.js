@@ -627,7 +627,6 @@ exports.getImageSimilar = function(datasetId,name) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
         var query_line = 'SELECT name FROM ' + tableName + ' where name LIKE \'%' + name + '%\'';
-        console.log(query_line)
         connection.queryAsync(query_line).then(
             function(data) {
                 console.log(data)

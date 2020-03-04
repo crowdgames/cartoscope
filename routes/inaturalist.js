@@ -136,7 +136,7 @@ router.get('/getAvailableImagesReport/:sessionId', function(req, res, next) {
     inatDB.getAvailableImagesToReport(sessionID).then(function(data){
         var ret_ob = [];
         data.forEach(function(item){
-            item.image_path = '/api/tasks/getImageFree/' + item.dataset_id + '/' + item.image_name + '.jpg';
+            item.image_path = '/api/tasks/getImageFreeSim/' + item.dataset_id + '/' + item.image_name + '.jpg';
             item.checked = true;
             ret_ob.push(item)
         });
