@@ -411,6 +411,20 @@ router.get('/getImageFree/:dataset/:name', function(req, res, next) {
     }
 });
 
+router.get('/getImageFreeSim/:dataset/:name', function(req, res, next) {
+    res.setHeader('Content-Type', 'image/jpeg');
+    if (fs.existsSync('dataset/' + req.params.dataset + '/' + req.params.name )) {
+        res.sendFile(path.resolve('dataset/' + req.params.dataset + '/' + req.params.name ));
+    } else {
+        //find the closest name:
+        projectDB.getImageSimilar(req.params.dataset,req.params.name).then(function(img){
+            res.sendFile(path.resolve('dataset/' + req.params.dataset + '/' + img[0].name + '.jpg' ));
+        }, function (err) {
+            res.status(404).send('No similar image found.');
+        })
+    }
+});
+
 router.get('/startProject/:project', [filters.requireLogin], function(req, res, next) {
   var user = req.session.passport.user;
   var chain = req.query.chain;

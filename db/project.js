@@ -622,6 +622,19 @@ exports.getDataSetNames = function(datasetId) {
     });
 };
 
+exports.getImageSimilar = function(datasetId,name) {
+    var tableName = 'dataset_' + datasetId;
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT name FROM ' + tableName + ' where name LIKE \'%' + name + '%\'').then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
 
 exports.getDataSetNamesArray = function(datasetId) {
     var tableName = 'dataset_' + datasetId;
