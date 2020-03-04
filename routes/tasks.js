@@ -417,7 +417,9 @@ router.get('/getImageFreeSim/:dataset/:name', function(req, res, next) {
         res.sendFile(path.resolve('dataset/' + req.params.dataset + '/' + req.params.name ));
     } else {
         //find the closest name:
-        projectDB.getImageSimilar(req.params.dataset,req.params.name).then(function(img){
+        var index = req.params.name.lastIndexOf('.');
+        var name_no_ext = req.params.name.slice(0, index)
+        projectDB.getImageSimilar(req.params.dataset,name_no_ext).then(function(img){
             console.log(img)
             res.sendFile(path.resolve('dataset/' + req.params.dataset + '/' + img[0].name + '.jpg' ));
         }, function (err) {
