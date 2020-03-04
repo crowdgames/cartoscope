@@ -16,7 +16,7 @@ exports.getAvailableImagesToReport = function(session_id) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
 
-        connection.queryAsync('select * from inaturalist_reports where session_id=? and identification_id > 0',[session_id]).then(
+        connection.queryAsync('select * from inaturalist_reports where session_id=? and identification_id=0',[session_id]).then(
             function(data) {
                 resolve(data)
             }, function(err) {
