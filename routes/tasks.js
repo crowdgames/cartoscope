@@ -418,6 +418,7 @@ router.get('/getImageFreeSim/:dataset/:name', function(req, res, next) {
     } else {
         //find the closest name:
         projectDB.getImageSimilar(req.params.dataset,req.params.name).then(function(img){
+            console.log(img)
             res.sendFile(path.resolve('dataset/' + req.params.dataset + '/' + img[0].name + '.jpg' ));
         }, function (err) {
             res.status(404).send('No similar image found.');
