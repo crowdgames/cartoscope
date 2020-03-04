@@ -1941,7 +1941,7 @@ module.controller('inatReportController',
                         "taxon_id": item.taxon_id,
                         "current": true,
                         "body": "Identified using Cartoscope."
-                    });
+                    },item.id);
                     $scope.carto_ids.push(item.id);
                 }
 
@@ -1950,7 +1950,7 @@ module.controller('inatReportController',
 
         }
 
-        $scope.sendReport = function(bd){
+        $scope.sendReport = function(bd,id){
             var body = {'identification': bd};
 
             //post to iNaturalist:
@@ -1966,7 +1966,7 @@ module.controller('inatReportController',
                     {
                         'identification_id': ident_id,
                         'session_id': $scope.session_id,
-                        'report_id': item.id
+                        'report_id': id
 
                 });
 
