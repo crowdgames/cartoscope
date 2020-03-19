@@ -334,12 +334,14 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   window.location.replace('/kioskProject.html#/results/' + vm.code);
               }
               else {
-                  //if project codes for algal, go to algal survey else go to TLX (default survey)
+                  //if project codes for algal, go to algal survey else go to IMI (default survey)
                   //TODO: Custom survey page
                   if (vm.code == heatMapProject2 || vm.code == heatMapProject1) {
                       window.location.replace('/survey.html#/survey?code=' + vm.code+ '&userType=kiosk');
                   } else {
-                      window.location.replace('/survey.html#/surveyTLX?code=' + vm.code+ '&userType=kiosk');
+                      // window.location.replace('/survey.html#/surveyTLX?code=' + vm.code+ '&userType=kiosk');
+                      window.location.replace('/survey.html#/surveyIMI?code=' + vm.code+ '&userType=kiosk');
+
                   }
               }
 
@@ -381,6 +383,10 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
                           } else if (showGAME){
                               window.location.replace('/survey.html#/surveyGAME?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
+
+
+                          }  else if (showIMI){
+                              window.location.replace('/survey.html#/surveyIMI?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
 
 
                           } else{
@@ -433,7 +439,11 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   } else if (showGAME){
                       window.location.replace('/survey.html#/surveyGAME?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
 
-                  }else{
+                  } else if (showIMI){
+                      window.location.replace('/survey.html#/surveyIMI?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
+
+                  }
+                  else{
                       window.location.replace('/survey.html#/survey?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
 
                   }
@@ -484,6 +494,10 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
                                   } else if (showGAME){
                                       window.location.replace('/survey.html#/surveyGAME?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
+
+
+                                  } else if (showIMI){
+                                      window.location.replace('/survey.html#/surveyIMI?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
 
 
                                   } else{
@@ -542,9 +556,10 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                               window.location.replace('/survey.html#/surveyGAME?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
 
 
-                          } else{
+                          }else if (showIMI){
+                              window.location.replace('/survey.html#/surveyIMI?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
+                          }else{
                               window.location.replace('/survey.html#/survey?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-
                           }
 
                       }
@@ -1454,7 +1469,11 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
                                 window.location.replace('/survey.html#/surveyGAME?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
 
 
-                            } else{
+                            } else if (showIMI){
+                                window.location.replace('/survey.html#/surveyIMI?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
+
+
+                            }else{
                                 window.location.replace('/survey.html#/survey?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
 
                             }
@@ -1510,7 +1529,10 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
                     } else if (showGAME){
                         window.location.replace('/survey.html#/surveyGAME?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
 
-                    }else{
+                    }else if (showIMI){
+                        window.location.replace('/survey.html#/surveyIMI?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
+
+                    } else{
                         window.location.replace('/survey.html#/survey?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
 
                     }
@@ -1560,7 +1582,11 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
                                     window.location.replace('/survey.html#/surveyGAME?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
 
 
-                                } else{
+                                } else if (showIMI){
+                                    window.location.replace('/survey.html#/surveyIMI?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
+
+
+                                }else{
                                     window.location.replace('/survey.html#/survey?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
 
                                 }
@@ -1612,6 +1638,10 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
                         }
                         else if (showGAME){
                             window.location.replace('/survey.html#/surveyGAME?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
+
+
+                        } else if (showIMI){
+                            window.location.replace('/survey.html#/surveyIMI?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
 
 
                         } else{

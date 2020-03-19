@@ -239,7 +239,7 @@ CREATE TABLE `survey` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` varchar(128) DEFAULT NULL,
   `project_id` int(11) DEFAULT NULL,
-  `response` varchar(1024) DEFAULT NULL,
+  `response` TEXT DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique` (`user_id`,`project_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=212 DEFAULT CHARSET=latin1;

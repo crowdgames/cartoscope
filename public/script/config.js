@@ -6,6 +6,7 @@ configApp.value('heatMapProject2', 'RPoFzDjhHLdV');
 configApp.value('googleMapAPIKey', 'AIzaSyAL32H2arSyCcBfcD49o1wG32pkHaNlOJE');
 configApp.value('projectCreators', 'cartoproject');
 configApp.value('showTLX', 0); //1 for TLX Survey
-configApp.value('showGAME', 1); //1 for Game Survey
+configApp.value('showGAME', 0); //1 for Game Survey
+configApp.value('showIMI', 1); //1 for IMI Survey with specific subscales
 
 

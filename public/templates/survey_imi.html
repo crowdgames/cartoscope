@@ -1,0 +1,98 @@
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4"><p class="h1">Follow up Survey</p></div>
+        <div class="col-md-4"></div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10"><p>Thank you for taking the time to contribute to our study. Your participation is invaluable to our work. As we
+            move forward, we would like to get some feedback from you about the usability of our software so that we can
+            take your thoughts into consideration during redevelopment. Please take a few moments to complete our brief
+            questionnaire and feel free to provide any additional comments you would like to share with us.</p></div>
+        <div class="col-md-1"></div>
+    </div>
+
+
+
+    <form class="horizontal col-md-offset-1 col-md-10" name="forms.mturk_form" >
+
+
+        <!--<div class="form-group">-->
+            <!--<label>What did you think of the activity?<span ng-if="req_answers" style="color:#9CDC18">*</span></label>-->
+            <!--<textarea class="form-control" rows="2" cols="50" ng-model="response.opinion" required></textarea>-->
+        <!--</div>-->
+
+        <!--<div class="form-group">-->
+            <!--<label>What did you think the images that you sorted could be used for?</label>-->
+            <!--<textarea class="form-control" rows="2" cols="50" ng-model="response.image_use" ></textarea>-->
+        <!--</div>-->
+
+        <!--<div class="form-group">-->
+            <!--<label>Do you have any thoughts about the images you looked at?</label>-->
+            <!--<textarea class="form-control" rows="2" cols="50" ng-model="response.image_opinion" ></textarea>-->
+        <!--</div>-->
+
+        <!--<div class="form-group">-->
+            <!--<label>What would you improve or change in the activity?</label>-->
+            <!--<textarea class="form-control" rows="3" cols="50" ng-model="response.improve" ></textarea>-->
+        <!--</div>-->
+
+        <div ng-show="imi_enjoy">
+            <div class="row" ng-repeat="likert_q in imi_q_enjoyment">
+                <div class="col-md-12">
+                <div class="form-group" >
+                    <center>
+                        <h4>{{likert_q.question}}<span ng-if="req_answers" style="color:#9CDC18">*</span></h4>
+                        <label >Not at all true</label>
+                        <label ng-repeat="n in getNumber(likert_q.value)">
+                            <input type="radio" name="{{likert_q.question}}" style="margin:20px" ng-model="likert_q.answer" ng-value=n  />
+                        </label>
+                        <label >Very True</label>
+
+                    </center>
+                </div>
+            </div>
+            </div>
+
+        </div>
+
+        <div ng-show="imi_competence">
+            <div class="form-group" ng-repeat="likert_q in imi_q_competence">
+                <center>
+                    <h4>{{likert_q.question}}<span ng-if="req_answers" style="color:#9CDC18">*</span></h4>
+                    <label >Not at all true</label>
+                    <label ng-repeat="n in getNumber(likert_q.value)">
+                        <input type="radio" name="{{likert_q.question}}" style="margin:20px" ng-model="likert_q.answer" ng-value=n  />
+                    </label>
+                    <label >Very True</label>
+
+                </center>
+            </div>
+        </div>
+
+
+
+        <br>
+
+        <div class="form-group">
+            <label>In the space provided, please provide any additional feedback you would like to share on this project.</label>
+            <textarea class="form-control" rows="3" cols="50" ng-model="response.additional_text"></textarea>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-md-10">Thank you for your time and your thoughts! Click Submit to complete your submission.</div>
+        </div>
+        <br>
+        <div class="form-group">
+            <button type="submit" ng-click="submit(mturk_form)" class="form-control btn btn-primary btn btn-block" style="background-color:#9cdc1f;color:black;">Submit</button>
+        </div>
+
+    </form>
+</div>
+
+
+
+

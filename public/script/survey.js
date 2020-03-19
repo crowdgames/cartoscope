@@ -41,6 +41,13 @@ module.config(function($stateProvider, $urlRouterProvider) {
         controller: 'surveyGAMEontroller'
     });
 
+    $stateProvider.state({
+        name: 'surveyIMI',
+        url: '/surveyIMI',
+        templateUrl: 'templates/survey_imi.html',
+        controller: 'surveyIMIController'
+    });
+
 
 
 
@@ -1017,6 +1024,184 @@ module.controller('surveyGAMEontroller', ['$scope', '$http', '$state', '$locatio
     $scope.checkInput = function(input) {
         if(input != undefined) {  return input}
         else {return 'ULB'}
+    }
+
+}]);
+
+
+
+module.controller('surveyIMIController', ['$scope', '$http', '$state', '$location','$timeout','$compile',function($scope, $http, $state, $location,$timeout,$compile) {
+
+
+    //locatin search, if coming from tileoscope or tileoscope AR
+
+
+    $scope.fromTileoscope = 0;
+    $scope.participantId ="";
+    $scope.trialId = "";
+
+    $scope.imi_enjoy = true;
+    $scope.imi_competence = true;
+
+
+    //if coming from tileoscope
+    if ($scope.params.hasOwnProperty("src") ){
+        $scope.fromTileoscope = 1;
+        $scope.participantId = $scope.params.workerId ||  $scope.params.participantId;
+        $scope.trialId = $scope.params.hitId ||  $scope.params.trialId;
+        $scope.userType = "mTurk"
+    } else {
+        $scope.userType = $scope.params.userType;
+    }
+
+
+
+
+    //Generate numbers for radio buttons for Likert (7 scales)
+    $scope.getNumber = function(n){
+        var ratings = [];
+        for (var i = 1; i <= n; i ++){
+            ratings.push(i)
+        }
+        return ratings;
+    };
+
+    function shuffleArray(array) {
+        for (var i = array.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
+    }
+
+    //imi questions: enjoyment:
+    $scope.imi_q_enjoyment = [
+        {'question': 'I enjoyed doing this activity very much.' , 'value': 7},
+        {'question': 'This activity was fun to do.' , 'value': 7},
+        {'question': 'I thought this was a boring activity.' , 'value': 7},
+        {'question': 'This activity did not hold my attention at all.' , 'value': 7},
+        {'question': 'I would describe this activity as very interesting.' , 'value': 7},
+        {'question': 'I thought this activity was quite enjoyable.' , 'value': 7},
+        {'question': 'While I was doing this activity, I was thinking about how much I enjoyed it.' , 'value': 7}
+    ];
+    //shuffle: in place
+    shuffleArray($scope.imi_q_enjoyment);
+
+    //imi questions: Competence:
+    $scope.imi_q_competence = [
+        {'question': 'I think I am pretty good at this activity.' , 'value': 7},
+        {'question': 'I think I did pretty well at this activity, compared to others.' , 'value': 7},
+        {'question': 'After working at this activity for awhile, I felt pretty competent.' , 'value': 7},
+        {'question': 'I am satisfied with my performance at this task.' , 'value': 7},
+        {'question': 'I was pretty skilled at this activity.' , 'value': 7},
+        {'question': 'This was an activity that I couldn\'t do very well.' , 'value': 7},
+    ];
+    //shuffle: in place
+    shuffleArray($scope.imi_q_competence);
+
+
+    $scope.req_answers = false;
+
+    $scope.forms = {};
+
+    if ($scope.userType == 'mTurk') {
+        $scope.req_answers = true;
+    }
+
+    $scope.submit = function() {
+
+        var data = $scope.transformDataIMI($scope.response, $scope.userType);
+
+        if ($scope.userType == 'mTurk') {
+            if (data.opinion == 'ULB') {
+                return alert("Please fill out all the required fields!")
+            }
+        }
+
+        
+        if (data != -1) {
+
+            var link = '/api/project/' + $scope.params.code + '/survey';
+
+
+            //TODO: if coming from Tileoscope, add hit id and participant id and save to different table
+            if ($scope.fromTileoscope){
+                link = '/api/project/surveyTileoscope';
+                data.participantId = $scope.participantId;
+                data.trialId = $scope.trialId;
+            }
+
+            $http.post(link, JSON.stringify(data)).then(function(data) {
+                // console.log('data',data.data);
+                //console.log(data.data.hitCode);
+                if (data.data.hitCode) {
+                    $state.go('hitCode', {hitCode: data.data.hitCode});
+                } else if (data.data.heatMap) {
+                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId});
+                }
+            }, function(err) {
+                if ($scope.userType == 'mTurk') {
+
+                    //if there is any other unexpected issue, use fallback code:
+                    var fallback = "c0b72bcf-39ac-40f5-99c4-d4016f510237";
+                    alert('Something unexpected occurred. Please use the following completion code to get compensated: ' + fallback);
+                } else {
+                    alert('Something unexpected occurred.');
+                }
+            });
+        } else {
+            alert("Please fill out all the required fields!")
+        }
+    };
+
+    $scope.transformDataIMI = function(response, userType) {
+
+
+        var survey_ok = 1;
+        //fixed TLX questions
+        // ULB stands for User Left Blank
+        var ret_obj =  {
+            'additional_feedback':  $scope.checkInput(response['additional_text']) || 'ULB'
+        };
+
+        if ($scope.imi_enjoy){
+            $scope.imi_q_enjoyment.forEach(function (item) {
+                item.answer = $scope.checkInput(item.answer) || -1;
+                ret_obj[item.question] = item.answer;
+
+                if ($scope.req_answers && item.answer == -1) {
+                    survey_ok = -1;
+                    console.log(item.question)
+
+                }
+            })
+
+        }
+        if ($scope.imi_competence){
+            $scope.imi_q_competence.forEach(function (item) {
+                item.answer = $scope.checkInput(item.answer) || -1;
+                ret_obj[item.question] = item.answer;
+                if ($scope.req_answers && item.answer == -1) {
+                    console.log(item.question)
+                    survey_ok = -1;
+                }
+            })
+
+        }
+        if (survey_ok == -1){
+            return survey_ok
+        } else {
+            return ret_obj;
+
+        }
+
+
+    };
+
+    $scope.checkInput = function(input) {
+        if(input != undefined) {  return input}
+        else {return -1}
     }
 
 }]);
