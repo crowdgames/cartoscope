@@ -323,7 +323,8 @@ router.post('/add', [upload.any(), filters.requireLogin, filters.requiredParamHa
           function(result) {
             res.send({id: result.insertId, code: projectCode});
           }, function(err) {
-            res.status(500).send({error: err.code});
+                console.log(err);
+                res.status(500).send({error: err.code});
           });
       });
     }
