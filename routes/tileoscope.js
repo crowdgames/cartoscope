@@ -47,6 +47,35 @@ const fupload = multer({ storage: storage });
 
 
 
+
+//endpoint for sorting them into a dataset
+router.get('/compareTGCC/:hit_id', function(req, res, next) {
+
+
+    //TODO: 3 datasets: tennis, animals, bridges
+    var possibles = ['wNqGQrb1d8rN','I9LEzE0k0qxJ','EGHiAhY5ucce'];
+
+    var hit_id= req.params.hit_id;
+    var pick_d = randomInt(0,2); //pick dataset
+    var selected_d = possibles[pick_d];
+    var pick_tg = randomInt(0,1);
+
+    //if pick Tile-o-Scope Grid, then go to TG, else go to Cartoscope Classic
+    if (pick_tg){
+        //nob means no bonus
+        var link = 'http://cartosco.pe/Tiles/?genetic='+ selected_d +'&trialId=' + hit_id + '&nob=1';
+
+    } else {
+        var link = 'https://cartosco.pe/api/anon/startAnon/'+ pick_d + '?trialId='+ hit_id;
+    }
+    //redirect to link:
+    res.redirect(link)
+
+});
+
+
+
+
 // Register tileoscope User to Cartoscope Code
 router.post('/registerTileoscopeUser', function(req, res, next) {
 
@@ -1411,3 +1440,10 @@ router.get('/getDatasetInfo/:code' , function(req, res, next) {
         res.status(404).send(error)
     })
 });
+
+
+
+//return random integer [min,max]
+function randomInt(min,max){
+    return (Math.floor(Math.random() * (max - min + 1) ) + min);
+}
