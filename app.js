@@ -131,6 +131,14 @@ app.get('/ar_tags', function(req, res) {
 });
 
 
+
+//ar main page
+app.get('/ar', function(req, res) {
+    res.redirect('/#/home_ar');
+});
+
+
+
 //go to inat report page after authorization with code attached
 app.get('/inat_auth', function(req, res) {
 
