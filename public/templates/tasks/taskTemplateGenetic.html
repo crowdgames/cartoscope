@@ -403,13 +403,16 @@
                     <center>
                     <div class="col-md-12" style="color: black">
                         <div ng-repeat="item in model.tutorial" style="display: inline;">
-                            <img ng-src ="{{item.image}}" style="max-height: 200px; max-width: 200px;margin: 5px;">
+                            <img ng-src ="{{item.image}}" ng-click="model.alertText(item.explanation)" style="max-height: 200px; max-width: 200px;margin: 5px;">
                         </div>
                     </div>
                     </center>
 
                     <div class=" answers" >
                     <button  ng-class="model.getColourClass(model.tutorial_button.color)"class="options">{{model.tutorial_button.text}}</button>
+                        <div>
+                            <small>Click on images to show explanation</small>
+                        </div>
                     </div>
 
 

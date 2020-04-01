@@ -1601,6 +1601,8 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
     vm.goTo=5;
     vm.showTutorialLink = false;
 
+    vm.annotated = false;
+
 
         vm.fetchCenter = fetchCenter;
         vm.centerChanged = centerChanged;
@@ -1725,6 +1727,8 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
         }
         function next_button() {
 
+            //hide annotated state
+            vm.annotated = false;
 
             //handle mapping task
             if(vm.params.projectType == 'mapping') {
@@ -1802,11 +1806,16 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
 
             } else {
 
+
+                vm.annotated = true; //show annotated image if available
+
+
                 var l_answer = vm.tutorial[vm.counter].answer;
                 // console.log(l_answer.toLowerCase(),option.toLowerCase());
                 if (l_answer.toLowerCase() != option.toLowerCase()) {
-
+                    vm.annotated = false; //show annotated image if available
                     return alert("Your input is incorrect. Please try again.");
+
                 }
 
                 // console.log('in correct options');
@@ -2060,12 +2069,14 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                     var tutpath = '../../images/Tutorials/';
 
 
-
                     if (item.hasOwnProperty('in_dataset') &&  item.in_dataset == 1){
                         //tutpath = '../../../dataset/' + data.data[0].dataset_id + '/';
                         tutpath = '/api/tasks/getImageFree/' + data.data[0].dataset_id + '/'
                     }
-                    console.log(tutpath + item.image_name);
+                    var it_annot = tutpath + item.image_name;
+                    if (item.image_annotation){
+                        it_annot = '../../images/Tutorials/' + vm.params.project + '/' +  item.image_annotation;
+                    }
 
                     var obj = {
                         image: tutpath + item.image_name,
@@ -2080,7 +2091,8 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                         tilt: 0,
                         col_number : parseInt(sel_num),
                         poi_name : item.poi_name || '',
-                        image_source: item.image_source
+                        image_source: item.image_source,
+                        image_annotation: it_annot
                     };
                     if( vm.params.projectType != 'mapping') {
 
@@ -2090,6 +2102,8 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                     }
 
                 });
+
+                console.log(vm.tutorial)
 
                 if(vm.params.projectType == 'mapping'){
 

@@ -222,6 +222,14 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           return  $sce.trustAsResourceUrl(url)
       };
 
+      vm.alertText = function(text){
+          if (text){
+              alert(text)
+          } else {
+              alert('No information available.');
+          }
+      };
+
 
 
       vm.makeSliderObj = function(){
@@ -344,11 +352,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
                   }
               }
-
-
-
-
-
 
 
           } else {
@@ -641,8 +644,20 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   //get only the images of the button that is hovering
                   if (item.answer == option) {
 
+
+                      var tutpath = '../../images/Tutorials/';
+
+                      if (item.hasOwnProperty('in_dataset') &&  item.in_dataset == 1){
+                          //tutpath = '../../../dataset/' + data.data[0].dataset_id + '/';
+                          tutpath = '/api/tasks/getImageFree/' + tdata.data[0].dataset_id + '/'
+                      }
+                      var it_annot = tutpath + item.image_name;
+                      if (item.image_annotation){
+                          it_annot = '../../images/Tutorials/' + vm.code + '/' +  item.image_annotation;
+                      }
+
                       var obj = {
-                          image: '../../images/Tutorials/' + item.image_name,
+                          image: it_annot,
                           answer: item.answer,
                           text: item.explanation,
                           color: sel_col,
@@ -652,10 +667,13 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                           heading: 0,
                           tilt: 0,
                           col_number: parseInt(sel_num),
-                          poi_name: item.poi_name || ''
+                          poi_name: item.poi_name || '',
+                          explanation: item.explanation
                       };
 
-                      if( (vm.data.template.selectedTaskType == 'tagging') || (vm.data.template.selectedTaskType == 'ngs') || (
+                      if( (vm.data.template.selectedTaskType == 'tagging') ||
+                          (vm.data.template.selectedTaskType == 'slider') ||
+                          (vm.data.template.selectedTaskType == 'ngs') || (
                               (vm.data.template.selectedTaskType == 'mapping') && (vm.data.point_selection == false)
                           )) {
                           vm.tutorial.push(obj)
@@ -1259,6 +1277,14 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
         vm.checkSatisfiedSequence = checkSatisfiedSequence;
         var SEQ_DEPTH = 6; //TODO: Change from hardcoded to variable
 
+        vm.alertText = function(text){
+            if (text){
+                alert(text)
+            } else {
+                alert('No information available.');
+            }
+        }
+
         //hide progress bar:
         vm.viewProgress = true;
 
@@ -1722,8 +1748,22 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
                     //get only the images of the button that is hovering
                     if (item.answer == option) {
 
+                        //if tutorial image in dataset, fetch from dataset
+                        var tutpath = '../../images/Tutorials/';
+
+                        if (item.hasOwnProperty('in_dataset') &&  item.in_dataset == 1){
+                            //tutpath = '../../../dataset/' + data.data[0].dataset_id + '/';
+                            tutpath = '/api/tasks/getImageFree/' + tdata.data[0].dataset_id + '/'
+                        }
+                        var it_annot = tutpath + item.image_name;
+                        if (item.image_annotation){
+                            it_annot = '../../images/Tutorials/' + vm.code + '/' +  item.image_annotation;
+                        }
+
+                        // console.log(it_annot);
+
                         var obj = {
-                            image: '../../images/Tutorials/' + item.image_name,
+                            image: it_annot,
                             answer: item.answer,
                             text: item.explanation,
                             color: sel_col,
@@ -1736,7 +1776,7 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
                             poi_name: item.poi_name || ''
                         };
 
-                        if( (vm.data.template.selectedTaskType == 'tagging') || (vm.data.template.selectedTaskType == 'ngs') ||   (
+                        if( (vm.data.template.selectedTaskType == 'tagging') || (vm.data.template.selectedTaskType == 'slider') || (vm.data.template.selectedTaskType == 'ngs') ||   (
                                 (vm.data.template.selectedTaskType == 'mapping') && (vm.data.point_selection == false)
                             )) {
                             vm.tutorial.push(obj)

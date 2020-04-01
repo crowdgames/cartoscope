@@ -128,6 +128,8 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
         vm.goTo=5;
         vm.showTutorialLink = false;
 
+        vm.annotated = false;
+
 
         vm.fetchCenter = fetchCenter;
         vm.centerChanged = centerChanged;
@@ -421,6 +423,8 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
 
         function next_button() {
 
+            vm.annotated = false;
+
 
             //handle mapping task
             if(vm.params.projectType == 'mapping') {
@@ -497,15 +501,22 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
 
             } else {
 
+
                 var l_answer = vm.tutorial[vm.counter].answer;
                 if (l_answer.toLowerCase() != option.toLowerCase()) {
-
+                    vm.annotated = false; //show annotated image if available
                     return alert("Your input is incorrect. Please try again.");
+
+                } else {
+                    vm.annotated = true; //show annotated image if available
+
                 }
 
                 // console.log('in correct options');
                 document.getElementById("correct-note").style.visibility = "visible";
                 document.getElementById("tut_next").style.visibility = "visible";
+
+
             }
 
             if (vm.counter == vm.goTo) {
@@ -682,8 +693,10 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                         tutpath = '/api/tasks/getImageFree/' + data.data[0].dataset_id + '/'
                     }
 
-                    console.log(tutpath + item.image_name);
-
+                    var it_annot = tutpath + item.image_name;
+                    if (item.image_annotation){
+                        it_annot = '../../images/Tutorials/' + item.image_annotation;
+                    }
 
                     var obj = {
                         image: tutpath + item.image_name,
@@ -698,7 +711,8 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                         tilt: 0,
                         col_number : parseInt(sel_num),
                         poi_name : item.poi_name || '',
-                        image_source: item.image_source
+                        image_source: item.image_source,
+                        image_annotation: it_annot
 
                     };
                     if( vm.params.projectType != 'mapping') {

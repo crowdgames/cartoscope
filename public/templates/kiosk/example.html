@@ -13,15 +13,18 @@
 
         <div class="row" ng-show="model.params.projectType === 'tagging' || model.params.projectType === 'slider'">
 
+
+
+
             <center>
             <div class="col-lg-3"></div>
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <img id="tut_image" class="img-responsive img-border" ng-src="{{model.tutorial[model.counter].image}}">
+                <img ng-show="!model.annotated" id="tut_image" class="img-responsive img-border" ng-src="{{model.tutorial[model.counter].image}}">
+                <img ng-show="model.annotated" id="tut_image" class="img-responsive img-border" ng-src="{{model.tutorial[model.counter].image_annotation}}">
+
             </div>
             <div class="col-lg-3"></div>
             </center>
-
-
         </div>
 
         <!--NGS: show ngs image instead of stored image-->
