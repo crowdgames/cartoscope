@@ -177,6 +177,11 @@ button:hover{
     height: 80%;}
 
 
+div.juxtapose {
+    width: 600px;
+    height: 600px;
+}
+
 div.jx-slider {
     max-width: 600px;
     max-height: 600px;
@@ -326,6 +331,12 @@ div.jx-slider {
 
     body, .task-body{
         max-width:100%
+    }
+
+
+    div.juxtapose {
+        width: 350px;
+        height: 350px;
     }
 
 
