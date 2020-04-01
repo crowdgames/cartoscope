@@ -159,8 +159,14 @@ exports.updateHasLocation = function(projectId, has_location) {
 exports.updateARReady = function(projectId, ar_ready) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
+
+        var ar_bit =0;
+        if (ar_ready){
+             ar_bit =1;
+        }
+
         connection.queryAsync('UPDATE projects SET ar_ready=? WHERE id=?',
-            [ar_ready, projectId]).then(
+            [ar_bit, projectId]).then(
             function(data) {
                 resolve(data);
             }, function(err) {
