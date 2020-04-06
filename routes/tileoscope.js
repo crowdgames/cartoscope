@@ -66,7 +66,7 @@ router.get('/compareTGCC/:hit_id', function(req, res, next) {
         var link = 'http://cartosco.pe/Tiles/?genetic='+ selected_d +'&trialId=' + hit_id + '&nob=1';
 
     } else {
-        var link = 'https://cartosco.pe/api/anon/startAnon/'+ pick_d + '?trialId='+ hit_id;
+        var link = 'https://cartosco.pe/api/anon/startAnon/'+ selected_d + '?trialId='+ hit_id;
     }
     //redirect to link:
     res.redirect(link)
