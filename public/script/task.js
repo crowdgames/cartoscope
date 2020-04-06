@@ -117,6 +117,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       $window.document.title = "Tasks";
 
 
+      console.log(showGAME,showIMI);
+
       var vm = this;
       vm.centerChanged = centerChanged;
       vm.zoomChanged = zoomChanged;
