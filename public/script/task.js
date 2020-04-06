@@ -112,7 +112,7 @@ module.controller('defaultController', ['$scope', '$location', function($scope, 
 //
 // }]);
 
-module.controller('taskController', ['$scope', '$location', '$http', 'userData', '$window', '$timeout', 'NgMap','$q', '$sce', 'showTLX', 'heatMapProject1', 'heatMapProject2',
+module.controller('taskController', ['$scope', '$location', '$http', 'userData', '$window', '$timeout', 'NgMap','$q', '$sce', 'showTLX','showGAME','showIMI', 'heatMapProject1', 'heatMapProject2',
   function($scope, $location, $http, userData,  $window, $timeout, NgMap, $q,$sce, showTLX,showGAME,showIMI, heatMapProject1, heatMapProject2) {
       $window.document.title = "Tasks";
 
@@ -1250,7 +1250,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
   }]);
 
 
-module.controller('geneticTaskController', ['$scope', '$location', '$http', 'userData', '$window', '$timeout', 'NgMap','$q', '$sce', 'showTLX', 'heatMapProject1', 'heatMapProject2',
+module.controller('geneticTaskController', ['$scope', '$location', '$http', 'userData', '$window', '$timeout', 'NgMap','$q', '$sce', 'showTLX','showGAME','showIMI', 'heatMapProject1', 'heatMapProject2',
     function($scope, $location, $http, userData,  $window, $timeout, NgMap, $q,$sce, showTLX,showGAME,showIMI, heatMapProject1, heatMapProject2) {
         $window.document.title = "Tasks";
 
