@@ -798,10 +798,14 @@ exports.insertTutorialItems = function(projectId,data){
 
                 if (key == "image_name"){
                     query2 += ", \"" + image_path  + "\" "
+                } else if (key == "explanation"){
+                    query2 += ", \"" + connection.escape(data[key])  + "\" "
+
                 } else {
                     query2 += ", \"" + data[key]  + "\" "
 
                 }
+
 
             }
         }
