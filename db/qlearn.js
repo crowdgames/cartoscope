@@ -16,8 +16,11 @@ var Chance = require('chance'); //for random weighted
 var chance = new Chance();
 
 
-var ALPHA = 0.001;
+// var ALPHA = 0.001;
+
+var ALPHA = 0.01;
 var LAMBDA = 0.95;
+SOFTMX = true; // whether to use softmax vs squared
 
 var ACTIONS = ['44_CaDo_C4_M0',
                 '55_TeNoTeG_C8_M0',
@@ -390,98 +393,16 @@ exports.QlearnAlgorithm = function(player_paths,main_code, Q, player_mistakes) {
 
 
             }) //end of paths from player
+
+            //TODO: now that we have done all updates for this player, we must update the user_index in the db!
+            var user_path = ppt.seq.split('-');
+            exports.updatePlayerPathIndex(ppt.id,user_path.length);
+
+
         }); //end of q table generation
 
 
-
-
-
-            //
-            // //pick a random path from all players
-            // var rand_pos = randomInt(0, player_paths.length - 1);
-            // var rand_traj_raw = player_paths[rand_pos];
-            // //data is in string format separated by commas. convert to array
-            // var rand_traj_seq = rand_traj_raw.seq.split('-');
-            // var rand_traj_tiles = rand_traj_raw.tiles_collected.split('-');
-            //
-            // //pick our example: it should be in the form of
-            // // state (empty, 1,2...STATE LEN),
-            // // action is the one right after
-            // // value is the value of the action
-            // //so we want to pick a point, then get from that point up to -STATE_LEN + 1 if possible
-            //
-            //
-            // //pick a random subseq from the sequences:
-            // // first pick the point to end
-            // var rand_point_end = randomInt(0, rand_traj_seq.length - 1);
-            // //then pick the point to start by going back STATE LEN times
-            // var rand_point_start = Math.max(0, rand_point_end - STATE_LEN );
-            //
-            //
-            // //js note: slice ends at, but does not include last argument. so we need +1
-            // var example_seq =  rand_traj_seq.slice(rand_point_start,rand_point_end+1);
-            // var example_tiles_c =  rand_traj_tiles.slice(rand_point_start,rand_point_end+1);
-            //
-            //
-            // //next state is going to be one step after. but if we picked the end, then they quit, so X
-            // var next_state = "";
-            // if (rand_point_end == rand_traj_seq.length - 1) {
-            //     next_state = "X";
-            // } else {
-            //     next_state_arr = example_seq.slice(rand_point_start+1,rand_point_end+1);
-            //     next_state = next_state_arr.join(',')
-            // }
-            //
-            // // action is going to be last item on what we got, value is going to be its tiles
-            // //everything else will be the state
-            // //pop the last item
-            // var action = example_seq.pop();
-            // var collected = parseInt(example_tiles_c.pop());
-            // var value = collected *  WEIGHTS[action];
-            // var state = example_seq.join('-');
-            // //key is going to be state | action | player current mistakes
-            // var key = state + "|" + action + "|" + p_mc;
-
-            // //we need the id in here: first search if there is a partial key, if there is then update key with its id
-            // //the reason we need the id is that we cannot have unique index in mySQL with state (text instead of varchar, can be arbitrarily long)
-            // //so we encode the id in the key so that we can pass that information when updating the q-table, so we can catch the duplicates correctly
-            // var has_key = Object.keys(Q).filter(function(item, index) {
-            //     return item.indexOf(key + "|") == 0;
-            // });
-            //
-            // if (has_key.length){
-            //     key = has_key[0]
-            // }
-            //
-            //
-            // //if key not in Q then init it
-            // if (! Q.hasOwnProperty(key)) {
-            //     Q[key] = 0
-            // }
-            // //update Qlearn table
-            // var max_next_Q = -99.0;
-            // ACTIONS.forEach(function(try_act){
-            //
-            //     var try_key = next_state + "|" + try_act;
-            //     var try_Q = 0.0;
-            //     if (Q.hasOwnProperty(try_key)){
-            //         try_Q = Q[try_key]
-            //     }
-            //     max_next_Q = Math.max(try_Q,max_next_Q);
-            // });
-            //
-            // //update Q[key]
-            // Q[key] = (1.0 - ALPHA) * Q[key] + ALPHA * (value + LAMBDA * max_next_Q)
-            // //keep track that this needed update
-            // if (update_keys_array.indexOf(key) == -1) {
-            //     update_keys_array.push(key);
-            // }
-
-
-
         //order them ascending:
-
-
         console.log("Have to update " + update_keys_array.length.toString() + " entries");
 
         //update Q-table first
@@ -504,6 +425,23 @@ exports.QlearnAlgorithm = function(player_paths,main_code, Q, player_mistakes) {
     })
 
 };
+
+
+
+//update user path
+exports.updatePlayerPathIndex = function(path_id,new_index) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+        connection.queryAsync('update tileoscope_paths set user_index=? where id=?',[new_index,path_id]).then(
+            function(data) {
+                resolve(data)
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
 
 
 
@@ -543,8 +481,10 @@ function QlearnAlgorithmConstruct(Q,size_n,p_mistakes) {
             state = state_arr.join("-")
         }
 
+
         var max_act = "";
         var max_Q = -99.0;
+        var tq_n = 0;
         var pick_w = [];
         var pick_act = [];
         var norm_w = 0;
@@ -563,13 +503,24 @@ function QlearnAlgorithmConstruct(Q,size_n,p_mistakes) {
 
             if (Q.hasOwnProperty(try_key)){
                 try_Q = parseFloat(Q[try_key]);
+            } else {
+                try_Q = -99.0;
             }
-            norm_w = norm_w + try_Q*try_Q;
-            pick_w.push(try_Q*try_Q);
+
+            //if softmax, then use softmax function to normalize weights
+            // else used squared value of function
+            if (SOFTMX){
+                tq_n = Math.exp(try_Q);
+            } else {
+                tq_n = Math.pow(try_Q, 2);
+            }
+
+            norm_w = norm_w + tq_n;
+            pick_w.push(tq_n);
             pick_act.push(try_act);
         });
-        //normalize weights of choices
 
+        //normalize weights of choices
 
         var pick_w_norm = [];
         for (var j = 0; j < pick_w.length; j++) {
@@ -593,6 +544,11 @@ function QlearnAlgorithmConstruct(Q,size_n,p_mistakes) {
 };
 
 
+
+
+
+
+
 //return random integer [min,max]
 function randomInt(min,max){
     return (Math.floor(Math.random() * (max - min + 1) ) + min);
@@ -614,6 +570,59 @@ function encodeMistakes(num_m){
     }
 }
 
+// function convertPathToKeys(rand_traj_raw) {
+//
+//     //for a given user path, convert to array of objects:
+//     // { state: , action: , collected: , next_state}, ...
+//
+//     var rand_traj_seq = rand_traj_raw.seq.split('-');
+//     var rand_traj_tiles = rand_traj_raw.tiles_collected.split('-');
+//
+//     var q_array_path = [];
+//     var pos = rand_traj_seq.length - 1; //start from end
+//     while (pos + STATE_LEN > 0) {
+//         for (var i = 0; i <= STATE_LEN; i++) {
+//
+//             var start_pos = pos - i;
+//             if (start_pos < 0) {
+//                 start_pos = 0
+//             }
+//             var example_seq = rand_traj_seq.slice(start_pos, pos + 1);
+//             var example_tiles_c = rand_traj_tiles.slice(start_pos, pos + 1);
+//             if (example_seq.length) {
+//                 var action = example_seq.pop();
+//                 var collected = parseInt(example_tiles_c.pop());
+//                 var value = collected * WEIGHTS[action];
+//                 var state = example_seq.join('-');
+//                 //next state is going to be one step after. but if we picked the end,
+//                 // then they quit, so X
+//                 var next_state = "";
+//                 var next_state_arr = [];
+//                 if (pos == rand_traj_seq.length - 1) {
+//                     next_state = "X";
+//                 } else {
+//                     next_state_arr = example_seq.concat([action]);
+//                     //if it is more than length 3, cut it to last 3
+//                     if (next_state_arr.length > STATE_LEN) {
+//                         next_state_arr = next_state_arr.slice(-STATE_LEN)
+//                     }
+//                     next_state = next_state_arr.join('-')
+//                 }
+//                 var obj = {
+//                     'state': state,
+//                     'action': action,
+//                     'value': value,
+//                     'next_state': next_state,
+//                 };
+//                 q_array_path.push(obj)
+//             }
+//         }
+//         pos = pos - 1;
+//     }
+//     return q_array_path;
+//
+// }
+
 function convertPathToKeys(rand_traj_raw) {
 
     //for a given user path, convert to array of objects:
@@ -622,43 +631,41 @@ function convertPathToKeys(rand_traj_raw) {
     var rand_traj_seq = rand_traj_raw.seq.split('-');
     var rand_traj_tiles = rand_traj_raw.tiles_collected.split('-');
 
+    //this is what is the first thing we must see
+    var user_index = rand_traj_raw.user_index || 0;
+
     var q_array_path = [];
-
     var pos = rand_traj_seq.length - 1; //start from end
-
-    while (pos + STATE_LEN > 0) {
-
+    while (pos  >= user_index) {
         for (var i = 0; i <= STATE_LEN; i++) {
 
             var start_pos = pos - i;
             if (start_pos < 0) {
-                start_pos = 0
+                // start_pos = 0
+                continue;
             }
             var example_seq = rand_traj_seq.slice(start_pos, pos + 1);
             var example_tiles_c = rand_traj_tiles.slice(start_pos, pos + 1);
-
             if (example_seq.length) {
-
                 var action = example_seq.pop();
                 var collected = parseInt(example_tiles_c.pop());
                 var value = collected * WEIGHTS[action];
                 var state = example_seq.join('-');
-
                 //next state is going to be one step after. but if we picked the end,
                 // then they quit, so X
                 var next_state = "";
                 var next_state_arr = [];
-                if (pos == rand_traj_seq.length - 1) {
-                    next_state = "X";
+
+                next_state_arr = example_seq.concat([action]);
+                //if it is more than length 3, cut it to last 3
+                if (next_state_arr.length > STATE_LEN) {
+                    next_state_arr = next_state_arr.slice(-STATE_LEN)
+                }
+
+                if(next_state.indexOf("X") != -1){
+                    next_state = "X"
                 } else {
-                    next_state_arr = example_seq.concat([action]);
-
-                    //if it is more than length 3, cut it to last 3
-                    if (next_state_arr.length > STATE_LEN) {
-                        next_state_arr = next_state_arr.slice(-STATE_LEN)
-                    }
-
-                    next_state = next_state_arr.join('-')
+                    next_state = next_state_arr.join('-');
                 }
 
                 var obj = {
@@ -669,10 +676,7 @@ function convertPathToKeys(rand_traj_raw) {
                 };
                 q_array_path.push(obj)
             }
-
-
         }
-
         pos = pos - 1;
     }
     return q_array_path;
