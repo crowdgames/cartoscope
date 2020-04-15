@@ -317,26 +317,29 @@ router.post('/submitMove', function(req, res, next) {
 
     else {
 
+        var worker_hashed = bcrypt.hashSync(workerId+hitId, salt);
+
 
         //make sure there is a project
-        tileDB.submitTileoscopeMove(workerId,hitId,move).then(function(project) {
+        tileDB.submitTileoscopeMove(worker_hashed,hitId,move).then(function(project) {
 
 
             //TODO: if move was cairn, must add that to table as well
             var move_parsed = JSON.parse(move);
             var  level_id = move_parsed.level_id;
+            var level_number = move_parsed.level;
 
             if (move_parsed.hasOwnProperty('level_id') && level_id.startsWith('CAIRN')){
 
                 console.log("Storing message");
 
                 //make sure there is a project
-                tileDB.submitTileoscopeCairn(workerId,hitId,move_parsed).then(function(dd) {
+                tileDB.submitTileoscopeCairn(worker_hashed,hitId,move_parsed).then(function(dd) {
 
                     //res.status(200).send('Move and cairn submitted successfully');
 
-                    //get the recnt ones
-                    tileDB.getRecentCairns(hitId,num_recent,workerId).then(function(cairns) {
+                    //get the recnt ones in that level
+                    tileDB.getRecentCairnsLevel(hitId,num_recent,worker_hashed,level_number).then(function(cairns) {
 
                         var c_arry = [];
                         cairns.forEach(function(item){

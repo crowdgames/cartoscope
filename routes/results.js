@@ -1,5 +1,6 @@
 var resultDB = require('../db/results');
 var projectDB = require('../db/project');
+var tileDB = require('../db/tileoscope');
 var filters = require('../constants/filters');
 var express = require('express');
 var router = express.Router();
@@ -15,8 +16,8 @@ module.exports = router;
 
 
 
-//Get simple results for list of projects from mturk workers
-router.get('/:hit_id', function(req, res, next) {
+//Get simple results from HIT for Cartoscope Classic
+router.get('/votes/:hit_id', function(req, res, next) {
 
     var hit_id = req.params.hit_id;
     resultDB.getProjectsVotesHIT(hit_id).then(function(results) {
@@ -27,7 +28,22 @@ router.get('/:hit_id', function(req, res, next) {
 });
 
 
-//Get simple results for list of projects from mturk workers
+//Get simple results from HIT for Tile-o-Scope Grid
+router.get('/votesTG/:hit_id', function(req, res, next) {
+    
+    //if one of the two missing, then error!
+    var hitId = req.params.hit_id;
+    //make sure there is a project
+    tileDB.getTileoscopeMoves(hitId).then(function(moves) {
+        res.send(moves);
+    }, function(err) {
+        console.log('err ', err);
+        res.status(404).send('No trial found.');
+    });
+});
+
+
+//Get survey results for HIT from Cartoscope Classic
 router.get('/survey/:hit_id', function(req, res, next) {
 
     var hit_id = req.params.hit_id;
@@ -39,7 +55,7 @@ router.get('/survey/:hit_id', function(req, res, next) {
 });
 
 
-//Get simple results for list of projects from mturk workers
+//Get survey results from HIT from Tile-o-Scope Grid
 router.get('/surveyTG/:hit_id', function(req, res, next) {
 
     var hit_id = req.params.hit_id;

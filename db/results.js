@@ -221,6 +221,21 @@ exports.getProjectsVotesHIT = function(hit_id) {
 };
 
 
+exports.getProjectsVotesTGHIT = function(hit_id) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('',
+            [ hit_id]).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+
+};
+
+
 exports.getSurveyVotesHIT = function(hit_id) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
