@@ -39,6 +39,19 @@ router.get('/survey/:hit_id', function(req, res, next) {
 });
 
 
+//Get simple results for list of projects from mturk workers
+router.get('/surveyTG/:hit_id', function(req, res, next) {
+
+    var hit_id = req.params.hit_id;
+    resultDB.getSurveyVotesTGHIT(hit_id).then(function(results) {
+        res.send(results);
+    }, function(err) {
+        res.status(400).send('survey results could not be generated!!!');
+    });
+});
+
+
+
 
 //Get results for project from mturk workers
 router.get('/:projectCode', function(req, res, next) {

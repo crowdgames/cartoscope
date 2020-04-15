@@ -236,3 +236,22 @@ exports.getSurveyVotesHIT = function(hit_id) {
     });
 
 }
+
+
+exports.getSurveyVotesTGHIT = function(hit_id) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('select us.user_id,us.response,us.hitID,g.unique_code_main,g.seq from \
+        (select r.user_id,r.response,u.hitID,u.genetic_id from \
+        (select user_id,response from tileoscope_survey) as r \
+        left join (select workerID, hitID,genetic_id from mturk_workers) as u on u.workerID=r.user_id where hitID=?) as us \
+        left join (select unique_code_main,seq, id from tileoscope_task_genetic_sequences) as g on us.genetic_id=g.id ',
+            [ hit_id]).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+
+}
