@@ -636,11 +636,12 @@ router.post('/:id/survey', [filters.requireLogin], function(req, res, next) {
 //storing to survey tileoscope
 router.post('/surveyTileoscope', function(req, res, next) {
 
-    console.log(req.body)
     var workerId = req.body.workerId || req.body.participantId;
     var hitId = req.body.hitId || req.body.trialId;
 
-    projectDB.addSurveyTileoscope(workerId, hitId, req.body).then(function(data) {
+    var worker_hashed = bcrypt.hashSync(workerID+hitId, salt);
+
+    projectDB.addSurveyTileoscope(worker_hashed, hitId, req.body).then(function(data) {
         console.log('inside function ... '+ data);
 
             //if participant id, send participant id as hit code, else from env
