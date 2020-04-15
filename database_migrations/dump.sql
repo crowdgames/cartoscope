@@ -224,6 +224,7 @@ CREATE TABLE `response` (
   `timestamp` datetime DEFAULT CURRENT_TIMESTAMP,
   `center_lat` varchar(50) DEFAULT NULL,
   `center_lon` varchar(50) DEFAULT NULL,
+   `response_text` varchar(256) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=677 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -332,6 +333,7 @@ CREATE TABLE `tileoscope_paths` (
   `hit_id` varchar(128) DEFAULT NULL,
   `method` varchar(255) DEFAULT NULL,
   `seq` TEXT DEFAULT NULL,
+  `user_index` INT(11) DEFAULT 0,
   `tiles_collected` TEXT DEFAULT NULL,
   `times_completed` TEXT DEFAULT NULL,
   `number_moves` TEXT DEFAULT NULL,

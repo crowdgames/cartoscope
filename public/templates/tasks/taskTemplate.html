@@ -111,7 +111,7 @@
                     <div class="col-lg-12 col-md-12 col-sm-12 answers" >
                         <div ng-hide="model.data.point_selection" ng-repeat="option in model.data.template.options" style="display: inline">
                             <button   ng-class="model.getColourClass(option.color)"
-                                      ng-click="model.submit($index)" ng-disabled="finished" class="options btn">
+                                      ng-click="model.submit($index,option.text)" ng-disabled="finished" class="options btn">
                                 {{option.text}}
                             </button>
                             <!--<span ng-show="model.userType === 'mTurk'"  style="color: #9cdc1f;cursor: pointer;display:inline;margin-left:-5px" ng-click="showTutorial(option.text)"><i class="fa fa-question-circle-o" aria-hidden="true"></i></span>-->
@@ -177,7 +177,7 @@
                         <div class="col-lg-12 col-md-12 col-sm-12 answers" >
                             <div ng-hide="model.data.point_selection" ng-repeat="option in model.data.template.options" style="display: inline">
                                 <button   ng-class="model.getColourClass(option.color)"
-                                          ng-click="model.submit($index)" ng-disabled="finished" class="options btn">
+                                          ng-click="model.submit($index,option.text)" ng-disabled="finished" class="options btn">
                                     {{option.text}}
                                 </button>
                                 <span   style="color: #9cdc1f;cursor: pointer;display:inline;margin-left:-5px" ng-click="showTutorial(option.text)"><i class="fa fa-question-circle-o" aria-hidden="true"></i></span>
@@ -248,7 +248,7 @@
                         <div class="col-lg-12 col-md-12 col-sm-12 answers" >
                             <div ng-hide="model.data.point_selection" ng-repeat="option in model.data.template.options" style="display: inline">
                                 <button   ng-class="model.getColourClass(option.color)"
-                                          ng-click="model.submit($index)" ng-disabled="finished" class="options btn">
+                                          ng-click="model.submit($index,option.text)" ng-disabled="finished" class="options btn">
                                     {{option.text}}
                                 </button>
                                 <span style="color: #9cdc1f;cursor: pointer;display:inline;margin-left:-5px" ng-click="showTutorial(option.text)"><i class="fa fa-question-circle-o" aria-hidden="true"></i></span>
@@ -319,7 +319,7 @@
                 <div class="col-lg-12 col-md-12 col-sm-12 answers" >
                     <div ng-repeat="option in model.data.template.options" style="display: inline">
                         <button   ng-class="model.getColourClass(option.color)"
-                                  ng-click="model.submit($index)" ng-disabled="finished" class="options btn">
+                                  ng-click="model.submit($index,option.text)" ng-disabled="finished" class="options btn">
                             {{option.text}}
                         </button>
                         <span   style="color: #9cdc1f;cursor: pointer;display:inline;margin-left:-5px" ng-click="showTutorial(option.text)"><i class="fa fa-question-circle-o" aria-hidden="true"></i></span>

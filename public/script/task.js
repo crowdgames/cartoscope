@@ -713,7 +713,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       //submit a dummy vote to indicate start of voting
       function submitStartTime(){
-          var dummyTask = {name:"dummy"}
+          var dummyTask = {name:"dummy"};
           var body = {
               projectID: vm.data.id,
               option: -1,
@@ -726,7 +726,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       }
 
 
-      function submit(option) {
+      function submit(option,option_text) {
 
           vm.showModal();
 
@@ -753,7 +753,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                           taskID: vm.tasks[0],
                           mapCenterLat:  item_lat,
                           mapCenterLon:  item_lng,
-                          multiple: vm.showMarkerPoints
+                          multiple: vm.showMarkerPoints,
+                          option_text: option_text
                       };
 
                       //regray the marker!
@@ -830,7 +831,9 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   option: option,
                   taskID: vm.tasks[0],
                   mapCenterLat:   $scope.votedLat,
-                  mapCenterLon:   $scope.votedLng
+                  mapCenterLon:   $scope.votedLng,
+                  option_text: option_text
+
               };
 
               $http.post('/api/tasks/submit', body).then(function() {
@@ -1828,7 +1831,7 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
             $http.post('/api/tasks/submit', body)
         }
 
-        function submit(option) {
+        function submit(option,option_text) {
 
 
             //update overall progress so far
@@ -1856,7 +1859,8 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
                             taskID: vm.tasks[0],
                             mapCenterLat:  item_lat,
                             mapCenterLon:  item_lng,
-                            multiple: vm.showMarkerPoints
+                            multiple: vm.showMarkerPoints,
+                            option_text: option_text
                         };
 
                         //regray the marker!
@@ -2015,7 +2019,8 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
                     option: option,
                     taskID: vm.tasks[0],
                     mapCenterLat:   $scope.votedLat,
-                    mapCenterLon:   $scope.votedLng
+                    mapCenterLon:   $scope.votedLng,
+                    option_text: option_text
                 };
 
                 $http.post('/api/tasks/submit', body).then(function() {

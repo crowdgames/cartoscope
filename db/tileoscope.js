@@ -176,6 +176,21 @@ exports.getRecentCairns = function(hitId,num,user_id) {
 };
 
 
+//get recent cairns for that hit id
+exports.getRecentCairnsLevel = function(hitId,num,user_id,level_number) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+        connection.queryAsync('select * from tileoscope_cairns where hit_id=? and  user_id!=? and level_number=? order by id desc limit ? ',[hitId,user_id,level_number,num]).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
+
 
 exports.submitTileoscopeARAction = function(session_id, short_name, response) {
     return new Promise(function(resolve, error) {

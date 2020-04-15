@@ -517,11 +517,12 @@ router.post('/submit', [filters.requireLogin, filters.requiredParamHandler(['tas
     var centerLat = req.body.mapCenterLat;
     var centerLon = req.body.mapCenterLon;
     var multiple = req.body.multiple || 0;
+    var response_text = req.body.option_text || 'dummy';
 
     //If markers task, don't increase the progress as long as the multiple flag is up
     if (multiple) {
 
-        projectDB.addResponse(userID, projectID, taskID, response,centerLat, centerLon)
+        projectDB.addResponse(userID, projectID, taskID, response,centerLat, centerLon,response_text)
             .then(function(data) {
                 // console.log('data inserted', data);
                 res.send({});
@@ -531,7 +532,7 @@ router.post('/submit', [filters.requireLogin, filters.requiredParamHandler(['tas
 
     } else {
 
-        projectDB.addResponse(userID, projectID, taskID, response,centerLat, centerLon)
+        projectDB.addResponse(userID, projectID, taskID, response,centerLat, centerLon,response_text)
             .then(projectDB.increaseProgress(userID, projectID))
             .then(function(data) {
                 // console.log('data inserted', data);

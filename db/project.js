@@ -290,6 +290,23 @@ exports.getSingleProjectFromCode = function(uniqueCode) {
   });
 };
 
+exports.getMultipleProjectsFromCodes = function(uniqueCodes) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT * from projects WHERE unique_code in (?) and published = 1',
+            [uniqueCodes.join()]).then(
+            function(data) {
+                if (data.length > 0) {
+                    resolve(data[0]);
+                } else {
+                    error({code: 'No project found'});
+                }
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
 
 exports.getTutorialFromCode = function(uniqueCode) {
     return new Promise(function(resolve, error) {
@@ -690,11 +707,11 @@ exports.startNewProgress = function(userId, projectId, userType) {
   });
 };
 
-exports.addResponse = function(userId, projectId, taskID, response, centerLat, centerLon) {
+exports.addResponse = function(userId, projectId, taskID, response, centerLat, centerLon,response_text) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        connection.queryAsync('INSERT INTO response (user_id, project_id,task_id,response, center_lat, center_lon,site_id) VALUES (?,?,?,?,?,?,1)',
-            [userId + '', projectId, taskID, response, centerLat, centerLon]).then(
+        connection.queryAsync('INSERT INTO response (user_id, project_id,task_id,response, center_lat, center_lon,site_id,response_text) VALUES (?,?,?,?,?,?,1,?)',
+            [userId + '', projectId, taskID, response, centerLat, centerLon,response_text]).then(
             function(data) {
                 if (data.insertId) {
                     resolve(data.insertId);

@@ -488,6 +488,22 @@ router.get('/getRecentCairns/:main_code/:user_id', function(req, res, next) {
 });
 
 
+//get most recent cairns submitted in that hit_id for that level number(but not the user's)
+router.get('/getRecentCairns/:main_code/:user_id/:level_number', function(req, res, next) {
+    var num_recent = 3;
+    //make sure there is a project
+    tileDB.getRecentCairnsLevel(req.params.main_code,num_recent,req.params.user_id,req.params.level_number).then(function(cairns) {
+        console.log(cairns);
+
+        //send them as string sequence separated by -
+
+        res.send(cairns.join('-'))
+    }, function (err) {
+        res.status(400).send('Error getting latest cairns: ' + err);
+    })
+});
+
+
 //get table
 router.get('/fetchQTableByCode/:main_code', function(req, res, next) {
 
