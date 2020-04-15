@@ -639,7 +639,7 @@ router.post('/surveyTileoscope', function(req, res, next) {
     var workerId = req.body.workerId || req.body.participantId;
     var hitId = req.body.hitId || req.body.trialId;
 
-    var worker_hashed = bcrypt.hashSync(workerID+hitId, salt);
+    var worker_hashed = bcrypt.hashSync(workerId+hitId, salt);
 
     projectDB.addSurveyTileoscope(worker_hashed, hitId, req.body).then(function(data) {
         console.log('inside function ... '+ data);
