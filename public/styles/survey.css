@@ -120,7 +120,9 @@ td.def
     max-height:10%;
 }
 
-
+input[type=radio]{
+    transform:scale(1.5);
+}
 
 @media (max-width: 768px) {
     .submit-survey {
