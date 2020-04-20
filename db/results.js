@@ -239,9 +239,9 @@ exports.getProjectsVotesTGHIT = function(hit_id) {
 exports.getSurveyVotesHIT = function(hit_id) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        connection.queryAsync('select r.user_id,r.response,u.hitID from ' +
+        connection.queryAsync('select r.user_id,r.response,u.hitID,u.projectID from ' +
             '(select user_id,response from survey) as r ' +
-            'left join (select workerID, hitID from mturk_workers) as u on u.workerID=r.user_id where hitID=? ',
+            'left join (select workerID, hitID,projectID from mturk_workers) as u on u.workerID=r.user_id where hitID=? ',
             [ hit_id]).then(
             function(data) {
                 resolve(data);
