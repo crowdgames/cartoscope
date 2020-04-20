@@ -207,7 +207,7 @@ exports.getTutorialResults = function(project,userId) {
 exports.getProjectsVotesHIT = function(hit_id) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        connection.queryAsync('select r.task_id,r.user_id,r.timestamp,r.response,r.response_text,u.hitID from ' +
+        connection.queryAsync('select r.task_id,r.user_id,r.timestamp,r.response,r.response_text,r.project_id,u.hitID from ' +
             '(select task_id,project_id,user_id,timestamp,response,response_text from response) as r ' +
             'left join (select workerID, hitID from mturk_workers) as u on u.workerID=r.user_id where hitID=? ',
             [ hit_id]).then(
