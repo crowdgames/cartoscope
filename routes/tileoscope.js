@@ -20,6 +20,8 @@ var archiver = require('archiver');
 var json2csv = require('json2csv');
 var d3 = require('d3');
 var CARTO_PORT = process.env.CARTO_PORT || '8081';
+var salt = process.env.CARTO_SALT;
+
 var path = require('path');
 module.exports = router;
 
