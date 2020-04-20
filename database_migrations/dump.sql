@@ -241,6 +241,7 @@ CREATE TABLE `survey` (
   `user_id` varchar(128) DEFAULT NULL,
   `project_id` int(11) DEFAULT NULL,
   `response` TEXT DEFAULT NULL,
+  `timestamp` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique` (`user_id`,`project_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=212 DEFAULT CHARSET=latin1;
@@ -259,6 +260,7 @@ CREATE TABLE `tileoscope_survey` (
   `user_id` varchar(128) DEFAULT NULL,
   `hit_id` varchar(128) DEFAULT NULL,
   `response` varchar(1024) DEFAULT NULL,
+  `timestamp` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique` (`user_id`,`hit_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=212 DEFAULT CHARSET=latin1;
