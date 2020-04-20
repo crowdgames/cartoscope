@@ -9,6 +9,7 @@ var qlearnDB = require('../db/qlearn');
 var inatDB = require('../db/inaturalist');
 var Promise = require('bluebird');
 
+var bcrypt = require('bcrypt');
 
 var filters = require('../constants/filters');
 var express = require('express');
