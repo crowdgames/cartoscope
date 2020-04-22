@@ -8,7 +8,6 @@ var module = angular.module('consentApp', ['ui.router', 'ngAnimate', 'ngRoute', 
     // }]);
 
 
-
 module.config(function($stateProvider, $urlRouterProvider, $cookiesProvider) {
 
     var n = new Date();
@@ -2180,8 +2179,8 @@ module.controller('kioskController', ['$window','$scope','$location','$state','$
         }
     }]);
 
-module.controller('kioskProjectController', ['$window','$scope','$location','$state','$stateParams','$http', '$cookies',
-    function($window,$scope,$location,$state,$stateParams,$http, $cookies){
+module.controller('kioskProjectController', ['$window','$scope','$location','$state','$stateParams','$http', '$cookies', '$sce',
+    function($window,$scope,$location,$state,$stateParams,$http, $cookies, $sce){
         $window.document.title = "Cartoscope";
 
         $scope.project_title = "";
@@ -2196,6 +2195,7 @@ module.controller('kioskProjectController', ['$window','$scope','$location','$st
         $http.get('/api/tasks/getInfoFree/' + $stateParams.pCode).then(function(pdata) {
 
             $scope.proj_data = pdata.data[0];
+
             $scope.project_title =  $scope.proj_data.name;
             $scope.project_desc =  $scope.proj_data.description;
             $scope.image_source = $scope.proj_data.image_source;
@@ -2203,9 +2203,17 @@ module.controller('kioskProjectController', ['$window','$scope','$location','$st
             $scope.proj_template = JSON.parse($scope.proj_data.template);
             $scope.projectType =  $scope.proj_template.selectedTaskType;
 
+            $scope.video_url = $sce.trustAsResourceUrl($scope.proj_data.video_url);
+
 
             if ($scope.image_source != null) {
                 $scope.showSource = true;
+            }
+
+            if ($scope.video_url != null) {
+                $scope.showVideo = true;
+            } else {
+                $scope.showVideo = false;
             }
 
             //Get the creator name from the collaborators:

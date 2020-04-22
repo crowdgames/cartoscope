@@ -200,6 +200,7 @@ CREATE TABLE `projects` (
    `is_inaturalist` int(11) DEFAULT '0',
   `has_survey` int(11) DEFAULT '1',
   `poi_name` text DEFAULT NULL,
+   `video_url` varchar(2048) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_code_UNIQUE` (`unique_code`),
   KEY `Creator_idx` (`creatorID`),

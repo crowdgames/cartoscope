@@ -29,12 +29,28 @@
                     </div>
 
 
-                </div>
             </center>
         </div>
 
         <br>
         <br>
+
+        <div class="row" ng-show="showVideo" style="text-align: center;margin-bottom:20px;">
+
+            <div class="col-10" ng-show="video_url.indexOf('youtube') != -1">
+
+            <iframe style="width:600px;height: 400px" ng-src="{{video_url  }}" ></iframe>
+
+
+            </div>
+            <div class="col-10" ng-show="video_url.indexOf('youtube') == -1">
+                    <video  class=" border border-primary" width="600" height="400" controls src="{{video_url }}">
+                    </video>
+            </div>
+            <small>Watch video for more information</small>
+
+        </div>
+
         <div class="row" style="text-align: center;margin-bottom:20px;">
             <a ng-click="beginProject()">
                 <img src="../../images/contribute_btn_on.png"
