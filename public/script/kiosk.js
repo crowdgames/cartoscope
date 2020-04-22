@@ -2033,6 +2033,11 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                 // tutorial data
                 var tutData = tdata.data;
 
+                console.log(tutData)
+                if (tutData.length == 0){
+                    vm.start();
+                }
+
                 var template  = JSON.parse(tutData[0].template);
                 vm.question = template.question;
                 vm.counter = 0;
@@ -2103,6 +2108,10 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                 });
 
                 console.log(vm.tutorial)
+
+                if (vm.tutorial.length == 0){
+                    vm.start();
+                }
 
                 if(vm.params.projectType == 'mapping'){
 
@@ -2219,7 +2228,6 @@ module.controller('kioskProjectController', ['$window','$scope','$location','$st
             //Get the creator name from the collaborators:
             //get collaborator info from db
             $http.get('/api/user/getAboutInfoCreator/' + $stateParams.pCode).then(function(cdata){
-                console.log(cdata.data);
                 if (cdata.data && cdata.data.length >0){
 
                     $scope.creator = cdata.data[0].name;

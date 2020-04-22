@@ -117,7 +117,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       $window.document.title = "Tasks";
 
 
-      console.log(showGAME,showIMI);
 
       var vm = this;
       vm.centerChanged = centerChanged;
@@ -193,7 +192,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
 
       //init slider obj
-      $scope.slider_obj = {};
+      vm.slider_obj = {};
 
 
 
@@ -236,15 +235,21 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       vm.makeSliderObj = function(){
 
-          $scope.slider_obj
+          var text_before = "Before";
+          var text_after = "After";
+          if (vm.data.slider_text){
+              text_before = JSON.parse(vm.data.slider_text).before;
+              text_after = JSON.parse(vm.data.slider_text).after;
+          }
+          console.log(vm.data.slider_text)
 
-          $scope.slider_obj.beforeImageUrl = vm.getNextTask();
-          $scope.slider_obj.beforeImageLabel = 'Before';
-          $scope.slider_obj.beforeImageAlt = 'Before Image';
+          vm.slider_obj.beforeImageUrl = vm.getNextTask();
+          vm.slider_obj.beforeImageLabel = text_before;
+          vm.slider_obj.beforeImageAlt = text_before + ' Image';
 
-          $scope.slider_obj.afterImageUrl = vm.getBeforeImage();
-          $scope.slider_obj.afterImageLabel = 'After';
-          $scope.slider_obj.afterImageAlt = 'After Image';
+          vm.slider_obj.afterImageUrl = vm.getBeforeImage();
+          vm.slider_obj.afterImageLabel = text_after;
+          vm.slider_obj.afterImageAlt = text_after + ' Image';
 
 
 

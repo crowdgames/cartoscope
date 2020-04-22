@@ -307,6 +307,24 @@ exports.getMultipleProjectsFromCodes = function(uniqueCodes) {
     });
 };
 
+//
+// exports.getTutorialFromCode = function(uniqueCode) {
+//     return new Promise(function(resolve, error) {
+//         var connection = db.get();
+//         var queryString = 'SELECT * from tutorial WHERE unique_code = \'' + uniqueCode + '\'';
+//         connection.queryAsync(queryString).then(
+//             function(data) {
+//                 if (data.length > 0) {
+//                     resolve(data);
+//                 } else {
+//                     error({code: 'No project found'});
+//                 }
+//             }, function(err) {
+//                 error(err);
+//             });
+//     });
+// };
+
 
 exports.getTutorialFromCode = function(uniqueCode) {
     return new Promise(function(resolve, error) {
@@ -314,11 +332,8 @@ exports.getTutorialFromCode = function(uniqueCode) {
         var queryString = 'SELECT * from tutorial WHERE unique_code = \'' + uniqueCode + '\'';
         connection.queryAsync(queryString).then(
             function(data) {
-                if (data.length > 0) {
-                    resolve(data);
-                } else {
-                    error({code: 'No project found'});
-                }
+                resolve(data);
+
             }, function(err) {
                 error(err);
             });
