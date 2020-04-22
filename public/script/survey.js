@@ -1162,7 +1162,7 @@ module.controller('surveyIMIController', ['$scope', '$http', '$state', '$locatio
         //fixed TLX questions
         // ULB stands for User Left Blank
         var ret_obj =  {
-            'additional_feedback':  $scope.checkInput(response['additional_text']) || 'ULB'
+            'additional_feedback':  response['additional_text'] || 'ULB'
         };
 
         if ($scope.imi_enjoy){
