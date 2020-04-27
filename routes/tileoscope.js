@@ -56,17 +56,19 @@ router.get('/compareTGCC/:hit_id', function(req, res, next) {
 
 
     //TODO: 3 datasets: tennis, animals, bridges
-    var possibles = ['wNqGQrb1d8rN','I9LEzE0k0qxJ','EGHiAhY5ucce'];
+    // var possibles = ['wNqGQrb1d8rN','I9LEzE0k0qxJ','EGHiAhY5ucce'];
+    var possibles = ['wNqGQrb1d8rN'];
+
 
     var hit_id= req.params.hit_id;
-    var pick_d = randomInt(0,2); //pick dataset
+    var pick_d = randomInt(0,possibles.length - 1); //pick dataset
     var selected_d = possibles[pick_d];
     var pick_tg = randomInt(0,1);
 
     //if pick Tile-o-Scope Grid, then go to TG, else go to Cartoscope Classic
     if (pick_tg){
-        //nob means no bonus
-        var link = 'http://cartosco.pe/Tiles/?genetic='+ selected_d +'&trialId=' + hit_id + '&nob=1';
+        //nob means no bonus, nop means no penalty
+        var link = 'http://cartosco.pe/Tiles/?genetic='+ selected_d +'&trialId=' + hit_id + '&nob=1&nop=1';
 
     } else {
         var link = 'https://cartosco.pe/api/anon/startAnon/'+ selected_d + '?trialId='+ hit_id;
