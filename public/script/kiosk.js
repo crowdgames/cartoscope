@@ -1726,6 +1726,11 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
         }
         function next_button() {
 
+            //scroll to the top
+            $('html,body').animate({
+                    scrollTop: $("#top-page").offset().top},
+                'slow');
+
             //hide annotated state
             vm.annotated = false;
 
