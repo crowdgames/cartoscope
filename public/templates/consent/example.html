@@ -15,7 +15,10 @@
         <div class="row" ng-show="model.params.projectType === 'tagging'">
             <div class="col-lg-3"></div>
             <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
-                <img id="tut_image" class="img-responsive img-border" ng-src="{{model.tutorial[model.counter].image}}">
+                <!--<img id="tut_image" class="img-responsive img-border" ng-src="{{model.tutorial[model.counter].image}}">-->
+                <img ng-show="!model.annotated" id="tut_image" class="img-responsive img-border tut_image" ng-src="{{model.tutorial[model.counter].image}}">
+                <img ng-show="model.annotated" id="tut_image" class="img-responsive img-border tut_image" ng-src="{{model.tutorial[model.counter].image_annotation}}">
+
             </div>
             <div class="col-lg-3"></div>
         </div>
@@ -50,13 +53,13 @@
         </div>
 
         <div id="correct-note" class="row" style="visibility:hidden">
-            <div class="col-lg-3 col-md-1 col-sm-2"></div>
-            <div class="col-lg-6 col-md-10 col-sm-8 col-xs-12">
+            <!--<div class="col-lg-3 col-md-1 col-sm-2"></div>-->
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <h4 id="tut_correct_ans"> The answer here is <span id="tut_span" style="color: {{tutorial[counter].color}}">
                     {{model.tutorial[model.counter].answer}}</span>.</h4>
                 <h4 id="tut_text">{{model.tutorial[model.counter].text}}</h4>
             </div>
-            <div class="col-lg-3 col-md-1 col-sm-2"></div>
+            <!--<div class="col-lg-3 col-md-1 col-sm-2"></div>-->
         </div>
 
         <div id="tut_next" class="agree-btn-row" style="visibility:hidden;display: flex;justify-content: center;">

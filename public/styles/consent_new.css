@@ -108,6 +108,12 @@ body {
     color: black;
     text-transform: uppercase;
 }
+
+
+.tut_image {
+    max-width: 450px;
+}
+
 .instructions {
     font-size: 2em;
     font-weight: bold;
