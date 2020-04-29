@@ -1773,8 +1773,13 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                     document.getElementById("tut_next").style.visibility = "hidden";
                     document.getElementById("tut_text").style.visibility = "hidden";
                 }
-            }
 
+                //if ask user is turned off, then skip the question part and show text directly
+                if (vm.tutorial[vm.counter].ask_user == 0) {
+                    show_Correct_Options(vm.tutorial[vm.counter].answer);
+                }
+
+            }
 
 
             //handle end of tutorial
@@ -2096,7 +2101,8 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                         col_number : parseInt(sel_num),
                         poi_name : item.poi_name || '',
                         image_source: item.image_source,
-                        image_annotation: it_annot
+                        image_annotation: it_annot,
+                        ask_user : item.ask_user || 1
                     };
                     if( vm.params.projectType != 'mapping') {
 
@@ -2107,10 +2113,15 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
 
                 });
 
-                console.log(vm.tutorial)
+                console.log(vm.tutorial);
 
                 if (vm.tutorial.length == 0){
                     vm.start();
+                }
+
+                //if ask user is turned off, then skip the question part and show text directly
+                if (vm.tutorial[vm.counter].ask_user == 0) {
+                    show_Correct_Options(vm.tutorial[vm.counter].answer);
                 }
 
                 if(vm.params.projectType == 'mapping'){

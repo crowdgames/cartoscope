@@ -557,7 +557,6 @@ function downloadTutorialLocal(loc, projectID,existing,ar_ready,dataset_id) {
                                 pArr.push(p_json);
                             }
 
-
                             var p = projectDB.insertTutorialItems(projectID, data[i]);
                             //catch and print error but do not cause problem
                             p.catch(function (err) {

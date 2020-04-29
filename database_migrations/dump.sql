@@ -414,6 +414,8 @@ CREATE TABLE `tutorial` (
   `image_source` text DEFAULT NULL,
   `image_attribution` text DEFAULT NULL,
   `in_dataset` INT(11) DEFAULT 0,
+  `image_annotation` varchar(255) DEFAULT 0,
+  `ask_user` INT(11) DEFAULT 1,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
