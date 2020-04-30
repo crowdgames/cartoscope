@@ -972,7 +972,7 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
         //make the mturk user object
         var anonUser = {
             workerId: workerId,
-            hitId: req.query.hitId || req.query.trialId ||  "tileoscope",
+            hitId: req.query.hitId || req.query.trialId || req.query.trialID ||  "tileoscope",
             assignmentId: req.query.assignmentId || "tileoscope",
             submitTo: req.query.submitTo || "tileoscope"
         };

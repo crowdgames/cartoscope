@@ -56,6 +56,7 @@ exports.generateQlearnOptimalSequenceTileoscopeOld = function(main_code,train_id
         //get tree from main code
         dynamicDB.getTreeRootFromCodeTileoscope(main_code).then(function(tree) {
 
+            console.log("Fetching paths from: ",train_id);
             //then get paths from designated random train hit:
             tileDB.getTileoscopePaths(train_id).then(function(tile_paths) {
 
@@ -63,7 +64,7 @@ exports.generateQlearnOptimalSequenceTileoscopeOld = function(main_code,train_id
                 //if no paths:we should generate a random sequence!
                 if (tile_paths.length == 0 ) {
 
-                    console.log("No table, no paths: random sequence");
+                    console.log("No paths: random sequence");
                     dynamicDB.createUserSequenceFromTreeTileoscopeRandom(main_code).then(function(random_data){
                         resolve(random_data)
                     }, function (err) {
