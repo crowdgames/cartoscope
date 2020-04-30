@@ -45,6 +45,85 @@ var REP_N = 3000; //TODO: kill this
 
 var SEQ_HORIZON = 10; //how much ahead should I generate
 
+
+
+
+//pick optimal for Tileoscope (old version, non adaptive)
+exports.generateQlearnOptimalSequenceTileoscopeOld = function(main_code,train_id) {
+
+    return new Promise(function(resolve, error) {
+
+        //get tree from main code
+        dynamicDB.getTreeRootFromCodeTileoscope(main_code).then(function(tree) {
+
+            //then get paths from designated random train hit:
+            tileDB.getTileoscopePaths(train_id).then(function(tile_paths) {
+
+                console.log("Fetched: "+ tile_paths.length + " paths");
+                //if no paths:we should generate a random sequence!
+                if (tile_paths.length == 0 ) {
+
+                    console.log("No table, no paths: random sequence");
+                    dynamicDB.createUserSequenceFromTreeTileoscopeRandom(main_code).then(function(random_data){
+                        resolve(random_data)
+                    }, function (err) {
+                        error({code: 'Problem with generating random sequence'});
+                    })
+
+                } else {
+                    //QLEARN FUNCTION HERE should return the sequence
+                    exports.QlearnAlgorithmStatic(main_code,tile_paths).then(function(res_seq){
+
+                        //convert sequence to comptible string for Tile-o-Scope
+                        var seq_conv = res_seq.join('-');
+                        var gen_obj = {
+                            unique_code_main: main_code,
+                            seq: seq_conv,
+                            pool: tree[0].pool,
+                            ignore_codes: tree[0].ignore_codes,
+                            misc: tree[0].misc || "none",
+                            active: 1,
+                            method: "qlearnO"
+                        };
+                        var gen_list = [gen_obj];
+                        dynamicDB.insertGeneticSequences2Tileoscope(gen_list).then(function(insert_data) {
+                            //Send genetic id back
+                            if (insert_data.insertId) {
+                                resolve(
+                                    {
+                                        genetic_id:insert_data.insertId,
+                                        seq:seq_conv,
+                                        method:"qlearnO"
+                                    });
+                            } else if (insert_data.affectedRows > 0) {
+                                resolve(0);
+                            } else {
+                                error({code: 'Problem with insertion'});
+                            }
+                        },function(err){
+                            console.log("Error getting paths for main code:" + main_code);
+                            error(err)
+
+                        });
+
+                    },function(err){
+                        console.log("Error getting paths for main code:");
+                        console.log(err)
+                        error(err)
+
+                    })
+                }
+            });
+
+
+        },function(err){
+            error(err)
+
+        })
+    });
+};
+
+
 //pick optimal for Tileoscope (online)
 exports.generateQlearnOptimalSequenceTileoscopeOnline = function(main_code, player_mistakes) {
 
@@ -315,8 +394,7 @@ exports.fetchQTableByCode = function(unique_code_main) {
 };
 
 
-// qlearn core-algorithm: chi-play 2019 adaptation
-
+// qlearn core-algorithm: adaptive
 exports.QlearnAlgorithm = function(player_paths,main_code, Q, player_mistakes) {
 
     return new Promise(function (resolve, error) {
@@ -327,30 +405,23 @@ exports.QlearnAlgorithm = function(player_paths,main_code, Q, player_mistakes) {
         //  tiles_collected: ... ,
         // times_completed: ... , number_moves: ...}
 
-
         //if we come in with undefined Q or empty one
         if (Q == undefined || Q.length == 0){
             Q = {};
         }
 
-
         //encode current player mistakes:
         var p_mc = encodeMistakes(player_mistakes);
-
 
         // array that keeps track of how many entries in table need to be updated
         var update_keys_array = [];
 
-
         //for (var i = 0; i < REP_N; i++) {
-
         player_paths.forEach(function(ppt) {
-
 
             //convert to all keys we have to update
             var q_to_push = convertPathToKeys(ppt);
             q_to_push.forEach(function(q_update){
-
                 //add the player mistakes in the key
                 var key = q_update.state + "|" + q_update.action + "|" + p_mc;
                 var next_state = q_update.next_state;
@@ -427,6 +498,66 @@ exports.QlearnAlgorithm = function(player_paths,main_code, Q, player_mistakes) {
 };
 
 
+exports.QlearnAlgorithmStatic = function(main_code,player_paths){
+    return new Promise(function (resolve, error) {
+
+        //player paths have all the paths
+        //player_paths is an array of objects where
+        //each row is {seq: ... ,
+        //  tiles_collected: ... ,
+        // times_completed: ... , number_moves: ...}
+
+        var Q = {};
+
+
+        //for (var i = 0; i < REP_N; i++) {
+        player_paths.forEach(function(ppt) {
+
+            //convert to all keys we have to update
+            var q_to_push = convertPathToKeys(ppt);
+            q_to_push.forEach(function(q_update){
+                //add the player mistakes in the key
+                var key = q_update.state + "|" + q_update.action;
+                var next_state = q_update.next_state;
+                var value = q_update.value;
+
+
+                //if key not in Q then init it
+                if (! Q.hasOwnProperty(key)) {
+                    Q[key] = 0
+                }
+                //update Qlearn table
+                var max_next_Q = -99.0;
+                ACTIONS.forEach(function(try_act){
+
+                    var try_key = next_state + "|" + try_act;
+                    var try_Q = 0.0;
+                    if (Q.hasOwnProperty(try_key)){
+                        try_Q = Q[try_key]
+                    }
+                    max_next_Q = Math.max(try_Q,max_next_Q);
+                });
+
+                //update Q[key]
+                Q[key] = (1.0 - ALPHA) * Q[key] + ALPHA * (value + LAMBDA * max_next_Q);
+                //keep track that this needed update
+                if (update_keys_array.indexOf(key) == -1) {
+                    update_keys_array.push(key);
+                }
+
+
+            }) //end of paths from player
+
+        }); //end of q table generation
+        //once the Q-table is constructed, generate the seq and return
+        var new_seq = QlearnAlgorithmConstructOld(Q,SEQ_HORIZON);
+        resolve(new_seq);
+
+
+
+    })
+}
+
 
 //update user path
 exports.updatePlayerPathIndex = function(path_id,new_index) {
@@ -458,7 +589,7 @@ function convertQtableFormat(data){
 }
 
 
-//given Q table, construct a sequence of size n
+//given Q table, construct a sequence of size n: adaptive with mistakes and softmax
 function QlearnAlgorithmConstruct(Q,size_n,p_mistakes) {
 
     var pth = [];
@@ -540,6 +671,75 @@ function QlearnAlgorithmConstruct(Q,size_n,p_mistakes) {
     return(pth);
 
 };
+
+function QlearnAlgorithmConstructOld(Q,size_n) {
+
+    var pth = [];
+
+    for (var i = 0; i < size_n; i++) {
+
+        var state = "";
+        var state_arr = [];
+
+        //if the state is bigger than STATE LEN, get the last 3 items
+        if (pth.length > STATE_LEN){
+            state_arr = pth.slice(-STATE_LEN);
+        } else {
+            state_arr = pth;
+        }
+
+        if (state_arr.length == 0){
+            state = ""
+        } else {
+            state = state_arr.join("-")
+        }
+
+
+        var max_act = "";
+        var max_Q = -99.0;
+        var tq_n = 0;
+        var pick_w = [];
+        var pick_act = [];
+        var norm_w = 0;
+        ACTIONS.forEach(function(try_act){
+            var try_key = state + "|" + try_act ;
+            var try_Q = 0.0;
+
+            if (Q.hasOwnProperty(try_key)){
+                try_Q = parseFloat(Q[try_key]);
+            } else {
+                try_Q = -99.0;
+            }
+
+            // else used squared value of function
+            tq_n = Math.pow(try_Q, 2);
+
+            norm_w = norm_w + tq_n;
+            pick_w.push(tq_n);
+            pick_act.push(try_act);
+        });
+
+        //normalize weights of choices
+
+        var pick_w_norm = [];
+        for (var j = 0; j < pick_w.length; j++) {
+            if (norm_w > 0) {
+                pick_w_norm[j] = pick_w[j] *1.0 / norm_w
+            } else {
+                pick_w_norm[j] = 1.0
+            }
+        }
+
+        // pick random weighted
+        max_act = chance.weighted(pick_act, pick_w_norm);
+        pth.push(max_act);
+
+    }
+    //return path in array form
+    return(pth);
+
+};
+
 
 
 
@@ -671,13 +871,17 @@ function convertPathToKeys(rand_traj_raw) {
                 var next_state_arr = [];
 
                 next_state_arr = example_seq.concat([action]);
-                //if it is more than length 3, cut it to last 3
+                //if it is more than length STATE_LEN, cut it to last STATE_LEN
                 if (next_state_arr.length > STATE_LEN) {
                     next_state_arr = next_state_arr.slice(-STATE_LEN)
                 }
 
+                if (action == "X"){
+                    value = 0
+                }
+
                 if(next_state.indexOf("X") != -1){
-                    next_state = "X"
+                    next_state = "X";
                 } else {
                     next_state = next_state_arr.join('-');
                 }

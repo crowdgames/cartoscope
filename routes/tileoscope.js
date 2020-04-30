@@ -1088,7 +1088,13 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
 
                     var f_call = dynamicDB[func](projectID,gen_q);
                     if (req.query.hasOwnProperty("qlearn")){
-                        f_call = dynamicDB[func](projectID)
+
+                        var train_h = projectID;
+                        if (req.query.hasOwnProperty("train_hit")){
+                            train_h = req.query.train_hit
+                        }
+                        func = "generateQlearnOptimalSequenceTileoscopeOld";
+                        f_call = qlearnDB[func](projectID,train_h)
                     }
 
                     f_call.then(function(genetic_data){
