@@ -84,7 +84,7 @@ exports.generateQlearnOptimalSequenceTileoscopeOld = function(main_code,train_id
                             ignore_codes: tree[0].ignore_codes,
                             misc: tree[0].misc || "none",
                             active: 1,
-                            method: "qlearnO"
+                            method: "qlearn"
                         };
                         var gen_list = [gen_obj];
                         dynamicDB.insertGeneticSequences2Tileoscope(gen_list).then(function(insert_data) {
@@ -94,7 +94,7 @@ exports.generateQlearnOptimalSequenceTileoscopeOld = function(main_code,train_id
                                     {
                                         genetic_id:insert_data.insertId,
                                         seq:seq_conv,
-                                        method:"qlearnO"
+                                        method:"qlearn"
                                     });
                             } else if (insert_data.affectedRows > 0) {
                                 resolve(0);
@@ -541,7 +541,7 @@ exports.QlearnAlgorithmStatic = function(main_code,player_paths){
 
                 //update Q[key]
                 Q[key] = (1.0 - ALPHA) * Q[key] + ALPHA * (value + LAMBDA * max_next_Q);
-                
+
 
 
             }) //end of paths from player
