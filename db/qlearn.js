@@ -231,9 +231,9 @@ exports.updateQlearnTableOne = function(main_code,q_key,q_value) {
         if (q_id == 0) {
 
             console.log("Will insert:");
-            console.log(unique_code_main, q_state, q_action, q_player_mistakes, parseInt(q_value))
+            console.log(unique_code_main, q_state, q_action, q_player_mistakes, parseFloat(q_value))
 
-            connection.queryAsync('INSERT INTO tileoscope_qtable (unique_code_main, q_state, q_action,q_player_mistakes, q_value) VALUES(?,?,?,?,?) ',[unique_code_main, q_state, q_action,q_player_mistakes, parseInt(q_value)]).then(
+            connection.queryAsync('INSERT INTO tileoscope_qtable (unique_code_main, q_state, q_action,q_player_mistakes, q_value) VALUES(?,?,?,?,?) ',[unique_code_main, q_state, q_action,q_player_mistakes, parseFloat(q_value)]).then(
                 function(data) {
                     if (data.insertId) {
                         resolve(data.affectedRows);
@@ -247,8 +247,8 @@ exports.updateQlearnTableOne = function(main_code,q_key,q_value) {
         } else {
 
             //console.log("Will update:");
-            console.log(unique_code_main, q_state, q_action, parseInt(q_value),q_id);
-            connection.queryAsync('update tileoscope_qtable set q_value=? where id=?',[parseInt(q_value),q_id]).then(
+            console.log(unique_code_main, q_state, q_action, parseFloat(q_value),q_id);
+            connection.queryAsync('update tileoscope_qtable set q_value=? where id=?',[parseFloat(q_value),q_id]).then(
                 function(data) {
 
                     resolve(data)
