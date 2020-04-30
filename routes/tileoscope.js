@@ -398,8 +398,6 @@ router.post('/submitPath', function(req, res, next) {
 
     var path_t = JSON.parse(req.body.path);
 
-
-
     if (hitId == undefined){
         res.status(400).send('Trial ID missing.');
     }
@@ -442,6 +440,7 @@ router.post('/submitPath', function(req, res, next) {
                     'method' : path_t.method
                 };
 
+                console.log(new_path_obj);
 
 
             //make sure there is a project
