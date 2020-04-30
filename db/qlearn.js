@@ -60,18 +60,6 @@ exports.generateQlearnOptimalSequenceTileoscopeOld = function(main_code,train_id
             //then get paths from designated random train hit:
             tileDB.getTileoscopePaths(train_id).then(function(tile_paths) {
 
-                console.log("Fetched: "+ tile_paths.length + " paths");
-                //if no paths:we should generate a random sequence!
-                if (tile_paths.length == 0 ) {
-
-                    console.log("No paths: random sequence");
-                    dynamicDB.createUserSequenceFromTreeTileoscopeRandom(main_code).then(function(random_data){
-                        resolve(random_data)
-                    }, function (err) {
-                        error({code: 'Problem with generating random sequence'});
-                    })
-
-                } else {
                     //QLEARN FUNCTION HERE should return the sequence
                     exports.QlearnAlgorithmStatic(main_code,tile_paths).then(function(res_seq){
 
@@ -113,7 +101,7 @@ exports.generateQlearnOptimalSequenceTileoscopeOld = function(main_code,train_id
                         error(err)
 
                     })
-                }
+
             });
 
 
