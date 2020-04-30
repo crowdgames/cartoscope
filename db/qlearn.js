@@ -60,6 +60,8 @@ exports.generateQlearnOptimalSequenceTileoscopeOld = function(main_code,train_id
             //then get paths from designated random train hit:
             tileDB.getTileoscopePaths(train_id).then(function(tile_paths) {
 
+                    console.log("Fetched: " + tile_paths.length + " paths.");
+
                     //QLEARN FUNCTION HERE should return the sequence
                     exports.QlearnAlgorithmStatic(main_code,tile_paths).then(function(res_seq){
 
@@ -146,29 +148,17 @@ exports.generateQlearnOptimalSequenceTileoscopeOnline = function(main_code, play
 
 
                     //if no paths and no table, we should generate a random sequence!
-                    if (tile_paths.length == 0 && Q.length == 0) {
-
-                        console.log("No table, no paths: random sequence");
-
-                        func = "createUserSequenceFromTreeTileoscopeRandom";
-
-                        dynamicDB[func](main_code).then(function(random_data){
-                            resolve(random_data)
-
-                        }, function (err) {
-
-                            error({code: 'Problem with generating random sequence'});
-
-                        })
-
-                    } else if (tile_paths.length == 0 && Q.length > 0) {
+                    if (tile_paths.length == 0 ) {
 
 
-                        console.log("have table, no paths: create without updating");
+                        console.log("no paths: create without updating");
 
 
                         //if no paths, but we have table, then just spit sequence using table we have
-                        var Q_format = convertQtableFormat(Q);
+                        var Q_format ={};
+                        if (Q.length > 0) {
+                            Q_format = convertQtableFormat(Q);
+                        }
 
                         var res_seq = QlearnAlgorithmConstruct(Q_format,SEQ_HORIZON,player_mistakes);
 
