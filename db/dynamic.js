@@ -641,6 +641,7 @@ exports.pickGreedySequenceTileoscope = function(main_code) {
 
 
 
+//pick from Qlearn - Random - Greedy options
 exports.createUserSequenceQlearnTileoscope = function(main_code,generate) {
 
     return new Promise(function (resolve, error) {
@@ -669,19 +670,15 @@ exports.createUserSequenceQlearnTileoscope = function(main_code,generate) {
 
             exports.pickGreedySequenceTileoscope(main_code).then(function (genetic_id) {
 
-
                 //if we have greedy, then we get one, else randomly pick from the other two
                 if (genetic_id) {
                     resolve(genetic_id);
 
                 } else {
-
                     console.log("NO GREEDY. Repick")
                     var pick_optimal = randomInt(0, 1);
-
                     if (pick_optimal == 0) {
                         console.log("Picking optimal");
-
                         exports[opt_func](main_code).then(function (genetic_id) {
                             resolve(genetic_id);
                         })
@@ -690,16 +687,16 @@ exports.createUserSequenceQlearnTileoscope = function(main_code,generate) {
                         exports.createUserSequenceFromTreeTileoscopeRandom(main_code).then(function (genetic_id) {
                             resolve(genetic_id)
                         })
-
                     }
-
 
                 }
             });
-
         }
     })
 }
+
+
+
 
 
 //pick an already generated sequence from the db

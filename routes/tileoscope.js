@@ -1075,7 +1075,10 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
                     console.log("User not found. Creating...");
                     var gen_q = 0;
 
-                    var func = "createUserSequenceQlearnTileoscope";
+                    // var func = "createUserSequenceQlearnTileoscope";
+                    var func = "generateQlearnOptimalSequenceTileoscope";
+
+
                     if (req.query.hasOwnProperty("genetic")){
                         func = "pickGeneticSequenceTileoscope"
                     }
@@ -1083,7 +1086,12 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
                         gen_q = 1
                     }
 
-                    dynamicDB[func](projectID,gen_q).then(function(genetic_data){
+                    var f_call = dynamicDB[func](projectID,gen_q);
+                    if (req.query.hasOwnProperty("qlearn")){
+                        f_call = dynamicDB[func](projectID)
+                    }
+
+                    f_call.then(function(genetic_data){
 
                         console.log(genetic_data);
                         var genetic_id = genetic_data.genetic_id;
