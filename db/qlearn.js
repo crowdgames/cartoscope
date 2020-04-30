@@ -541,10 +541,7 @@ exports.QlearnAlgorithmStatic = function(main_code,player_paths){
 
                 //update Q[key]
                 Q[key] = (1.0 - ALPHA) * Q[key] + ALPHA * (value + LAMBDA * max_next_Q);
-                //keep track that this needed update
-                if (update_keys_array.indexOf(key) == -1) {
-                    update_keys_array.push(key);
-                }
+                
 
 
             }) //end of paths from player
