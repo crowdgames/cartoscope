@@ -52,10 +52,9 @@ const fupload = multer({ storage: storage });
 router.get('/compareTGCC/:hit_id', function(req, res, next) {
 
 
-    //TODO: 3 datasets: tennis, animals, bridges
+    //3 datasets: tennis, animals, bridges
     // var possibles = ['wNqGQrb1d8rN','I9LEzE0k0qxJ','EGHiAhY5ucce'];
     var possibles = ['wNqGQrb1d8rN'];
-
 
     var hit_id= req.params.hit_id;
     var pick_d = randomInt(0,possibles.length - 1); //pick dataset
@@ -64,7 +63,6 @@ router.get('/compareTGCC/:hit_id', function(req, res, next) {
 
     //pick only TG for now:
     pick_tg=1;
-
     //if pick Tile-o-Scope Grid, then go to TG, else go to Cartoscope Classic
     if (pick_tg){
         //nob means no bonus, nop means no penalty
@@ -78,6 +76,29 @@ router.get('/compareTGCC/:hit_id', function(req, res, next) {
 
 });
 
+//endpoint for Qlearn old vs Qlearn adaptive vs Greedy
+router.get('/compareTGQ/:hit_id/:train_hit', function(req, res, next) {
+
+    var hit_id= req.params.hit_id;
+    var train_hit = req.params.train_hit;
+
+    var possibles = [
+                        'qlearn=' + hit_id + '&train_hit=' + train_hit,
+                        'qlearnO='+ hit_id,
+                        'genetic=' + hit_id
+                    ];
+
+    var pick_d = randomInt(0,possibles.length - 1); //pick dataset
+    var selected_d = possibles[pick_d];
+
+
+    var link = 'http://cartosco.pe/Tiles/?' + selected_d +'&trialId=' + hit_id ;
+
+
+    //redirect to link:
+    res.redirect(link)
+
+});
 
 
 
