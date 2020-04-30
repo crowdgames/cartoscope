@@ -29,10 +29,7 @@ module.exports = router;
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-
-
         console.log("in storage disk")
-
         var path_to_store = path.join(__dirname, '../', 'temp');
         cb(null, path_to_store)
     },
@@ -64,6 +61,9 @@ router.get('/compareTGCC/:hit_id', function(req, res, next) {
     var pick_d = randomInt(0,possibles.length - 1); //pick dataset
     var selected_d = possibles[pick_d];
     var pick_tg = randomInt(0,1);
+
+    //pick only TG for now:
+    pick_tg=1;
 
     //if pick Tile-o-Scope Grid, then go to TG, else go to Cartoscope Classic
     if (pick_tg){
@@ -473,6 +473,17 @@ router.get('/getQlearnOnlineSequence/:main_code', function(req, res, next) {
     qlearnDB.generateQlearnOptimalSequenceTileoscopeOnline(req.params.main_code).then(function(seq) {
         console.log(seq)
         res.send(seq)
+    }, function (err) {
+        res.status(400).send('Error getting sequence: ' + err);
+    })
+});
+
+router.get('/playerEnded/:hit_id/:user_id', function(req, res, next) {
+
+    //make sure there is a project
+    qlearnDB.updatePlayerEnded(req.params.user_id,req.params.hit_id).then(function(d) {
+        res.status(200).send('End of gameplay recorded successfully');
+
     }, function (err) {
         res.status(400).send('Error getting sequence: ' + err);
     })

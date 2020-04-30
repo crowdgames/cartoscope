@@ -5,23 +5,26 @@ parser.add_argument('filename', type=str, help='CSV filename')
 args = parser.parse_args()
 
 LOOKUP = {
-    '44_RB_C4_M0': 'E',
+    '44_CaDo_C4_M0': 'E',
     '55_TeNoTeG_C8_M0': 'M',
-    '66_BrNoBrG_C12_M0': 'H'
+    '66_BrNoBrG_C12_M0': 'H',
+    'CAIRN': 'C'
     }
 
 
 LOOKUP_REV = {
-    'E': '44_RB_C4_M0',
+    'E': '44_CaDo_C4_M0',
     'M':'55_TeNoTeG_C8_M0' ,
-    'H':'66_BrNoBrG_C12_M0'
+    'H':'66_BrNoBrG_C12_M0',
+    'C': 'CAIRN'
     }
 
-ACTIONS = ['E', 'M', 'H']
+ACTIONS = ['E', 'M', 'H','C']
 
 
 WEIGHTS = {
-    'E': 0,
+    'C': 0,
+    'E': 0.5,
     'M': 1 ,
     'H': 1.2
     }
@@ -52,11 +55,16 @@ for action in ACTIONS:
 
 
 
-STATE_LEN = 3
+STATE_LEN = 2
 Q = {}
 
+NSAMPLE = 300000
+NSAMPLE = 1
 
-for ii in range(300000):
+ALPHA = 0.01
+LAMBDA = 0.95
+
+for ii in range(NSAMPLE):
     traj = trajs[random.randint(0, len(trajs) - 1)]
     pt = random.randint(0, len(traj) - 1)
     example = traj[max(0, pt - STATE_LEN):pt + 1]
@@ -86,8 +94,7 @@ for ii in range(300000):
             try_Q = Q[try_key]
         max_next_Q = max(max_next_Q, try_Q)
 
-    ALPHA = 0.001
-    LAMBDA = 0.95
+
 
     Q[key] = (1.0 - ALPHA) * Q[key] + ALPHA * (value + LAMBDA * max_next_Q)
 

@@ -394,7 +394,7 @@ exports.QlearnAlgorithm = function(player_paths,main_code, Q, player_mistakes) {
 
             }) //end of paths from player
 
-            //TODO: now that we have done all updates for this player, we must update the user_index in the db!
+            //now that we have done all updates for this player, we must update the user_index in the db!
             var user_path = ppt.seq.split('-');
             exports.updatePlayerPathIndex(ppt.id,user_path.length);
 
@@ -539,8 +539,22 @@ function QlearnAlgorithmConstruct(Q,size_n,p_mistakes) {
     //return path in array form
     return(pth);
 
+};
 
 
+
+//update that player ended round
+exports.updatePlayerEnded = function(user_id,hit_id) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('update tileoscope_paths set seq = CONCAT(seq, \'-X\') where user_id=? and hit_id=? ', [user_id,hit_id])
+            .then(
+                function(data) {
+                    resolve(data);
+                }, function(err) {
+                    error(err);
+                });
+    });
 };
 
 
