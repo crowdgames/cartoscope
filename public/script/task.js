@@ -1407,7 +1407,7 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
 
                         //if out of projects, go to survey
                         if (next_codes.length == 0) {
-                            window.location.replace('/survey.html#/'vm.survey_type + '?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
+                            window.location.replace('/survey.html#/' + vm.survey_type + '?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
 
                         } else {
 
