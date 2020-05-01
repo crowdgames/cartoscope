@@ -112,8 +112,8 @@ module.controller('defaultController', ['$scope', '$location', function($scope, 
 //
 // }]);
 
-module.controller('taskController', ['$scope', '$location', '$http', 'userData', '$window', '$timeout', 'NgMap','$q', '$sce', 'showTLX','showGAME','showIMI', 'heatMapProject1', 'heatMapProject2',
-  function($scope, $location, $http, userData,  $window, $timeout, NgMap, $q,$sce, showTLX,showGAME,showIMI, heatMapProject1, heatMapProject2) {
+module.controller('taskController', ['$scope', '$location', '$http', 'userData', '$window', '$timeout', 'NgMap','$q', '$sce',  'heatMapProject1', 'heatMapProject2',
+  function($scope, $location, $http, userData,  $window, $timeout, NgMap, $q,$sce,  heatMapProject1, heatMapProject2) {
       $window.document.title = "Tasks";
 
 
@@ -177,24 +177,15 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
 
       //for chaining, look for the parameter:
-
       vm.chaining = $location.search().chain;
       //Disable chaining
-
       vm.chaining = -1;
-
       //progress bars
-
       $scope.next_per2 = 0;
-
       //enable required amount
       $scope.showSurvButton = false;
-
-
       //init slider obj
       vm.slider_obj = {};
-
-
 
 
       vm.showChainQuestions = 0;
@@ -234,15 +225,12 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
 
       vm.makeSliderObj = function(){
-
           var text_before = "Before";
           var text_after = "After";
           if (vm.data.slider_text){
               text_before = JSON.parse(vm.data.slider_text).before;
               text_after = JSON.parse(vm.data.slider_text).after;
           }
-          console.log(vm.data.slider_text)
-
           vm.slider_obj.beforeImageUrl = vm.getNextTask();
           vm.slider_obj.beforeImageLabel = text_before;
           vm.slider_obj.beforeImageAlt = text_before + ' Image';
@@ -250,10 +238,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           vm.slider_obj.afterImageUrl = vm.getBeforeImage();
           vm.slider_obj.afterImageLabel = text_after;
           vm.slider_obj.afterImageAlt = text_after + ' Image';
-
-
-
-      }
+      };
 
 
       //get before image, either
@@ -327,7 +312,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   vm.setCurrentPos()
               }
 
-
           }, function(err) {
               vm.hideModal();
           });
@@ -335,27 +319,20 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       function handleEnd($window){
 
-
-
-
           if (!userData) {
               //window.location.replace('/consentForm.html#!/kiosk');
 
-
-
-              //TODO:if project has no survey, go to results
-
+              //if project has no survey, go to results
               if (!parseInt(vm.data.has_survey))  {
                   window.location.replace('/kioskProject.html#/results/' + vm.code);
               }
               else {
                   //if project codes for algal, go to algal survey else go to IMI (default survey)
-                  //TODO: Custom survey page
                   if (vm.code == heatMapProject2 || vm.code == heatMapProject1) {
                       window.location.replace('/survey.html#/survey?code=' + vm.code+ '&userType=kiosk');
                   } else {
-                      // window.location.replace('/survey.html#/surveyTLX?code=' + vm.code+ '&userType=kiosk');
-                      window.location.replace('/survey.html#/surveyIMI?code=' + vm.code+ '&userType=kiosk');
+
+                      window.location.replace('/survey.html#/' + vm.survey_type + '?code=' + vm.code+ '&userType=kiosk');
 
                   }
               }
@@ -387,22 +364,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                       //if out of projects, go to survey
                       if (next_codes.length == 0) {
 
-                          //Provision for NASA-TLX questionnaire
-                          if(showTLX){
-                              window.location.replace('/survey.html#/surveyTLX?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-
-                          } else if (showGAME){
-                              window.location.replace('/survey.html#/surveyGAME?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-
-
-                          }  else if (showIMI){
-                              window.location.replace('/survey.html#/surveyIMI?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-
-
-                          } else{
-                              window.location.replace('/survey.html#/survey?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-
-                          }
+                          window.location.replace('/survey.html#/'+ vm.survey_type + '?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
 
                       } else {
 
@@ -442,23 +404,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
               } else {
                   //Add the chaining parameter to show relevant questions at the survey
-                  //Provision for NASA-TLX questionnaire
-                  if(showTLX){
-                      window.location.replace('/survey.html#/surveyTLX?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-
-                  } else if (showGAME){
-                      window.location.replace('/survey.html#/surveyGAME?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-
-                  } else if (showIMI){
-                      window.location.replace('/survey.html#/surveyIMI?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-
-                  }
-                  else{
-                      window.location.replace('/survey.html#/survey?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-
-                  }
-
-
+                  window.location.replace('/survey.html#/'+ vm.survey_type + '?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
               }
           } else {
               window.location.replace('/UserProfile.html');
@@ -466,8 +412,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       };
 
       function skipToSurvey() {
-
-
 
           //console.log('Scope code', $scope.code);
           var skip = confirm('Are you sure ?');
@@ -497,23 +441,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                               //if out of projects, go to survey
                               if (next_codes.length == 0) {
 
-                                  //Provision for NASA-TLX questionnaire
-                                  //TODO: SWITCH BACK TO TLX IF NEEDED!
-                                  if(showTLX){
-                                      window.location.replace('/survey.html#/surveyTLX?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
+                                  window.location.replace('/survey.html#/'+ vm.survey_type + '?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
 
-                                  } else if (showGAME){
-                                      window.location.replace('/survey.html#/surveyGAME?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-
-
-                                  } else if (showIMI){
-                                      window.location.replace('/survey.html#/surveyIMI?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-
-
-                                  } else{
-                                      window.location.replace('/survey.html#/survey?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-
-                                  }
                               } else {
 
                                   //pick the next at random
@@ -555,27 +484,10 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                       }
                       else {
                           //Add the chaining parameter to show relevant questions at the survey
-
-
-                          //Provision for NASA-TLX questionnaire
-                          if(showTLX){
-                              window.location.replace('/survey.html#/surveyTLX?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-
-                          }
-                          else if (showGAME){
-                              window.location.replace('/survey.html#/surveyGAME?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-
-
-                          }else if (showIMI){
-                              window.location.replace('/survey.html#/surveyIMI?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-                          }else{
-                              window.location.replace('/survey.html#/survey?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-                          }
+                          window.location.replace('/survey.html#/'+ vm.survey_type + '?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last)
 
                       }
                   }
-
-
 
                   } else {
                   window.location.replace('/UserProfile.html');
@@ -615,7 +527,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               return vm.centerLng;
           }
       };
-
 
 
       //Show Tutorial Hover functionality
@@ -734,8 +645,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       function submit(option,option_text) {
 
           vm.showModal();
-
-
           //if markers task, loop through all markers and submit the selected ones, ignore submit button option
           if (vm.showMarkerPoints) {
 
@@ -921,7 +830,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       };
 
 
-
       function fetchCenter(){
           //console.log('In get Center ');
           var lng = vm.getLng();
@@ -996,6 +904,9 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           vm.data = data.data;
           vm.data.template = JSON.parse(vm.data.template);
           vm.req_amount = vm.data.req_count;
+          vm.survey_t = vm.data.survey_type || 'IMI';
+          vm.survey_type = 'survey' +  vm.survey_t;
+          console.log(vm.survey_type);
 
 
           if (parseInt(vm.req_amount) == 0) {
@@ -1258,8 +1169,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
   }]);
 
 
-module.controller('geneticTaskController', ['$scope', '$location', '$http', 'userData', '$window', '$timeout', 'NgMap','$q', '$sce', 'showTLX','showGAME','showIMI', 'heatMapProject1', 'heatMapProject2',
-    function($scope, $location, $http, userData,  $window, $timeout, NgMap, $q,$sce, showTLX,showGAME,showIMI, heatMapProject1, heatMapProject2) {
+module.controller('geneticTaskController', ['$scope', '$location', '$http', 'userData', '$window', '$timeout', 'NgMap','$q', '$sce', 'heatMapProject1', 'heatMapProject2',
+    function($scope, $location, $http, userData,  $window, $timeout, NgMap, $q,$sce, heatMapProject1, heatMapProject2) {
         $window.document.title = "Tasks";
 
         var vm = this;
@@ -1463,11 +1374,11 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
                 //window.location.replace('/consentForm.html#!/kiosk');
 
                 //if project codes for algal, go to algal survey else go to TLX (default survey)
-                //TODO: Custom survey page
+                //Custom survey page
                 if (vm.code == heatMapProject2 || vm.code == heatMapProject1) {
                     window.location.replace('/survey.html#/survey?code=' + vm.code+ '&userType=kiosk');
                 } else {
-                    window.location.replace('/survey.html#/surveyTLX?code=' + vm.code+ '&userType=kiosk');
+                    window.location.replace('/survey.html#/'+ vm.survey_type + '?code=' + vm.code+ '&userType=kiosk');
                 }
 
 
@@ -1496,23 +1407,7 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
 
                         //if out of projects, go to survey
                         if (next_codes.length == 0) {
-
-                            //Provision for NASA-TLX questionnaire
-                            if(showTLX){
-                                window.location.replace('/survey.html#/surveyTLX?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-
-                            } else if (showGAME){
-                                window.location.replace('/survey.html#/surveyGAME?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-
-
-                            } else if (showIMI){
-                                window.location.replace('/survey.html#/surveyIMI?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-
-
-                            }else{
-                                window.location.replace('/survey.html#/survey?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-
-                            }
+                            window.location.replace('/survey.html#/'vm.survey_type + '?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
 
                         } else {
 
@@ -1555,24 +1450,8 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
 
                     //in genetic cases, check if user satisfied constraint
                     vm.checkSatisfiedSequence();
-
-
                     //Add the chaining parameter to show relevant questions at the survey
-                    //Provision for NASA-TLX questionnaire
-                    if(showTLX){
-                        window.location.replace('/survey.html#/surveyTLX?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-
-                    } else if (showGAME){
-                        window.location.replace('/survey.html#/surveyGAME?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-
-                    }else if (showIMI){
-                        window.location.replace('/survey.html#/surveyIMI?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-
-                    } else{
-                        window.location.replace('/survey.html#/survey?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-
-                    }
-
+                    window.location.replace('/survey.html#/'+ vm.survey_type + '?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
 
                 }
             } else {
@@ -1608,24 +1487,7 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
 
                             //if out of projects, go to survey
                             if (next_codes.length == 0) {
-
-                                //Provision for NASA-TLX questionnaire
-                                //TODO: SWITCH BACK TO TLX IF NEEDED!
-                                if(showTLX){
-                                    window.location.replace('/survey.html#/surveyTLX?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-
-                                } else if (showGAME){
-                                    window.location.replace('/survey.html#/surveyGAME?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-
-
-                                } else if (showIMI){
-                                    window.location.replace('/survey.html#/surveyIMI?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-
-
-                                }else{
-                                    window.location.replace('/survey.html#/survey?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-
-                                }
+                                window.location.replace('/survey.html#/'+ vm.survey_type + '?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
                             } else {
 
                                 //pick the next at random
@@ -1666,25 +1528,7 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
 
                     } else {
                         //Add the chaining parameter to show relevant questions at the survey
-
-                        //Provision for NASA-TLX questionnaire
-                        if(showTLX){
-                            window.location.replace('/survey.html#/surveyTLX?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-
-                        }
-                        else if (showGAME){
-                            window.location.replace('/survey.html#/surveyGAME?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-
-
-                        } else if (showIMI){
-                            window.location.replace('/survey.html#/surveyIMI?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-
-
-                        } else{
-                            window.location.replace('/survey.html#/survey?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
-
-                        }
-
+                        window.location.replace('/survey.html#/'+ vm.survey_type + '?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
                     }
 
                 } else {
@@ -1738,7 +1582,7 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
                 var tutData = tdata.data;
 
                 vm.tutorial = [];
-                //TODO: Mapping
+                //Mapping
                 vm.tutorialMapping = [];
 
                 vm.data.template.options.forEach(function(item) {
@@ -1748,7 +1592,6 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
                 });
 
                 tutData.forEach(function(item) {
-
 
                     var tmpl = JSON.parse(item.template);
                     var opt = [];
@@ -1846,7 +1689,6 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
 
             //if markers task, loop through all markers and submit the selected ones, ignore submit button option
             if (vm.showMarkerPoints) {
-
 
                 var promiseArray = [];
                 $scope.pointMarkers.forEach(function (item) {
@@ -2261,38 +2103,6 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
             return dec_seq;
         }
 
-        // function calculateRemaining(slist,id){
-        //
-        //     var cs = slist[id];
-        //     var rem = 0;
-        //     var found = false;
-        //     while (!found){
-        //
-        //         var ns = slist[id+ rem];
-        //         if (ns != cs){
-        //             found = true;
-        //         } else {
-        //             rem++;
-        //         }
-        //     }
-        //     return rem
-        // }
-        //
-
-        // //get the next project in the sequence and how many to load
-        // vm.getNextGeneticCode2 = function (){
-        //     //decode the sequence
-        //     var seg_list = decodeGeneticSequence(vm.genetic_sequence);
-        //     // var seg_list = vm.genetic_sequence .split('-');
-        //     console.log(seg_list);
-        //     //get the next symbol:
-        //     var indx = vm.total_genetic_progress %  seg_list.length;
-        //     vm.genetic_task_current = vm.genetic_projects[seg_list[indx]];
-        //     vm.genetic_task_current_symbol = seg_list[indx];
-        //     vm.genetic_tasks_to_load = calculateRemaining(seg_list,indx);
-        //
-        // };
-
         //decodes block of type XX00 into XX and 00
         //eg L7 -> L and 7
         function decodeBlock(bl){
@@ -2361,6 +2171,9 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
                     } else {
                         $scope.req_text = "You must complete at least " + vm.req_amount + " subtasks in order to continue to the survey."
                     }
+
+                    vm.survey_t = vm.data.survey_type || 'IMI';
+                    vm.survey_type = 'survey' + vm.survey_t;
 
                     //get the tasks to show
                     vm.getTasks();
@@ -2613,7 +2426,7 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
                 }
 
                 //get the projects for each type
-                //TODO: HANDLE MULTIPLE CODES OF SAME TYPE e.g L, LL etc if comma separaterd text
+                //HANDLE MULTIPLE CODES OF SAME TYPE e.g L, LL etc if comma separaterd text
                 extract_multiple_projects(vm.gen_data.genetic_info);
 
                 // vm.genetic_projects = {

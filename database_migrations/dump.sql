@@ -199,6 +199,7 @@ CREATE TABLE `projects` (
   `has_location` int(11) DEFAULT '1',
    `is_inaturalist` int(11) DEFAULT '0',
   `has_survey` int(11) DEFAULT '1',
+  `survey_type` VARCHAR(255) default 'IMI',
   `poi_name` text DEFAULT NULL,
    `video_url` varchar(2048) DEFAULT NULL,
    `slider_text` text DEFAULT NULL,

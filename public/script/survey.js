@@ -1040,8 +1040,14 @@ module.controller('surveyIMIController', ['$scope', '$http', '$state', '$locatio
     $scope.participantId ="";
     $scope.trialId = "";
 
-    $scope.imi_enjoy = true;
-    $scope.imi_competence = true;
+    //toggle IMI subscales:
+    $scope.imi_toggled = {
+        'enjoyment': true,
+        'competence': true,
+        'effort': false,
+        'pressure': false,
+        'choice': false
+    };
 
 
     //if coming from tileoscope
@@ -1075,7 +1081,7 @@ module.controller('surveyIMIController', ['$scope', '$http', '$state', '$locatio
         }
     }
 
-    //imi questions: enjoyment:
+    //IMI: ENJOYMENT:
     $scope.imi_q_enjoyment = [
         {'question': 'I enjoyed doing this activity very much.' , 'value': 7},
         {'question': 'This activity was fun to do.' , 'value': 7},
@@ -1088,7 +1094,7 @@ module.controller('surveyIMIController', ['$scope', '$http', '$state', '$locatio
     //shuffle: in place
     shuffleArray($scope.imi_q_enjoyment);
 
-    //imi questions: Competence:
+    //IMI: COMPETENCE
     $scope.imi_q_competence = [
         {'question': 'I think I am pretty good at this activity.' , 'value': 7},
         {'question': 'I think I did pretty well at this activity, compared to others.' , 'value': 7},
@@ -1099,6 +1105,36 @@ module.controller('surveyIMIController', ['$scope', '$http', '$state', '$locatio
     ];
     //shuffle: in place
     shuffleArray($scope.imi_q_competence);
+
+    //IMI: EFFORT
+    $scope.imi_q_effort = [
+        {'question': 'I put a lot of effort into this.' , 'value': 7},
+        {'question': 'I didn\'t try very hard to do well at this activity. ' , 'value': 7},
+        {'question': 'I tried very hard on this activity.' , 'value': 7},
+        {'question': 'It was important to me to do well at this task.' , 'value': 7},
+        {'question': 'I didn\'t put much energy into this.' , 'value': 7}
+    ];
+    //shuffle: in place
+    shuffleArray($scope.imi_q_effort);
+    //IMI: Pressure
+    $scope.imi_q_pressure = [
+        {'question': 'I did not feel nervous at all while doing this. ' , 'value': 7},
+        {'question': 'I felt very tense while doing this activity. ' , 'value': 7},
+        {'question': 'I was very relaxed in doing these.' , 'value': 7},
+        {'question': 'I was anxious while working on this task.' , 'value': 7},
+        {'question': 'I felt pressured while doing these.' , 'value': 7}
+    ];
+    shuffleArray($scope.imi_q_pressure);
+    //IMI: Choice
+    $scope.imi_q_choice = [
+        {'question': 'I believe I had some choice about doing this activity.' , 'value': 7},
+        {'question': 'I felt like it was not my own choice to do this task.' , 'value': 7},
+        {'question': 'I didn\'t really have a choice about doing this task.' , 'value': 7},
+        {'question': 'I did this activity because I had no choice.' , 'value': 7},
+        {'question': 'I did this activity because I wanted to.' , 'value': 7},
+        {'question': 'I did this activity because I had to. ' , 'value': 7}
+    ];
+    shuffleArray($scope.imi_q_choice);
 
 
     $scope.req_answers = false;
@@ -1125,7 +1161,7 @@ module.controller('surveyIMIController', ['$scope', '$http', '$state', '$locatio
             var link = '/api/project/' + $scope.params.code + '/survey';
 
 
-            //TODO: if coming from Tileoscope, add hit id and participant id and save to different table
+            //f coming from Tileoscope, add hit id and participant id and save to different table
             if ($scope.fromTileoscope){
                 link = '/api/project/surveyTileoscope';
                 data.participantId = $scope.participantId;

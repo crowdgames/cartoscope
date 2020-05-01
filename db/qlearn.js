@@ -20,7 +20,7 @@ var chance = new Chance();
 
 var ALPHA = 0.01;
 var LAMBDA = 0.95;
-SOFTMX = true; // whether to use softmax vs squared
+var SOFTMX = true; // whether to use softmax vs squared
 
 var ACTIONS = ['44_CaDo_C4_M0',
                 '55_TeNoTeG_C8_M0',
@@ -41,9 +41,9 @@ var WEIGHTS = {
 
 var STATE_LEN = 2;
 // var REP_N = 300000; //CHI-PLAY
-var REP_N = 3000; //TODO: kill this
+var REP_N = 1; //not used anymore
 
-var SEQ_HORIZON = 10; //how much ahead should I generate
+var SEQ_HORIZON = 15; //how much ahead should I generate
 
 
 
@@ -687,8 +687,13 @@ function QlearnAlgorithmConstructOld(Q,size_n) {
                 try_Q = -99.0;
             }
 
+            //if softmax, then use softmax function to normalize weights
             // else used squared value of function
-            tq_n = Math.pow(try_Q, 2);
+            if (SOFTMX){
+                tq_n = Math.exp(try_Q);
+            } else {
+                tq_n = Math.pow(try_Q, 2);
+            }
 
             norm_w = norm_w + tq_n;
             pick_w.push(tq_n);

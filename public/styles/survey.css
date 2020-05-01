@@ -1,5 +1,9 @@
 body {
     background-image: url('../images/background_dktp.png');
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
     font-family: 'PT Sans', sans-serif;
     color: #f8f8ff;
 }
