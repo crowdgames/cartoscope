@@ -1172,3 +1172,39 @@ exports.getTutorialItemsMultipleCodes = function(projectID_list) {
             });
     });
 };
+
+
+//get custom survey items from db
+exports.getCustomSurveyItems = function(unique_code) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT * from survey_questions WHERE unique_code=?',
+            [unique_code]).then(
+            function(data) {
+                if (data.length > 0) {
+                    resolve(data[0]);
+                } else {
+                    error({code: 'No survey found'});
+                }
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
+
+//add custom survey items to db
+exports.addCustomSurveyItem = function(unique_code,item) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+
+        connection.queryAsync('insert into survey_questions (unique_code,survey_form) VALUES(?,?) on DUPLICATE KEY UPDATE survey_form= VALUES(survey_form)',
+            [unique_code,JSON.stringify(item)]).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};

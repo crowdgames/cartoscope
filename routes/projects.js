@@ -588,6 +588,35 @@ router.get('/:id/unarchive', function(req, res, next) {
 // });
 
 
+//get survey items from backend
+router.get('/surveyItems/:unique_code', function(req, res, next) {
+
+    projectDB.getCustomSurveyItems(req.params.unique_code).then(function(data) {
+        res.send(data)
+    }).catch(function(error) {
+        res.status(400).send({error: error.body || 'Survey items could not be found for ' + req.params.uniqueCode});
+    });
+});
+
+
+//get survey items from backend
+router.post('/addsurveyItems/', function(req, res, next) {
+
+
+    console.log(req.body)
+    var survey_body = req.body.survey;
+    var unique_code = req.body.unique_code;
+
+    projectDB.addCustomSurveyItem(unique_code,survey_body).then(function(data) {
+        res.send(data)
+    }).catch(function(error) {
+        console.log(error)
+        res.status(400).send({error: error.body || 'Survey items could not be stored for ' + unique_code});
+    });
+});
+
+
+
 //fix for issues with codes!
 router.post('/:id/survey', [filters.requireLogin], function(req, res, next) {
     if (req.session.passport.user.anonymous) {

@@ -1,0 +1,89 @@
+<div class="container-fluid">
+<center>
+
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4"><p class="h1">Follow up Survey</p></div>
+        <div class="col-md-4"></div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10"><h4>Thank you for taking the time to contribute to our study. Your participation is invaluable to our work. As we
+            move forward, we would like to get some feedback from you about the usability of our software so that we can
+            take your thoughts into consideration during redevelopment. Please take a few moments to complete our brief
+            questionnaire and feel free to provide any additional comments you would like to share with us.</h4></div>
+        <div class="col-md-1"></div>
+    </div>
+
+
+
+    <form class="horizontal col-md-offset-1 col-md-10" name="forms.mturk_form" >
+
+
+        <div class="row" ng-repeat="suv in survey_questions">
+            <hr>
+            <div class="form-group "  >
+                <center>
+                    <!--TEXTAREA-->
+                <div ng-if="suv.question_type == 'textarea'">
+                    <h4>{{suv.question}}</h4>
+                    <textarea class="form-control" rows="3" cols="50" ng-model="suv.answer"></textarea>
+                </div>
+
+                    <!--LIKERT-->
+                    <div ng-if="suv.question_type.includes('likert')">
+                        <h4>{{suv.question}}<span ng-if="req_answers" style="color:#9CDC18">*</span></h4>
+                        <label class="col-form-label" >{{suv.least}}</label>
+                        <label class="col-form-label" ng-repeat="n in getNumber(suv.value)">
+                            <input type="radio" name="{{suv.question}}" style="margin:20px" ng-model="suv.answer" ng-value=n  />
+                        </label>
+                        <label class="col-form-label" >{{suv.most}}</label>
+                    </div>
+
+                    <!--RADIO-->
+                    <div ng-if="suv.question_type == 'radio'">
+                        <h4>{{suv.question}}<span ng-if="req_answers" style="color:#9CDC18">*</span></h4>
+                            <label class="col-form-label" ng-repeat="opt in suv.options">
+                                <input type="radio" name="{{suv.question}}" style="margin:20px" ng-model="suv.answer" ng-value=opt  /> {{opt}}
+                            </label>
+                    </div>
+
+                    <!--Checkbox-->
+                    <div ng-if="suv.question_type == 'checkbox'">
+                        <h4>{{suv.question}}<span ng-if="req_answers" style="color:#9CDC18">*</span></h4>
+                        <label class="col-form-label" ng-repeat="opt in suv.options">
+                            <input type="checkbox" name="{{suv.question}}" style="margin:20px" ng-model="suv.answer[opt]" ng-value=opt  /> {{opt}}
+                        </label>
+                    </div>
+
+
+
+                </center>
+
+            </div>
+        </div>
+
+        <br>
+
+        <div class="form-group">
+            <label>In the space provided, please provide any additional feedback you would like to share on this project.</label>
+            <textarea class="form-control" rows="3" cols="50" ng-model="response.additional_text"></textarea>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-md-12">Thank you for your time and your thoughts! Click Submit to complete your submission.</div>
+        </div>
+        <br>
+        <div class="form-group">
+            <button type="submit" ng-click="submit(mturk_form)" class="form-control btn btn-primary btn btn-block" style="background-color:#9cdc1f;color:black;">Submit</button>
+        </div>
+
+    </form>
+
+</center>
+</div>
+
+
+
+

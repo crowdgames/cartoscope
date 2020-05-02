@@ -211,6 +211,26 @@ CREATE TABLE `projects` (
 ) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+
+--
+-- Table structure for table `survey_questions`
+--
+
+DROP TABLE IF EXISTS `survey_questions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `survey_questions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `unique_code` varchar(255) DEFAULT NULL,
+  `survey_form` TEXT DEFAULT NULL,
+  `timestamp` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_code_UNIQUE` (`unique_code`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+
 --
 -- Table structure for table `response`
 --

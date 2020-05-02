@@ -48,6 +48,14 @@ module.config(function($stateProvider, $urlRouterProvider) {
         controller: 'surveyIMIController'
     });
 
+    //TODO: TEST IF WE HAVE QUESTIONS, IF NOT WE SHOULD JUMP ELSEWHERE
+    $stateProvider.state({
+        name: 'surveyCUSTOM',
+        url: '/surveyCUSTOM',
+        templateUrl: 'templates/survey_custom.html',
+        controller: 'surveyCUSTOMController'
+    });
+
 
 
 
@@ -1032,23 +1040,20 @@ module.controller('surveyGAMEontroller', ['$scope', '$http', '$state', '$locatio
 
 module.controller('surveyIMIController', ['$scope', '$http', '$state', '$location','$timeout','$compile',function($scope, $http, $state, $location,$timeout,$compile) {
 
-
-    //locatin search, if coming from tileoscope or tileoscope AR
-
-
+    //location search, if coming from tileoscope or tileoscope AR
     $scope.fromTileoscope = 0;
     $scope.participantId ="";
     $scope.trialId = "";
+
 
     //toggle IMI subscales:
     $scope.imi_toggled = {
         'enjoyment': true,
         'competence': true,
-        'effort': false,
+        'effort': true,
         'pressure': false,
         'choice': false
     };
-
 
     //if coming from tileoscope
     if ($scope.params.hasOwnProperty("src") ){
@@ -1059,9 +1064,6 @@ module.controller('surveyIMIController', ['$scope', '$http', '$state', '$locatio
     } else {
         $scope.userType = $scope.params.userType;
     }
-
-
-
 
     //Generate numbers for radio buttons for Likert (7 scales)
     $scope.getNumber = function(n){
@@ -1225,6 +1227,210 @@ module.controller('surveyIMIController', ['$scope', '$http', '$state', '$locatio
             })
 
         }
+        if (survey_ok == -1){
+            return survey_ok
+        } else {
+            return ret_obj;
+
+        }
+
+
+    };
+
+    $scope.checkInput = function(input) {
+        if(input != undefined) {  return input}
+        else {return -1}
+    }
+
+}]);
+
+
+module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$location','$timeout','$compile',function($scope, $http, $state, $location,$timeout,$compile) {
+
+    //location search, if coming from tileoscope or tileoscope AR
+    $scope.fromTileoscope = 0;
+    $scope.participantId ="";
+    $scope.trialId = "";
+
+    $scope.survey_questions = [];
+
+
+
+    //if coming from tileoscope
+    if ($scope.params.hasOwnProperty("src") ){
+        $scope.fromTileoscope = 1;
+        $scope.participantId = $scope.params.workerId ||  $scope.params.participantId;
+        $scope.trialId = $scope.params.hitId ||  $scope.params.trialId;
+        $scope.userType = "mTurk"
+    } else {
+        $scope.userType = $scope.params.userType;
+    }
+
+    //Generate numbers for radio buttons for Likert (7 scales)
+    $scope.getNumber = function(n){
+        var ratings = [];
+        for (var i = 1; i <= n; i ++){
+            ratings.push(i)
+        }
+        return ratings;
+    };
+
+    function shuffleArray(array) {
+        for (var i = array.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
+    }
+
+    function checkValidItem(item,values){
+
+        var is_ok = 1;
+        values.forEach(function(it){
+            if (item[it] == undefined || item[it] == ""){
+                is_ok = 0;
+            }
+        })
+        return is_ok
+
+    }
+
+    //TODO: fetch questions, validate that everything has the right format and add to survey_questions
+    $http.get('/api/project/surveyItems/' +   $scope.params.code).then(function(sdata) {
+
+        var survey_items = JSON.parse(sdata.data.survey_form);
+
+        console.log(survey_items)
+
+        //Supported question types: textarea | likert[5,7,10] | radio | checkbox
+        survey_items.forEach(function (sv){
+
+            //they all must have a question field
+            if (sv.question !== undefined && sv.question !== ""){
+
+                if (sv.question_type === 'textarea') {
+                    //if textarea: we push question and question type
+                    $scope.survey_questions.push({'question': sv.question, 'question_type': sv.question_type })
+                } else if (sv.question_type.includes('likert') ){
+                    //if likert: we need to have values, least text and most text
+                    if (checkValidItem(sv, ['question','value','least', 'most'])){
+                        $scope.survey_questions.push({'question': sv.question, 'question_type': sv.question_type, 'value': sv.value, 'least': sv.least, 'most': sv.most })
+
+                    }
+
+                }  else if (sv.question_type.includes('radio') ){
+                    //if radio: we need to have options
+                    if (checkValidItem(sv, ['question','options'])){
+                        $scope.survey_questions.push({'question': sv.question, 'question_type': sv.question_type, 'options': sv.options })
+
+                    }
+
+                } else if (sv.question_type.includes('checkbox') ){
+                    //if radio: we need to have options
+                    if (checkValidItem(sv, ['question','options'])){
+
+                        var options_check = {};
+                        sv.options.forEach(function (ot){
+                            options_check[ot] = false
+                        })
+                        $scope.survey_questions.push({'question': sv.question, 'question_type': sv.question_type, 'options': sv.options, 'answer': options_check })
+
+                    }
+
+                }
+            }
+
+        })
+        console.log($scope.survey_questions)
+
+    }, function(err) {
+        console.log('error', err);
+        //TODO: handle errors here!
+    });
+
+
+
+
+
+    $scope.req_answers = false;
+
+    $scope.forms = {};
+
+    if ($scope.userType == 'mTurk') {
+        $scope.req_answers = true;
+    }
+
+    $scope.submit = function() {
+
+        //TODO change to custom
+        var data = $scope.transformDataCUSTOM($scope.response, $scope.userType);
+
+        if ($scope.userType == 'mTurk') {
+            if (data.opinion == 'ULB') {
+                return alert("Please fill out all the required fields!")
+            }
+        }
+
+        if (data != -1) {
+
+            var link = '/api/project/' + $scope.params.code + '/survey';
+            //f coming from Tileoscope, add hit id and participant id and save to different table
+            if ($scope.fromTileoscope){
+                link = '/api/project/surveyTileoscope';
+                data.participantId = $scope.participantId;
+                data.trialId = $scope.trialId;
+            }
+
+            $http.post(link, JSON.stringify(data)).then(function(data) {
+                // console.log('data',data.data);
+                //console.log(data.data.hitCode);
+                if (data.data.hitCode) {
+                    $state.go('hitCode', {hitCode: data.data.hitCode});
+                } else if (data.data.heatMap) {
+                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId});
+                }
+            }, function(err) {
+                if ($scope.userType == 'mTurk') {
+
+                    //if there is any other unexpected issue, use fallback code:
+                    var fallback = "c0b72bcf-39ac-40f5-99c4-d4016f510237";
+                    alert('Something unexpected occurred. Please use the following completion code to get compensated: ' + fallback);
+                } else {
+                    alert('Something unexpected occurred.');
+                }
+            });
+        } else {
+            alert("Please fill out all the required fields!")
+        }
+    };
+
+    $scope.transformDataCUSTOM = function(response, userType) {
+
+
+        var survey_ok = 1;
+        // ULB stands for User Left Blank
+        var ret_obj =  {
+            'additional_feedback':  { "answer" : response['additional_text'] || 'ULB' , "type" : "textarea"}
+        };
+
+        //TODO: we have to go through every option and validate it
+        $scope.survey_questions.forEach(function (item) {
+            item.answer = $scope.checkInput(item.answer) || -1;
+
+            var ulb = "ULB";
+            if (item.question_type.indexOf('likert') != -1){
+                ulb = -1
+            }
+
+            ret_obj[item.question] = { "answer" : item.answer || ulb , "type" : item.question_type};
+            if ($scope.req_answers && item.answer == -1) {
+                console.log(item.question);
+                survey_ok = -1;
+            }
+        })
+
+
         if (survey_ok == -1){
             return survey_ok
         } else {
