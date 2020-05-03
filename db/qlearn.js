@@ -25,12 +25,12 @@ var SOFTMX = true; // whether to use softmax vs squared
 var ACTIONS = ['44_CaDo_C4_M0',
                 '55_TeNoTeG_C8_M0',
                 '66_BrNoBrG_C12_M0',
-                'CAIRN'
+                'CAIRNM'
                 ];
 
 
 var WEIGHTS = {
-    'CAIRN': 0,
+    'CAIRNM': 0,
     '44_RB_C4_M0': 0.5, //replace with cats dogs
     '44_CaDo_C4_M0': 0.5,
     '55_TeNoTeG_C8_M0': 1 ,
