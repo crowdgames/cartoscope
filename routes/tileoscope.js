@@ -52,35 +52,31 @@ const fupload = multer({ storage: storage });
 router.get('/compareTGCC/:hit_id', function(req, res, next) {
 
 
-    //3 datasets: tennis, animals, bridges
-    // var possibles = ['wNqGQrb1d8rN','I9LEzE0k0qxJ','EGHiAhY5ucce'];
-    var possibles = ['wNqGQrb1d8rN'];
-
+    //2 datasets: cats dogs, bridges
+    //3 interfaces, CC, TG and TG-BIG
     var possibles_pool = [
         {'interface': 'CC', 'dataset': 'EGHiAhY5ucce' , 'name': 'bridges'},
         {'interface': 'CC', 'dataset': 'XtdcMntF37R9' , 'name': 'catdogs'},
         {'interface': 'TG', 'dataset': 'brs' , 'name': 'bridges_small'},
         {'interface': 'TG', 'dataset': 'cas' , 'name': 'catdogs_small'},
         {'interface': 'TG', 'dataset': 'brb' , 'name': 'bridges_big'},
-        {'interface': 'TG', 'dataset': 'cab' , 'name': 'catdogs_big'},
-
-
-    ]
+        {'interface': 'TG', 'dataset': 'cab' , 'name': 'catdogs_big'}
+    ];
 
     var hit_id= req.params.hit_id;
-    var pick_d = randomInt(0,possibles_pool.length - 1); //pick dataset
+    var pick_d = randomInt(0,possibles_pool.length - 1); //pick dataset [start,end]
     var selected_d = possibles[pick_d];
-    var interface = selected_d.interface;
+    var interface_version = selected_d.interface;
     var dataset = selected_d.dataset;
-
+    var link = "";
 
     //if pick Tile-o-Scope Grid, then go to TG, else go to Cartoscope Classic
-    if (interface == "CC"){
+    if (interface_version == "CC"){
         //nob means no bonus, nop means no penalty, capl means cap them at certain amount of images
-        var link = 'http://cartosco.pe/Tiles/?genetic='+ dataset +'&trialId=' + hit_id + '&nob=1&nop=1&capl=1';
+        link = 'http://cartosco.pe/Tiles/?genetic='+ dataset +'&trialId=' + hit_id + '&nob=1&nop=1&capl=1';
 
     } else {
-        var link = 'https://cartosco.pe/api/anon/startAnon/'+ dataset + '?trialId='+ hit_id;
+        link = 'https://cartosco.pe/api/anon/startAnon/'+ dataset + '?trialId='+ hit_id;
     }
     //redirect to link:
     res.redirect(link)
