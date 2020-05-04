@@ -138,6 +138,12 @@ app.get('/ar', function(req, res) {
 });
 
 
+//fix Tiles lowercase redirect
+app.get('/tiles', function(req, res) {
+    res.redirect('/Tiles');
+});
+
+
 
 //go to inat report page after authorization with code attached
 app.get('/inat_auth', function(req, res) {
