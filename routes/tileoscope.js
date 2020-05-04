@@ -56,20 +56,31 @@ router.get('/compareTGCC/:hit_id', function(req, res, next) {
     // var possibles = ['wNqGQrb1d8rN','I9LEzE0k0qxJ','EGHiAhY5ucce'];
     var possibles = ['wNqGQrb1d8rN'];
 
-    var hit_id= req.params.hit_id;
-    var pick_d = randomInt(0,possibles.length - 1); //pick dataset
-    var selected_d = possibles[pick_d];
-    var pick_tg = randomInt(0,1);
+    var possibles_pool = [
+        {'interface': 'CC', 'dataset': 'EGHiAhY5ucce' , 'name': 'bridges'},
+        {'interface': 'CC', 'dataset': 'XtdcMntF37R9' , 'name': 'catdogs'},
+        {'interface': 'TG', 'dataset': 'brs' , 'name': 'bridges_small'},
+        {'interface': 'TG', 'dataset': 'cas' , 'name': 'catdogs_small'},
+        {'interface': 'TG', 'dataset': 'brb' , 'name': 'bridges_big'},
+        {'interface': 'TG', 'dataset': 'cab' , 'name': 'catdogs_big'},
 
-    //pick only TG for now:
-    pick_tg=1;
+
+    ]
+
+    var hit_id= req.params.hit_id;
+    var pick_d = randomInt(0,possibles_pool.length - 1); //pick dataset
+    var selected_d = possibles[pick_d];
+    var interface = selected_d.interface;
+    var dataset = selected_d.dataset;
+
+
     //if pick Tile-o-Scope Grid, then go to TG, else go to Cartoscope Classic
-    if (pick_tg){
-        //nob means no bonus, nop means no penalty
-        var link = 'http://cartosco.pe/Tiles/?genetic='+ selected_d +'&trialId=' + hit_id + '&nob=1&nop=1';
+    if (interface == "CC"){
+        //nob means no bonus, nop means no penalty, capl means cap them at certain amount of images
+        var link = 'http://cartosco.pe/Tiles/?genetic='+ dataset +'&trialId=' + hit_id + '&nob=1&nop=1&capl=1';
 
     } else {
-        var link = 'https://cartosco.pe/api/anon/startAnon/'+ selected_d + '?trialId='+ hit_id;
+        var link = 'https://cartosco.pe/api/anon/startAnon/'+ dataset + '?trialId='+ hit_id;
     }
     //redirect to link:
     res.redirect(link)

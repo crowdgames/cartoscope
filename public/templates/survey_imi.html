@@ -44,7 +44,7 @@
 
         <!--IMI: ENJOYMENT-->
         <div ng-show="imi_toggled.enjoyment">
-            <div class="row" ng-repeat="likert_q in imi_q_enjoyment">
+            <div class="row" ng-repeat="likert_q in questions_imi.enjoyment">
                 <hr>
                 <div class="form-group row " >
                     <center>
@@ -61,7 +61,7 @@
 
         <!--IMI: COMPETENCE-->
         <div ng-show="imi_toggled.competence">
-            <div class="form-group row" ng-repeat="likert_q in imi_q_competence">
+            <div class="form-group row" ng-repeat="likert_q in questions_imi.competence">
                 <center>
                     <hr>
                     <h4>{{likert_q.question}}<span ng-if="req_answers" style="color:#9CDC18">*</span></h4>
@@ -76,7 +76,7 @@
 
         <!--IMI: EFFORT-->
         <div ng-show="imi_toggled.effort">
-            <div class="form-group row" ng-repeat="likert_q in imi_q_effort">
+            <div class="form-group row" ng-repeat="likert_q in questions_imi.effort">
                 <center>
                     <hr>
                     <h4>{{likert_q.question}}<span ng-if="req_answers" style="color:#9CDC18">*</span></h4>
@@ -91,7 +91,7 @@
 
         <!--IMI: PRESSURE-->
         <div ng-show="imi_toggled.pressure">
-            <div class="form-group row" ng-repeat="likert_q in imi_q_pressure">
+            <div class="form-group row" ng-repeat="likert_q in questions_imi.pressure">
                 <center>
                     <hr>
                     <h4>{{likert_q.question}}<span ng-if="req_answers" style="color:#9CDC18">*</span></h4>
@@ -106,7 +106,7 @@
 
         <!--IMI: CHOICE-->
         <div ng-show="imi_toggled.choice">
-            <div class="form-group row" ng-repeat="likert_q in imi_q_choice">
+            <div class="form-group row" ng-repeat="likert_q in questions_imi.choice">
                 <center>
                     <hr>
                     <h4>{{likert_q.question}}<span ng-if="req_answers" style="color:#9CDC18">*</span></h4>

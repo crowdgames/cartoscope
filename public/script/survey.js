@@ -1054,6 +1054,7 @@ module.controller('surveyIMIController', ['$scope', '$http', '$state', '$locatio
         'pressure': false,
         'choice': false
     };
+    $scope.questions_imi = {};
 
     //if coming from tileoscope
     if ($scope.params.hasOwnProperty("src") ){
@@ -1084,7 +1085,7 @@ module.controller('surveyIMIController', ['$scope', '$http', '$state', '$locatio
     }
 
     //IMI: ENJOYMENT:
-    $scope.imi_q_enjoyment = [
+    $scope.questions_imi.enjoyment = [
         {'question': 'I enjoyed doing this activity very much.' , 'value': 7},
         {'question': 'This activity was fun to do.' , 'value': 7},
         {'question': 'I thought this was a boring activity.' , 'value': 7},
@@ -1094,10 +1095,10 @@ module.controller('surveyIMIController', ['$scope', '$http', '$state', '$locatio
         {'question': 'While I was doing this activity, I was thinking about how much I enjoyed it.' , 'value': 7}
     ];
     //shuffle: in place
-    shuffleArray($scope.imi_q_enjoyment);
+    shuffleArray($scope.questions_imi.enjoyment);
 
     //IMI: COMPETENCE
-    $scope.imi_q_competence = [
+    $scope.questions_imi.competence = [
         {'question': 'I think I am pretty good at this activity.' , 'value': 7},
         {'question': 'I think I did pretty well at this activity, compared to others.' , 'value': 7},
         {'question': 'After working at this activity for awhile, I felt pretty competent.' , 'value': 7},
@@ -1106,10 +1107,10 @@ module.controller('surveyIMIController', ['$scope', '$http', '$state', '$locatio
         {'question': 'This was an activity that I couldn\'t do very well.' , 'value': 7},
     ];
     //shuffle: in place
-    shuffleArray($scope.imi_q_competence);
+    shuffleArray($scope.questions_imi.competence);
 
     //IMI: EFFORT
-    $scope.imi_q_effort = [
+    $scope.questions_imi.effort = [
         {'question': 'I put a lot of effort into this.' , 'value': 7},
         {'question': 'I didn\'t try very hard to do well at this activity. ' , 'value': 7},
         {'question': 'I tried very hard on this activity.' , 'value': 7},
@@ -1117,18 +1118,18 @@ module.controller('surveyIMIController', ['$scope', '$http', '$state', '$locatio
         {'question': 'I didn\'t put much energy into this.' , 'value': 7}
     ];
     //shuffle: in place
-    shuffleArray($scope.imi_q_effort);
+    shuffleArray($scope.questions_imi.effort);
     //IMI: Pressure
-    $scope.imi_q_pressure = [
+    $scope.questions_imi.pressure = [
         {'question': 'I did not feel nervous at all while doing this. ' , 'value': 7},
         {'question': 'I felt very tense while doing this activity. ' , 'value': 7},
         {'question': 'I was very relaxed in doing these.' , 'value': 7},
         {'question': 'I was anxious while working on this task.' , 'value': 7},
         {'question': 'I felt pressured while doing these.' , 'value': 7}
     ];
-    shuffleArray($scope.imi_q_pressure);
+    shuffleArray($scope.questions_imi.pressure);
     //IMI: Choice
-    $scope.imi_q_choice = [
+    $scope.questions_imi.choice = [
         {'question': 'I believe I had some choice about doing this activity.' , 'value': 7},
         {'question': 'I felt like it was not my own choice to do this task.' , 'value': 7},
         {'question': 'I didn\'t really have a choice about doing this task.' , 'value': 7},
@@ -1136,7 +1137,7 @@ module.controller('surveyIMIController', ['$scope', '$http', '$state', '$locatio
         {'question': 'I did this activity because I wanted to.' , 'value': 7},
         {'question': 'I did this activity because I had to. ' , 'value': 7}
     ];
-    shuffleArray($scope.imi_q_choice);
+    shuffleArray($scope.questions_imi.choice);
 
 
     $scope.req_answers = false;
@@ -1203,30 +1204,24 @@ module.controller('surveyIMIController', ['$scope', '$http', '$state', '$locatio
             'additional_feedback':  response['additional_text'] || 'ULB'
         };
 
-        if ($scope.imi_enjoy){
-            $scope.imi_q_enjoyment.forEach(function (item) {
-                item.answer = $scope.checkInput(item.answer) || -1;
-                ret_obj[item.question] = item.answer;
+        //for each subscale: if any of them in then check
+        var subscales = Object.keys($scope.imi_toggled);
 
-                if ($scope.req_answers && item.answer == -1) {
-                    survey_ok = -1;
-                    console.log(item.question)
+        subscales.forEach(function(subsc){
 
-                }
-            })
+            if ($scope.imi_toggled[subsc]){
+                $scope.questions_imi[subsc].forEach(function (item) {
+                    item.answer = $scope.checkInput(item.answer) || -1;
+                    ret_obj[item.question] = item.answer;
+                    if ($scope.req_answers && item.answer == -1) {
+                        survey_ok = -1;
+                        console.log(item.question)
+                    }
+                })
+            }
+        });
 
-        }
-        if ($scope.imi_competence){
-            $scope.imi_q_competence.forEach(function (item) {
-                item.answer = $scope.checkInput(item.answer) || -1;
-                ret_obj[item.question] = item.answer;
-                if ($scope.req_answers && item.answer == -1) {
-                    console.log(item.question)
-                    survey_ok = -1;
-                }
-            })
 
-        }
         if (survey_ok == -1){
             return survey_ok
         } else {
