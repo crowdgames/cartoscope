@@ -8,6 +8,26 @@ var module = angular.module('consentApp', ['ui.router', 'ngAnimate', 'ngRoute', 
     // }]);
 
 
+
+//change \n to br
+module.filter("textBreaks", ['$sce', function ($sce) {
+    return function (x) {
+        console.log("Here");
+        if (x){
+            console.log(x)
+            // var new_text = x.replace(new RegExp('\\n', 'g'), '<br/>');
+            var new_text = x.replace(/\\n/g, "<br/>");
+            console.log(new_text)
+            return $sce.trustAsHtml(new_text);
+        } else {
+            return(x)
+        }
+
+
+    }
+}]);
+
+
 module.config(function($stateProvider, $urlRouterProvider, $cookiesProvider) {
 
     var n = new Date();
@@ -2032,7 +2052,7 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
             });
 
         }
-
+        
 
         //Get project info here to check for genetic
         $http.get('/api/tasks/getInfoFree/' + vm.params.project).then(function(data) {
@@ -2095,7 +2115,7 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                     var obj = {
                         image: tutpath + item.image_name,
                         answer: item.answer,
-                        text: item.explanation,
+                        text:  item.explanation,
                         color: sel_col,
                         options: opt,
                         lat: parseFloat(item.x) ,
