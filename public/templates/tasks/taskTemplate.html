@@ -439,6 +439,7 @@
                 <div class="modal-body">
 
                     <center>
+                        <div class="row">
                     <div class="col-md-4" style="color: black">
                         <div ng-repeat="item in model.tutorial" style="display: inline;">
                             <div>
@@ -446,13 +447,17 @@
                             </div>
                         </div>
                     </div>
+                        </div>
                     </center>
+                    <div class="row">
 
                     <div class=" answers" >
                     <button  ng-class="model.getColourClass(model.tutorial_button.color)"class="options">{{model.tutorial_button.text}}</button>
                         <div>
                             <small>Click on images to show explanation</small>
                         </div>
+                    </div>
+
                     </div>
 
 
