@@ -443,24 +443,24 @@
 
                         <div class="col-md-4" ng-repeat="item in model.tutorial" style="display: inline;">
                             <div>
-                                <img ng-src ="{{item.image}}" ng-click="model.alertText(item.explanation)" style="max-height: 200px; max-width: 200px;margin: 5px;">
+                                <img ng-src ="{{item.image}}" ng-click="model.alertText(item.explanation)" style="max-height: 150px; max-width: 150px;margin: 5px;">
                             </div>
                         </div>
                         </div>
-                    </center>
-                    <div class="row">
 
-                    <div class=" answers" >
+
+
+                    <div class="row answers" >
                     <button  ng-class="model.getColourClass(model.tutorial_button.color)"class="options">{{model.tutorial_button.text}}</button>
                         <div>
                             <small>Click on images to show explanation</small>
                         </div>
                     </div>
 
-                    </div>
+                    
 
 
-
+                    </center>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
