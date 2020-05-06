@@ -65,7 +65,7 @@ router.get('/compareTGCC/:hit_id', function(req, res, next) {
 
     var hit_id= req.params.hit_id;
     var pick_d = randomInt(0,possibles_pool.length - 1); //pick dataset [start,end]
-    var selected_d = possibles[pick_d];
+    var selected_d = possibles_pool[pick_d];
     var interface_version = selected_d.interface;
     var dataset = selected_d.dataset;
     var link = "";
