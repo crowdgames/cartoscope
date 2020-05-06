@@ -70,6 +70,8 @@ router.get('/compareTGCC/:hit_id', function(req, res, next) {
     var dataset = selected_d.dataset;
     var link = "";
 
+    console.log(interface_version,dataset)
+
     //if pick Tile-o-Scope Grid, then go to TG, else go to Cartoscope Classic
     if (interface_version == "CC"){
         //nob means no bonus, nop means no penalty, capl means cap them at certain amount of images
