@@ -439,14 +439,13 @@
                 <div class="modal-body">
 
                     <center>
-                        <div class="row">
-                    <div class="col-md-4" style="color: black">
-                        <div ng-repeat="item in model.tutorial" style="display: inline;">
+                        <div class="row" style="color: black">
+
+                        <div class="col-md-4" ng-repeat="item in model.tutorial" style="display: inline;">
                             <div>
                                 <img ng-src ="{{item.image}}" ng-click="model.alertText(item.explanation)" style="max-height: 200px; max-width: 200px;margin: 5px;">
                             </div>
                         </div>
-                    </div>
                         </div>
                     </center>
                     <div class="row">
