@@ -665,6 +665,8 @@ router.post('/:id/survey', [filters.requireLogin], function(req, res, next) {
 //storing to survey tileoscope
 router.post('/surveyTileoscope', function(req, res, next) {
 
+    console.log(req.body);
+
     var workerId = req.body.workerId || req.body.participantId;
     var hitId = req.body.hitId || req.body.trialId;
 
@@ -681,6 +683,8 @@ router.post('/surveyTileoscope', function(req, res, next) {
             res.send({hitCode: hitCode, workerId: workerId});
             },
                 function(err) {
+                    console.log("Could not store survey response for:" + workerId);
+                    console.log(err);
                     //if for any reason there is an issue adding the survey text, still send hit code
                     //if participant id, send participant id as hit code, else from env
                     //if participant id, send participant id as hit code, else from env

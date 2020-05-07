@@ -13,14 +13,14 @@
     <div ng-show="model.params.projectType === 'tagging' || model.params.projectType === 'ngs'" class="col-md-12">
 
         <div class="row" ng-show="model.params.projectType === 'tagging'">
-            <div class="col-lg-3"></div>
+            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3"></div>
             <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
                 <!--<img id="tut_image" class="img-responsive img-border" ng-src="{{model.tutorial[model.counter].image}}">-->
                 <img ng-show="!model.annotated" id="tut_image" class="img-responsive img-border tut_image" ng-src="{{model.tutorial[model.counter].image}}">
                 <img ng-show="model.annotated" id="tut_image" class="img-responsive img-border tut_image" ng-src="{{model.tutorial[model.counter].image_annotation}}">
 
             </div>
-            <div class="col-lg-3"></div>
+            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3"></div>
         </div>
 
         <!--NGS: show ngs image instead of stored image-->
