@@ -671,7 +671,7 @@ router.post('/surveyTileoscope', function(req, res, next) {
     var hitId = req.body.hitId || req.body.trialId;
 
     //if we have a bonus, there will be a clash with original worker id, let's break that up:
-    var worker_split = workerId.split("-");
+    var worker_split = workerIdB.split("-");
     var bonus = worker_split.pop();
     var workerId = worker_split.join("-");
     var data_surv = req.body;
