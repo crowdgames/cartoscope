@@ -667,17 +667,19 @@ router.post('/surveyTileoscope', function(req, res, next) {
 
     console.log(req.body);
 
-    var workerId = req.body.workerId || req.body.participantId;
+    var workerIdB = req.body.workerId || req.body.participantId;
     var hitId = req.body.hitId || req.body.trialId;
 
     //if we have a bonus, there will be a clash with original worker id, let's break that up:
     var worker_split = workerId.split("-");
     var bonus = worker_split.pop();
-    req.body.bonus = bonus;
+    var workerId = worker_split.join("-");
+    var data_surv = req.body;
+    data_surv.bonus = bonus;
 
     var worker_hashed = bcrypt.hashSync(workerId + hitId, salt);
 
-    projectDB.addSurveyTileoscope(worker_hashed, hitId, req.body).then(function(data) {
+    projectDB.addSurveyTileoscope(worker_hashed, hitId, data_surv).then(function(data) {
         console.log('inside function ... '+ data);
 
             //if participant id, send participant id as hit code, else from env
