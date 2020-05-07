@@ -1050,7 +1050,7 @@ module.controller('surveyIMIController', ['$scope', '$http', '$state', '$locatio
     $scope.imi_toggled = {
         'enjoyment': true,
         'competence': true,
-        'effort': true,
+        'effort': false,
         'pressure': false,
         'choice': false
     };
