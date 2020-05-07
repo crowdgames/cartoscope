@@ -667,11 +667,11 @@ router.post('/surveyTileoscope', function(req, res, next) {
 
     console.log(req.body);
 
-    var workerIdB = req.body.workerId || req.body.participantId;
+    var workerId = req.body.workerId || req.body.participantId;
     var hitId = req.body.hitId || req.body.trialId;
 
     //if we have a bonus, there will be a clash with original worker id, let's break that up:
-    var worker_split = workerId.split('-');
+    var worker_split = workerId.split("-");
     var bonus = worker_split.pop();
     req.body.bonus = bonus;
 
