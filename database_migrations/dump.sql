@@ -283,7 +283,7 @@ CREATE TABLE `tileoscope_survey` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` varchar(128) DEFAULT NULL,
   `hit_id` varchar(128) DEFAULT NULL,
-  `response` varchar(1024) DEFAULT NULL,
+  `response` TEXT DEFAULT NULL,
   `timestamp` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique` (`user_id`,`hit_id`)
