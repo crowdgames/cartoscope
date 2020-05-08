@@ -1,0 +1,23 @@
+<div class="container-fluid">
+
+<div class="row">
+    <div class="col-md-12 text-center" style="margin-top: 100px;"><h1>Thank you very much for participating!</h1>
+        <h1>Return to Amazon Mechanical Turk and paste the following code to complete the survey</h1>
+        <h1 id="hit-code-text"><i><b>{{hitCode}}</b></i></h1>
+</div>
+</div>
+
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4 text-center" style="margin-top: 100px;"><h1>Thank you very much for participating!</h1>
+            <button class="form-control btn btn-primary btn btn-block" style="background-color:#9cdc1f;color:black;" type="button" ng-click="copyToClipBoard(hitCode)">Copy to Clipboard</button>
+            <br/>
+            <small ng-if="showCopiedMsg">Code copied successfully!</small>
+        </div>
+        <div class="col-md-4"></div>
+
+    </div>
+
+
+
+</div>

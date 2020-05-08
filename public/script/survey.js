@@ -59,31 +59,52 @@ module.config(function($stateProvider, $urlRouterProvider) {
 
 
 
+  //
+  // $stateProvider.state({
+  //   name: 'hitCode',
+  //   url: '/hit',
+  //   template: '<div class="col-md-12 text-center" style="margin-top: 100px;"><h1>Thank you very much for participating!</h1>' +
+  //   '<br><h1>Return to Amazon Mechanical Turk and paste the following code to complete the survey</h1><br>' +
+  //   '<h1><i><b>{{hitCode}}</b></i></h1></div><br>' +
+  //     '<button class="btn btn-default" type="button" ngxClipboard [cbContent]="{{hitCode}}">Copy to Clipboard</button>',
+  //   controller: 'hitController',
+  //   params: {
+  //     hitCode: null
+  //   }
+  // });
 
-  $stateProvider.state({
-    name: 'hitCode',
-    url: '/hit',
-    template: '<div class="col-md-12 text-center" style="margin-top: 100px;"><h1>Thank you very much for participating!</h1>' +
-    '<br><h1>Return to Amazon Mechanical Turk and paste the following code to complete the survey</h1><br>' +
-    '<h1><i><b>{{hitCode}}</b></i></h1></div>',
-    controller: 'hitController',
-    params: {
-      hitCode: null
-    }
-  });
-
+    $stateProvider.state({
+        name: 'hitCode',
+        url: '/hit',
+        templateUrl: 'templates/hitCode.html',
+        controller: 'hitController',
+        params: {
+            hitCode: null
+        }
+    });
 
     $stateProvider.state({
         name: 'hitCodeTileoscope',
         url: '/hitTileoscope',
-        template: '<div class="col-md-12 text-center" style="margin-top: 100px;"><h1>Thank you very much for participating!</h1>' +
-            '<br><h1>Return to Amazon Mechanical Turk and paste the following code to complete the survey</h1><br>' +
-            '<h1><i><b>{{hitCode}}</b></i></h1></div>',
+        templateUrl: 'templates/hitCode.html',
         controller: 'hitTileoscopeController',
         params: {
             hitCode: null
         }
     });
+
+    //
+    // $stateProvider.state({
+    //     name: 'hitCodeTileoscope',
+    //     url: '/hitTileoscope',
+    //     template: '<div class="col-md-12 text-center" style="margin-top: 100px;"><h1>Thank you very much for participating!</h1>' +
+    //         '<br><h1>Return to Amazon Mechanical Turk and paste the following code to complete the survey</h1><br>' +
+    //         '<h1><i><b>{{hitCode}}</b></i></h1></div>',
+    //     controller: 'hitTileoscopeController',
+    //     params: {
+    //         hitCode: null
+    //     }
+    // });
 
   $stateProvider.state({
       name: 'heatMap',
@@ -652,6 +673,30 @@ module.controller('appController', ['$scope', '$location', function($scope, $loc
 
 module.controller('hitController', ['$scope', '$stateParams', function($scope, $stateParams) {
   $scope.hitCode = $stateParams.hitCode;
+
+    $scope.showCopiedMsg = false;
+
+    $scope.copyToClipBoard = function(val) {
+        try {
+            console.log(val);
+            var selBox = document.createElement('textarea');
+            selBox.style.position = 'fixed';
+            selBox.style.left = '0';
+            selBox.style.top = '0';
+            selBox.style.opacity = '0';
+            selBox.value = val;
+            document.body.appendChild(selBox);
+            selBox.focus();
+            selBox.select();
+            document.execCommand('copy');
+            document.body.removeChild(selBox);
+            $scope.showCopiedMsg = true;
+
+        } catch (err) {
+            alert('Your browser doesn\'t support this feature yet. Please press ctrl+c to copy');
+        }
+    };
+
 }]);
 
 
@@ -659,9 +704,33 @@ module.controller('hitTileoscopeController', ['$scope', '$stateParams','$locatio
 
 
     $scope.params = $location.search();
-
-
     $scope.hitCode = $scope.params.participantId;
+
+    $scope.showCopiedMsg = false;
+
+    $scope.copyToClipBoard = function(val) {
+        try {
+            console.log(val)
+        var selBox = document.createElement('textarea');
+        selBox.style.position = 'fixed';
+        selBox.style.left = '0';
+        selBox.style.top = '0';
+        selBox.style.opacity = '0';
+        selBox.value = val;
+        document.body.appendChild(selBox);
+        selBox.focus();
+        selBox.select();
+        document.execCommand('copy');
+        document.body.removeChild(selBox);
+        $scope.showCopiedMsg = true;
+
+        } catch (err) {
+            alert('Your browser doesn\'t support this feature yet. Please press ctrl+c to copy');
+        }
+    };
+
+
+
 }]);
 
 module.controller('surveyController', ['$scope', '$http', '$state', '$location',function($scope, $http, $state, $location) {
