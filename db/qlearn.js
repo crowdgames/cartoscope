@@ -550,6 +550,21 @@ exports.updatePlayerPathIndex = function(path_id,new_index) {
 };
 
 
+//update user path
+exports.updatePlayerQuit = function(path_id) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+        connection.queryAsync('update tileoscope_paths set user_quit=1 where id=?',[path_id]).then(
+            function(data) {
+                resolve(data)
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
+
 
 
 function convertQtableFormat(data){
@@ -829,6 +844,8 @@ function convertPathToKeys(rand_traj_raw) {
     //this is what is the first thing we must see
     var user_index = rand_traj_raw.user_index || 0;
 
+    var path_quit = rand_traj_raw.quit || 0;
+
     var q_array_path = [];
     var pos = rand_traj_seq.length - 1; //start from end
     while (pos  >= user_index) {
@@ -857,11 +874,9 @@ function convertPathToKeys(rand_traj_raw) {
                     next_state_arr = next_state_arr.slice(-STATE_LEN)
                 }
 
-                if (action == "X"){
-                    value = 0
-                }
 
-                if(next_state.indexOf("X") != -1){
+
+                if(path_quit){
                     next_state = "X";
                 } else {
                     next_state = next_state_arr.join('-');

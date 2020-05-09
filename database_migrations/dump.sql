@@ -360,6 +360,7 @@ CREATE TABLE `tileoscope_paths` (
   `method` varchar(255) DEFAULT NULL,
   `seq` TEXT DEFAULT NULL,
   `user_index` INT(11) DEFAULT 0,
+    `user_quit` INT(11) DEFAULT 0,
   `tiles_collected` TEXT DEFAULT NULL,
   `times_completed` TEXT DEFAULT NULL,
   `number_moves` TEXT DEFAULT NULL,
