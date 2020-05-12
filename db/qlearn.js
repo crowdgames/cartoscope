@@ -277,6 +277,7 @@ exports.updateQlearnTableOne = function(main_code,q_key,q_value) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
 
+        console.log("Got: " + q_key);
         var unique_code_main = main_code;
         var kk = q_key.split('|');
         //key is state | action
@@ -392,6 +393,8 @@ exports.QlearnAlgorithm = function(player_paths,main_code, Q, player_mistakes) {
         if (Q == undefined || Q.length == 0){
             Q = {};
         }
+        console.log("Qtable before")
+        console.log(Q)
 
         //encode current player mistakes:
         var p_mc = encodeMistakes(player_mistakes);
