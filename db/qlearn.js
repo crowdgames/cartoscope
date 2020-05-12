@@ -410,6 +410,8 @@ exports.QlearnAlgorithm = function(player_paths,main_code, Q, player_mistakes) {
                 var next_state = q_update.next_state;
                 var value = q_update.value;
 
+                console.log("Prop key: " + key)
+
                 //we need the id in here: first search if there is a partial key, if there is then update key with its id
                 //the reason we need the id is that we cannot have unique index in mySQL with state (text instead of varchar, can be arbitrarily long)
                 //so we encode the id in the key so that we can pass that information when updating the q-table, so we can catch the duplicates correctly
@@ -419,12 +421,14 @@ exports.QlearnAlgorithm = function(player_paths,main_code, Q, player_mistakes) {
 
                 if (has_key.length){
                     key = has_key[0]
+                    console.log("Id key: " + key)
                 }
 
 
                 //if key not in Q then init it
                 if (! Q.hasOwnProperty(key)) {
-                    Q[key] = 0
+                    Q[key] = -99.0
+                    console.log("No key! init it")
                 }
                 //update Qlearn table
                 var max_next_Q = -99.0;
@@ -435,11 +439,14 @@ exports.QlearnAlgorithm = function(player_paths,main_code, Q, player_mistakes) {
                     if (Q.hasOwnProperty(try_key)){
                         try_Q = Q[try_key]
                     }
+                    console.log("Try key: " + try_key)
+                    console.log("Try key valu: " + try_Q )
                     max_next_Q = Math.max(try_Q,max_next_Q);
                 });
 
                 //update Q[key]
                 Q[key] = (1.0 - ALPHA) * Q[key] + ALPHA * (value + LAMBDA * max_next_Q);
+                console.log("Updated: " + Q[key])
                 //keep track that this needed update
                 if (update_keys_array.indexOf(key) == -1) {
                     update_keys_array.push(key);
