@@ -131,18 +131,19 @@ exports.generateQlearnOptimalSequenceTileoscopeOnline = function(main_code, play
             //C: If table and paths: update
             exports.fetchQTableByCode(main_code).then(function(Q){
 
-                var func_fetch_paths = "getTileoscopePathsRecent";
-                if (Q.length){
-                    var last_update = Q[Q.length-1].last_updated;
-
-                } else {
-                    func_fetch_paths = "getTileoscopePaths";
-                }
+                // var func_fetch_paths = "getTileoscopePathsRecent";
+                // if (Q.length){
+                //     var last_update = Q[Q.length-1].last_updated;
+                //
+                // } else {
+                //     func_fetch_paths = "getTileoscopePaths";
+                // }
 
                 console.log("Fetched: "+ Q.length + " Q-table entries");
 
                 //get all paths relevant to that main_code
-                tileDB[func_fetch_paths](main_code,last_update).then(function(tile_paths) {
+                tileDB.getTileoscopePaths(main_code).then(function(tile_paths) {
+                //tileDB[func_fetch_paths](main_code,last_update).then(function(tile_paths) {
 
                     console.log("Fetched: "+ tile_paths.length + " paths");
 
