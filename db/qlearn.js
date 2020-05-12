@@ -845,13 +845,17 @@ function convertPathToKeys(rand_traj_raw) {
     console.log("Path: " + rand_traj_raw.seq);
     console.log("Collected: " + rand_traj_raw.tiles_collected);
 
+
     var rand_traj_seq = rand_traj_raw.seq.split('-');
     var rand_traj_tiles = rand_traj_raw.tiles_collected.split('-');
 
     //this is what is the first thing we must see
     var user_index = rand_traj_raw.user_index || 0;
 
-    var path_quit = rand_traj_raw.quit || 0;
+    var path_quit = rand_traj_raw.user_quit || 0;
+
+    console.log("Quit: " + path_quit + " index: "  + user_index);
+
 
     var q_array_path = [];
     var pos = rand_traj_seq.length - 1; //start from end
