@@ -147,11 +147,14 @@ exports.generateQlearnOptimalSequenceTileoscopeOnline = function(main_code, play
                     console.log("Fetched: "+ tile_paths.length + " paths");
 
 
-                    //if no paths and no table, we should generate a random sequence!
-                    if (tile_paths.length == 0 ) {
+                    //if no paths, we should generate a random sequence!
+                    if (tile_paths.length == 0 || player_mistakes == -1 ) {
 
 
                         console.log("no paths: create without updating");
+                        if (player_mistakes == -1){
+                            console.log("We are at the very start of play. Just get what we have")
+                        }
 
 
                         //if no paths, but we have table, then just spit sequence using table we have
