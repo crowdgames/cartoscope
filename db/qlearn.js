@@ -148,7 +148,7 @@ exports.generateQlearnOptimalSequenceTileoscopeOnline = function(main_code, play
 
 
                     //if no paths, we should generate a random sequence!
-                    if (tile_paths.length == 0 || player_mistakes == -1 ) {
+                    if (tile_paths.length == 0 ) {
 
 
                         console.log("no paths: create without updating");
