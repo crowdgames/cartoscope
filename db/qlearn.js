@@ -532,7 +532,7 @@ exports.QlearnAlgorithmStatic = function(main_code,player_paths){
 
 
     })
-}
+};
 
 
 //update user path
@@ -838,6 +838,9 @@ function convertPathToKeys(rand_traj_raw) {
     //for a given user path, convert to array of objects:
     // { state: , action: , collected: , next_state}, ...
 
+    console.log("Path: " + rand_traj_raw.seq);
+    console.log("Collected: " + rand_traj_raw.tiles_collected);
+
     var rand_traj_seq = rand_traj_raw.seq.split('-');
     var rand_traj_tiles = rand_traj_raw.tiles_collected.split('-');
 
@@ -888,6 +891,7 @@ function convertPathToKeys(rand_traj_raw) {
                     'value': value,
                     'next_state': next_state,
                 };
+                console.log(obj);
                 q_array_path.push(obj)
             }
         }
