@@ -430,7 +430,7 @@ exports.QlearnAlgorithm = function(player_paths,main_code, Q, player_mistakes) {
 
                 //if key not in Q then init it
                 if (! Q.hasOwnProperty(key)) {
-                    Q[key] = -99.0
+                    Q[key] = 0
                     console.log("No key! init it")
                 }
                 //update Qlearn table
@@ -439,6 +439,14 @@ exports.QlearnAlgorithm = function(player_paths,main_code, Q, player_mistakes) {
 
                     var try_key = next_state + "|" + try_act + "|" + p_mc;
                     var try_Q = 0.0;
+                    var has_key_try = Object.keys(Q).filter(function(item, index) {
+                        return item.indexOf(try_key + "|") == 0;
+                    });
+
+                    if (has_key_try.length){
+                        try_key = has_key_try[0]
+                        console.log("Id key try: " + try_key)
+                    }
                     if (Q.hasOwnProperty(try_key)){
                         try_Q = Q[try_key]
                     }
