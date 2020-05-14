@@ -468,7 +468,8 @@ router.post('/submitPath', function(req, res, next) {
                     'number_moves' : number_moves,
                     'number_mistakes' : number_mistakes,
                     'method' : path_t.method,
-                    'user_quit' : path_t.user_quit
+                    'user_quit' : path_t.user_quit,
+                    'unique_code_main': path_t.unique_code_main
                 };
 
                 console.log(new_path_obj);

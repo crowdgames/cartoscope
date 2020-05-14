@@ -358,6 +358,7 @@ CREATE TABLE `tileoscope_paths` (
   `user_id` varchar(128) DEFAULT NULL,
   `hit_id` varchar(128) DEFAULT NULL,
   `method` varchar(255) DEFAULT NULL,
+   `unique_code_main` varchar(255) DEFAULT NULL,
   `seq` TEXT DEFAULT NULL,
   `user_index` INT(11) DEFAULT 0,
     `user_quit` INT(11) DEFAULT 0,

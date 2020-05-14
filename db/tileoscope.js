@@ -105,11 +105,12 @@ exports.submitTileoscopePath = function(userId, hitId, response) {
         var number_moves = response.number_moves;
         var number_mistakes = response.number_mistakes;
         var user_quit = response.user_quit;
+        var unique_code_main = response.unique_code_main;
 
-        connection.queryAsync('INSERT INTO tileoscope_paths (user_id, hit_id,method, seq,tiles_collected,times_completed,number_moves,number_mistakes,user_quit) VALUES(?,?,?,?,?,?,?,?,?) ' +
+        connection.queryAsync('INSERT INTO tileoscope_paths (user_id, hit_id,method, seq,tiles_collected,times_completed,number_moves,number_mistakes,user_quit,unique_code_main) VALUES(?,?,?,?,?,?,?,?,?,?) ' +
             'ON DUPLICATE KEY UPDATE seq=VALUES(seq),tiles_collected=VALUES(tiles_collected),times_completed=VALUES(times_completed),' +
-            'number_moves=VALUES(number_moves),number_mistakes=VALUES(number_mistakes),user_quit=VALUES(user_quit)',
-            [userId,hitId,method,seq,tiles_collected,times_completed,number_moves,number_mistakes,user_quit]).then(
+            'number_moves=VALUES(number_moves),number_mistakes=VALUES(number_mistakes),user_quit=VALUES(user_quit),unique_code_main=VALUES(unique_code_main)',
+            [userId,hitId,method,seq,tiles_collected,times_completed,number_moves,number_mistakes,user_quit,unique_code_main]).then(
             function(data) {
                 if (data.insertId) {
                     resolve(data.affectedRows);
