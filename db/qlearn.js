@@ -451,7 +451,7 @@ exports.QlearnAlgorithm = function(player_paths,main_code, Q, player_mistakes) {
                         try_Q = Q[try_key]
                     }
                     console.log("Try key: " + try_key)
-                    console.log("Try key valu: " + try_Q )
+                    console.log("Try key valu: " + try_Q );
                     max_next_Q = Math.max(try_Q,max_next_Q);
                 });
 
@@ -627,7 +627,7 @@ function QlearnAlgorithmConstruct(Q,size_n,p_mistakes) {
 
 
         var max_act = "";
-        var max_Q = -99.0;
+        // var max_Q = -99.0;
         var tq_n = 0;
         var pick_w = [];
         var pick_act = [];
@@ -645,11 +645,12 @@ function QlearnAlgorithmConstruct(Q,size_n,p_mistakes) {
                 try_key = has_key[0]
             }
 
-            if (Q.hasOwnProperty(try_key)){
+            if (Q.hasOwnProperty(try_key)) {
                 try_Q = parseFloat(Q[try_key]);
-            } else {
-                try_Q = -99.0;
             }
+            // } else {
+            //     try_Q = -99.0;
+            // }
 
             //if softmax, then use softmax function to normalize weights
             // else used squared value of function
