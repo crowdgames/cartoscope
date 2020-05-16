@@ -665,6 +665,9 @@ function QlearnAlgorithmConstruct(Q,size_n,p_mistakes) {
         });
 
         //normalize weights of choices
+        console.log(pick_w);
+        console.log(pick_act);
+
 
         var pick_w_norm = [];
         for (var j = 0; j < pick_w.length; j++) {
