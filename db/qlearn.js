@@ -413,7 +413,7 @@ exports.QlearnAlgorithm = function(player_paths,main_code, Q, player_mistakes) {
                 var next_state = q_update.next_state;
                 var value = q_update.value;
 
-                console.log("Prop key: " + key)
+                //console.log("Prop key: " + key)
 
                 //we need the id in here: first search if there is a partial key, if there is then update key with its id
                 //the reason we need the id is that we cannot have unique index in mySQL with state (text instead of varchar, can be arbitrarily long)
@@ -424,14 +424,14 @@ exports.QlearnAlgorithm = function(player_paths,main_code, Q, player_mistakes) {
 
                 if (has_key.length){
                     key = has_key[0]
-                    console.log("Id key: " + key)
+                    //console.log("Id key: " + key)
                 }
 
 
                 //if key not in Q then init it
                 if (! Q.hasOwnProperty(key)) {
                     Q[key] = 0
-                    console.log("No key! init it")
+                    //console.log("No key! init it")
                 }
                 //update Qlearn table
                 var max_next_Q = -99.0;
@@ -445,19 +445,19 @@ exports.QlearnAlgorithm = function(player_paths,main_code, Q, player_mistakes) {
 
                     if (has_key_try.length){
                         try_key = has_key_try[0]
-                        console.log("Id key try: " + try_key)
+                        //console.log("Id key try: " + try_key)
                     }
                     if (Q.hasOwnProperty(try_key)){
                         try_Q = Q[try_key]
                     }
-                    console.log("Try key: " + try_key)
-                    console.log("Try key valu: " + try_Q );
+                    //console.log("Try key: " + try_key)
+                    //console.log("Try key valu: " + try_Q );
                     max_next_Q = Math.max(try_Q,max_next_Q);
                 });
 
                 //update Q[key]
                 Q[key] = (1.0 - ALPHA) * Q[key] + ALPHA * (value + LAMBDA * max_next_Q);
-                console.log("Updated: " + Q[key])
+                //console.log("Updated: " + Q[key])
                 //keep track that this needed update
                 if (update_keys_array.indexOf(key) == -1) {
                     update_keys_array.push(key);
@@ -666,8 +666,8 @@ function QlearnAlgorithmConstruct(Q,size_n,p_mistakes) {
         });
 
         //normalize weights of choices
-        console.log(pick_w);
-        console.log(pick_act);
+        // console.log(pick_w);
+        // console.log(pick_act);
 
 
         var pick_w_norm = [];
@@ -864,8 +864,8 @@ function convertPathToKeys(rand_traj_raw) {
     //for a given user path, convert to array of objects:
     // { state: , action: , collected: , next_state}, ...
 
-    console.log("Path: " + rand_traj_raw.seq);
-    console.log("Collected: " + rand_traj_raw.tiles_collected);
+    //console.log("Path: " + rand_traj_raw.seq);
+    //console.log("Collected: " + rand_traj_raw.tiles_collected);
 
 
     var rand_traj_seq = rand_traj_raw.seq.split('-');
@@ -876,7 +876,7 @@ function convertPathToKeys(rand_traj_raw) {
 
     var path_quit = rand_traj_raw.user_quit || 0;
 
-    console.log("Quit: " + path_quit + " index: "  + user_index);
+    //console.log("Quit: " + path_quit + " index: "  + user_index);
 
 
     var q_array_path = [];
