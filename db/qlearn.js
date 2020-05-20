@@ -612,7 +612,7 @@ function QlearnAlgorithmConstruct(Q,size_n,p_mistakes) {
         var state = "";
         var state_arr = [];
 
-        //if the state is bigger than STATE LEN, get the last 3 items
+        //if the state is bigger than STATE LEN, get the last STATE-LEN items
         if (pth.length > STATE_LEN){
             state_arr = pth.slice(-STATE_LEN);
         } else {
