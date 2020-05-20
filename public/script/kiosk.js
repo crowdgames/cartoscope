@@ -15,7 +15,7 @@ module.filter("textBreaks", ['$sce', function ($sce) {
         if (x){
             // var new_text = x.replace(new RegExp('\\n', 'g'), '<br/>');
             var new_text = x.replace(/\\n/g, "<br/>");
-            new_text = x.replace(/n/g, "<br/>");
+            // new_text = x.replace(/n/g, "<br/>");
             return $sce.trustAsHtml(new_text);
         } else {
             return(x)
