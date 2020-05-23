@@ -1,15 +1,34 @@
 <div class="content" ng-controller="exampleController as model">
 
+
     <div id="top-page" class="row">
-        <div class="col-lg-1"></div>
-        <div class="col-lg-10 col-md-12 col-sm-12 col-xs-12">
-            <h4 class="title">Tutorial</h4>
-        </div>
-        <div class="col-lg-1"></div>
+        <center>
+            <h1 >{{model.project_name}}: Tutorial</h1>
+        </center>
     </div>
+
+    <!--<div  class="row">-->
+        <!--<div class="col-lg-1"></div>-->
+        <!--<div class="col-lg-10 col-md-12 col-sm-12 col-xs-12">-->
+            <!--<h4 class="title">Tutorial</h4>-->
+        <!--</div>-->
+        <!--<div class="col-lg-1"></div>-->
+    <!--</div>-->
 
     <div ng-show="model.params.projectType === 'tagging' || model.params.projectType === 'ngs' || model.params.projectType === 'slider'" class="col-md-12">
 
+
+        <div id="correct-note" class="row" ng-if="show_explanation">
+            <!--<div class="col-lg-3 col-md-1 col-sm-2"></div>-->
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <h3 id="tut_correct_ans">The answer here is <span id="tut_span" style="color: {{tutorial[counter].color}}">
+                    {{model.tutorial[model.counter].answer}}</span>.</h3>
+                <!--<h3  id="tut_text">{{model.tutorial[model.counter].text }}</h3>-->
+                <h3  ng-bind-html="model.tutorial[model.counter].text | textBreaks " id="tut_text"></h3>
+
+            </div>
+            <!--<div class="col-lg-3 col-md-1 col-sm-2"></div>-->
+        </div>
 
         <div class="row" ng-show="model.params.projectType === 'tagging' || model.params.projectType === 'slider'">
 
@@ -34,7 +53,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row" ng-if="show_option_buttons">
             <div class="col-lg-3 col-md-2 col-sm-1"></div>
             <div class="col-lg-6 col-md-8 col-sm-10 col-xs-12">
                 <h3 id="tut_question">{{model.question}}</h3>
@@ -42,7 +61,7 @@
             <div class="col-lg-3 col-md-2 col-sm-1"></div>
         </div>
 
-        <div class="row">
+        <div class="row" ng-if="show_option_buttons">
             <center>
             <!--<div class="col-lg-2 col-md-2"></div>-->
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -56,17 +75,7 @@
             </center>
         </div>
 
-        <div id="correct-note" class="row" style="visibility:hidden">
-            <!--<div class="col-lg-3 col-md-1 col-sm-2"></div>-->
-            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <h3 id="tut_correct_ans">The answer here is <span id="tut_span" style="color: {{tutorial[counter].color}}">
-                    {{model.tutorial[model.counter].answer}}</span>.</h3>
-                <!--<h3  id="tut_text">{{model.tutorial[model.counter].text }}</h3>-->
-                <h3  ng-bind-html="model.tutorial[model.counter].text | textBreaks " id="tut_text"></h3>
 
-            </div>
-            <!--<div class="col-lg-3 col-md-1 col-sm-2"></div>-->
-        </div>
 
         <div id="tut_next" class="agree-btn-row" style="visibility:hidden;display: flex;justify-content: center;">
             <button class="consent-button" ng-click="model.next_button()" >Next</button>

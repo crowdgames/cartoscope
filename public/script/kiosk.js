@@ -1631,7 +1631,8 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
         vm.map_init = map_init;
         vm.zoomToMarker = zoomToMarker;
         vm.getFullIframe = getFullIframe;
-
+        $scope.show_explanation = false;
+        $scope.show_option_buttons = true;
 
         var dZoom = 15;
 
@@ -1792,8 +1793,9 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
 
                 if (vm.counter < vm.tutorial.length - 1) {
                     vm.counter = Number(vm.counter) + Number(1);
-
-                    document.getElementById("correct-note").style.visibility = "hidden";
+                    $scope.show_explanation = false;
+                    $scope.show_option_buttons = true;
+                    // document.getElementById("correct-note").style.visibility = "none";
                     document.getElementById("tut_next").style.visibility = "hidden";
                     document.getElementById("tut_text").style.visibility = "hidden";
                 }
@@ -1832,6 +1834,8 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                 document.getElementById("tut_next_mapping").style.visibility = "visible";
                 document.getElementById("tut_text_mapping").style.visibility = "visible";
 
+
+
             } else {
 
 
@@ -1849,7 +1853,9 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                 }
 
                 // console.log('in correct options');
-                document.getElementById("correct-note").style.visibility = "visible";
+                $scope.show_explanation = true;
+                $scope.show_option_buttons = false;
+                // document.getElementById("correct-note").style.visibility = "visible";
                 document.getElementById("tut_next").style.visibility = "visible";
                 document.getElementById("tut_text").style.visibility = "visible";
             }
@@ -2057,6 +2063,8 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
 
         //Get project info here to check for genetic
         $http.get('/api/tasks/getInfoFree/' + vm.params.project).then(function(data) {
+
+            vm.project_name = data.data[0].name;
 
             $http.get('/api/project/getTutorial/' + vm.params.project).then(function(tdata) {
 

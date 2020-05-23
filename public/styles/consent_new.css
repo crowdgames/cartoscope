@@ -28,7 +28,7 @@ body {
     padding-bottom: 1%;
 }
 #tut_correct_ans, #tut_text {
-    text-align: center;
+    text-align: left;
 }
 .consent-button {
     margin-top: 20px;
