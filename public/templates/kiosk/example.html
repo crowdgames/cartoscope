@@ -81,7 +81,7 @@
             <button class="consent-button" ng-click="model.next_button()" >Next</button>
         </div>
 
-        <div id="tut_start" class="agree-btn-row" style="visibility:hidden;display: flex;justify-content: center;">
+        <div id="tut_start" ng-if="show_start_button" class="agree-btn-row" style="display: flex;justify-content: center;">
             <button class="consent-button" ng-click="model.start()">Start</button>
         </div>
     </div>

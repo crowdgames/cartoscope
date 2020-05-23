@@ -1633,6 +1633,7 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
         vm.getFullIframe = getFullIframe;
         $scope.show_explanation = false;
         $scope.show_option_buttons = true;
+        $scope.show_start_button = false;
 
         var dZoom = 15;
 
@@ -1857,7 +1858,7 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                 $scope.show_option_buttons = false;
                 // document.getElementById("correct-note").style.visibility = "visible";
                 document.getElementById("tut_next").style.visibility = "visible";
-                document.getElementById("tut_text").style.visibility = "visible";
+                //document.getElementById("tut_text").style.visibility = "visible";
             }
 
             if (vm.counter == vm.goTo) {
@@ -1868,7 +1869,9 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                 if(vm.params.projectType == 'mapping'){
                     document.getElementById("tut_start_mapping").style.visibility = "visible";
                 } else {
-                    document.getElementById("tut_start").style.visibility = "visible";
+                    console.log("eE")
+                    $scope.show_start_button = true;
+                    //document.getElementById("tut_start").style.visibility = "visible";
                 }
 
                 //Get the link to more training
@@ -1882,9 +1885,9 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
 
             }
 
-            $('html,body').animate({
-                    scrollTop: $("#correct-note").offset().top},
-                'slow');
+            // $('html,body').animate({
+            //         scrollTop: $("#correct-note").offset().top},
+            //     'slow');
         };
 
         function start() {
