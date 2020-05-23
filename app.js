@@ -152,14 +152,10 @@ app.get('/inat_auth', function(req, res) {
     var access_code = req.query.code;
     // req.session.passport = {};
 
-
-
     var core_site = 'https://cartosco.pe';
-
     if(os.hostname().indexOf("local") > -1){
         core_site = 'http://localhost:8081';
     }
-
     var site = "https://www.inaturalist.org";
     var app_id = process.env.INAT_APP_ID ;
     var app_secret = process.env.INAT_SECRET ;
@@ -171,8 +167,6 @@ app.get('/inat_auth', function(req, res) {
         'grant_type': "authorization_code"
     });
 
-
-
     var options = {
         hostname: 'inaturalist.org',
         port: 443,
@@ -183,7 +177,6 @@ app.get('/inat_auth', function(req, res) {
             'Content-Length': postData.length
         }
     };
-
     var request = https.request(options, function(resp) {
         resp.setEncoding('utf8');
         resp.on('data', function (chunk) {
@@ -197,13 +190,22 @@ app.get('/inat_auth', function(req, res) {
     request.on('error', function(e) {
         console.log('problem with request: ' + e.message);
     });
-
     // write data to request body
     request.write(postData);
     request.end();
-
 });
 
+
+//healthy gulf: Landloss Lookout
+app.get('/landloss', function(req, res) {
+
+    var subprojects = ["UOYIiFeapnyI","ocioawiaGcjw","KyW6Ti9QUr4I","Srz9arMDwthQ","94yoCWhFkpMk","cXz6ImkmG9k5"];
+    var pick_d = randomInt(0,subprojects.length - 1); //pick dataset [start,end]
+    var project_code = subprojects[pick_d];
+    var link = "kioskProject.html#/kioskStart/" + project_code;
+    res.redirect('./' + link); // send to project page
+
+});
 
 //healthy gulf event: algal Blooms
 app.get('/hg', function(req, res) {
