@@ -176,11 +176,11 @@ exports.updateARReady = function(projectId, ar_ready) {
 };
 
 
-exports.updateDescriptionName = function(projectId, description,name,short_name,short_name_friendly,short_description,is_inaturalist) {
+exports.updateDescriptionName = function(projectId, description,name,short_name,short_name_friendly,short_description,is_inaturalist,cover_pic) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        connection.queryAsync('UPDATE projects SET description=? , name=?, short_name=?, short_name_friendly=?, short_description=?, is_inaturalist=? WHERE id=?',
-            [description,name, short_name,short_name_friendly, short_description, is_inaturalist,projectId]).then(
+        connection.queryAsync('UPDATE projects SET description=? , name=?, short_name=?, short_name_friendly=?, short_description=?, is_inaturalist=?, cover_pic=? WHERE id=?',
+            [description,name, short_name,short_name_friendly, short_description, is_inaturalist,cover_pic,projectId]).then(
             function(data) {
                 resolve(data);
             }, function(err) {

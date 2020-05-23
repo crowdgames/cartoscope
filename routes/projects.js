@@ -30,6 +30,28 @@ var bcrypt = require('bcrypt');
 var salt = process.env.CARTO_SALT;
 
 
+
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+
+
+        console.log("in storage disk")
+
+        var path_to_store = path.join(__dirname, '../', 'uploads');
+        cb(null, path_to_store)
+    },
+    filename: function (req, file, cb) {
+        console.log(file)
+        var extArray = file.originalname.split(".");
+        var extension = extArray[extArray.length - 1];
+        cb(null, file.originalname)
+    }
+})
+const fupload = multer({ storage: storage });
+
+
+
 var email = process.env.CARTO_MAILER;
 
 module.exports = router;
@@ -280,25 +302,25 @@ router.get('/duplicateProject/:pCode', [ filters.requireLogin],
 });
 
 
-router.post('/add', [upload.any(), filters.requireLogin, filters.requiredParamHandler(['name', 'description'])],
+router.post('/add', [fupload.single('file'), filters.requireLogin, filters.requiredParamHandler(['name', 'description'])],
   function(req, res, next) {
     var body = req.body;
     var filename = 'default';
      console.log('body ', body);
     
-    if (req.files && req.files.length > 0) {
-      filename = req.files[0].filename;
+    if (req.file) {
+      filename = req.file.filename;
         // console.log('file '+ filename);
 
-      magic.detectFile(req.files[0].path, function(err, result) {
+      magic.detectFile(req.file.path, function(err, result) {
         if (err) {
             console.log('result err'+ err);
             res.status(500).send({error: 'problem with the uploaded image, please try again'});
-          fs.unlink(req.files[0].path);
+          fs.unlink(req.file.path);
         }
         
         if (isValidImage(result)) {
-          fs.renameSync(req.files[0].path, 'profile_photos/' + filename);
+          fs.renameSync(req.file.path, 'profile_photos/' + filename);
           generateUniqueProjectCode().then(function(projectCode) {
             projectDB.addProject(body.name, req.session.passport.user.id, body.description, filename, projectCode,body.short_name,body.short_name_friendly, body.short_description, body.is_inaturalist).then(
               function(result) {
@@ -313,7 +335,7 @@ router.post('/add', [upload.any(), filters.requireLogin, filters.requiredParamHa
         } else {
             console.log(err);
             res.status(500).send({error: 'problem with the uploaded image, please try again'});
-          fs.unlink(req.files[0].path);
+          fs.unlink(req.file.path);
         }
       });
       
@@ -380,16 +402,106 @@ router.post('/updateDescription',
 router.post('/updateDescriptionName',
     [filters.requireLogin, filters.requiredParamHandler(['projectID', 'description']), upload.any()],
     function(req, res, next) {
-        projectDB.updateDescriptionName(req.body.projectID, req.body.description,req.body.name,req.body.short_name, req.body.short_name_friendly,req.body.short_description,req.body.is_inaturalist).then(function(data) {
-            if (data.affectedRows == 1) {
-                res.send({'status': 'done'});
-            } else {
-                res.status(500).send({error: 'Project not found'});
-            }
-        }, function(err) {
-            console.log(err);
-            res.status(500).send({'error': err.code});
-        });
+
+        var body = req.body;
+        var filename = 'default';
+        console.log('body ', body);
+
+        if (req.files && req.files.length > 0) {
+            filename = req.files[0].filename;
+            // console.log('file '+ filename);
+
+            magic.detectFile(req.files[0].path, function(err, result) {
+                if (err) {
+                    console.log('result err' + err);
+                    res.status(500).send({error: 'problem with the uploaded image, please try again'});
+                    fs.unlink(req.files[0].path);
+                }
+                if (isValidImage(result)) {
+                    fs.renameSync(req.files[0].path, 'profile_photos/' + filename);
+
+                    projectDB.updateDescriptionName(req.body.projectID, req.body.description,req.body.name,req.body.short_name, req.body.short_name_friendly,req.body.short_description,req.body.is_inaturalist,filename).then(function(data) {
+                        if (data.affectedRows == 1) {
+                            res.send({'status': 'done'});
+                        } else {
+                            res.status(500).send({error: 'Project not found'});
+                        }
+                    }, function(err) {
+                        console.log(err);
+                        res.status(500).send({'error': err.code});
+                    });
+                }
+
+
+            })
+        } else {
+
+            projectDB.updateDescriptionName(req.body.projectID, req.body.description,req.body.name,req.body.short_name, req.body.short_name_friendly,req.body.short_description,req.body.is_inaturalist,filename).then(function(data) {
+                if (data.affectedRows == 1) {
+                    res.send({'status': 'done'});
+                } else {
+                    res.status(500).send({error: 'Project not found'});
+                }
+            }, function(err) {
+                console.log(err);
+                res.status(500).send({'error': err.code});
+            });
+
+        }
+
+
+
+
+    });
+
+router.post('/updateProjectInfoMain', [fupload.single('file'), filters.requireLogin, filters.requiredParamHandler(['name', 'description'])],
+    function(req, res, next) {
+        var body = req.body;
+        var filename = 'default';
+        console.log('body ', body);
+
+        if (req.file ) {
+            filename = req.file.filename;
+            console.log(filename)
+            // console.log('file '+ filename);
+
+            magic.detectFile(req.file.path, function(err, result) {
+                if (err) {
+                    console.log('result err'+ err);
+                    res.status(500).send({error: 'problem with the uploaded image, please try again'});
+                    fs.unlink(req.file.path);
+                }
+
+                if (isValidImage(result)) {
+                    fs.renameSync(req.file.path, 'profile_photos/' + filename);
+                    projectDB.updateDescriptionName(req.body.projectID, req.body.description,req.body.name,req.body.short_name, req.body.short_name_friendly,req.body.short_description,req.body.is_inaturalist,filename).
+                    then(function(result) {
+                        if (result.affectedRows == 1) {
+                            res.send({'status': 'done'});
+                        } else {
+                            res.status(500).send({error: 'Project not found'});
+                        }
+                    })
+
+                } else {
+                    console.log(err);
+                    res.status(500).send({error: 'problem with the uploaded image, please try again'});
+                    fs.unlink(req.file.path);
+                }
+            });
+
+        } else {
+            projectDB.updateDescriptionName(req.body.projectID, req.body.description,req.body.name,req.body.short_name, req.body.short_name_friendly,req.body.short_description,req.body.is_inaturalist,filename).
+            then(function(result) {
+                if (result.affectedRows == 1) {
+                    res.send({'status': 'done'});
+                } else {
+                    res.status(500).send({error: 'Project not found'});
+                }                    }, function(err) {
+                        console.log(err);
+                        res.status(500).send({error: err.code});
+                    });
+        }
     });
 
 router.post('/updateHasLocation',
@@ -504,6 +616,30 @@ router.post('/updateDescription',
                 res.status(500).send({error: err.code});
             });
     });
+
+
+
+router.get('/getProjectPic/:code', function(req, res, next) {
+    res.setHeader('Content-Type', 'image/jpeg');
+
+    var getProject = projectDB.getProjectFromCode(req.params.code);
+    getProject.then(function(project) {
+        if (project.length > 0) {
+            var cover_pic = project[0].cover_pic;
+            if (fs.existsSync('profile_photos/' + cover_pic)) {
+                res.sendFile(path.resolve('profile_photos/' +cover_pic));
+            } else {
+                res.sendFile(path.resolve('profile_photos/default.png' ));
+            }
+        } else {
+            res.status(500).send({error: 'Project not found'});
+        }
+    }).catch(function(error) {
+        res.status(500).send({error: error.code || 'Project pic not found'});
+    });
+
+
+});
 
 function generateUniqueProjectCode() {
   return new Promise(function(resolve) {

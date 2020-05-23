@@ -401,27 +401,33 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
     views: {
       'createProjChildView': {
         templateUrl: 'templates/userProfile/projectCreation/step1.html',
-        controller: ['$scope','$http', 'project', function($scope, $http, project) {
+        controller: ['$scope','$http', 'project', 'swalService', function($scope, $http, project,swalService) {
           $scope.$on('validate', function(e) {
             $scope.validate();
           });
 
+
           $scope.validate = function() {
 
 
-              var data = {
-                  description: $scope.project.description,
-                  projectID: $scope.project.id,
-                  name: $scope.project.name,
-                  short_name: $scope.project.short_name,
-                  short_name_friendly: $scope.project.short_name_friendly,
-                  short_description: $scope.project.short_description,
-                  is_inaturalist: $scope.project.is_inaturalist,
+                  var fd = new FormData();
+                  if ($scope.coverPic) {
+                      fd.append('file', $scope.coverPic);
+                  }
+                  fd.append('projectID', $scope.project.id);
+                  fd.append('name', $scope.project.name);
+                  fd.append('description', $scope.project.description);
+                  fd.append('short_name', $scope.project.short_name);
+                  fd.append('short_name_friendly', $scope.project.short_name_friendly);
+                  fd.append('short_description', $scope.project.short_description);
+                  fd.append('is_inaturalist', $scope.project.is_inaturalist);
 
+                  console.log(fd)
 
-              };
-
-              $http.post('/api/project/updateDescriptionName', data).then(function(data) {
+                  $http.post('api/project/updateProjectInfoMain', fd, {
+                      transformRequest: angular.identity,
+                      headers: {'Content-Type': undefined}
+                  }).then(function(dat) {
                   $scope.$emit('moveNext');
               }, function(response) {
                   var msg = response.data.error || 'couldn\'t save description at this time';
@@ -1204,7 +1210,7 @@ module.controller('stepOneController', ['$scope', '$state', '$http', 'swalServic
       } else {
         var fd = new FormData();
         if ($scope.coverPic) {
-          fd.append('photo', $scope.coverPic);
+          fd.append('file', $scope.coverPic);
         }
         fd.append('name', $scope.project.name);
         fd.append('description', $scope.project.description);

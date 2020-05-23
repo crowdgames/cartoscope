@@ -1,4 +1,5 @@
 var module = angular.module('consentApp', ['ui.router', 'ngAnimate', 'ngRoute', 'uiGmapgoogle-maps','ngCookies', 'ngMap', 'configApp'])
+
     // .config(['uiGmapGoogleMapApiProvider', function (GoogleMapApi, googleMapAPIKey) {
     //     GoogleMapApi.configure({
     //         key: 'AIzaSyAL32H2arSyCcBfcD49o1wG32pkHaNlOJE',
@@ -1602,7 +1603,7 @@ module.controller('TermsController', ['$scope', '$window', '$stateParams', funct
 
 module.controller('exampleController', ['$window', '$scope', '$state', '$stateParams','NgMap', '$timeout',
     'heatMapProject1', 'heatMapProject2', 'googleMapAPIKey', '$http', '$q' , '$location', '$sce',
-    function($window, $scope, $state, $stateParams, NgMap, $timeout,heatMapProject1, heatMapProject2, googleMapAPIKey, $http, $q, $location, $sce) {
+    function($window, $scope, $state, $stateParams, NgMap, $timeout, heatMapProject1, heatMapProject2, googleMapAPIKey, $http, $q, $location, $sce ) {
     var vm = this;
     vm.params={};
 
@@ -1841,7 +1842,9 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                 // console.log(l_answer.toLowerCase(),option.toLowerCase());
                 if (l_answer.toLowerCase() != option.toLowerCase()) {
                     vm.annotated = false; //show annotated image if available
-                    return alert("Your input is incorrect. Please try again.");
+                    //return swalService.showErrorMsg('Whoops! Try again!');
+                    return alert("Whoops! Try again!");
+
 
                 }
 
@@ -2247,6 +2250,11 @@ module.controller('kioskProjectController', ['$window','$scope','$location','$st
             $scope.projectType =  $scope.proj_template.selectedTaskType;
 
             $scope.video_url = $sce.trustAsResourceUrl($scope.proj_data.video_url);
+
+            $scope.cover_pic = $scope.proj_data.cover_pic;
+
+            $scope.cover_pic_path = 'api/project/getProjectPic/' + $stateParams.pCode;
+
 
 
             if ($scope.image_source != null) {
