@@ -348,4 +348,10 @@ function onListening() {
     console.log('Listening on ' + bind);
 }
 
+
+//return random integer [min,max]
+function randomInt(min,max){
+    return (Math.floor(Math.random() * (max - min + 1) ) + min);
+}
+
 module.exports = app;
