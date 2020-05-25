@@ -1621,6 +1621,19 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
 
     vm.annotated = false;
 
+    vm.alertError = function(msg) {
+        swal({
+            title: 'Whoops!',
+            confirmButtonColor: '#9cdc1f',
+            allowOutsideClick: true,
+            text: msg,
+            type: 'error',
+            confirmButtonText: 'Back'
+        });
+    }
+
+
+
 
         vm.fetchCenter = fetchCenter;
         vm.centerChanged = centerChanged;
@@ -1847,8 +1860,8 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                 // console.log(l_answer.toLowerCase(),option.toLowerCase());
                 if (l_answer.toLowerCase() != option.toLowerCase()) {
                     vm.annotated = false; //show annotated image if available
-                    //return swalService.showErrorMsg('Whoops! Try again!');
-                    return alert("Whoops! Try again!");
+                    return vm.alertError("Try again!")
+                    //return alert("Whoops! Try again!");
 
 
                 }
@@ -2200,12 +2213,13 @@ module.controller('mTurkController', ['$window','$scope','$location','$state','$
 }]);
 
 module.controller('kioskController', ['$window','$scope','$location','$state','$stateParams','$http', '$cookies',
-    function($window,$scope,$location,$state,$stateParams,$http, $cookies){
+    function($window,$scope,$location,$state,$stateParams,$http, $cookies ){
         $window.document.title = "Cartoscope";
         $scope.begin = function() {
             //console.log($stateParams);
 
             $scope.params = $location.search();
+
 
             //check for cookie and set it if it doesnt exist
             if(!$cookies.get('kiosk')){
@@ -2237,7 +2251,7 @@ module.controller('kioskController', ['$window','$scope','$location','$state','$
     }]);
 
 module.controller('kioskProjectController', ['$window','$scope','$location','$state','$stateParams','$http', '$cookies', '$sce',
-    function($window,$scope,$location,$state,$stateParams,$http, $cookies, $sce){
+    function($window,$scope,$location,$state,$stateParams,$http, $cookies, $sce ){
         $window.document.title = "Cartoscope";
 
         $scope.project_title = "";
@@ -2245,6 +2259,7 @@ module.controller('kioskProjectController', ['$window','$scope','$location','$st
         $scope.showSource = false;
         $scope.showCC = false;
         $scope.proj_data = {};
+
 
 
         //Get project info and set the page
