@@ -44,13 +44,16 @@
 
         <div class="row" ng-show="showVideo" style="text-align: center;margin-bottom:20px;">
 
-            <div class="col-12" ng-show="video_url.indexOf('youtube') != -1">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" ng-show="video_url.indexOf('youtube') != -1">
 
-            <iframe style="width:600px;height: 400px" ng-src="{{video_url  }}" ></iframe>
+            <!--<iframe style="width:600px;height: 400px" ng-src="{{video_url  }}" ></iframe>-->
+                <div class="embed-responsive embed-responsive-16by9">
+                    <iframe  class="embed-responsive-item" ng-src="{{video_url  }}" allowfullscreen></iframe>
+                </div>
 
 
             </div>
-            <div class="col-12" ng-show="video_url.indexOf('youtube') == -1">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" ng-show="video_url.indexOf('youtube') == -1">
                     <video  class=" border border-primary" width="600" height="400" controls src="{{video_url }}">
                     </video>
             </div>
