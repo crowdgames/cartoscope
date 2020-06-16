@@ -2156,7 +2156,7 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                         poi_name : item.poi_name || '',
                         image_source: item.image_source,
                         image_annotation: it_annot,
-                        ask_user : item.ask_user || 1
+                        ask_user : parseInt(item.ask_user)
                     };
                     if( vm.params.projectType != 'mapping') {
 
