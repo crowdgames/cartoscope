@@ -235,12 +235,14 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.alertText = function(text){
           if (text){
               //alert(text)
+              var div_exp = document.createElement("div");
+              div_exp.innerHTML = text;
 
               swal({
                   title: "Explanation",
                   confirmButtonColor: '#9cdc1f',
                   allowOutsideClick: true,
-                  html: text,
+                  content: div_exp,
                   confirmButtonText: 'Back'
               });
           } else {
