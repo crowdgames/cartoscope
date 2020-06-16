@@ -44,13 +44,13 @@
 
         <div class="row" ng-show="showVideo" style="text-align: center;margin-bottom:20px;">
 
-            <div class="col-10" ng-show="video_url.indexOf('youtube') != -1">
+            <div class="col-12" ng-show="video_url.indexOf('youtube') != -1">
 
             <iframe style="width:600px;height: 400px" ng-src="{{video_url  }}" ></iframe>
 
 
             </div>
-            <div class="col-10" ng-show="video_url.indexOf('youtube') == -1">
+            <div class="col-12" ng-show="video_url.indexOf('youtube') == -1">
                     <video  class=" border border-primary" width="600" height="400" controls src="{{video_url }}">
                     </video>
             </div>
