@@ -237,10 +237,10 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               //alert(text)
 
               swal({
-                  title: Explanation,
+                  title: "Explanation",
                   confirmButtonColor: '#9cdc1f',
                   allowOutsideClick: true,
-                  html: msg,
+                  html: text,
                   confirmButtonText: 'Back'
               });
           } else {
