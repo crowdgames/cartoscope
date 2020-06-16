@@ -243,7 +243,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   confirmButtonColor: '#9cdc1f',
                   allowOutsideClick: true,
                   html: true,
-                  text: div_exp,
+                  text: text,
                   confirmButtonText: 'Back'
               });
           } else {
