@@ -3,6 +3,24 @@
  */
 var module = angular.module('taskApp', ['ui.router', 'ngMap','configApp','ngJuxtapose']);
 
+//change \n to br
+module.filter("textBreaks", ['$sce', function ($sce) {
+    return function (x) {
+        if (x){
+            // var new_text = x.replace(new RegExp('\\n', 'g'), '<br/>');
+            var new_text = x.replace(/\\n/g, "<br/>");
+            // new_text = x.replace(/n/g, "<br/>");
+            //trim first and last quote:
+            new_text =  new_text.slice(1,-1);
+            return $sce.trustAsHtml(new_text);
+        } else {
+            return(x)
+        }
+
+
+    }
+}]);
+
 var latCenter;
 var lngCenter;
 var dZoom = 15;
@@ -216,7 +234,15 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       vm.alertText = function(text){
           if (text){
-              alert(text)
+              //alert(text)
+
+              swal({
+                  title: Explanation,
+                  confirmButtonColor: '#9cdc1f',
+                  allowOutsideClick: true,
+                  html: msg,
+                  confirmButtonText: 'Back'
+              });
           } else {
               alert('No information available.');
           }
@@ -594,7 +620,9 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                           (vm.data.template.selectedTaskType == 'ngs') || (
                               (vm.data.template.selectedTaskType == 'mapping') && (vm.data.point_selection == false)
                           )) {
-                          vm.tutorial.push(obj)
+                          if (parseInt(item.ask_user)){
+                              vm.tutorial.push(obj)
+                          }
                       } else {
                           vm.tutorialMapping.push(obj)
                       }
