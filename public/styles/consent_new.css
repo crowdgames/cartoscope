@@ -116,6 +116,7 @@ body {
 
 .tut_image {
     /*max-width: 450px;*/
+    width: 80%;
 }
 
 .instructions {
@@ -179,5 +180,11 @@ body {
 
     .tut_answer{
        width: 80%;
+    }
+
+
+    .tut_image {
+        /*max-width: 450px;*/
+        width: 100%;
     }
 }
