@@ -17,6 +17,8 @@ module.filter("textBreaks", ['$sce', function ($sce) {
             // var new_text = x.replace(new RegExp('\\n', 'g'), '<br/>');
             var new_text = x.replace(/\\n/g, "<br/>");
             // new_text = x.replace(/n/g, "<br/>");
+            //trim first and last quote:
+            new_text =  new_text.slice(1,-1);
             return $sce.trustAsHtml(new_text);
         } else {
             return(x)
@@ -1816,6 +1818,7 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
 
                 //if ask user is turned off, then skip the question part and show text directly
                 if (vm.tutorial[vm.counter].ask_user == 0) {
+                    console.log("Will show text directly")
                     show_Correct_Options(vm.tutorial[vm.counter].answer);
                 }
 
