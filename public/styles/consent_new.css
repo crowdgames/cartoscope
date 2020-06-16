@@ -1,10 +1,14 @@
 body {
-    background: url('../images/background_dktp.png') no-repeat center center fixed;
+    /*background: url('../images/background_dktp.png') no-repeat center center fixed;*/
+    background-color: #D8D3D6;
+    /*background-color: #3C6478;*/
+
+    color: black ;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size:cover;
-    color: #f8f8ff;
+    /*color: #f8f8ff;*/
 }
 .title {
     text-align: center;

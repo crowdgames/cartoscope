@@ -1,19 +1,19 @@
 <div class="row" ng-controller="navController">
-    <div class="center-element" style="font-size: 1em;text-align:center; position: relative; z-index: 100;">
+    <div class="center-element" style="font-size: 1em;text-align:center; position: relative; z-index: 100; color: black;">
         <span ng-class="{'selected': setPage('/')}">
-        <a href={{home_link}} >HOME</a>
+        <a style="color: black;" href={{home_link}} >HOME</a>
         </span>
         <span class="circ-sep"></span>
         <span ng-class="{'selected': setPage('/about')}" >
-        <a href={{about_link}} >ABOUT</a>
+        <a style="color: black;" href={{about_link}} >ABOUT</a>
         </span>
         <span class="circ-sep"></span>
         <span ng-class="{'selected': setPage('/results')}">
-            <a href={{results_link}} >RESULTS</a>
+            <a style="color: black;" href={{results_link}} >RESULTS</a>
         </span>
         <span class="circ-sep"></span>
         <span ng-class="{'selected':setPage('/termsOfUse')}">
-            <a href={{toc_link}}>TERMS OF USE</a>
+            <a style="color: black;" href={{toc_link}}>TERMS OF USE</a>
         </span>
     </div>
 
