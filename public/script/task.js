@@ -235,8 +235,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.alertText = function(text){
           if (text){
               //alert(text)
-              var div_exp = document.createElement("div");
-              div_exp.innerHTML = text;
 
               swal({
                   title: "Explanation",
@@ -247,7 +245,13 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   confirmButtonText: 'Back'
               });
           } else {
-              alert('No information available.');
+              swal({
+                  title: "Explanation",
+                  confirmButtonColor: '#9cdc1f',
+                  allowOutsideClick: true,
+                  text: "No additional information available for this example.",
+                  confirmButtonText: 'Back'
+              });
           }
       };
 
