@@ -1817,6 +1817,7 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                 }
 
                 //if ask user is turned off, then skip the question part and show text directly
+                console.log(vm.tutorial[vm.counter].ask_user);
                 if (vm.tutorial[vm.counter].ask_user == 0) {
                     console.log("Will show text directly")
                     show_Correct_Options(vm.tutorial[vm.counter].answer);
