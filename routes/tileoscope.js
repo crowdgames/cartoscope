@@ -86,15 +86,15 @@ router.get('/compareTGCC/:hit_id', function(req, res, next) {
 });
 
 //endpoint for Qlearn old vs Qlearn adaptive vs Greedy
-router.get('/compareTGQ/:hit_id/:train_hit', function(req, res, next) {
+router.get('/compareTGQ/:hit_id', function(req, res, next) {
 
     var hit_id= req.params.hit_id;
     var train_hit = req.params.train_hit;
 
     var possibles = [
-                        'qlearn=' + hit_id + '&train_hit=' + train_hit,
+                        'qlearn=' + hit_id + '&train_hit=8PIKNDW2LD5I',
                         'qlearnO='+ hit_id,
-                        'genetic=' + hit_id
+                        'genetic=GNEPFHZXA6QL'
                     ];
 
     var pick_d = randomInt(0,possibles.length - 1); //pick dataset
