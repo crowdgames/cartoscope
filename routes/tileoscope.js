@@ -558,9 +558,9 @@ router.get('/getRecentCairns/:main_code/:user_id/:level_number', function(req, r
 router.get('/fetchQTableByCode/:main_code', function(req, res, next) {
 
 
-    tileDB.fetchQTableByCode(req.params.main_code).then(function(q_table) {
-        console.log(q_table)
-        res.send(q_table)
+    qlearnDB.fetchQTableByCode(req.params.main_code).then(function(q_table) {
+        console.log(q_table);
+        res.json(q_table)
     }, function (err) {
         res.status(400).send('Error getting q_table: ' + err);
     })
