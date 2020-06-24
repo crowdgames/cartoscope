@@ -4,8 +4,17 @@
     <div id="top-page" class="row">
         <center>
             <h1 >{{model.project_name}} </h1>
-            <h2 ng-if="model.tutorial[model.counter].ask_user" > Tutorial {{model.counter}} / {{model.goTo}}</h2>
+            <!--<h2 ng-if="model.tutorial[model.counter].ask_user" > Tutorial {{model.counter}} / {{model.goTo}}</h2>-->
         </center>
+    </div>
+
+    <!-- Progress Bar-->
+    <div class="row" ng-if="model.tutorial[model.counter].ask_user">
+        <div class="progress progressDiv" style="height: 20px;margin-top: 5px;border-radius: 0;">
+        <div  class="progress-bar " role="progressbar" aria-valuenow="{{next_per2}}"
+              aria-valuemin="0" aria-valuemax="100" ng-style="progressBarStyle"> {{model.counter}} out of {{model.goTo}}
+        </div>
+        </div>
     </div>
 
     <!--<div  class="row">-->

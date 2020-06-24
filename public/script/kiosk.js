@@ -1622,6 +1622,8 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
     vm.showTutorialLink = false;
 
     vm.annotated = false;
+        $scope.next_per2 = 0;
+        $scope.progressBarStyle = {"width" : "0%"};
 
     vm.alertError = function(msg) {
         swal({
@@ -1762,6 +1764,8 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
         }
         function next_button() {
 
+
+
             //scroll to the top
             $('html,body').animate({
                     scrollTop: $("#top-page").offset().top},
@@ -1819,10 +1823,19 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                 //if ask user is turned off, then skip the question part and show text directly
                 console.log(vm.tutorial[vm.counter].ask_user);
                 if (vm.tutorial[vm.counter].ask_user == 0) {
-                    console.log("Will show text directly")
                     show_Correct_Options(vm.tutorial[vm.counter].answer);
                 }
 
+            }
+
+            //increase progress bar
+            $scope.next_per = (vm.counter / vm.goTo).toFixed(2) *100;
+            $scope.progressBarStyle = {"width" : $scope.next_per.toString() + "%"};
+
+            if (vm.counter == 0) {
+                $scope.next_per2 = 0;
+            } else {
+                $scope.next_per2 = Math.floor($scope.next_per);
             }
 
 
@@ -1840,6 +1853,7 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
 
 
         function show_Correct_Options(option) {
+
 
 
             if(vm.params.projectType == 'mapping'){
@@ -2102,6 +2116,15 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                 vm.counter = 0;
                 //get question from results
                 vm.goTo = tutData.length -1;
+
+                $scope.next_per = (vm.counter / vm.goTo).toFixed(2) *100;
+                $scope.progressBarStyle = {"width" : $scope.next_per.toString() + "%"};
+
+                if (vm.counter == 0) {
+                    $scope.next_per2 = 0;
+                } else {
+                    $scope.next_per2 = Math.floor($scope.next_per);
+                }
 
 
                 vm.showMarkers = parseInt(tutData[0].point_selection);
