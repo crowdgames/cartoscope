@@ -187,7 +187,6 @@ router.post('/uploadTutorialLocal', fupload.single('file'),
         var ar_ready = req.body.ar_ready;
 
 
-
             //proceed to analyze the folder
             console.log(req.file);
             var stored_filename = req.file.path;
@@ -496,6 +495,9 @@ function downloadTutorialLocal(loc, projectID,existing,ar_ready,dataset_id) {
         var downloadDir = 'temp/'; //where the temp file is stored
         var tutorialDir = 'public/images/Tutorials/'; //where the images should end up
         var dirName = tutorialDir  + projectID;
+
+        //Delete whatever we have right now
+        deleteFolderRecursive(dirName);
 
         //if it doesn't exist, then create it, else add to it
         if (!fs.existsSync(dirName)) {
