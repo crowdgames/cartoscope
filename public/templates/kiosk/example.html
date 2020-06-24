@@ -28,17 +28,21 @@
     <div ng-show="model.params.projectType === 'tagging' || model.params.projectType === 'ngs' || model.params.projectType === 'slider'" class="col-md-12">
 
 
-        <div id="correct-note" class="row" ng-if="show_explanation">
-            <!--<div class="col-lg-3 col-md-1 col-sm-2"></div>-->
-            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <h3 ng-if="model.tutorial[model.counter].ask_user" id="tut_correct_ans">The answer here is <span id="tut_span" style="color: {{tutorial[counter].color}}">
-                    {{model.tutorial[model.counter].answer}}</span>.</h3>
-                <!--<h3  id="tut_text">{{model.tutorial[model.counter].text }}</h3>-->
-                <h3  ng-bind-html="model.tutorial[model.counter].text | textBreaks " id="tut_text"></h3>
+            <div id="correct-note" class="row" ng-if="show_explanation" >
+                <!--<div class="col-lg-3 col-md-1 col-sm-2"></div>-->
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <h3 ng-if="model.tutorial[model.counter].ask_user && model.tutorial[model.counter].text == undefined" id="tut_correct_ans">
+                        The answer here is <span id="tut_span" style="color: {{tutorial[counter].color}}"> {{model.tutorial[model.counter].answer}}</span>.
+                    </h3>
+                    <h3 ng-if="model.tutorial[model.counter].ask_user && model.tutorial[model.counter].text != undefined" ng-bind-html="model.tutorial[model.counter].text | textBreaks " id="tut_text"></h3>
 
+                </div>
+                <!--<div class="col-lg-3 col-md-1 col-sm-2"></div>-->
             </div>
-            <!--<div class="col-lg-3 col-md-1 col-sm-2"></div>-->
-        </div>
+
+
+
+
 
         <div class="row" ng-show="model.params.projectType === 'tagging' || model.params.projectType === 'slider'">
 
