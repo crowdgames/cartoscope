@@ -106,7 +106,11 @@ app.use('/api/inat', inaturalist);
 
 //ar game download
 app.get('/ar_apk', function(req, res) {
-    res.redirect('https://drive.google.com/open?id=1-iiiuU_KfkUDYtNGIlJnLcQh0NJ5u-d4');
+
+    var version1 = 'https://drive.google.com/open?id=1-iiiuU_KfkUDYtNGIlJnLcQh0NJ5u-d4'
+    var version2 = 'https://drive.google.com/open?id=1kPyDCCdUKpRpLfMOMFOGYkE4HAlpPVmy'
+
+    res.redirect(version2);
 });
 
 
