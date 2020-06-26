@@ -114,7 +114,7 @@ app.get('/ar_apk', function(req, res) {
 });
 
 
-//ar game download
+//ar game instructions
 app.get('/ar_games', function(req, res) {
     var filePath = "public/files/cartoscope_ar_games_rules.pdf";
 
@@ -124,7 +124,7 @@ app.get('/ar_games', function(req, res) {
     });});
 
 
-//ar game instructions
+//ar tags
 app.get('/ar_tags', function(req, res) {
     var filePath = "public/files/cartoscope_ar_tags_print.pdf";
 
@@ -132,6 +132,15 @@ app.get('/ar_tags', function(req, res) {
         res.contentType("application/pdf");
         res.send(data);
     });
+});
+
+
+//ar gameplay video
+app.get('/ar_video', function(req, res) {
+
+    var video_path = 'https://drive.google.com/file/d/1Yzdcs1UMHL_tUeL5kXuHvW4W52yJMqvr/view?usp=sharing';
+
+    res.redirect(video_path);
 });
 
 
