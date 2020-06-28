@@ -142,7 +142,7 @@ exports.generateQlearnOptimalSequenceTileoscopeOnline = function(main_code, play
                 console.log("Fetched: "+ Q.length + " Q-table entries");
 
                 //get all paths relevant to that main_code
-                tileDB.getTileoscopePaths(main_code).then(function(tile_paths) {
+                tileDB.getTileoscopePathsQlearnO(main_code).then(function(tile_paths) {
                 //tileDB[func_fetch_paths](main_code,last_update).then(function(tile_paths) {
 
                     console.log("Fetched: "+ tile_paths.length + " paths");

@@ -150,6 +150,19 @@ exports.getTileoscopePaths = function(hitId) {
     });
 };
 
+exports.getTileoscopePathsQlearnO = function(hitId) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+        connection.queryAsync('select * from tileoscope_paths where hit_id=? and method="qlearnO" ORDER BY RAND()',[hitId]).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
 
 //get all paths that have been updated after the last time we updated the Qtable
 exports.getTileoscopePathsRecent = function(hitId,timestamp) {
