@@ -94,7 +94,8 @@ router.get('/compareTGQ/:hit_id', function(req, res, next) {
     var possibles = [
                         'qlearn=' + hit_id + '&train_hit=8PIKNDW2LD5I',
                         'qlearnO='+ hit_id,
-                        'genetic=GNEPFHZXA6QL'
+                        'genetic=NGBMJ00O6R4B',
+                        'random=' + hit_id
                     ];
 
     var pick_d = randomInt(0,possibles.length - 1); //pick dataset
