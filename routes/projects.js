@@ -755,9 +755,10 @@ router.post('/addsurveyItems/', function(req, res, next) {
 
 //fix for issues with codes!
 router.post('/:id/survey', [filters.requireLogin], function(req, res, next) {
+
     if (req.session.passport.user.anonymous) {
         projectDB.getSingleProjectFromCode(req.params.id).then(function(project) {
-            projectDB.addSurvey(req.session.passport.user.id, project.id, req.body).then(
+            projectDB.addSurvey(req.session.passport.user.id, project.id, req.body,req.body.trialId).then(
                 function(data) {
                     console.log('inside function ... '+ data);
                     if(req.session.passport.user.type == "mTurk"){

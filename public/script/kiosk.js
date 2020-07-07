@@ -297,7 +297,6 @@ module.controller('heatMapController', function($scope, $http, $window,heatMapPr
     // Exit button to front page:
     $scope.exit = exit;
     function exit(){
-        console.log('in exit');
         $window.location.href='/algalBloom.html';
     }
 
@@ -645,7 +644,6 @@ module.controller('heatMapProjectController', function($scope, $http, $window,$s
     // Exit button to front page:
     $scope.exit = exit;
     function exit(){
-        console.log('in exit');
         // $window.location.href='/algalBloom.html';
         $window.location.href='kioskProject.html#/kioskStart/' + $stateParams.pCode;
     }
@@ -797,7 +795,7 @@ module.controller('heatMapProjectController', function($scope, $http, $window,$s
             //$http.get('/api/results/csv_heatmap/' + $stateParams.pCode).then(function(data){
 
 
-                console.log(data.data)
+                // console.log(data.data)
 
                 // console.log("Results from first project", data.data);
                 $scope.results1 = data.data;
@@ -1108,7 +1106,6 @@ module.controller('gridMapProjectController',
     // Exit button to front page:
     $scope.exit = exit;
     function exit(){
-        console.log('in exit');
         // $window.location.href='/algalBloom.html';
         $window.location.href='kioskProject.html#/kioskStart/' + $stateParams.pCode;
     }
@@ -1616,10 +1613,12 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
     vm.params.workerId= $stateParams.workerId;
     vm.params.kioskId= $stateParams.kioskId;
     vm.params.projectType = $stateParams.projectType;
+    vm.params.hitId= $stateParams.hitId;
     //console.log('$scope.params.project ',vm.params);
     vm.googleMapsUrl= "https://maps.googleapis.com/maps/api/js?key="+googleMapAPIKey;
     vm.goTo=5;
     vm.showTutorialLink = false;
+
 
     vm.annotated = false;
         $scope.next_per2 = 0;
@@ -1821,7 +1820,6 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                 }
 
                 //if ask user is turned off, then skip the question part and show text directly
-                console.log(vm.tutorial[vm.counter].ask_user);
                 if (vm.tutorial[vm.counter].ask_user == 0) {
                     show_Correct_Options(vm.tutorial[vm.counter].answer);
                 }
@@ -1900,7 +1898,6 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                 if(vm.params.projectType == 'mapping'){
                     document.getElementById("tut_start_mapping").style.visibility = "visible";
                 } else {
-                    console.log("eE")
                     $scope.show_start_button = true;
                     //document.getElementById("tut_start").style.visibility = "visible";
                 }
@@ -2286,6 +2283,23 @@ module.controller('kioskProjectController', ['$window','$scope','$location','$st
         $scope.showSource = false;
         $scope.showCC = false;
         $scope.proj_data = {};
+        $scope.showConsentMturk = false;
+        $scope.isMturk = false;
+        $scope.hit_id = "kiosk";
+
+        if ($location.search().hasOwnProperty("trialId")){
+            $scope.isMturk = true
+            $scope.hit_id = $location.search().trialId;
+        }
+
+
+        $scope.acceptConsent = function() {
+            $scope.showConsentMturk = false;
+            //TODO: We are hiding the navbar because we only want them to do the task
+            //document.getElementById("navB").style.display = "block";
+
+        };
+
 
 
 
@@ -2307,6 +2321,17 @@ module.controller('kioskProjectController', ['$window','$scope','$location','$st
             $scope.cover_pic = $scope.proj_data.cover_pic;
 
             $scope.cover_pic_path = 'api/project/getProjectPic/' + $stateParams.pCode;
+
+
+
+            //if mturk, first show consent!
+            if ($scope.isMturk) {
+
+                document.getElementById("navB").style.display = "none";
+
+                $scope.showConsentMturk = true;
+            }
+
 
 
 
@@ -2338,6 +2363,8 @@ module.controller('kioskProjectController', ['$window','$scope','$location','$st
         });
 
 
+
+
         $scope.beginProject = function() {
             //console.log($stateParams);
 
@@ -2360,9 +2387,10 @@ module.controller('kioskProjectController', ['$window','$scope','$location','$st
                     var type= JSON.parse($scope.proj_data.template);
                     $scope.projectType = type.selectedTaskType;
 
-                    $http.get('/api/anon/consentKiosk/' + $stateParams.pCode + '?' + 'workerId='+ $scope.workerId+'&cookie='+$cookies.get('kiosk')).then(function(e, data) {
+                    $http.get('/api/anon/consentKiosk/' + $stateParams.pCode + '?' + 'workerId='+ $scope.workerId+'&cookie='+$cookies.get('kiosk')+'&hitID='+ $scope.hit_id)
+                        .then(function(e, data) {
                         //console.log('data ', e.data.workerId);
-                        $state.go('examples', {pCode: $stateParams.pCode, workerId: e.data.workerId, projectType: $scope.projectType, kioskId:1});
+                        $state.go('examples', {pCode: $stateParams.pCode, workerId: e.data.workerId, projectType: $scope.projectType, kioskId:1, hitId: $scope.hit_id});
                         //window.location.replace('/api/anon/startKiosk/' + $scope.params.project+ '?workerId='+e.data.workerId+'&kioskId=1');
                     }, function(err) {
                         alert('error'+ err);
@@ -2421,7 +2449,7 @@ module.controller('instructionController', ['$window','$scope', '$state','$state
             $state.go('examples', {
                 pCode: $scope.params.project,
                 workerId: $scope.params.workerId,
-                kioskId: $scope.params.kioskId
+                kioskId: $scope.params.kioskId,
             });
         } else {
             $state.go('examples', {

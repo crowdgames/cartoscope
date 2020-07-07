@@ -887,12 +887,12 @@ exports.addDataSetID = function(projectId, dataSetID) {
 };
 
 // exports.addSurvey = function(userID, projectID, whyText, whyMore, techDiff, techDiffText, additionalFeedback) {
-exports.addSurvey = function(userID, projectID, response) {
+exports.addSurvey = function(userID, projectID, response, hitID) {
   return new Promise(function(resolve, error) {
     var connection = db.get();
-        connection.queryAsync('INSERT INTO '+databaseName+'.`survey`(`user_id`,`project_id`,`response`)' +
-            'VALUES (?, ?, ?) on DUPLICATE KEY update response=VALUES(response)',
-      [userID, projectID, JSON.stringify(response)]).then(
+        connection.queryAsync('INSERT INTO '+databaseName+'.`survey`(`user_id`,`project_id`,`response` , `hitID`)' +
+            'VALUES (?, ?, ? , ?) on DUPLICATE KEY update response=VALUES(response)',
+      [userID, projectID, JSON.stringify(response),hitID]).then(
       function(data) {
           console.log(data)
         if (data.insertId) {

@@ -195,15 +195,15 @@ exports.addMTurkWorkerNoHash = function(anonUser, projectID, siteID, consented) 
     });
 };
 
-exports.addKioskWorker = function(anonUser, projectID, cookie, consented) {
+exports.addKioskWorker = function(anonUser, projectID, cookie, consented,hitID) {
     return new Promise(function(resolve, reject) {
         console.log(anonUser, projectID, cookie, consented);
         var connection = db.get();
 
         connection.queryAsync('INSERT INTO `kiosk_workers` ' +
-            '(`workerID`, `projectID`,`cookieID`,`consented`) VALUES ' +
-            '(?, ?, ?, ?) ON DUPLICATE KEY UPDATE `consented`=?',
-            [anonUser.workerId, projectID, cookie, consented, consented]).then(
+            '(`workerID`, `projectID`,`cookieID`,`consented`, `hitID`) VALUES ' +
+            '(?, ?, ?, ?,?) ON DUPLICATE KEY UPDATE `consented`=?',
+            [anonUser.workerId, projectID, cookie, consented, hitID, consented]).then(
             function(data) {
                 if (data.insertId) {
                     resolve(data.insertId);
@@ -224,6 +224,25 @@ exports.findConsentedKioskWorker = function(workerID, projectID) {
         console.log('finding.. ', workerID, projectID);
         connection.queryAsync('SELECT * from `kiosk_workers` where `workerID`=? and `projectID`=? and `consented`=1',
             [workerID, projectID]).then(
+            function(data) {
+                if (data.length == 1) {
+                    resolve(data[0]);
+                } else {
+                    resolve({});
+                }
+            }, function(err) {
+                reject(err);
+            });
+    });
+};
+
+//find user by cookie
+exports.findConsentedKioskWorkerbyCookie = function(cookieID, projectID) {
+    return new Promise(function(resolve, reject) {
+        var connection = db.get();
+        console.log('finding.. ', workerID, projectID);
+        connection.queryAsync('SELECT * from `kiosk_workers` where `cookieID`=? and `projectID`=? and `consented`=1',
+            [cookieID, projectID]).then(
             function(data) {
                 if (data.length == 1) {
                     resolve(data[0]);

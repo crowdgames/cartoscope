@@ -24,28 +24,40 @@ module.config(function($stateProvider, $urlRouterProvider) {
             name: 'surveyTLX',
             url: '/surveyTLX',
             templateUrl: 'templates/survey_tlx.html',
-            controller: 'surveyTLXController'
+            controller: 'surveyTLXController',
+            params: {
+                hitId:''
+            }
   });
 
     $stateProvider.state({
         name: 'surveyGAMEontroller',
         url: '/surveyGAME',
         templateUrl: 'templates/survey_game.html',
-        controller: 'surveyGAMEontroller'
+        controller: 'surveyGAMEontroller',
+        params: {
+            hitId:''
+        }
     });
 
     $stateProvider.state({
         name: 'surveyGAMETileoscopeontroller',
         url: '/surveyGAMETileoscope',
         templateUrl: 'templates/survey_game.html',
-        controller: 'surveyGAMEontroller'
+        controller: 'surveyGAMEontroller',
+        params: {
+            hitId:''
+        }
     });
 
     $stateProvider.state({
         name: 'surveyIMI',
         url: '/surveyIMI',
         templateUrl: 'templates/survey_imi.html',
-        controller: 'surveyIMIController'
+        controller: 'surveyIMIController',
+        params: {
+            hitId:''
+        }
     });
 
     //TODO: TEST IF WE HAVE QUESTIONS, IF NOT WE SHOULD JUMP ELSEWHERE
@@ -53,7 +65,10 @@ module.config(function($stateProvider, $urlRouterProvider) {
         name: 'surveyCUSTOM',
         url: '/surveyCUSTOM',
         templateUrl: 'templates/survey_custom.html',
-        controller: 'surveyCUSTOMController'
+        controller: 'surveyCUSTOMController',
+        params: {
+            hitId:''
+        }
     });
 
 
@@ -113,10 +128,12 @@ module.config(function($stateProvider, $urlRouterProvider) {
       templateUrl: 'heatmap2.html',
       params: {
           workerId: '',
-          project: ''
+          project: '',
+          hitId:null,
+          hitCode: null
       },
 
-      controller: function ($scope,$stateParams, $window, $http, heatMapProject1, heatMapProject2) {
+      controller: function ($scope,$stateParams, $state, $window, $http, heatMapProject1, heatMapProject2) {
 
           $scope.callSuccess = false;
           $scope.callSuccess1 = false;
@@ -131,9 +148,18 @@ module.config(function($stateProvider, $urlRouterProvider) {
 
           $scope.exit = exit;
           function exit(){
-              console.log('in exit');
-              // $window.location.href='/algalBloom.html';
-              $window.location.href='kioskProject.html#/kioskStart/' + $scope.project;
+
+              console.log($stateParams.hitId)
+              //if we have a hit Id, then send them to hit code page!
+              if ($stateParams.hitId && $stateParams.hitId != "kiosk") {
+                  $state.go('hitCode', {hitCode: $scope.workerId});
+              } else {
+                  console.log('in exit');
+                  // $window.location.href='/algalBloom.html';
+                  $window.location.href='kioskProject.html#/kioskStart/' + $scope.project;
+              }
+
+
           }
 
           // $scope.icon_array =  ['http://maps.google.com/mapfiles/ms/icons/green-dot.png',
@@ -736,8 +762,10 @@ module.controller('hitTileoscopeController', ['$scope', '$stateParams','$locatio
 module.controller('surveyController', ['$scope', '$http', '$state', '$location',function($scope, $http, $state, $location) {
   $scope.userType = $scope.params.userType;
   $scope.forms = {};
+  $scope.trialId = $scope.params.hitId ||  $scope.params.trialId || "kiosk";
 
-  $scope.survCh = {showChainQuestions : false};
+
+    $scope.survCh = {showChainQuestions : false};
 
   $scope.first_choice = "First";
   $scope.second_choice = "Second";
@@ -910,6 +938,10 @@ module.controller('surveyController', ['$scope', '$http', '$state', '$location',
 module.controller('surveyTLXController', ['$scope', '$http', '$state', '$location','$timeout','$compile',function($scope, $http, $state, $location,$timeout,$compile) {
 
 
+    $scope.trialId = $scope.params.hitId ||  $scope.params.trialId || "kiosk";
+
+
+
     //Generate numbers for radio buttons for TLX
     $scope.getNumber = function(){
         var ratings = [];
@@ -997,6 +1029,9 @@ module.controller('surveyGAMEontroller', ['$scope', '$http', '$state', '$locatio
     $scope.fromTileoscope = 0;
     $scope.participantId ="";
     $scope.trialId = "";
+
+    $scope.trialId = $scope.params.hitId ||  $scope.params.trialId || "kiosk";
+
 
 
     //if coming from tileoscope
@@ -1114,6 +1149,8 @@ module.controller('surveyIMIController', ['$scope', '$http', '$state', '$locatio
     $scope.participantId ="";
     $scope.trialId = "";
 
+    $scope.trialId = $scope.params.hitId ||  $scope.params.trialId || "kiosk";
+
 
     //toggle IMI subscales:
     $scope.imi_toggled = {
@@ -1135,6 +1172,8 @@ module.controller('surveyIMIController', ['$scope', '$http', '$state', '$locatio
         $scope.userType = $scope.params.userType;
     }
 
+    console.log($scope.trialId);
+
     //Generate numbers for radio buttons for Likert (7 scales)
     $scope.getNumber = function(n){
         var ratings = [];
@@ -1151,6 +1190,17 @@ module.controller('surveyIMIController', ['$scope', '$http', '$state', '$locatio
             array[i] = array[j];
             array[j] = temp;
         }
+    }
+
+    $scope.alertError = function(msg) {
+        swal({
+            title: 'Whoops!',
+            confirmButtonColor: '#9cdc1f',
+            allowOutsideClick: true,
+            text: msg,
+            type: 'error',
+            confirmButtonText: 'Back'
+        });
     }
 
     //IMI: ENJOYMENT:
@@ -1231,13 +1281,12 @@ module.controller('surveyIMIController', ['$scope', '$http', '$state', '$locatio
         if (data != -1) {
 
             var link = '/api/project/' + $scope.params.code + '/survey';
-
+            data.trialId = $scope.trialId;
 
             //f coming from Tileoscope, add hit id and participant id and save to different table
             if ($scope.fromTileoscope){
                 link = '/api/project/surveyTileoscope';
                 data.participantId = $scope.participantId;
-                data.trialId = $scope.trialId;
             }
 
             $http.post(link, JSON.stringify(data)).then(function(data) {
@@ -1246,7 +1295,7 @@ module.controller('surveyIMIController', ['$scope', '$http', '$state', '$locatio
                 if (data.data.hitCode) {
                     $state.go('hitCode', {hitCode: data.data.hitCode});
                 } else if (data.data.heatMap) {
-                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId});
+                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId, hitId: $scope.trialId });
                 }
             }, function(err) {
                 if ($scope.userType == 'mTurk') {
@@ -1259,7 +1308,8 @@ module.controller('surveyIMIController', ['$scope', '$http', '$state', '$locatio
                 }
             });
         } else {
-            alert("Please fill out all the required fields!")
+            //alert("Please fill out all the required fields!")
+            $scope.alertError("Please fill out all the required fields!")
         }
     };
 
@@ -1316,7 +1366,21 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
     $scope.participantId ="";
     $scope.trialId = "";
 
+    $scope.trialId = $scope.params.hitId ||  $scope.params.trialId || "kiosk";
+
+
     $scope.survey_questions = [];
+
+    $scope.alertError = function(msg) {
+        swal({
+            title: 'Whoops!',
+            confirmButtonColor: '#9cdc1f',
+            allowOutsideClick: true,
+            text: msg,
+            type: 'error',
+            confirmButtonText: 'Back'
+        });
+    }
 
 
 
@@ -1363,9 +1427,12 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
     //TODO: fetch questions, validate that everything has the right format and add to survey_questions
     $http.get('/api/project/surveyItems/' +   $scope.params.code).then(function(sdata) {
 
-        var survey_items = JSON.parse(sdata.data.survey_form);
+        var survey_items_all = JSON.parse(sdata.data.survey_form);
 
-        console.log(survey_items)
+        var survey_items = survey_items_all.questions;
+
+        $scope.custom_description = survey_items_all.description;
+
 
         //Supported question types: textarea | likert[5,7,10] | radio | checkbox
         survey_items.forEach(function (sv){
@@ -1403,6 +1470,7 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
                     }
 
                 }
+                //TODO: survey type: external!
             }
 
         })
@@ -1421,13 +1489,12 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
 
     $scope.forms = {};
 
-    if ($scope.userType == 'mTurk') {
+    if ($scope.userType == 'mTurk' || $scope.trialId !="kiosk") {
         $scope.req_answers = true;
     }
 
     $scope.submit = function() {
 
-        //TODO change to custom
         var data = $scope.transformDataCUSTOM($scope.response, $scope.userType);
 
         if ($scope.userType == 'mTurk') {
@@ -1439,6 +1506,8 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
         if (data != -1) {
 
             var link = '/api/project/' + $scope.params.code + '/survey';
+            data.trialId = $scope.trialId;
+
             //f coming from Tileoscope, add hit id and participant id and save to different table
             if ($scope.fromTileoscope){
                 link = '/api/project/surveyTileoscope';
@@ -1452,7 +1521,7 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
                 if (data.data.hitCode) {
                     $state.go('hitCode', {hitCode: data.data.hitCode});
                 } else if (data.data.heatMap) {
-                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId});
+                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId, hitId: $scope.trialId });
                 }
             }, function(err) {
                 if ($scope.userType == 'mTurk') {
@@ -1465,7 +1534,8 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
                 }
             });
         } else {
-            alert("Please fill out all the required fields!")
+            //alert("Please fill out all the required fields!")
+            $scope.alertError("Please fill out all the required fields!")
         }
     };
 

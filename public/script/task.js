@@ -365,7 +365,9 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                       window.location.replace('/survey.html#/survey?code=' + vm.code+ '&userType=kiosk');
                   } else {
 
-                      window.location.replace('/survey.html#/' + vm.survey_type + '?code=' + vm.code+ '&userType=kiosk');
+                      var hitID = $location.search().hitID || $location.search().trialID || "kiosk";
+
+                      window.location.replace('/survey.html#/' + vm.survey_type + '?code=' + vm.code+ '&userType=kiosk&hitId=' + hitID);
 
                   }
               }

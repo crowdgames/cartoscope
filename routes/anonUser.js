@@ -288,7 +288,8 @@ router.get('/consentKiosk/:pCode',
         console.log('req ',req.query);
         console.log('params ', req.query);
         projectDB.getSingleProjectFromCode(req.params.pCode).then(function(project) {
-            return anonUserDB.addKioskWorker(req.query, req.params.pCode, req.query.cookie, 1);
+
+            return anonUserDB.addKioskWorker(req.query, req.params.pCode, req.query.cookie, 1, req.query.hitID);
         }).then(function(userID) {
             if (userID != null) {
                 res.status(200).send({workerId: req.query.workerId});

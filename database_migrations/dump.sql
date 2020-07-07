@@ -82,6 +82,7 @@ CREATE TABLE `kiosk_workers` (
   `projectID` varchar(128) DEFAULT NULL,
   `consented` int(1) DEFAULT '1',
   `cookieID` varchar(120) DEFAULT NULL,
+  `hitID`` varchar(128) default NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_index` (`workerID`,`projectID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=350 DEFAULT CHARSET=latin1;
@@ -266,6 +267,7 @@ CREATE TABLE `survey` (
   `project_id` int(11) DEFAULT NULL,
   `response` TEXT DEFAULT NULL,
   `timestamp` datetime DEFAULT CURRENT_TIMESTAMP,
+  `hitID` varchar(128) default NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique` (`user_id`,`project_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=212 DEFAULT CHARSET=latin1;
