@@ -1,12 +1,27 @@
 body {
-    background-image: url('../images/background_dktp.png');
+    /*background-image: url('../images/background_dktp.png');*/
+    background-color: #D8D3D6;
+
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
-    font-family: 'PT Sans', sans-serif;
-    color: #f8f8ff;
+    /*font-family: 'PT Sans', sans-serif;*/
+    font-family: 'Raleway', sans-serif;
+
+    /*color: #f8f8ff;*/
+    color: black;
 }
+
+hr.black-line {
+    border: 1px solid #aaaaaa;
+}
+
+span.required_answer {
+    /*color:#9CDC18"*/
+    color:darkred;
+}
+
 .whymore-checkbox {
     display:block;
 }

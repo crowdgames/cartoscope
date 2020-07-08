@@ -1440,21 +1440,22 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
             //they all must have a question field
             if (sv.question !== undefined && sv.question !== ""){
 
+                var push_obj = {}
+
+
                 if (sv.question_type === 'textarea') {
                     //if textarea: we push question and question type
-                    $scope.survey_questions.push({'question': sv.question, 'question_type': sv.question_type })
+                    push_obj = {'question': sv.question, 'question_type': sv.question_type }
                 } else if (sv.question_type.includes('likert') ){
                     //if likert: we need to have values, least text and most text
                     if (checkValidItem(sv, ['question','value','least', 'most'])){
-                        $scope.survey_questions.push({'question': sv.question, 'question_type': sv.question_type, 'value': sv.value, 'least': sv.least, 'most': sv.most })
-
+                        push_obj = {'question': sv.question, 'question_type': sv.question_type, 'value': sv.value, 'least': sv.least, 'most': sv.most }
                     }
 
                 }  else if (sv.question_type.includes('radio') ){
                     //if radio: we need to have options
                     if (checkValidItem(sv, ['question','options'])){
-                        $scope.survey_questions.push({'question': sv.question, 'question_type': sv.question_type, 'options': sv.options })
-
+                        push_obj = {'question': sv.question, 'question_type': sv.question_type, 'options': sv.options }
                     }
 
                 } else if (sv.question_type.includes('checkbox') ){
@@ -1464,17 +1465,27 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
                         var options_check = {};
                         sv.options.forEach(function (ot){
                             options_check[ot] = false
-                        })
-                        $scope.survey_questions.push({'question': sv.question, 'question_type': sv.question_type, 'options': sv.options, 'answer': options_check })
-
+                        });
+                        push_obj = {'question': sv.question, 'question_type': sv.question_type, 'options': sv.options, 'answer': options_check }
                     }
 
+                } else if (sv.question_type.includes('title') || sv.question_type.includes('text')){
+                    push_obj = {'question': sv.question, 'question_type': sv.question_type, 'no_data': 1 }
                 }
+
+                if (sv.hasOwnProperty("required") && sv.required == true){
+                    push_obj.required = true
+                } else {
+                    push_obj.required = false
+                }
+
+                $scope.survey_questions.push(push_obj)
+
                 //TODO: survey type: external!
             }
 
         })
-        console.log($scope.survey_questions)
+        //console.log($scope.survey_questions)
 
     }, function(err) {
         console.log('error', err);
@@ -1549,20 +1560,41 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
         };
 
         //TODO: we have to go through every option and validate it
-        $scope.survey_questions.forEach(function (item) {
-            item.answer = $scope.checkInput(item.answer) || -1;
+
+        for (var i = 0; i < $scope.survey_questions.length; i++) {
+
+            var item = $scope.survey_questions[i];
+            item.answer = $scope.checkInput(item.answer) || "ULB";
 
             var ulb = "ULB";
             if (item.question_type.indexOf('likert') != -1){
                 ulb = -1
             }
 
-            ret_obj[item.question] = { "answer" : item.answer || ulb , "type" : item.question_type};
-            if ($scope.req_answers && item.answer == -1) {
-                console.log(item.question);
-                survey_ok = -1;
+
+            if ((item.question_type == "radio" || item.question_type == "checkbox") && item.hasOwnProperty("answer") ) {
+                if (item.answer.toLowerCase().includes('other')){
+                    item.answer = item.other_text;
+                }
+
             }
-        })
+
+            var q_obj = { "answer" : item.answer || ulb , "type" : item.question_type};
+
+            if ( ($scope.req_answers || item.required) && (item.answer == -1 || item.answer == "ULB") ) {
+                survey_ok = -1;
+
+            } else {
+                ret_obj[item.question] = q_obj;
+            }
+
+            //if it is not ok, we should empty text if empty
+            if (survey_ok == -1 && item.answer == "ULB" && item.question_type == "textarea"){
+                $scope.survey_questions[i].answer = null
+            }
+
+
+        }
 
 
         if (survey_ok == -1){
@@ -1577,7 +1609,7 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
 
     $scope.checkInput = function(input) {
         if(input != undefined) {  return input}
-        else {return -1}
+        else {return 'ULB'}
     }
 
 }]);

@@ -2,6 +2,7 @@ body {
     /*background: url('../images/background_dktp.png') no-repeat center center fixed;*/
     background-color: #D8D3D6;
     /*background-color: #3C6478;*/
+    font-family: 'Raleway', sans-serif;
 
     color: black ;
     -webkit-background-size: cover;

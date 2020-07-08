@@ -28,39 +28,71 @@
 
 
         <div class="row" ng-repeat="suv in survey_questions">
-            <hr>
+            <hr class="black-line">
+
+
             <div class="form-group "  >
                 <center>
+                    <!--Title-->
+                    <div ng-if="suv.question_type == 'title'">
+                        <h4>{{suv.question}}</h4>
+                    </div>
+                    <!--Text-->
+                    <div ng-if="suv.question_type == 'text'">
+                        <p>{{suv.question}}</p>
+                    </div>
                     <!--TEXTAREA-->
                 <div ng-if="suv.question_type == 'textarea'">
-                    <h4>{{suv.question}}</h4>
+                    <h4>{{suv.question}}
+                        <span  title="This question is required." class="required_answer" ng-if="req_answers || suv.required" >
+                                <b>*</b>
+                            </span>
+                    </h4>
                     <textarea class="form-control" rows="3" cols="50" ng-model="suv.answer"></textarea>
+
                 </div>
 
                     <!--LIKERT-->
                     <div ng-if="suv.question_type.includes('likert')">
-                        <h4>{{suv.question}}<span ng-if="req_answers" style="color:#9CDC18">*</span></h4>
+                        <h4>{{suv.question}}
+                            <span  title="This question is required." class="required_answer" ng-if="req_answers || suv.required" >
+                                <b>*</b>
+                            </span>
+                        </h4>
                         <label class="col-form-label" >{{suv.least}}</label>
                         <label class="col-form-label" ng-repeat="n in getNumber(suv.value)">
-                            <input type="radio" name="{{suv.question}}" style="margin:20px" ng-model="suv.answer" ng-value=n  />
+                            <input type="radio" name="{{suv.question}}" style="margin:20px" ng-model="suv.answer" ng-value=n   />
                         </label>
                         <label class="col-form-label" >{{suv.most}}</label>
                     </div>
 
                     <!--RADIO-->
                     <div ng-if="suv.question_type == 'radio'">
-                        <h4>{{suv.question}}<span ng-if="req_answers" style="color:#9CDC18">*</span></h4>
+                        <h4>{{suv.question}}
+                            <span  title="This question is required." class="required_answer" ng-if="req_answers || suv.required" >
+                                <b>*</b>
+                            </span>
+                        </h4>
                             <label class="col-form-label" ng-repeat="opt in suv.options">
-                                <input type="radio" name="{{suv.question}}" style="margin:20px" ng-model="suv.answer" ng-value=opt  /> {{opt}}
+                                <input type="radio" name="{{suv.question}}" style="margin:20px" ng-model="suv.answer" ng-value=opt /> {{opt}}
                             </label>
+                        <p ng-if="suv.answer.toLowerCase().includes('other')">Please describe:</p>
+                        <textarea ng-if="suv.answer.toLowerCase().includes('other')" class="form-control" rows="3" cols="50" ng-model="suv.other_text"></textarea>
+
                     </div>
 
                     <!--Checkbox-->
                     <div ng-if="suv.question_type == 'checkbox'">
-                        <h4>{{suv.question}}<span ng-if="req_answers" style="color:#9CDC18">*</span></h4>
+                        <h4>{{suv.question}}
+                            <span  title="This question is required." class="required_answer" ng-if="req_answers || suv.required" >
+                                <b>*</b>
+                            </span>                        </h4>
                         <label class="col-form-label" ng-repeat="opt in suv.options">
                             <input type="checkbox" name="{{suv.question}}" style="margin:20px" ng-model="suv.answer[opt]" ng-value=opt  /> {{opt}}
                         </label>
+                        <p ng-if="suv.answer.toLowerCase().includes('other')">Please describe:</p>
+                        <textarea ng-if="suv.answer.toLowerCase().includes('other')" class="form-control" rows="3" cols="50" ng-model="suv.other_text"></textarea>
+
                     </div>
 
 
