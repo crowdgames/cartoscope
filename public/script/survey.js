@@ -1427,11 +1427,25 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
         return is_ok
 
     }
+    $scope.cover_pic_path = "default";
 
-    $scope.cover_pic_path = 'api/project/getProjectPic/' + $scope.params.code;
+    $scope.getProjectPic = function(code){
+
+        $http.get('/api/project/getProjectPic/' +  code).then(function(pic_data) {
+            $scope.cover_pic_path = 'api/project/getProjectPic/' + code;
+        }, function(err) {
+            console.log('error', err);
+            $scope.cover_pic_path = "default"
+        })
+    };
+
+
 
     //TODO: fetch questions, validate that everything has the right format and add to survey_questions
     $http.get('/api/project/surveyItems/' +   $scope.params.code).then(function(sdata) {
+
+
+        $scope.getProjectPic($scope.params.code);
 
         var survey_items_all = JSON.parse(sdata.data.survey_form);
 

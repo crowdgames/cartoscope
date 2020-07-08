@@ -9,11 +9,11 @@
         <div class="col-md-4"></div>
     </div>
 
-    <div class="row">
+    <div class="row" ng-if="!cover_pic_path.includes('default')">
         <div class="col-md-4"></div>
         <div class="col-md-4">
-            <img src="images/logo_color.png"  alt="logo" style="width: 120px; height: 60px">
-            <img ng-if="!cover_pic_path.includes('default')" ng-src="{{cover_pic_path}}" alt=" logo" style="width: 120px; height: auto;margin-left: 5px"/>
+            <img  src="images/logo_color.png"  alt="logo" style="width: 120px; height: 60px">
+            <img  ng-src="{{cover_pic_path}}" alt=" logo" style="width: 120px; height: auto;margin-left: 5px"/>
         </div>
         <div class="col-md-4"></div>
     </div>
