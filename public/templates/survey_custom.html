@@ -1,4 +1,6 @@
 <div class="container-fluid">
+
+
 <center>
 
     <div class="row">
@@ -8,52 +10,66 @@
     </div>
 
     <div class="row">
-        <div class="col-md-1"></div>
-        <div class="col-md-10" ng-if="!custom_description"><h4>Thank you for taking the time to contribute to our study. Your participation is invaluable to our work. As we
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            <img src="images/logo_color.png"  alt="logo" style="width: 120px; height: 60px">
+            <img ng-if="!cover_pic_path.includes('default')" ng-src="{{cover_pic_path}}" alt=" logo" style="width: 120px; height: auto;margin-left: 5px"/>
+        </div>
+        <div class="col-md-4"></div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8" ng-if="!custom_description"><h4>Thank you for taking the time to contribute to our study. Your participation is invaluable to our work. As we
             move forward, we would like to get some feedback from you about the usability of our software so that we can
             take your thoughts into consideration during redevelopment. Please take a few moments to complete our brief
             questionnaire and feel free to provide any additional comments you would like to share with us.</h4></div>
-        <div class="col-md-1"></div>
-        <div class="col-md-10" ng-if="custom_description">
+        <div class="col-md-8" ng-if="custom_description">
             <h4>
                 {{custom_description}}
             </h4>
         </div>
-        <div class="col-md-1"></div>
+        <div class="col-md-2"></div>
+
     </div>
 
 
 
-    <form class="horizontal col-md-offset-1 col-md-10" name="forms.mturk_form" >
+    <form  name="forms.mturk_form" >
+        <center>
 
 
         <div class="row" ng-repeat="suv in survey_questions">
-            <hr class="black-line">
+            <div class="col-md-3 col-sm-2"></div>
+            <div class="col-md-6 col-sm-8">
+                <hr class="black-line">
 
 
-            <div class="form-group "  >
-                <center>
-                    <!--Title-->
-                    <div ng-if="suv.question_type == 'title'">
+            <div ng-switch="suv.question_type ">
+
+                <!--Title-->
+                <div ng-switch-when="title" class="form-group ">
                         <h4>{{suv.question}}</h4>
-                    </div>
-                    <!--Text-->
-                    <div ng-if="suv.question_type == 'text'">
-                        <p>{{suv.question}}</p>
-                    </div>
-                    <!--TEXTAREA-->
-                <div ng-if="suv.question_type == 'textarea'">
-                    <h4>{{suv.question}}
-                        <span  title="This question is required." class="required_answer" ng-if="req_answers || suv.required" >
+                </div>
+                <!--Text-->
+                <div ng-switch-when="text" class="form-group ">
+                        <h4>{{suv.question}}</h4>
+                </div>
+
+                <!--Text area-->
+                <div ng-switch-when="textarea" class="form-group ">
+
+                        <h4>{{suv.question}}
+                            <span  title="This question is required." class="required_answer" ng-if="req_answers || suv.required" >
                                 <b>*</b>
                             </span>
-                    </h4>
-                    <textarea class="form-control" rows="3" cols="50" ng-model="suv.answer"></textarea>
+                        </h4>
+                        <textarea class="form-control" rows="3"  ng-model="suv.answer"></textarea>
 
                 </div>
 
-                    <!--LIKERT-->
-                    <div ng-if="suv.question_type.includes('likert')">
+                <!--LIKERT-->
+                <div ng-switch-when="likert" class="form-group ">
                         <h4>{{suv.question}}
                             <span  title="This question is required." class="required_answer" ng-if="req_answers || suv.required" >
                                 <b>*</b>
@@ -64,25 +80,24 @@
                             <input type="radio" name="{{suv.question}}" style="margin:20px" ng-model="suv.answer" ng-value=n   />
                         </label>
                         <label class="col-form-label" >{{suv.most}}</label>
-                    </div>
+                </div>
 
-                    <!--RADIO-->
-                    <div ng-if="suv.question_type == 'radio'">
+                <!--RADIO-->
+                <div ng-switch-when="radio" class="form-group ">
                         <h4>{{suv.question}}
                             <span  title="This question is required." class="required_answer" ng-if="req_answers || suv.required" >
                                 <b>*</b>
                             </span>
                         </h4>
-                            <label class="col-form-label" ng-repeat="opt in suv.options">
-                                <input type="radio" name="{{suv.question}}" style="margin:20px" ng-model="suv.answer" ng-value=opt /> {{opt}}
-                            </label>
+                        <label class="col-form-label" ng-repeat="opt in suv.options">
+                            <input type="radio" name="{{suv.question}}" style="margin:20px" ng-model="suv.answer" ng-value=opt /> {{opt}}
+                        </label>
                         <p ng-if="suv.answer.toLowerCase().includes('other')">Please describe:</p>
                         <textarea ng-if="suv.answer.toLowerCase().includes('other')" class="form-control" rows="3" cols="50" ng-model="suv.other_text"></textarea>
+                </div>
 
-                    </div>
-
-                    <!--Checkbox-->
-                    <div ng-if="suv.question_type == 'checkbox'">
+                <!--CHECKBOX-->
+                <div ng-switch-when="checkbox" class="form-group ">
                         <h4>{{suv.question}}
                             <span  title="This question is required." class="required_answer" ng-if="req_answers || suv.required" >
                                 <b>*</b>
@@ -93,33 +108,69 @@
                         <p ng-if="suv.answer.toLowerCase().includes('other')">Please describe:</p>
                         <textarea ng-if="suv.answer.toLowerCase().includes('other')" class="form-control" rows="3" cols="50" ng-model="suv.other_text"></textarea>
 
-                    </div>
+                </div>
 
+                <!--External-->
+                <div ng-switch-when="external" class="form-group external-box ">
+                    <h3> <b>{{suv.disclaimer}} </b></h3>
+                    <br>
+                    <h4>{{suv.question}}</h4>
+                    <!--<iframe  class="embed-responsive-item" ng-src="{{suv.external_link}}"></iframe>-->
+                    <iframe id="iframe_div2" class="iframeDiv" ng-src="{{getExternalFrame(suv.external_link)}}"></iframe>
 
+                </div>
 
-                </center>
-
+                <div ng-switch-default></div>
             </div>
+            </div>
+            <div class="col-md-3 col-sm-2"></div>
         </div>
+
+
+
 
         <br>
 
-        <div class="form-group">
-            <label>In the space provided, please provide any additional feedback you would like to share on this project.</label>
-            <textarea class="form-control" rows="3" cols="50" ng-model="response.additional_text"></textarea>
+        <div class="row">
+            <div class="col-md-3 col-sm-2"></div>
+            <div class="col-md-6 col-sm-10">
+            <div class="form-group ">
+            <h4>In the space provided, please provide any additional feedback you would like to share on this project.
+            </h4>
+            <textarea  class="form-control" rows="3"  ng-model="response.additional_text"></textarea>
+            </div>
+            </div>
+            <div class="col-md-3 col-sm-2"></div>
+
         </div>
+
+
         <br>
         <div class="row">
-            <div class="col-md-12">Thank you for your time and your thoughts! Click Submit to complete your submission.</div>
+            <div class="col-md-12 col-sm-12">
+                <h4>Thank you for your time and your thoughts! Click Submit to complete your submission.
+                </h4>
+            </div>
         </div>
         <br>
+
+        <div class="row">
+            <div class="col-md-4 col-sm-4"></div>
+            <div class="col-md-4 col-sm-4">
         <div class="form-group">
-            <button type="submit" ng-click="submit(mturk_form)" class="form-control btn btn-primary btn btn-block" style="background-color:#9cdc1f;color:black;">Submit</button>
+            <button type="submit" ng-click="submit(mturk_form)" class="form-control btn btn-primary btn btn-block"
+                    style="background-color:#9cdc1f;color:black; border-color: #9cdc1f">Submit</button>
         </div>
+            </div>
+            <div class="col-md-4 col-sm-4"></div>
+
+        </div>
+        </center>
 
     </form>
 
-</center>
+    </center>
+
 </div>
 
 

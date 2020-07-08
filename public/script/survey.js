@@ -1359,7 +1359,7 @@ module.controller('surveyIMIController', ['$scope', '$http', '$state', '$locatio
 }]);
 
 
-module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$location','$timeout','$compile',function($scope, $http, $state, $location,$timeout,$compile) {
+module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$location','$timeout','$compile', '$sce',function($scope, $http, $state, $location,$timeout,$compile, $sce) {
 
     //location search, if coming from tileoscope or tileoscope AR
     $scope.fromTileoscope = 0;
@@ -1403,6 +1403,10 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
         return ratings;
     };
 
+    $scope.getExternalFrame = function(link){
+        return  $sce.trustAsResourceUrl(link)
+    }
+
     function shuffleArray(array) {
         for (var i = array.length - 1; i > 0; i--) {
             var j = Math.floor(Math.random() * (i + 1));
@@ -1423,6 +1427,8 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
         return is_ok
 
     }
+
+    $scope.cover_pic_path = 'api/project/getProjectPic/' + $scope.params.code;
 
     //TODO: fetch questions, validate that everything has the right format and add to survey_questions
     $http.get('/api/project/surveyItems/' +   $scope.params.code).then(function(sdata) {
@@ -1469,8 +1475,12 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
                         push_obj = {'question': sv.question, 'question_type': sv.question_type, 'options': sv.options, 'answer': options_check }
                     }
 
-                } else if (sv.question_type.includes('title') || sv.question_type.includes('text')){
+                } else if (sv.question_type.includes('title') || sv.question_type.includes('text') ){
                     push_obj = {'question': sv.question, 'question_type': sv.question_type, 'no_data': 1 }
+                } else if (sv.question_type.includes('external')){
+                    if (checkValidItem(sv, ['question','external_link'])){
+                        push_obj = {'question': sv.question, 'question_type': sv.question_type, 'external_link': sv.external_link, 'disclaimer': sv.disclaimer }
+                    }
                 }
 
                 if (sv.hasOwnProperty("required") && sv.required == true){
