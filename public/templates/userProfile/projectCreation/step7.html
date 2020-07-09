@@ -29,16 +29,39 @@
 
 
     <div class="row" ng-show="project.survey_type == 'CUSTOM'">
-        <span class="txt" >Create your own survey by adding items below.</span>
+        <span class="txt" >Create your own survey by adding items below. Survey questions or other informational text you add will appear in the order you add them. </span>
     </div>
 
+    <br>
+
+    <div class="row" ng-show="project.survey_type == 'CUSTOM'">
+        <span class="txt" >Want to add a custom description at the top of the survey? </span>
+    </div>
+
+
+
+    <div class="row" ng-show="project.survey_type == 'CUSTOM'">
+        <div class="col-md-10">
+            <textarea class="form-control" ng-model="custom_description" rows="5" placeholder="Type your description here."></textarea>
+        </div>
+    </div>
+
+    <br>
+    <br>
+
         <div class="row" ng-show="project.survey_type == 'CUSTOM'" ng-repeat="item in survey_questions">
+
+            <div>
+
 
 
             <div class="col-md-2" >
                     <select class="form-control" ng-model="item.question_type" >
                     <option ng-repeat="x in question_options_list" value="{{x}}" > {{x}}  </option>
                     </select>
+                <span class="option-add-btn" ng-click="showMoreInfoSurveyItem(item.question_type)" style="top:0px;">
+                <span class="fa fa-question-circle"></span>
+            </span>
                 </div>
 
                 <div  class="col-md-3" ng-switch="item.question_type">
@@ -100,6 +123,8 @@
 
             </div>
 
+        </div>
+
             <br>
 
             <div class="row">
@@ -116,9 +141,12 @@
     <br>
 
         <div class="row">
-            <div class="col-md-12">
-            <button type="submit" class="invite" ng-click="setSurveyItems()" >Add Survey</button>
+            <div class="col-md-4"></div>
+            <div class="col-md-4">
+            <button  class="next-btn btn btn-primary btn btn-block" ng-click="setSurveyItems()" >Add Survey</button>
         </div>
+            <div class="col-md-4"></div>
+
         </div>
 
 </div>

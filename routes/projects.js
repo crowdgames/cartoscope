@@ -752,11 +752,10 @@ router.post('/addsurveyItems/', function(req, res, next) {
     });
 });
 
-//TODO: add survey items to backend
+//add survey items to backend
 router.post('/createSurvey', function(req, res, next) {
 
 
-    console.log(req.body);
     var survey_body = req.body.survey;
     var unique_code = req.body.unique_code;
     var survey_type = req.body.survey_type;
@@ -787,15 +786,13 @@ router.post('/createSurvey', function(req, res, next) {
 
 });
 
-//TODO: add survey items to backend
+//add survey items to backend
 router.post('/addsurveyItemsMultiple/', function(req, res, next) {
 
 
     var survey_body = req.body.survey;
     var unique_codes = req.body.unique_codes;
     var pArr = [];
-
-    console.log(unique_codes)
 
     unique_codes.forEach(function(uc){
 

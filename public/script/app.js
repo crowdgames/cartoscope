@@ -1659,6 +1659,7 @@ module.controller('stepSevenController', ['$scope', '$state', '$http', 'Upload',
         $scope.$emit('moveNext');
     };
 
+    $scope.custom_description = null
 
     $scope.question_options_list = ["textarea","radio","checkbox","likert","external","title","text"];
 
@@ -1695,6 +1696,35 @@ module.controller('stepSevenController', ['$scope', '$state', '$http', 'Upload',
 
     }
 
+    $scope.showMoreInfoSurveyItem = function(type) {
+
+        var info_types = {
+            textarea : "A simple question that allows users to input free responses. Simply type the question you want to ask in the question field.",
+            radio : "Give users select options to answer your question. Only one option can be picked. Simply add all the options you want to give users, separated by commas.",
+            checkbox : "Give users multiple options to answer your question. More than one option can be picked. Simply add all the options you want to give users, separated by commas.",
+            likert : "Allow users to answer on a scale. Pick the size of the scale (minimum 4, maximum 10). and add a label for the text to appear in the leftmost position and rightmost.",
+            external : "Do you have a website you want to embed in the exit survey? Use the external option and provide the link. Useful when you want users to complete external surveys. " +
+                "Data provided in external questions are not stored on Cartoscope.",
+            title : "Want to add a title in your survey flow? Use this option.",
+            text : "Want to add more text in your survey flow? Use this option."
+        };
+
+        var path_icon = "images/survey_icons/" + type + "_icon.png";
+
+        var html_text = "<img  src=\"" + path_icon +"\" style=\"width: 120px;border: 1px solid\">" +
+            "<p>" + info_types[type] + "</p>"
+
+        swal({
+            title: type,
+            confirmButtonColor: '#9cdc1f',
+            allowOutsideClick: true,
+            html: true,
+            text: html_text,
+            type: 'info'
+        });
+
+    }
+
     $scope.fetchSurveyItems = function() {
 
 
@@ -1719,7 +1749,9 @@ module.controller('stepSevenController', ['$scope', '$state', '$http', 'Upload',
                 questions: $scope.survey_questions
             }
 
-
+            if ($scope.custom_description){
+                $scope.survey.description = $scope.custom_description
+            }
 
         $http.post('/api/project/createSurvey',
             {
