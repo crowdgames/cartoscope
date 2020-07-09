@@ -504,6 +504,17 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
     }
   });
 
+    $stateProvider.state({
+        name: 'root.projectEdit.step7',
+        url: '/step7',
+        views: {
+            'createProjChildView': {
+                templateUrl: 'templates/userProfile/projectCreation/step7.html',
+                controller: 'stepSevenController'
+            }
+        }
+    });
+
   $stateProvider.state({
     name: 'root.projectCreation',
     url: '/project/new',
@@ -1636,13 +1647,104 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
             swalService.showErrorMsg('Please enter a valid compressed folder');
         }
     };
+}]);
+
+module.controller('stepSevenController', ['$scope', '$state', '$http', 'Upload', 'swalService', function($scope, $state, $http, Upload, swalService) {
+
+    $scope.$on('validate', function(e) {
+        $scope.validate();
+    });
+
+    $scope.validate = function() {
+        $scope.$emit('moveNext');
+    };
+
+
+    $scope.question_options_list = ["textarea","radio","checkbox","likert","external","title","text"];
+
+
+    $scope.survey_questions = [];
+
+
+    $scope.addSurveyItem = function() {
+        var default_item = {question: "", question_type: "textarea" };
+        $scope.survey_questions.push(default_item);
+    };
+
+    $scope.deleteSurveyItem = function(index) {
+        $scope.survey_questions.splice(index, 1);
+    };
+
+    //mode : 1 -> go from text to array
+    //mode : 0 -> go from array to text
+    $scope.parseSurveyItems = function(mode){
+
+        for (var i = 0; i < $scope.survey_questions.length; i++) {
+
+            if (mode) {
+                if  ($scope.survey_questions[i].question_type == "radio" || $scope.survey_questions[i].question_type == "checkbox" ){
+                    $scope.survey_questions[i].options = $scope.survey_questions[i].options_raw.split(",");
+                }
+            } else {
+                if  ($scope.survey_questions[i].question_type == "radio" || $scope.survey_questions[i].question_type == "checkbox" ){
+                    $scope.survey_questions[i].options_raw = $scope.survey_questions[i].options.join(",");
+                }
+            }
+
+        }
+
+    }
+
+    $scope.fetchSurveyItems = function() {
+
+
+        $http.get('/api/project/surveyItems/' + $scope.project.unique_code).then(function (sdata) {
+
+            var survey_items_all = JSON.parse(sdata.data.survey_form);
+            $scope.survey_questions = survey_items_all.questions;
+            console.log($scope.survey_questions)
+            $scope.parseSurveyItems(0)
+
+        }, function () {
+            $scope.survey_questions = [];
+        });
+    }
+
+    $scope.setSurveyItems = function() {
+
+        console.log("Sending Survey Items");
+        $scope.parseSurveyItems(1)
+
+        $scope.survey = {
+                questions: $scope.survey_questions
+            }
 
 
 
+        $http.post('/api/project/createSurvey',
+            {
+                'unique_code': $scope.project.unique_code,
+                'survey_type': $scope.project.survey_type,
+                'survey': $scope.survey
+            }).then(function () {
 
+            //send message we good
+            swal({
+                title: 'Success!',
+                confirmButtonColor: '#9cdc1f',
+                allowOutsideClick: true,
+                text: 'Survey added!',
+                type: 'success'
+            });
 
+                //TODO what next?
+            }, function () {
 
+                swalService.showErrorMsg('Something went wrong!');
+            })
+    };
 
+    $scope.fetchSurveyItems();
 }]);
 
 module.controller('defaultController', ['$scope', 'userData', '$window', function($scope, userData, $window) {

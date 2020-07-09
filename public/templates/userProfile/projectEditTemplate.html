@@ -29,6 +29,10 @@
                       ng-class="{'active': isActive('root.projectEdit.step6')}">
                     TUTORIAL
                 </span>
+                <span ui-sref="root.projectEdit.step7"
+                      ng-class="{'active': isActive('root.projectEdit.step7')}">
+                    SURVEY
+                </span>
                 <span class="right" ng-click='openPublishPopup()' ng-if='!project.published'
                       ng-class="{'greyed-out': !verifyCanPublish()}">
                     PUBLISH

@@ -1524,7 +1524,7 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
 
     $scope.forms = {};
 
-    if ($scope.userType == 'mTurk' || $scope.trialId !="kiosk") {
+    if ($scope.userType == 'mTurk' ) {
         $scope.req_answers = true;
     }
 

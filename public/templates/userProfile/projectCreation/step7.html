@@ -1,0 +1,132 @@
+<div class="step-2 step-5">
+
+
+
+    <div class="row">
+        <span class="txt" >Exit Survey</span>
+    </div>
+
+    <div class="row">
+        <div class="buttons">
+
+            <div class="privacy-button" style="float: left;" ng-class="{'active': project.survey_type == 'TLX'}" ng-click="project.survey_type = 'TLX'">
+                <span class="title"><i class="fa fa-check-circle sel-check"></i>NASA TLX</span>
+                <span class="msg">
+                    Uses the NASA TLX questionnaire.
+                </span>
+            </div>
+
+            <div class="privacy-button" ng-class="{'active': project.survey_type == 'IMI'}" ng-click="project.survey_type = 'IMI'">
+                <span class="title"><i class="fa fa-check-circle sel-check"></i>IMI</span>
+                <span class="msg"> Uses the Intrinsic Motivation Inventory Questionnaire (enjoyment, competence, effort subscales). </span>
+            </div>
+            <div class="privacy-button" ng-class="{'active': project.survey_type == 'CUSTOM'}" ng-click="project.survey_type = 'CUSTOM'">
+                <span class="title"><i class="fa fa-check-circle sel-check"></i>Custom</span>
+                <span class="msg"> Create your own survey. </span>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row" ng-show="project.survey_type == 'CUSTOM'">
+        <span class="txt" >Create your own survey by adding items below.</span>
+    </div>
+
+        <div class="row" ng-show="project.survey_type == 'CUSTOM'" ng-repeat="item in survey_questions">
+
+
+            <div class="col-md-2" >
+                    <select class="form-control" ng-model="item.question_type" >
+                    <option ng-repeat="x in question_options_list" value="{{x}}" > {{x}}  </option>
+                    </select>
+                </div>
+
+                <div  class="col-md-3" ng-switch="item.question_type">
+                    <input ng-switch-when="title" type="text" class="form-control" ng-model="item.question" placeholder="Type title to appear here.">
+                    <input ng-switch-when="text" type="text" class="form-control" ng-model="item.question" placeholder="Type text to appear here.">
+                    <input ng-switch-default type="text" class="form-control" ng-model="item.question" placeholder="Type your question here.">
+
+                </div>
+
+            <!--If radio or checkbox, add options separated by comma-->
+            <div   ng-switch="item.question_type">
+
+                <!--Radio-->
+                <div class="col-md-5" ng-switch-when="radio">
+                    <input type="text" class="form-control" ng-model="item.options_raw" placeholder="Input options separated by commas."/>
+                </div>
+
+                <!--Checkboxes-->
+                <div class="col-md-5" ng-switch-when="checkbox">
+                    <input type="text" class="form-control" ng-model="item.options_raw" placeholder="Input options separated by commas."/>
+                </div>
+
+                <!--LIKERT-->
+                <div  ng-switch-when="likert">
+                    <div class="col-md-1">
+                        <input type="number" class="form-control" ng-model="item.value" placeholder="" min="4" max="10"/>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" class="form-control" ng-model="item.least" placeholder="Leftmost label."/>
+                    </div>
+                    <div class="col-md-2">
+                    <input type="text" class="form-control" ng-model="item.most" placeholder="Rightmost label."/>
+                    </div>
+
+                </div>
+
+                <div class="col-md-5" ng-switch-when="external">
+                    <input type="url" class="form-control" ng-model="item.external_link" placeholder="URL for website to be embedded."/>
+                </div>
+
+
+                <div class="col-md-5" ng-switch-default>
+                </div>
+
+            </div>
+
+
+
+            <div class="col-md-2">
+                <span class="" ng-click="deleteSurveyItem($index)" style="color:#DC1F3A;cursor: pointer;">
+                <span class="fa fa-minus"></span>
+                    <span>REMOVE ITEM</span>
+            </span>
+            </div>
+
+            <br>
+            <br>
+
+
+            </div>
+
+            <br>
+
+            <div class="row">
+                <div class="col-md-12">
+            <span class="option-add-btn" ng-click="addSurveyItem()" style="top:0px;">
+                <span class="fa fa-plus"></span>
+                <span>ADD ITEM</span>
+            </span>
+                </div>
+            </div>
+
+
+
+    <br>
+
+        <div class="row">
+            <div class="col-md-12">
+            <button type="submit" class="invite" ng-click="setSurveyItems()" >Add Survey</button>
+        </div>
+        </div>
+
+</div>
+
+
+
+
+
+
+
+</div>

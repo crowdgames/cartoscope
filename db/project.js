@@ -1198,9 +1198,23 @@ exports.addCustomSurveyItem = function(unique_code,item) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
 
-
         connection.queryAsync('insert into survey_questions (unique_code,survey_form) VALUES(?,?) on DUPLICATE KEY UPDATE survey_form= VALUES(survey_form)',
             [unique_code,JSON.stringify(item)]).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
+//add custom survey items to db
+exports.setSurveyType = function(unique_code,survey_type) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+        connection.queryAsync('update projects set survey_type=? where unique_code=? ',
+            [survey_type,unique_code]).then(
             function(data) {
                 resolve(data);
             }, function(err) {

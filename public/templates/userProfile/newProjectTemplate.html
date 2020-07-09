@@ -29,6 +29,10 @@
                       ng-class="{'active': isActive('root.projectCreation.step6'), 'greyed-out': !verifyCanPublish()}">
                     TUTORIAL
                 </span>
+                <span ui-sref="root.projectCreation.step7({project: project})"
+                      ng-class="{'active': isActive('root.projectCreation.step7'), 'greyed-out': !verifyCanPublish()}">
+                    SURVEY
+                </span>
                 <span class="right" ng-click='openPublishPopup()' ng-if='!project.published'
                       ng-class="{'greyed-out': !verifyCanPublish()}">
                     PUBLISH

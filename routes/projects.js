@@ -620,19 +620,20 @@ router.post('/updateDescription',
 
 
 router.get('/getProjectPic/:code', function(req, res, next) {
-    res.setHeader('Content-Type', 'image/jpeg');
 
     var getProject = projectDB.getProjectFromCode(req.params.code);
     getProject.then(function(project) {
         if (project.length > 0) {
             var cover_pic = project[0].cover_pic;
-            if (fs.existsSync('profile_photos/' + cover_pic)) {
+            console.log(cover_pic)
+            if (fs.existsSync('profile_photos/' + cover_pic) && cover_pic != 'default') {
+                res.setHeader('Content-Type', 'image/jpeg');
                 res.sendFile(path.resolve('profile_photos/' +cover_pic));
             } else {
-                res.sendFile(path.resolve('profile_photos/default.png' ));
+                res.status(404).send({error: 'Pic not set'});
             }
         } else {
-            res.status(500).send({error: 'Project not found'});
+            res.status(404).send({error: 'Project not found'});
         }
     }).catch(function(error) {
         res.status(500).send({error: error.code || 'Project pic not found'});
@@ -735,11 +736,11 @@ router.get('/surveyItems/:unique_code', function(req, res, next) {
 });
 
 
-//get survey items from backend
+//add survey items to backend
 router.post('/addsurveyItems/', function(req, res, next) {
 
 
-    console.log(req.body)
+    console.log(req.body);
     var survey_body = req.body.survey;
     var unique_code = req.body.unique_code;
 
@@ -749,6 +750,80 @@ router.post('/addsurveyItems/', function(req, res, next) {
         console.log(error)
         res.status(400).send({error: error.body || 'Survey items could not be stored for ' + unique_code});
     });
+});
+
+//TODO: add survey items to backend
+router.post('/createSurvey', function(req, res, next) {
+
+
+    console.log(req.body);
+    var survey_body = req.body.survey;
+    var unique_code = req.body.unique_code;
+    var survey_type = req.body.survey_type;
+
+
+    projectDB.setSurveyType(unique_code,survey_type).then(function(data) {
+
+        if (survey_type == "CUSTOM"){
+
+            //add the items as well
+            projectDB.addCustomSurveyItem(unique_code,survey_body).then(function(data) {
+                res.status(200).send( ' Custom survey set for: ' + unique_code);
+            }).catch(function(error) {
+                console.log(error)
+                res.status(400).send({error: error.body || 'Survey items could not be stored for ' + unique_code});
+            });
+
+        } else {
+            res.status(200).send( 'Survey type set to ' + survey_type + 'for: ' + unique_code);
+        }
+
+
+    }).catch(function(error) {
+        console.log(error)
+        res.status(400).send({error: error.body || 'Survey type could not be set for ' + unique_code});
+    });
+
+
+});
+
+//TODO: add survey items to backend
+router.post('/addsurveyItemsMultiple/', function(req, res, next) {
+
+
+    var survey_body = req.body.survey;
+    var unique_codes = req.body.unique_codes;
+    var pArr = [];
+
+    console.log(unique_codes)
+
+    unique_codes.forEach(function(uc){
+
+        console.log(uc)
+
+        var p = projectDB.addCustomSurveyItem(uc,survey_body);
+        //catch and print error but do not cause problem
+        p.catch(function (err) {
+            console.log("OH NO: " + uc);
+            console.log(err)
+        });
+        pArr.push(p);
+
+    });
+
+    Promise.all(pArr).then(function (data) {
+        res.status(200).send("Success! Added survey for unique_codes" + unique_codes.join(','))
+
+    }).catch(function (err) {
+        console.log(err)
+        console.log("Error adding survey items");
+        res.status(400).send({error: error.body || 'Survey items could not be stored for ' + unique_code});
+
+
+    });
+
+
+
 });
 
 
