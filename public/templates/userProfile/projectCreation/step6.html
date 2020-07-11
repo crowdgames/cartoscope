@@ -1,4 +1,4 @@
-<div class="step-4">
+<div class="step-4 step-2">
 
     <div class="holder">
 
@@ -12,10 +12,9 @@
                 <span class="msg">Upload other images for the tutorial.</span>
             </div>
 
-            <div class="upload-button" ng-class="{'active': existingImages == 1}" ng-click="existingImages = 1" ng-disabled="supportExisting">
+            <div class="upload-button" ng-class="{'active': existingImages == 1}" ng-click="existingImages = 1;">
                 <span class="title"><i class="fa fa-check-circle sel-check"></i>Choose Existing</span>
                 <span class="msg"> Choose tutorial images from the uploaded dataset.  </span>
-                <span class="msg" ng-show="!supportExisting"> (Coming Soon!) </span>
 
             </div>
 
@@ -27,7 +26,8 @@
         </div>
 
 
-        <div ng-show="(!existingImages) || (existingImages && supportExisting)">
+        <!--if we upload external-->
+        <div ng-show="!existingImages">
 
 
         <br>
@@ -102,6 +102,161 @@
 
 
     </div>
+
+
+        <div ng-show="existingImages && !dataset_image_list.length && !dataset_image_list.length ">
+            <div class="txt">
+                Waiting for items to load...
+            </div>
+
+        </div>
+
+        <!--if we choose from dataset-->
+        <div ng-show="existingImages && dataset_image_list.length && dataset_image_list.length ">
+
+            <div ng-repeat="item in tutorial_items">
+
+                <div class="row">
+                    <p class="txt"> Tutorial item: {{$index}}</p>
+                </div>
+
+
+                <div class="row txt" >
+                    <div class="col-md-3" >
+                        <span>
+                        Image Name <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
+                                      data-placement="right" style="margin-left: 10px;color: #9cdc1f;"
+                                      title="The name of the image file. Warning icons indicate the image you have uploaded is not in the original dataset uploaded."></i>
+                    </span>
+                    </div>
+                    <div class="col-md-2" >
+                        <span>
+                        Image Preview <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
+                                      data-placement="right" style="margin-left: 10px;color: #9cdc1f;"
+                                      title="Click on the image to see it bigger."></i>
+                        </span>
+                    </div>
+                    <div class="col-md-2" >
+                        <span>
+                        Answer:
+                            <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
+                                         data-placement="right" style="margin-left: 10px;color: #9cdc1f;"
+                                         title="Pick the correct answer for this image.">
+                            </i>
+                        </span>
+                    </div>
+                    <div class="col-md-2" > Ask User?
+                        <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
+                                                data-placement="right" style="color: #9cdc1f;"
+                                                title="If you wish to test users by letting them choose the correct answer, check the box.
+                                                If you want to use this slot as an information slide, keep this box unchecked.
+                                                Only the image and explanation will be shown in this case. ">
+                    </i>
+                    </div>
+
+                </div>
+
+            <div class="row" >
+
+
+                <!-- image picker-->
+                <div class="col-md-3" ng-if="item.in_dataset"   >
+                    <select class="form-control" ng-model="item.image_name" >
+                        <option ng-repeat="x in dataset_image_list" value="{{x}}" > {{x}}
+                        </option>
+                    </select>
+                </div>
+
+
+
+                <div class="col-md-3" ng-if="!item.in_dataset" >
+                    <span style="color: #9cdc1f;" style="top:0px;">
+                        <small>
+                    <span class="fa fa-warning "></span>
+                        {{item.image_name.replace(project.unique_code + "/","")}}
+                    </span>
+                    </small>
+                </div>
+
+                <div class="col-md-2">
+                    <img style="width: 75px;cursor: pointer;"  class="img-thumbnail" ng-src="{{getTutorialImage(item.image_name,item.in_dataset)}}" ng-click="showBiggerImage(item.image_name,item.in_dataset)">
+
+                    <!--<span style="color: #9cdc1f;cursor: pointer;" ng-click="showBiggerImage(item.image_name)" style="top:0px;">-->
+                        <!--<span class="fa fa-camera fa-2x"></span>-->
+                    <!--</span>-->
+                </div>
+
+                <!-- pick answer from template-->
+                <div class="col-md-2" >
+                    <select class="form-control" ng-model="item.answer" >
+                        <option ng-repeat="x in project.task.options" value="{{x.text}}" > {{x.text}}  </option>
+                    </select>
+                </div>
+
+                <!--ask user: checkbox-->
+                <div class="col-md-1">
+                    <label class="col-form-label" >
+                        <input type="checkbox" name="{{item.ask_user}}"  ng-model="item.ask_user"
+                               ng-value="item.ask_user"
+                               ng-true-value="1"
+                               ng-false-value="0"
+                               ng-checked="item.ask_user == 1"  />
+                        <span class="option-add-btn">  </span>
+                    </label>
+                </div>
+
+
+                <!--remove answer-->
+                <div class="col-md-2 pull-right">
+                <span class="" ng-click="deleteTutorialItem($index)" style="color:#DC1F3A;cursor: pointer;">
+                <span class="fa fa-minus"></span>
+                    <span>REMOVE ITEM</span>
+            </span>
+                </div>
+
+                <br>
+                <br>
+
+            </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <p class="txt">Explanation:</p>
+                        <textarea class="form-control" ng-model="item.explanation" rows="2" placeholder="Type your explanation here."></textarea>
+                    </div>
+                </div>
+
+            <hr>
+            </div>
+            <br>
+            <br>
+
+
+            <div class="row">
+                <div class="col-md-12">
+            <span class="option-add-btn" ng-click="addTutorialItem()" style="top:0px;">
+                <span class="fa fa-plus"></span>
+                <span>ADD ITEM</span>
+            </span>
+                </div>
+            </div>
+
+            <br>
+
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <button  class="next-btn btn btn-primary btn btn-block" ng-click="setTutorialItems()" >Add Tutorial</button>
+                </div>
+                <div class="col-md-4"></div>
+
+            </div>
+
+
+
+
+        </div>
+
+
 
     </div>
 

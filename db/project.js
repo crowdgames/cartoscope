@@ -808,10 +808,6 @@ exports.insertTutorialItems = function(projectId,data){
             image_path =  data.image_name;
         }
 
-        console.log(image_path);
-
-
-
         var query = 'INSERT INTO tutorial (unique_code, template, point_selection, points_file';
         query2 = ' SELECT unique_code, template, point_selection, points_file';
 
@@ -841,11 +837,7 @@ exports.insertTutorialItems = function(projectId,data){
 
             }
         }
-
         query += ')' + query2 + ' from projects where unique_code=\"' + projectId + '\"';
-
-
-
         connection.queryAsync(query).then(
             function(data) {
 
@@ -859,11 +851,27 @@ exports.insertTutorialItems = function(projectId,data){
 }
 
 
+
+
+
 exports.deleteTutorialItemsFromCode = function(projectCode) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
         connection.queryAsync('delete from tutorial where unique_code=?',
             [ projectCode]).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
+exports.deleteTutorialItemsFromIds = function(tutorial_item_ids) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('delete from tutorial where id in =(?)',
+            [ tutorial_item_ids.join(',')]).then(
             function(data) {
                 resolve(data);
             }, function(err) {

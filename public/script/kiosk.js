@@ -1763,8 +1763,6 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
         }
         function next_button() {
 
-
-
             //scroll to the top
             $('html,body').animate({
                     scrollTop: $("#top-page").offset().top},
@@ -2176,7 +2174,8 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                         poi_name : item.poi_name || '',
                         image_source: item.image_source,
                         image_annotation: it_annot,
-                        ask_user : parseInt(item.ask_user)
+                        ask_user : parseInt(item.ask_user),
+                        in_dataset : parseInt(item.in_dataset)
                     };
                     if( vm.params.projectType != 'mapping') {
 

@@ -40,8 +40,8 @@
 
 
         <div class="row" ng-repeat="suv in survey_questions">
-            <div class="col-md-3 col-sm-2"></div>
-            <div class="col-md-6 col-sm-8">
+            <div class="col-md-2 col-sm-2"></div>
+            <div class="col-md-8 col-sm-8">
                 <hr class="black-line">
 
 
@@ -103,7 +103,7 @@
                                 <b>*</b>
                             </span>                        </h4>
                         <label class="col-form-label" ng-repeat="opt in suv.options">
-                            <input type="checkbox" name="{{suv.question}}" style="margin:20px" ng-model="suv.answer[opt]" ng-value=opt  /> {{opt}}
+                            <input type="checkbox" name="{{suv.question}}" style="margin:20px" ng-model="suv.answer[opt]" ng-value=opt   /> {{opt}}
                         </label>
                         <p ng-if="suv.answer.toLowerCase().includes('other')">Please describe:</p>
                         <textarea ng-if="suv.answer.toLowerCase().includes('other')" class="form-control" rows="3" cols="50" ng-model="suv.other_text"></textarea>
@@ -123,7 +123,7 @@
                 <div ng-switch-default></div>
             </div>
             </div>
-            <div class="col-md-3 col-sm-2"></div>
+            <div class="col-md-2 col-sm-2"></div>
         </div>
 
 
@@ -132,15 +132,15 @@
         <br>
 
         <div class="row">
-            <div class="col-md-3 col-sm-2"></div>
-            <div class="col-md-6 col-sm-10">
+            <div class="col-md-2 col-sm-2"></div>
+            <div class="col-md-8 col-sm-10">
             <div class="form-group ">
             <h4>In the space provided, please provide any additional feedback you would like to share on this project.
             </h4>
             <textarea  class="form-control" rows="3"  ng-model="response.additional_text"></textarea>
             </div>
             </div>
-            <div class="col-md-3 col-sm-2"></div>
+            <div class="col-md-2 col-sm-2"></div>
 
         </div>
 

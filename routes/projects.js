@@ -110,6 +110,42 @@ router.get('/getNextProjectChain/:workerID', function(req, res, next) {
     });
 
 
+router.post('/addTutorialItems', function(req, res, next) {
+
+    var projectCode = req.body.unique_code;
+    var tutorial_items = req.body.tutorial_items;
+
+    //first delete what we have:
+    projectDB.deleteTutorialItemsFromCode(projectCode).then(function(results) {
+
+        //then, add items
+        var pArr = [];
+        tutorial_items.forEach(function(item){
+            var p = projectDB.insertTutorialItems(projectCode, item);
+            //catch and print error but do not cause problem
+            p.catch(function (err) {
+                console.log(err)
+            });
+            pArr.push(p);
+        });
+
+        Promise.all(pArr).then(function (data) {
+
+            res.status(200).send("Tutorial items set successfully!")
+
+        }, function (err) {
+            console.log(err)
+            res.status(500).send('Tutorial items could not be set!!!');
+        })
+    }, function(err) {
+        console.log(err)
+        res.status(400).send('Previous tutorial could not be deleted!!!');
+    });
+});
+
+
+
+
 router.get('/getTutorial/:projectCode', function(req, res, next) {
     var projectCode = req.params.projectCode;
     projectDB.getTutorialFromCode(projectCode).then(function(results) {

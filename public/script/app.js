@@ -1591,19 +1591,126 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
   };
 
     $scope.showUploadProgress = false;
-
-
     $scope.existingImages = 0;
-
-
-    //TODO: SET TO 1 once this functionality is ready
-    $scope.supportExisting = 0;
-
     $scope.received_code = 0;
+    $scope.tutorial_items = [];
+    $scope.dataset_image_list = [];
 
-   // console.log($scope.project);
 
 
+    $scope.addTutorialItem = function(){
+        var default_item = {
+            unique_code: $scope.project.unique_code,
+            image_name: null,
+            answer: null,
+            explanation: null,
+            ask_user: 1,
+            in_dataset: 1 };
+        $scope.tutorial_items.push(default_item);
+    };
+
+    $scope.deleteTutorialItem = function(index) {
+        $scope.tutorial_items.splice(index, 1);
+    };
+
+    $scope.fetchTutorialItems = function(){
+
+            $http.get('/api/project/getTutorial/' + $scope.project.unique_code).then(function (sdata) {
+                $scope.tutorial_items = sdata.data;
+                for (var i = 0; i < $scope.tutorial_items.length; i++) {
+                    $scope.tutorial_items[i].explanation = $scope.tutorial_items[i].explanation.slice(1, -1);
+
+                }
+                }, function (err) {
+                $scope.tutorial_items = [];
+            });
+
+    };
+
+    $scope.getTutorialImage = function(img, in_dataset){
+
+        var link = '../../images/placeholder-image.png';
+        if (img){
+            link = '/api/tasks/getImage/' + $scope.project.dataset_id + '/' + img.replace(".jpg","");
+            //if not in dataset, was externally uploaded
+            if (!in_dataset){
+                link = '../../images/Tutorials/'   + img
+            }
+        }
+        return link
+    };
+
+    $scope.showBiggerImage = function(img,in_dataset){
+
+        var link = '/api/tasks/getImage/' + $scope.project.dataset_id + '/' + img.replace(".jpg","");
+        //if not in dataset, was externally uploaded
+        if (!in_dataset){
+            link = '../../images/Tutorials/'  + img
+        }
+        window.open(link);
+    };
+
+
+
+    $scope.fetchDatasetItems = function(){
+
+        $http.get('/api/project/getProjectPoints/' + $scope.project.unique_code).then(function (sdata) {
+
+            sdata.data.forEach(function(item){
+                $scope.dataset_image_list.push(  item.name + '.jpg');
+            });
+            //then see if we have anything already
+            $scope.fetchTutorialItems();
+        }, function (err) {
+
+            //andle error!
+            $scope.dataset_image_list = [];
+            swalService.showErrorMsg("No images in dataset yet!");
+        });
+    };
+
+
+
+    $scope.setTutorialItems = function(){
+
+        //bring it to format we need for tutorial
+        //$scope.project_template = JSON.stringify($scope.project.task);
+
+        for (var i = 0; i < $scope.tutorial_items.length; i++) {
+
+            // $scope.tutorial_items[i].template = $scope.project_template;
+            $scope.tutorial_items[i].image_name = $scope.tutorial_items[i].image_name.replace($scope.project.unique_code + '/', "");
+            delete $scope.tutorial_items[i].template;
+            delete $scope.tutorial_items[i].points_file;
+            delete $scope.tutorial_items[i].point_selection;
+            delete $scope.tutorial_items[i].unique_code;
+            //everything that was null before should be deleted!
+            Object.keys($scope.tutorial_items[i]).forEach(function(ky){
+                if ($scope.tutorial_items[i][ky] == null) {
+                    delete $scope.tutorial_items[i][ky]
+                }
+            })
+
+        }
+        $http.post('/api/project/addTutorialItems',
+            {
+                'unique_code': $scope.project.unique_code,
+                'tutorial_items': $scope.tutorial_items
+            }).then(function () {
+
+            //send message we good
+            swal({
+                title: 'Success!',
+                confirmButtonColor: '#9cdc1f',
+                allowOutsideClick: true,
+                text: 'Tutorial added!',
+                type: 'success'
+            });
+
+        }, function (err) {
+            swalService.showErrorMsg(err);
+        })
+    };
 
     $scope.sendTutorialLocal = function() {
 
@@ -1647,6 +1754,10 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
             swalService.showErrorMsg('Please enter a valid compressed folder');
         }
     };
+
+
+    $scope.fetchDatasetItems();
+
 }]);
 
 module.controller('stepSevenController', ['$scope', '$state', '$http', 'Upload', 'swalService', function($scope, $state, $http, Upload, swalService) {
