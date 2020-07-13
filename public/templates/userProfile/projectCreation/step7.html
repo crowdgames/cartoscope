@@ -28,6 +28,7 @@
     </div>
 
 
+
     <div class="row" ng-show="project.survey_type == 'CUSTOM'">
         <span class="txt" >Create your own survey by adding items below. Survey questions or other informational text you add will appear in the order you add them. </span>
     </div>
@@ -49,11 +50,32 @@
     <br>
     <br>
 
-        <div class="row" ng-show="project.survey_type == 'CUSTOM'" ng-repeat="item in survey_questions">
-
-            <div>
+    <div ng-show="project.survey_type == 'CUSTOM'" ng-repeat="item in survey_questions" >
 
 
+        <div class="row txt" >
+
+            <div  class="col-md-2">  Question Type:</div>
+            <div ng-switch="item.question_type">
+                <div  class="col-md-3" ng-switch-when="title">  Title text:</div>
+                <div  class="col-md-3" ng-switch-when="text">  Paragraph text:</div>
+                <div  class="col-md-3" ng-switch-default>  Question Text:</div>
+            </div>
+            <div ng-switch="item.question_type" >
+                <div  class="col-md-5" ng-switch-when="radio">  Options:</div>
+                <div  class="col-md-5" ng-switch-when="checkbox">  Options:</div>
+                <div ng-switch-when="likert">
+                    <div class="col-md-1"> Value: </div>
+                    <div class="col-md-2"> Leftmost Value: </div>
+                    <div class="col-md-2"> Rightmost Value: </div>
+                </div>
+                <div  class="col-md-5" ng-switch-when="external">  URL Link:</div>
+            </div>
+
+        </div>
+
+
+        <div class="row" >
 
             <div class="col-md-2" >
                     <select class="form-control" ng-model="item.question_type" >
@@ -125,6 +147,7 @@
 
         </div>
 
+
             <br>
 
             <div class="row">
@@ -140,7 +163,7 @@
 
     <br>
 
-        <div class="row">
+        <div class="row" ng-show="project.survey_type == 'CUSTOM'">
             <div class="col-md-4"></div>
             <div class="col-md-4">
             <button  class="next-btn btn btn-primary btn btn-block" ng-click="setSurveyItems()" >Add Survey</button>
