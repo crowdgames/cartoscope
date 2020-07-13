@@ -1596,6 +1596,8 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
     $scope.tutorial_items = [];
     $scope.dataset_image_list = [];
 
+    $scope.add_tutorial_text = "Add tutorial";
+
 
 
     $scope.addTutorialItem = function(){
@@ -1613,22 +1615,40 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
         $scope.tutorial_items.splice(index, 1);
     };
 
+    $scope.moveUp = function(i){
+        if (i > 0) {
+            var temp = $scope.tutorial_items[i-1];
+            $scope.tutorial_items[i-1] = $scope.tutorial_items[i]
+            $scope.tutorial_items[i] = temp
+        }
+    };
+
+    $scope.moveDown = function(i){
+        if (i < $scope.tutorial_items.length - 1) {
+            var temp = $scope.tutorial_items[i+1];
+            $scope.tutorial_items[i+1] = $scope.tutorial_items[i];
+            $scope.tutorial_items[i] = temp
+        }
+    };
+
     $scope.fetchTutorialItems = function(){
 
             $http.get('/api/project/getTutorial/' + $scope.project.unique_code).then(function (sdata) {
                 $scope.tutorial_items = sdata.data;
                 for (var i = 0; i < $scope.tutorial_items.length; i++) {
                     $scope.tutorial_items[i].explanation = $scope.tutorial_items[i].explanation.slice(1, -1);
-
+                }
+                if ($scope.tutorial_items.length){
+                    $scope.add_tutorial_text = "Update tutorial";
                 }
                 }, function (err) {
                 $scope.tutorial_items = [];
+                $scope.add_tutorial_text = "Add tutorial";
             });
 
     };
 
     $scope.getTutorialImage = function(img, in_dataset){
-
         var link = '../../images/placeholder-image.png';
         if (img){
             link = '/api/tasks/getImage/' + $scope.project.dataset_id + '/' + img.replace(".jpg","");
@@ -1641,7 +1661,6 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
     };
 
     $scope.showBiggerImage = function(img,in_dataset){
-
         var link = '/api/tasks/getImage/' + $scope.project.dataset_id + '/' + img.replace(".jpg","");
         //if not in dataset, was externally uploaded
         if (!in_dataset){
@@ -1770,12 +1789,30 @@ module.controller('stepSevenController', ['$scope', '$state', '$http', 'Upload',
         $scope.$emit('moveNext');
     };
 
-    $scope.custom_description = null
+    $scope.custom_description = null;
+
+    $scope.add_survey_text = "Add Survey";
 
     $scope.question_options_list = ["textarea","radio","checkbox","likert","external","title","text"];
 
 
     $scope.survey_questions = [];
+
+    $scope.moveUp = function(i){
+        if (i > 0) {
+            var temp = $scope.survey_questions[i-1];
+            $scope.survey_questions[i-1] = $scope.survey_questions[i]
+            $scope.survey_questions[i] = temp
+        }
+    };
+
+    $scope.moveDown = function(i){
+        if (i < $scope.survey_questions.length - 1) {
+            var temp = $scope.survey_questions[i+1];
+            $scope.survey_questions[i+1] = $scope.survey_questions[i];
+            $scope.survey_questions[i] = temp
+        }
+    };
 
 
     $scope.addSurveyItem = function() {
@@ -1845,6 +1882,9 @@ module.controller('stepSevenController', ['$scope', '$state', '$http', 'Upload',
             $scope.survey_questions = survey_items_all.questions;
             console.log($scope.survey_questions)
             $scope.parseSurveyItems(0)
+            if ($scope.survey_questions.length){
+                $scope.add_survey_text = "Update Survey";
+            }
 
         }, function () {
             $scope.survey_questions = [];
@@ -1880,7 +1920,6 @@ module.controller('stepSevenController', ['$scope', '$state', '$http', 'Upload',
                 type: 'success'
             });
 
-                //TODO what next?
             }, function () {
 
                 swalService.showErrorMsg('Something went wrong!');

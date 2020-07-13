@@ -122,11 +122,22 @@
 
 
                 <div class="row txt" >
+
+                    <div class="col-md-1">
+                        Order
+                        <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
+                           data-placement="right" style="color: #9cdc1f;"
+                           title="You can move items up and down to adjust the order with which you want people to encounter tutorial items.">
+                        </i>
+                    </div>
+
                     <div class="col-md-3" >
                         <span>
-                        Image Name <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
-                                      data-placement="right" style="color: #9cdc1f;"
-                                      title="The name of the image file. Warning icons indicate the image you have uploaded is not in the original dataset uploaded."></i>
+                        Image Name
+                            <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
+                               data-placement="right" style="color: #9cdc1f;"
+                               title="The name of the image file. Warning icons indicate the image you have uploaded is not in the original dataset uploaded.">
+                            </i>
                     </span>
                     </div>
                     <div class="col-md-2" >
@@ -159,6 +170,22 @@
             <div class="row" >
 
 
+                <div class="col-md-1"   >
+                <span class="" ng-if="$index > 0" ng-click="moveUp($index)" style="color:#9cdc1f;cursor: pointer;">
+                    <span class="fa fa-arrow-circle-up"></span>
+                 </span>
+                    <span class="" ng-if="$index == 0"  style="color:#acacac;cursor: pointer;">
+                        <span class="fa fa-arrow-circle-up"></span>
+                 </span>
+                    <span class="" ng-if="$index < tutorial_items.length - 1" ng-click="moveDown($index)" style="color:#9cdc1f;cursor: pointer;">
+                        <span class="fa fa-arrow-circle-down"></span>
+                    </span>
+                    <span class="" ng-if="$index == tutorial_items.length - 1"  style="color:#acacac;cursor: pointer;">
+                        <span class="fa fa-arrow-circle-down"></span>
+                 </span>
+
+                </div>
+
                 <!-- image picker-->
                 <div class="col-md-3" ng-if="item.in_dataset"   >
                     <select class="form-control" ng-model="item.image_name" >
@@ -174,16 +201,15 @@
                         <small>
                     <span class="fa fa-warning "></span>
                         {{item.image_name.replace(project.unique_code + "/","")}}
+                        </small>
                     </span>
-                    </small>
                 </div>
 
+                <!--image-->
                 <div class="col-md-2">
-                    <img style="width: 75px;cursor: pointer;"  class="img-thumbnail" ng-src="{{getTutorialImage(item.image_name,item.in_dataset)}}" ng-click="showBiggerImage(item.image_name,item.in_dataset)">
-
-                    <!--<span style="color: #9cdc1f;cursor: pointer;" ng-click="showBiggerImage(item.image_name)" style="top:0px;">-->
-                        <!--<span class="fa fa-camera fa-2x"></span>-->
-                    <!--</span>-->
+                    <img style="width: 75px;cursor: pointer;"  class="img-thumbnail"
+                         ng-src="{{getTutorialImage(item.image_name,item.in_dataset)}}"
+                         ng-click="showBiggerImage(item.image_name,item.in_dataset)">
                 </div>
 
                 <!-- pick answer from template-->
@@ -245,7 +271,10 @@
             <div class="row">
                 <div class="col-md-4"></div>
                 <div class="col-md-4">
-                    <button  class="next-btn btn btn-primary btn btn-block" ng-click="setTutorialItems()" >Add Tutorial</button>
+                    <button style="border: none;"
+                            ng-if="tutorial_items.length"
+                            class="next-btn btn btn-primary btn btn-block"
+                            ng-click="setTutorialItems()" >{{add_tutorial_text}}</button>
                 </div>
                 <div class="col-md-4"></div>
 
