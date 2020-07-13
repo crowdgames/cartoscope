@@ -116,7 +116,7 @@
 
             <div ng-repeat="item in tutorial_items">
 
-                <div class="row">
+                <div  class="row">
                     <p class="txt"> Tutorial item: {{$index}}</p>
                 </div>
 
@@ -174,13 +174,13 @@
                 <span class="" ng-if="$index > 0" ng-click="moveUp($index)" style="color:#9cdc1f;cursor: pointer;">
                     <span class="fa fa-arrow-circle-up"></span>
                  </span>
-                    <span class="" ng-if="$index == 0"  style="color:#acacac;cursor: pointer;">
+                    <span class="disabled" ng-if="$index == 0"  >
                         <span class="fa fa-arrow-circle-up"></span>
                  </span>
                     <span class="" ng-if="$index < tutorial_items.length - 1" ng-click="moveDown($index)" style="color:#9cdc1f;cursor: pointer;">
                         <span class="fa fa-arrow-circle-down"></span>
                     </span>
-                    <span class="" ng-if="$index == tutorial_items.length - 1"  style="color:#acacac;cursor: pointer;">
+                    <span class="disabled" ng-if="$index == tutorial_items.length - 1"  >
                         <span class="fa fa-arrow-circle-down"></span>
                  </span>
 

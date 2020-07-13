@@ -1618,7 +1618,7 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
     $scope.moveUp = function(i){
         if (i > 0) {
             var temp = $scope.tutorial_items[i-1];
-            $scope.tutorial_items[i-1] = $scope.tutorial_items[i]
+            $scope.tutorial_items[i-1] = $scope.tutorial_items[i];
             $scope.tutorial_items[i] = temp
         }
     };
@@ -1703,6 +1703,7 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
             delete $scope.tutorial_items[i].points_file;
             delete $scope.tutorial_items[i].point_selection;
             delete $scope.tutorial_items[i].unique_code;
+            delete $scope.tutorial_items[i].id;
             //everything that was null before should be deleted!
             Object.keys($scope.tutorial_items[i]).forEach(function(ky){
                 if ($scope.tutorial_items[i][ky] == null) {
