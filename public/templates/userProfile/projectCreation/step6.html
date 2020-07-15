@@ -246,7 +246,14 @@
             </div>
                 <div class="row">
                     <div class="col-md-12">
-                        <p class="txt">Explanation:</p>
+                        <p class="txt">
+                            Explanation:
+                            <span class="" ng-click="previewExplanation(item.explanation)" style="color:#9cdc1f;cursor: pointer;">
+                            <i cs-tooltip class="fa fa-eye" data-toggle="tooltip"
+                               data-placement="right" style="color: #9cdc1f;"
+                               title="See a preview of what the explanation looks like. Useful when inputting html code. ">
+                    </i>
+                        </p>
                         <textarea class="form-control" ng-model="item.explanation" rows="2" placeholder="Type your explanation here."></textarea>
                     </div>
                 </div>

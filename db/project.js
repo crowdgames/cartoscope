@@ -800,7 +800,6 @@ exports.insertTutorialItems = function(projectId,data){
     return new Promise(function(resolve, error) {
         var connection = db.get();
 
-
         var image_path = projectId + "/" + data.image_name;
 
         //if tutorial image not in dataset, then do not include project id path and let the example page take care of that
@@ -818,8 +817,10 @@ exports.insertTutorialItems = function(projectId,data){
 
             var key = obj_keys[i];
 
+
             //if it is relevant, add to query
-            if (data[key] != '') {
+            if (data[key] !== '') {
+
 
                 query += ', ' + key;
 
@@ -828,6 +829,9 @@ exports.insertTutorialItems = function(projectId,data){
                     query2 += ", \"" + image_path  + "\" "
                 } else if (key == "explanation"){
                     query2 += ", \"" + connection.escape(data[key])  + "\" "
+
+                } else if (key == "ask_user") {
+                    query2 += ", \"" + parseInt(data[key])  + "\" "
 
                 } else {
                     query2 += ", \"" + data[key]  + "\" "
@@ -839,10 +843,9 @@ exports.insertTutorialItems = function(projectId,data){
         }
         query += ')' + query2 + ' from projects where unique_code=\"' + projectId + '\"';
         connection.queryAsync(query).then(
-            function(data) {
-
-                console.log(data)
-                resolve(data);
+            function(d) {
+                console.log(data.image_name)
+                resolve(d);
             }, function(err) {
                 console.log(err)
                 error(err);

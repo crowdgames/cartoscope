@@ -118,25 +118,17 @@ router.post('/addTutorialItems', function(req, res, next) {
     //first delete what we have:
     projectDB.deleteTutorialItemsFromCode(projectCode).then(function(results) {
 
-        //then, add items
-        var pArr = [];
-        tutorial_items.forEach(function(item){
-            var p = projectDB.insertTutorialItems(projectCode, item);
-            //catch and print error but do not cause problem
-            p.catch(function (err) {
-                console.log(err)
+
+        Promise.each(tutorial_items, function(item, index, arrayLength) {
+            //promises will be done in order
+            return projectDB.insertTutorialItems(projectCode, item).then(function(result_item) {
+                return result_item; // Doesn't matter
             });
-            pArr.push(p);
+        }).then(function(result) {
+            // This will run after the last step is done
+            res.status(200).send("Tutorial items set successfully!")
         });
 
-        Promise.all(pArr).then(function (data) {
-
-            res.status(200).send("Tutorial items set successfully!")
-
-        }, function (err) {
-            console.log(err)
-            res.status(500).send('Tutorial items could not be set!!!');
-        })
     }, function(err) {
         console.log(err)
         res.status(400).send('Previous tutorial could not be deleted!!!');

@@ -1669,6 +1669,17 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
         window.open(link);
     };
 
+    $scope.previewExplanation = function(explanation){
+        swal({
+            title: "Explanation Preview",
+            confirmButtonColor: '#9cdc1f',
+            allowOutsideClick: true,
+            html: true,
+            text: '<div>' + explanation + '</div>',
+            type: 'info'
+        });
+    };
+
 
 
     $scope.fetchDatasetItems = function(){
@@ -1695,19 +1706,21 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
         //bring it to format we need for tutorial
         //$scope.project_template = JSON.stringify($scope.project.task);
 
+        var tutorial_items_to_send = JSON.parse(JSON.stringify($scope.tutorial_items));
+
         for (var i = 0; i < $scope.tutorial_items.length; i++) {
 
-            // $scope.tutorial_items[i].template = $scope.project_template;
-            $scope.tutorial_items[i].image_name = $scope.tutorial_items[i].image_name.replace($scope.project.unique_code + '/', "");
-            delete $scope.tutorial_items[i].template;
-            delete $scope.tutorial_items[i].points_file;
-            delete $scope.tutorial_items[i].point_selection;
-            delete $scope.tutorial_items[i].unique_code;
-            delete $scope.tutorial_items[i].id;
+            tutorial_items_to_send[i].ask_user = parseInt(tutorial_items_to_send[i].ask_user)
+            tutorial_items_to_send[i].image_name = tutorial_items_to_send[i].image_name.replace($scope.project.unique_code + '/', "");
+            delete tutorial_items_to_send[i].template;
+            delete tutorial_items_to_send[i].points_file;
+            delete tutorial_items_to_send[i].point_selection;
+            delete tutorial_items_to_send[i].unique_code;
+            delete tutorial_items_to_send[i].id;
             //everything that was null before should be deleted!
-            Object.keys($scope.tutorial_items[i]).forEach(function(ky){
-                if ($scope.tutorial_items[i][ky] == null) {
-                    delete $scope.tutorial_items[i][ky]
+            Object.keys(tutorial_items_to_send[i]).forEach(function(ky){
+                if (tutorial_items_to_send[i][ky] == null) {
+                    delete tutorial_items_to_send[i][ky]
                 }
             })
 
@@ -1715,7 +1728,7 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
         $http.post('/api/project/addTutorialItems',
             {
                 'unique_code': $scope.project.unique_code,
-                'tutorial_items': $scope.tutorial_items
+                'tutorial_items': tutorial_items_to_send
             }).then(function () {
 
             //send message we good
