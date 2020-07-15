@@ -1493,7 +1493,16 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
                     push_obj = {'question': sv.question, 'question_type': sv.question_type, 'no_data': 1 }
                 } else if (sv.question_type.includes('external')){
                     if (checkValidItem(sv, ['question','external_link'])){
-                        push_obj = {'question': sv.question, 'question_type': sv.question_type, 'external_link': sv.external_link, 'disclaimer': sv.disclaimer }
+
+                        var style_obj = {"width": "100%", "height": "400px"};
+                        if (sv.hasOwnProperty('height')){
+                            style_obj.height =  sv.height + "px"
+                        }
+                        push_obj = {'question': sv.question,
+                            'question_type': sv.question_type,
+                            'external_link': sv.external_link,
+                            'disclaimer': sv.disclaimer ,
+                            'external_style': style_obj};
                     }
                 }
 

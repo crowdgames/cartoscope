@@ -119,7 +119,10 @@
                     <br>
                     <h4>{{suv.question}}</h4>
                     <!--<iframe  class="embed-responsive-item" ng-src="{{suv.external_link}}"></iframe>-->
-                    <iframe id="iframe_div2" class="iframeDiv" ng-src="{{getExternalFrame(suv.external_link)}}"></iframe>
+                    <iframe id="iframe_div2"
+                            ng-src="{{getExternalFrame(suv.external_link)}}"
+                            ng-style="suv.external_style"
+                    ></iframe>
 
                 </div>
 
