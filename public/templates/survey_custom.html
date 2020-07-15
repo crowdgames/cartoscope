@@ -20,10 +20,13 @@
 
     <div class="row">
         <div class="col-md-2"></div>
-        <div class="col-md-8" ng-if="!custom_description"><h4>Thank you for taking the time to contribute to our study. Your participation is invaluable to our work. As we
-            move forward, we would like to get some feedback from you about the usability of our software so that we can
-            take your thoughts into consideration during redevelopment. Please take a few moments to complete our brief
-            questionnaire and feel free to provide any additional comments you would like to share with us.</h4></div>
+        <div class="col-md-8" ng-if="!custom_description">
+            <h4>Thank you for taking the time to participate in this project. Your participation is invaluable.
+                To improve the project and our software we would like to get some feedback on your experience.
+                Please take a few moments to complete this questionnaire and feel free to provide any additional comments
+                you would like to share with us.
+            </h4>
+        </div>
         <div class="col-md-8" ng-if="custom_description">
             <h4>
                 {{custom_description}}
