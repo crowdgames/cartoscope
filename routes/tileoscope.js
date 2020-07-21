@@ -92,9 +92,9 @@ router.get('/compareTGQ/:hit_id', function(req, res, next) {
     var train_hit = req.params.train_hit;
 
     var possibles = [
-                        'qlearn=' + hit_id + '&train_hit=8PIKNDW2LD5I',
+                        'qlearn=' + hit_id + '&train_hit=O01MB2E67SUU',
                         'qlearnO='+ hit_id,
-                        'genetic=NGBMJ00O6R4B',
+                        'genetic=GNEPFHZXA6QL',
                         'random=' + hit_id
                     ];
 
