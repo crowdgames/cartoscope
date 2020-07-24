@@ -1368,6 +1368,8 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
 
     $scope.trialId = $scope.params.hitId ||  $scope.params.trialId || "kiosk";
 
+    console.log($scope.trialId)
+
 
     $scope.survey_questions = [];
 
