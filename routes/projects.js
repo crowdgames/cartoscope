@@ -856,7 +856,6 @@ router.post('/addsurveyItemsMultiple/', function(req, res, next) {
 //fix for issues with codes!
 router.post('/:id/survey', [filters.requireLogin], function(req, res, next) {
 
-    console.log(req.body.trialId)
 
     if (req.session.passport.user.anonymous) {
         projectDB.getSingleProjectFromCode(req.params.id).then(function(project) {
@@ -880,6 +879,7 @@ router.post('/:id/survey', [filters.requireLogin], function(req, res, next) {
                     }
                 },
                 function(err) {
+                    console.log(err)
                     //if for any reason there is an issue adding the survey text, still send hit code
                     //if participant id, send participant id as hit code, else from env
                     var hitCode = process.env.hitCode;
