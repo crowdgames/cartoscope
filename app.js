@@ -220,6 +220,17 @@ app.get('/landloss', function(req, res) {
 
 });
 
+//healthy gulf: Landloss Lookout, mturk randomized
+app.get('/landloss/:hitID', function(req, res) {
+
+    var subprojects = ["UOYIiFeapnyI","ocioawiaGcjw","KyW6Ti9QUr4I","Srz9arMDwthQ","94yoCWhFkpMk","cXz6ImkmG9k5"];
+    var pick_d = randomInt(0,subprojects.length - 1); //pick dataset [start,end]
+    var project_code = subprojects[pick_d];
+    var link = "kioskProject.html#/kioskStart/" + project_code + '?trialId=' + req.params.hitID;
+    res.redirect('./' + link); // send to project page
+
+});
+
 //healthy gulf event: algal Blooms
 app.get('/hg', function(req, res) {
     var project_code = "ChAkLfwYIBgo";
