@@ -27,6 +27,17 @@ router.get('/votes/:hit_id', function(req, res, next) {
         });
 });
 
+//Get simple results from HIT for Cartoscope Classic
+router.get('/votesKiosk/:hit_id', function(req, res, next) {
+
+    var hit_id = req.params.hit_id;
+    resultDB.getProjectsVotesHITKiosk(hit_id).then(function(results) {
+        res.send(results);
+    }, function(err) {
+        res.status(400).send('simple results could not be generated!!!');
+    });
+});
+
 
 //Get simple results from HIT for Tile-o-Scope Grid
 router.get('/votesTG/:hit_id', function(req, res, next) {
@@ -48,6 +59,17 @@ router.get('/survey/:hit_id', function(req, res, next) {
 
     var hit_id = req.params.hit_id;
     resultDB.getSurveyVotesHIT(hit_id).then(function(results) {
+        res.send(results);
+    }, function(err) {
+        res.status(400).send('survey results could not be generated!!!');
+    });
+});
+
+//Get survey results for HIT from Cartoscope Classic
+router.get('/surveyKiosk/:hit_id', function(req, res, next) {
+
+    var hit_id = req.params.hit_id;
+    resultDB.getSurveyVotesHITKiosk(hit_id).then(function(results) {
         res.send(results);
     }, function(err) {
         res.status(400).send('survey results could not be generated!!!');
