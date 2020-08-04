@@ -64,7 +64,7 @@
 
                         <h4>{{suv.question}}
                             <span  title="This question is required." class="required_answer" ng-if="req_answers || suv.required" >
-                                <b>*</b>
+                                <b style="font-size: 25px">*</b>
                             </span>
                         </h4>
                         <textarea class="form-control" rows="3"  ng-model="suv.answer"></textarea>
@@ -75,7 +75,7 @@
                 <div ng-switch-when="likert" class="form-group ">
                         <h4>{{suv.question}}
                             <span  title="This question is required." class="required_answer" ng-if="req_answers || suv.required" >
-                                <b>*</b>
+                                <b style="font-size: 25px">*</b>
                             </span>
                         </h4>
                         <label class="col-form-label" >{{suv.least}}</label>
@@ -88,8 +88,9 @@
                 <!--RADIO-->
                 <div ng-switch-when="radio" class="form-group ">
                         <h4>{{suv.question}}
-                            <span  title="This question is required." class="required_answer" ng-if="req_answers || suv.required" >
-                                <b>*</b>
+                            <span   title="This question is required." class="required_answer" ng-if="req_answers || suv.required" >
+                                <b style="font-size: 25px">*</b>
+
                             </span>
                         </h4>
                         <label class="col-form-label" ng-repeat="opt in suv.options">
@@ -103,7 +104,7 @@
                 <div ng-switch-when="checkbox" class="form-group ">
                         <h4>{{suv.question}}
                             <span  title="This question is required." class="required_answer" ng-if="req_answers || suv.required" >
-                                <b>*</b>
+                                <b style="font-size: 25px">*</b>
                             </span>                        </h4>
                         <label class="col-form-label" ng-repeat="opt in suv.options">
                             <input type="checkbox" name="{{suv.question}}" style="margin:20px" ng-model="suv.answer[opt]" ng-value=opt   /> {{opt}}
