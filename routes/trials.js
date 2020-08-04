@@ -42,7 +42,7 @@ router.get('/compareTGCC/:hit_id', function(req, res, next) {
         {'interface': 'TG', 'dataset': 'cab' , 'name': 'catdogs_big'}
     ];
 
-    var hit_id= req.params.hit_id;
+    var hit_id = req.params.hit_id;
     var pick_d = randomInt(0,possibles_pool.length - 1); //pick dataset [start,end]
     var selected_d = possibles_pool[pick_d];
     var interface_version = selected_d.interface;
@@ -90,14 +90,18 @@ router.get('/compareTGQ/:hit_id', function(req, res, next) {
 });
 
 //healthy gulf: Landloss Lookout, mturk randomized
-router.get('/hgtest/:hitID', function(req, res,next) {
+router.get('/hgtest/:hit_id', function(req, res,next) {
+
+    console.log(req.params);
+
+    var hit_id = req.params.hit_id;
 
 
     var subprojects = ["UOYIiFeapnyI","ocioawiaGcjw","KyW6Ti9QUr4I","Srz9arMDwthQ","94yoCWhFkpMk","cXz6ImkmG9k5"];
     var pick_d = randomInt(0,subprojects.length - 1); //pick dataset [start,end]
     var project_code = subprojects[pick_d];
-    var link = "kioskProject.html#/kioskStart/" + project_code + '?trialId=' + req.params.hitID;
-    res.redirect('./' + link); // send to project page
+    var link = "kioskProject.html#/kioskStart/" + project_code + '?trialId=' + hit_id;
+    res.redirect('http://cartosco.pe/' + link); // send to project page
 
 });
 
