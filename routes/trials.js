@@ -33,13 +33,18 @@ router.get('/compareTGCC/:hit_id', function(req, res, next) {
 
     //2 datasets: cats dogs, bridges
     //3 interfaces, CC, TG and TG-BIG
+    // var possibles_pool = [
+    //     {'interface': 'CC', 'dataset': 'EGHiAhY5ucce' , 'name': 'bridges'},
+    //     {'interface': 'CC', 'dataset': 'XtdcMntF37R9' , 'name': 'catdogs'},
+    //     {'interface': 'TG', 'dataset': 'brs' , 'name': 'bridges_small'},
+    //     {'interface': 'TG', 'dataset': 'cas' , 'name': 'catdogs_small'},
+    //     {'interface': 'TG', 'dataset': 'brb' , 'name': 'bridges_big'},
+    //     {'interface': 'TG', 'dataset': 'cab' , 'name': 'catdogs_big'}
+    // ];
     var possibles_pool = [
         {'interface': 'CC', 'dataset': 'EGHiAhY5ucce' , 'name': 'bridges'},
-        {'interface': 'CC', 'dataset': 'XtdcMntF37R9' , 'name': 'catdogs'},
-        {'interface': 'TG', 'dataset': 'brs' , 'name': 'bridges_small'},
-        {'interface': 'TG', 'dataset': 'cas' , 'name': 'catdogs_small'},
         {'interface': 'TG', 'dataset': 'brb' , 'name': 'bridges_big'},
-        {'interface': 'TG', 'dataset': 'cab' , 'name': 'catdogs_big'}
+        {'interface': 'TG', 'dataset': 'brb0' , 'name': 'bridges_big_0'}
     ];
 
     var hit_id = req.params.hit_id;
