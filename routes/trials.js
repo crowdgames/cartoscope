@@ -59,7 +59,7 @@ router.get('/compareTGCC/:hit_id', function(req, res, next) {
     //if pick Tile-o-Scope Grid, then go to TG, else go to Cartoscope Classic
     if (interface_version == "TG"){
         //nob means no bonus, nop means no penalty, capl means cap them at certain amount of images
-        link = 'http://cartosco.pe/Tiles/?genetic='+ dataset +'&trialId=' + hit_id + '&nob=1&nop=1&capl=1';
+        link = 'http://cartosco.pe/Tiles/?genetic='+ dataset +'&trialId=' + hit_id + '&nob=1&nop=1&capl=1&clev=1';
 
     } else {
         link = 'https://cartosco.pe/api/anon/startAnon/'+ dataset + '?trialId='+ hit_id;
