@@ -1300,7 +1300,7 @@ router.post('/resetTreeTileoscope/:mainCode', function(req,res,next){
 
 router.get('/getTileoscopePaths/:code', function(req,res,next){
 
-    tileDB.getTileoscopePaths(req.code).then(function(tile_paths) {
+    tileDB.getTileoscopePaths(req.params.code).then(function(tile_paths) {
         res.send(tile_paths)
     })
 });
