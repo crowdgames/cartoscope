@@ -111,6 +111,25 @@ router.get('/hgtest/:hit_id', function(req, res,next) {
 });
 
 
+
+router.post('batchPaths',function(req,res,next){
+
+
+    var data = req.body.paths;
+    var pArr = [];
+    data.forEach(function(item){
+        var p = tileDB.submitTileoscopePath(item.user_id, item.hit_id, item)
+        pArr.push(p)
+    });
+    Promise.all(pArr).then(function (d) {
+        res.status(200).send("Ok!")
+    })
+
+});
+
+
+
+
 //return random integer [min,max]
 function randomInt(min,max){
     return (Math.floor(Math.random() * (max - min + 1) ) + min);

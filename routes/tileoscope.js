@@ -503,7 +503,7 @@ router.get('/getQlearnOnlineSequence/:main_code', function(req, res, next) {
 
     //make sure there is a project
     qlearnDB.generateQlearnOptimalSequenceTileoscopeOnline(req.params.main_code).then(function(seq) {
-        console.log(seq)
+        console.log(seq);
         res.send(seq)
     }, function (err) {
         res.status(400).send('Error getting sequence: ' + err);
@@ -556,10 +556,9 @@ router.get('/getRecentCairns/:main_code/:user_id/:level_number', function(req, r
 
 
 //get table
-router.get('/fetchQTableByCode/:main_code', function(req, res, next) {
+router.get('/fetchQTableByCode/:main_code/:mode', function(req, res, next) {
 
-
-    qlearnDB.fetchQTableByCode(req.params.main_code).then(function(q_table) {
+    qlearnDB.fetchQTableByCode(req.params.main_code,req.params.mode).then(function(q_table) {
         console.log(q_table);
         res.json(q_table)
     }, function (err) {
@@ -1109,6 +1108,8 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
                     var gen_q = 0;
 
                     // var func = "createUserSequenceQlearnTileoscope";
+                    //var func = "generateSequenceQlearnStatic";
+
                     var func = "generateQlearnOptimalSequenceTileoscope";
 
 
@@ -1126,7 +1127,8 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
                         if (req.query.hasOwnProperty("train_hit")){
                             train_h = req.query.train_hit
                         }
-                        func = "generateQlearnOptimalSequenceTileoscopeOld";
+                        //func = "generateQlearnOptimalSequenceTileoscopeOld";
+                        func = "generateSequenceQlearnStatic";
                         f_call = qlearnDB[func](projectID,train_h)
                     }
 
@@ -1254,11 +1256,7 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
                     });
                 }
             })
-
-
         }
-
-
     }
 
 });
@@ -1280,9 +1278,6 @@ router.post('/updateGeneticTreeFromRDATA/:mainCode', function(req,res,next){
             res.status(404).send(error)
         })
     })
-
-
-
 });
 
 
@@ -1302,6 +1297,14 @@ router.post('/resetTreeTileoscope/:mainCode', function(req,res,next){
     })
 
 });
+
+router.get('/getTileoscopePaths/:code', function(req,res,next){
+
+    tileDB.getTileoscopePaths(req.code).then(function(tile_paths) {
+        res.send(tile_paths)
+    })
+});
+
 
 
 
