@@ -97,12 +97,39 @@ router.get('/surveyTG/:hit_id', function(req, res, next) {
 router.get('/hg_raw_data', function(req, res, next) {
 
     var hg_ids = [55,56,57,58,59,60];
+
+    hg_ids = [69]
+
+    var grouped_data = {}
     
 
     resultDB.getRawResultsMultiplebyTextGrouped(hg_ids).then(function(results) {
-        console.log(results)
 
-        res.send(results);
+        results.forEach(function(item){
+
+            if (!grouped_data.hasOwnProperty(item.task_id)){
+                grouped_data[item.task_id] = {}
+            };
+
+            if (!grouped_data[item.task_id].hasOwnProperty(item.name)){
+                grouped_data[item.task_id][item.name] = {
+                    total:0,
+                    majority: item.answer,
+                    majority_count: item.votes,
+                    unique_code: item.unique_code}
+            }
+
+            grouped_data[item.task_id][item.name][item.answer] = item.votes;
+            grouped_data[item.task_id][item.name].total += item.votes;
+            if (item.votes > grouped_data[item.task_id][item.name].majority_count  ) {
+                grouped_data[item.task_id][item.name].majority_count = item.votes;
+                grouped_data[item.task_id][item.name].majority = item.answer
+            }
+        });
+
+
+
+        res.send(grouped_data);
     }, function(err) {
         console.log(err)
         res.status(400).send('raw HG results could not be retrieved');
