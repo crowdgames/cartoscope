@@ -115,24 +115,29 @@ router.get('/generateHGLinks/:hit_id', function(req, res,next) {
     console.log(req.params);
 
     var hit_id = req.params.hit_id;
-    var subprojects = {
-        'erosion': 'UOYIiFeapnyI',
-        'farming': 'ocioawiaGcjw',
-        'oil & gas' : 'KyW6Ti9QUr4I',
-        'shipping': 'Srz9arMDwthQ',
-        'sea level rise': '94yoCWhFkpMk',
-        'restoration': 'cXz6ImkmG9k5'
-    };
 
-    var link_object = {};
-    link_object.description = "To do one of the available projects, follow its respective link from the list below."
+    if (hit_id === undefined){
+        res.status(404).send("You need to provide an identifier for grouping!")
+    } else {
+        var subprojects = {
+            'erosion': 'UOYIiFeapnyI',
+            'farming': 'ocioawiaGcjw',
+            'oil & gas' : 'KyW6Ti9QUr4I',
+            'shipping': 'Srz9arMDwthQ',
+            'sea level rise': '94yoCWhFkpMk',
+            'restoration': 'cXz6ImkmG9k5'
+        };
 
-    Object.keys(subprojects).forEach(function (item) {
+        var link_object = {};
+        link_object.description = "To do one of the available projects, follow its respective link from the list below."
+        Object.keys(subprojects).forEach(function (item) {
+            link_object[item] = 'http://cartosco.pe/kioskProject.html#/kioskStart/' + subprojects[item] + '?trialId=' + hit_id;
+        });
 
-        link_object[item] = 'http://cartosco.pe/kioskProject.html#/kioskStart/' + subprojects[item] + '?trialId=' + hit_id;
-    })
+        res.send(link_object); // send the list
+    }
 
-    res.send(link_object); // send the list
+
 
 });
 
