@@ -295,7 +295,7 @@ exports.getRawResultsMultiplebyTextGrouped = function(project_ids){
     return new Promise(function(resolve, error) {
         var connection = db.get();
 
-        connection.queryAsync('select task_id,project_id,answer as response_text ,count(*) as votes from response where project_id in (?) and task_id!=? group by task_id,project_id,response_text ',
+        connection.queryAsync('select r.task_id,r.project_id,r.response_text as answer,p.unique_code  ,count(*) as votes from response as r left join projects as p on p.id=r.project_id where r. project_id in (?) and task_id!=? group by task_id,project_id,response_text ',
             [ project_ids.toString(),"dummy"]).then(
             function(data) {
                 resolve(data);

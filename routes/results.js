@@ -94,24 +94,16 @@ router.get('/surveyTG/:hit_id', function(req, res, next) {
 
 
 //Get raw HG data from all projects
-router.get('/hg_raw_data/', function(req, res, next) {
+router.get('/hg_raw_data', function(req, res, next) {
 
     var hg_ids = [55,56,57,58,59,60];
+    
 
-    resultDB.getRawResultsMultiplebyText(hg_ids).then(function(results) {
+    resultDB.getRawResultsMultiplebyTextGrouped(hg_ids).then(function(results) {
 
-
-        var groupedData = d3.nest()
-            .key(function(d) { return d.task_id })
-            .key(function(d) { return d.project_id })
-            .key(function(d) { return d.answer })
-            .rollup(function(v) { return v.length; })
-            .entries(results);
-
-
-
-        res.send(groupedData);
+        res.send(results);
     }, function(err) {
+        console.log(err)
         res.status(400).send('raw HG results could not be retrieved');
     });
 });
