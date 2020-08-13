@@ -100,6 +100,7 @@ router.get('/hg_raw_data', function(req, res, next) {
     
 
     resultDB.getRawResultsMultiplebyTextGrouped(hg_ids).then(function(results) {
+        console.log(results)
 
         res.send(results);
     }, function(err) {
