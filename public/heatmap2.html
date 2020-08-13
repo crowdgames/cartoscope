@@ -1,11 +1,19 @@
 <div class="container">
-    <h1 class="title">Results & Contributions</h1>
-    <p> Below you can see how
-        other people have contributed to the project. The markers indicate your
-        own contributions.</p>
+
+    <center>
 
 
-        <center>
+    <div class="row">
+        <h1 class="title">Results & Contributions</h1>
+        <p> Below you can see how
+            other people have contributed to the project. The markers indicate your
+            own contributions.</p>
+    </div>
+
+
+
+
+        <div class="row">
         <div id="map_canvas" ng-if="callSuccess">
 
             <ui-gmap-google-map center="map1.center" zoom="map1.zoom" draggable="true" options="options" bounds="map1.bounds">
@@ -84,14 +92,33 @@
                 </center>
             </div>
 
-        <div class="row">
-            <h3>Thank you for taking the time to contribute to our study!</h3>
-            <p ng-if="showSource" ><a style="color: black;" target="_blank" ng-href="{{image_source}}">
-                Image Source</a>
-            </p>
-        </div>
 
-        <button class="submit-button" ng-click="exit()" style="margin-top: 20px;
+            <br>
+
+
+            <div class="row" ng-if="proj_data.external_sign_up">
+                <div class="col-md-1"></div>
+                <div class="col-md-10">
+
+                <iframe id="iframe_div2"
+                        ng-src="{{getExternalFrame(proj_data.external_sign_up)}}"
+                        style="width: 100%;height:800px"
+                ></iframe>
+                </div>
+                <div class="col-md-1"></div>
+
+            </div>
+
+            <div class="row">
+                <h3>Thank you for taking the time to contribute to our study!</h3>
+                <p ng-if="showSource" ><a style="color: black;" target="_blank" ng-href="{{image_source}}">
+                    Image Source</a>
+                </p>
+            </div>
+
+            <div class="row">
+
+                <button class="submit-button" ng-click="exit()" style="margin-top: 20px;
             border-radius: 8px;
             background-color: #9cdc1f;
             color: #000;
@@ -101,12 +128,20 @@
             border: none;
             padding: 10px 25px;">Finish</button>
 
-    </center>
+            </div>
+
+
+
+
+
+
+
+
 
     <!--get project code for the legend-->
     <p style="display: none" id="pcode">{{project}}</p>
     <input type="button"  id="projectValuePlace" value={{projectCodeForHeatMapHTML}} ng-show=false>
-
+    </center>
 </div>
 
 

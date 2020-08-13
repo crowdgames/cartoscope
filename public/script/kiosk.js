@@ -539,7 +539,7 @@ module.controller('heatMapController', function($scope, $http, $window,heatMapPr
     });
 });
 
-module.controller('heatMapProjectController', function($scope, $http, $window,$stateParams){
+module.controller('heatMapProjectController', function($scope, $http, $window,$stateParams, $sce){
 
     $scope.successProject1 = false;
     $window.document.title ="Results";
@@ -547,6 +547,10 @@ module.controller('heatMapProjectController', function($scope, $http, $window,$s
     $scope.showMarkers = false;
     $scope.showPoiName = false;
     $scope.isMarkerTask = false;
+
+    $scope.getExternalFrame = function(link){
+        return  $sce.trustAsResourceUrl(link)
+    }
 
     //gradients: initial colors
     var gradients = {
@@ -939,7 +943,7 @@ module.controller('heatMapProjectController', function($scope, $http, $window,$s
 
 
 module.controller('gridMapProjectController',
-    function($scope, $http, $window,$stateParams,$timeout,$location,NgMap) {
+    function($scope, $http, $window,$stateParams,$timeout,$location,$sce,NgMap) {
 
 
 
@@ -964,6 +968,10 @@ module.controller('gridMapProjectController',
         $scope.game_source = url_params.source;
         $scope.fromTileARUser = url_params.user_code;
     }
+
+        $scope.getExternalFrame = function(link){
+            return  $sce.trustAsResourceUrl(link)
+        }
 
 
 

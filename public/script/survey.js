@@ -133,7 +133,7 @@ module.config(function($stateProvider, $urlRouterProvider) {
           hitCode: null
       },
 
-      controller: function ($scope,$stateParams, $state, $window, $http, heatMapProject1, heatMapProject2) {
+      controller: function ($scope,$stateParams, $state, $window, $http, $sce, heatMapProject1, heatMapProject2) {
 
           $scope.callSuccess = false;
           $scope.callSuccess1 = false;
@@ -328,6 +328,10 @@ module.config(function($stateProvider, $urlRouterProvider) {
 
           }
 
+          $scope.getExternalFrame = function(link){
+              return  $sce.trustAsResourceUrl(link)
+          }
+
 
           //Function for Heatmap
           function HeatLayer(heatLayer,rdata,pointArray,answer) {
@@ -375,6 +379,7 @@ module.config(function($stateProvider, $urlRouterProvider) {
                   if ($scope.image_source != null) {
                       $scope.showSource = true;
                   }
+
 
 
               //Get options from the template

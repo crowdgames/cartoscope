@@ -113,6 +113,20 @@
                 <h2>Results coming soon!</h2>
             </div>
 
+            <div class="row" ng-if="proj_data.external_sign_up">
+                <div class="col-md-1"></div>
+                <div class="col-md-10">
+
+                    <iframe id="iframe_div2"
+                            ng-src="{{getExternalFrame(proj_data.external_sign_up)}}"
+                            style="width: 100%;height:800px"
+                    ></iframe>
+                </div>
+                <div class="col-md-1"></div>
+
+            </div>
+
+
 
             <div class="row">
                 <h3>Thank you for taking the time to contribute to our study!</h3>
