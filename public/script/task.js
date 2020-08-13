@@ -204,6 +204,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       $scope.showSurvButton = false;
       //init slider obj
       vm.slider_obj = {};
+      //if we do loop after we reach end
+      vm.image_loop = $location.search().image_loop || 0;
 
 
       vm.showChainQuestions = 0;
@@ -253,6 +255,31 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   confirmButtonText: 'Back'
               });
           }
+      };
+
+      vm.alertLoop = function(){
+
+          swal({
+              title: "Reached End!",
+              text: "Good job! Click continue to keep labeling images, or Survey to quit and go to the survey.",
+              type: 'info',
+              showCancelButton: true,
+              confirmButtonColor: '#9cdc1f',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Proceed to Survey',
+              cancelButtonText: 'Continue Labeling',
+              buttonsStyling: false
+          }, function(){
+
+              if (vm.userType == "kiosk") {
+                  vm.handleEnd();
+              } else {
+                  vm.handleFinish();
+              }
+          })
+
+
+
       };
 
 
@@ -320,11 +347,19 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       function getTasks() {
           showModal();
-          $http.get('/api/tasks/gettask/' + vm.code).then(function(e) {
+
+          var endpoint = '/api/tasks/gettask/';
+          //if we want to keep going after hitting the end
+          if (vm.image_loop) {
+              endpoint = '/api/tasks/gettaskloop/';
+          }
+
+          $http.get(endpoint + vm.code).then(function(e) {
               vm.dataset = e.data.dataset;
               vm.tasks = e.data.items;
 
-              if (e.data.finished) {
+
+              if (e.data.finished && !vm.image_loop) {
                   vm.finished = true;
 
                   if (vm.userType == "kiosk") {
@@ -334,6 +369,9 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   }
 
               }
+
+
+
               latCenter = vm.tasks[0].x;
               lngCenter = vm.tasks[0].y;
               if (vm.viewMarkerPoints){
@@ -825,6 +863,11 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   //if we are past the required amount for the project, show exit button
                   if (vm.data.progress > vm.req_amount ) {
                       $scope.showSurvButton = true;
+                  }
+
+                  if ((vm.data.progress == vm.data.size + 1) && vm.image_loop) {
+                      console.log("Reached end")
+                      vm.alertLoop();
                   }
 
 

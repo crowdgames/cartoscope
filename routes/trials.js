@@ -54,7 +54,7 @@ router.get('/compareTGCC/:hit_id', function(req, res, next) {
     var dataset = selected_d.dataset;
     var link = "";
 
-    console.log(interface_version,dataset)
+    console.log(interface_version,dataset);
 
     //if pick Tile-o-Scope Grid, then go to TG, else go to Cartoscope Classic
     if (interface_version == "TG"){
@@ -111,19 +111,19 @@ router.get('/hgtest/:hit_id', function(req, res,next) {
 });
 
 
+//batch insert path data
+router.post('/batchPaths',function(req,res,next){
 
-router.post('batchPaths',function(req,res,next){
-
-
-    var data = req.body.paths;
-    var pArr = [];
-    data.forEach(function(item){
-        var p = tileDB.submitTileoscopePath(item.user_id, item.hit_id, item)
-        pArr.push(p)
+    var path_data = req.body.paths;
+    Promise.each(path_data, function(item, index, arrayLength) {
+        //promises will be done in order
+        return tileDB.submitTileoscopePath(item.user_id, item.hit_id, item).then(function(result_item) {
+            return result_item; // Doesn't matter
+        });
+    }).then(function(result) {
+        // This will run after the last step is done
+        res.status(200).send("Path items set successfully!")
     });
-    Promise.all(pArr).then(function (d) {
-        res.status(200).send("Ok!")
-    })
 
 });
 

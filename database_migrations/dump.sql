@@ -386,6 +386,7 @@ CREATE TABLE `tileoscope_qtable` (
   `q_state` TEXT DEFAULT NULL,
   `q_player_mistakes`  varchar(128) DEFAULT NULL,
   `q_value` float DEFAULT NULL,
+  `mode` varchar(128) DEFAULT 'adaptive',
   `last_updated` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=212 DEFAULT CHARSET=latin1;

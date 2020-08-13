@@ -49,6 +49,7 @@ var SEQ_HORIZON = 15; //how much ahead should I generate
 
 
 //pick optimal for Tileoscope (old version, non adaptive)
+//TODO: RETIRE
 exports.generateQlearnOptimalSequenceTileoscopeOld = function(main_code,train_id) {
 
     return new Promise(function(resolve, error) {
@@ -115,29 +116,160 @@ exports.generateQlearnOptimalSequenceTileoscopeOld = function(main_code,train_id
 };
 
 
-//pick optimal for Tileoscope (online)
-exports.generateQlearnOptimalSequenceTileoscopeOnline = function(main_code, player_mistakes) {
+
+
+//function to generate a sequence based on static Q-learn
+exports.generateSequenceQlearnStatic = function(main_code,train_id,user_id) {
 
     return new Promise(function(resolve, error) {
 
+        exports.fetchQTableByCode(main_code,"static").then(function(Q){
+            //if table exists, then just format Q-table and construct sequence
+            if (Q.length > 0) {
+
+                //format from db format to object:
+                var Q_format = convertQtableFormat(Q);
+                var res_seq = QlearnAlgorithmConstruct(Q_format,SEQ_HORIZON,"N","");
+                var seq_conv = res_seq.join('-');
+                //send seq data
+                resolve(
+                    {
+                        genetic_id:-1, //not stored
+                        seq:seq_conv,
+                        method:"qlearn"
+                    });
+
+            } else {
+                //generate first then construct
+                console.log("No Qtable. Generating first")
+                exports.generateQTableStatic(main_code,train_id).then(function(c_q){
+                    var res_seq = QlearnAlgorithmConstruct(c_q,SEQ_HORIZON,"N","");
+                    var seq_conv = res_seq.join('-');
+                    resolve(
+                        {
+                            genetic_id:-1, //not stored
+                            seq:seq_conv,
+                            method:"qlearn"
+                        });
+
+
+                },function(err){
+                    console.log("Error constructing static Qlearn table");
+                    console.log(err);
+                    error(err);
+                })
+
+            }
+
+        }, function(err){
+            console.log("Error fetching static Qlearn table.");
+            console.log(err);
+            error(err);
+
+        })
+    });
+};
+
+
+//function to generate the Static Q-table from training data
+exports.generateQTableStatic = function(main_code,train_id) {
+
+    return new Promise(function(resolve, error) {
+
+         console.log("Fetching paths from: ",train_id);
+            //then get paths from designated random train hit:
+            tileDB.getTileoscopePaths(train_id).then(function(tile_paths) {
+
+                console.log("Fetched: " + tile_paths.length + " paths.");
+
+                //QLEARN FUNCTION HERE should return the Q-table
+                exports.QlearnAlgorithmStatic(main_code,tile_paths).then(function(Q){
+
+                    //order them ascending:
+                    var update_keys_array = Object.keys(Q);
+                    console.log("Have to insert " + update_keys_array.length.toString() + " entries");
+
+                    //store Q-table for static
+                    exports.updateQlearnTableAll(main_code,update_keys_array.sort(),Q,"static").then(function (up) {
+                        console.log("Inserted " + up.toString() + " entries");
+                        //once the Q-table is constructed, return Q-table
+                        resolve(Q);
+                    }, function (err) {
+                        error(err)
+                    })
+                },function(err){
+                    console.log("Error getting paths from training to build Q-table static");
+                    console.log(err)
+                    error(err)
+                })
+
+            });
+
+
+    });
+};
+
+
+
+//generate Qtable from training data
+exports.generateQTableAdaptive = function(main_code,train_id) {
+
+    return new Promise(function(resolve, error) {
+
+        //get the paths from training:
+        tileDB.getTileoscopePaths(train_id).then(function(tile_paths) {
+
+            console.log("Fetched: " + tile_paths.length + " paths.");
+            //generate Qtable:
+            exports.QlearnAlgorithm(tile_paths,main_code,{},-1).then(function(res_seq){
+
+                //convert sequence to comptible string for Tile-o-Scope
+                var seq_conv = res_seq.join('-');
+                resolve(
+                    {
+                        genetic_id:-1, //we didn't store it
+                        seq:seq_conv,
+                        method:"qlearnO"
+                    });
+
+            },function(err){
+
+                console.log("Error generating Q-table adaptive for code: " + main_code);
+                console.log(err);
+                error(err)
+
+            })
+
+
+        },function(err){
+          console.log("Error fetching paths for: " + train_id);
+          console.log(err);
+          error(err);
+        })
+
+    });
+};
+
+
+
+
+
+
+
+
+//pick optimal for Tileoscope (online)
+exports.generateQlearnOptimalSequenceTileoscopeOnline = function(main_code, player_mistakes,user_id) {
+
+    return new Promise(function(resolve, error) {
+
+        var Q_format ={};
+
         //get tree from main code
-        dynamicDB.getTreeRootFromCodeTileoscope(main_code).then(function(tree) {
+        exports.fetchPlayerPath(user_id).then(function(user_path) {
 
+           //Step 1: get table
+            exports.fetchQTableByCode(main_code,"adaptive").then(function(Q){
 
-
-            //first, fetch the table
-            //A: If no table AND no paths: Random
-            //B: If no table But paths: generate
-            //C: If table and paths: update
-            exports.fetchQTableByCode(main_code).then(function(Q){
-
-                // var func_fetch_paths = "getTileoscopePathsRecent";
-                // if (Q.length){
-                //     var last_update = Q[Q.length-1].last_updated;
-                //
-                // } else {
-                //     func_fetch_paths = "getTileoscopePaths";
-                // }
 
                 console.log("Fetched: "+ Q.length + " Q-table entries");
 
@@ -153,97 +285,43 @@ exports.generateQlearnOptimalSequenceTileoscopeOnline = function(main_code, play
 
 
                         console.log("no paths: create without updating");
-                        if (player_mistakes == -1){
+                        if (player_mistakes === -1){
                             console.log("We are at the very start of play. Just get what we have")
                         }
 
 
                         //if no paths, but we have table, then just spit sequence using table we have
-                        var Q_format ={};
                         if (Q.length > 0) {
                             Q_format = convertQtableFormat(Q);
                         }
 
-                        var res_seq = QlearnAlgorithmConstruct(Q_format,SEQ_HORIZON,player_mistakes);
+                        //get next level
+                        var res_seq = QlearnAlgorithmConstruct(Q_format,1,encodeMistakes(player_mistakes),user_path);
 
                         //convert sequence to comptible string for Tile-o-Scope
                         var seq_conv = res_seq.join('-');
-                        var gen_obj = {
-                            unique_code_main: main_code,
-                            seq: seq_conv,
-                            pool: tree[0].pool,
-                            ignore_codes: tree[0].ignore_codes,
-                            misc: tree[0].misc || "none",
-                            active: 1,
-                            method: "qlearnO"
-                        };
-                        var gen_list = [gen_obj];
-                        dynamicDB.insertGeneticSequences2Tileoscope(gen_list).then(function(insert_data) {
-                            //Send genetic id back
-                            if (insert_data.insertId) {
-                                resolve(
-                                    {
-                                        genetic_id:insert_data.insertId,
-                                        seq:seq_conv,
-                                        method:"qlearnO"
-                                    });
-                            } else if (insert_data.affectedRows > 0) {
-                                resolve(0);
-                            } else {
-                                error({code: 'Problem with insertion'});
-                            }
-
-
-                        },function(err){
-
-                            console.log("Error getting paths for main code:" + main_code);
-                            error(err)
-
-                        });
-
-
+                        resolve(
+                            {
+                                genetic_id:-1,
+                                seq:seq_conv,
+                                method:"qlearnO"
+                            });
 
                     } else {
                         //QLEARN FUNCTION HERE should return the sequence
 
-                        var Q_format = convertQtableFormat(Q);
+                        Q_format = convertQtableFormat(Q);
 
-                        exports.QlearnAlgorithm(tile_paths,main_code,Q_format,player_mistakes).then(function(res_seq){
+                        exports.QlearnAlgorithm(tile_paths,main_code,Q_format,player_mistakes,user_path).then(function(res_seq){
 
                             //convert sequence to comptible string for Tile-o-Scope
                             var seq_conv = res_seq.join('-');
-                            var gen_obj = {
-                                unique_code_main: main_code,
-                                seq: seq_conv,
-                                pool: tree[0].pool,
-                                ignore_codes: tree[0].ignore_codes,
-                                misc: tree[0].misc || "none",
-                                active: 1,
-                                method: "qlearnO"
-                            };
-                            var gen_list = [gen_obj];
-                            dynamicDB.insertGeneticSequences2Tileoscope(gen_list).then(function(insert_data) {
-                                //Send genetic id back
-                                if (insert_data.insertId) {
-                                    resolve(
-                                        {
-                                            genetic_id:insert_data.insertId,
-                                            seq:seq_conv,
-                                            method:"qlearnO"
-                                        });
-                                } else if (insert_data.affectedRows > 0) {
-                                    resolve(0);
-                                } else {
-                                    error({code: 'Problem with insertion'});
-                                }
-
-
-                            },function(err){
-
-                                console.log("Error getting paths for main code:" + main_code);
-                                error(err)
-
-                            });
+                            resolve(
+                                {
+                                    genetic_id:-1, //not storing this, we don't need it now that we have the paths table
+                                    seq:seq_conv,
+                                    method:"qlearnO"
+                                });
 
                         },function(err){
 
@@ -264,6 +342,7 @@ exports.generateQlearnOptimalSequenceTileoscopeOnline = function(main_code, play
 
 
         },function(err){
+            console.log("Could not get user path")
             error(err)
 
         })
@@ -272,8 +351,11 @@ exports.generateQlearnOptimalSequenceTileoscopeOnline = function(main_code, play
 
 
 
+
+
+
 //update q-learn table entry (one)
-exports.updateQlearnTableOne = function(main_code,q_key,q_value) {
+exports.updateQlearnTableOne = function(main_code,q_key,q_value,mode) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
 
@@ -283,7 +365,7 @@ exports.updateQlearnTableOne = function(main_code,q_key,q_value) {
         //key is state | action
         var q_action = kk[1];
         var q_state = kk[0];
-        var q_player_mistakes = kk[2];
+        var q_player_mistakes = q_state.split('/')[1] || 'N'; //if we are in the static version, then we don't have performance
         var q_id = 0;
         if (kk.length == 4){
             q_id = parseInt(kk[3])
@@ -296,7 +378,7 @@ exports.updateQlearnTableOne = function(main_code,q_key,q_value) {
             console.log("Will insert:");
             console.log(unique_code_main, q_state, q_action, q_player_mistakes, parseFloat(q_value))
 
-            connection.queryAsync('INSERT INTO tileoscope_qtable (unique_code_main, q_state, q_action,q_player_mistakes, q_value) VALUES(?,?,?,?,?) ',[unique_code_main, q_state, q_action,q_player_mistakes, parseFloat(q_value)]).then(
+            connection.queryAsync('INSERT INTO tileoscope_qtable (unique_code_main, q_state, q_action,q_player_mistakes, q_value,mode) VALUES(?,?,?,?,?,?) ',[unique_code_main, q_state, q_action,q_player_mistakes, parseFloat(q_value),mode]).then(
                 function(data) {
                     if (data.insertId) {
                         resolve(data.affectedRows);
@@ -328,7 +410,7 @@ exports.updateQlearnTableOne = function(main_code,q_key,q_value) {
 
 
 //update q-learn table entry
-exports.updateQlearnTableAll = function(main_code,update_keys, q_table) {
+exports.updateQlearnTableAll = function(main_code,update_keys, q_table,mode) {
 
     return new Promise(function (resolve, error) {
 
@@ -338,7 +420,7 @@ exports.updateQlearnTableAll = function(main_code,update_keys, q_table) {
 
         update_keys.forEach(function (item) {
 
-            var p = exports.updateQlearnTableOne(main_code,item,q_table[item]);
+            var p = exports.updateQlearnTableOne(main_code,item,q_table[item],mode);
             p.catch(function (err) {
                // console.log("Error updating qtable entry");
                // console.log(err)
@@ -364,11 +446,11 @@ exports.updateQlearnTableAll = function(main_code,update_keys, q_table) {
 
 
 //fetch from table and re-format
-exports.fetchQTableByCode = function(unique_code_main) {
+exports.fetchQTableByCode = function(unique_code_main,mode) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
 
-        connection.queryAsync('select * from tileoscope_qtable where unique_code_main=? order by UNIX_TIMESTAMP(last_updated)',[unique_code_main]).then(
+        connection.queryAsync('select * from tileoscope_qtable where unique_code_main=? and mode=? order by UNIX_TIMESTAMP(last_updated)',[unique_code_main,mode]).then(
             function(data) {
                 resolve(data)
             }, function(err) {
@@ -379,25 +461,19 @@ exports.fetchQTableByCode = function(unique_code_main) {
 
 
 // qlearn core-algorithm: adaptive
-exports.QlearnAlgorithm = function(player_paths,main_code, Q, player_mistakes) {
+exports.QlearnAlgorithm = function(player_paths,main_code, Q, player_mistakes,main_player_path) {
 
     return new Promise(function (resolve, error) {
 
-        //player paths have all the paths
-        //player_paths is an array of objects where
-        //each row is {seq: ... ,
-        //  tiles_collected: ... ,
-        // times_completed: ... , number_moves: ...}
 
         //if we come in with undefined Q or empty one
         if (Q == undefined || Q.length == 0){
             Q = {};
         }
-        console.log("Qtable before")
-        console.log(Q)
+        console.log("Qtable before");
+        console.log(Q);
 
-        //encode current player mistakes:
-        var p_mc = encodeMistakes(player_mistakes);
+
 
         // array that keeps track of how many entries in table need to be updated
         var update_keys_array = [];
@@ -405,11 +481,12 @@ exports.QlearnAlgorithm = function(player_paths,main_code, Q, player_mistakes) {
         //for (var i = 0; i < REP_N; i++) {
         player_paths.forEach(function(ppt) {
 
+
             //convert to all keys we have to update
-            var q_to_push = convertPathToKeys(ppt);
+            var q_to_push = convertPathToKeys(ppt,"adaptive");
             q_to_push.forEach(function(q_update){
-                //add the player mistakes in the key
-                var key = q_update.state + "|" + q_update.action + "|" + p_mc;
+                //make the key as state | action Q[key] -> Q[state,action]
+                var key = q_update.state + "|" + q_update.action;
                 var next_state = q_update.next_state;
                 var value = q_update.value;
 
@@ -437,7 +514,7 @@ exports.QlearnAlgorithm = function(player_paths,main_code, Q, player_mistakes) {
                 var max_next_Q = -99.0;
                 ACTIONS.forEach(function(try_act){
 
-                    var try_key = next_state + "|" + try_act + "|" + p_mc;
+                    var try_key = next_state + "|" + try_act ;
                     var try_Q = 0.0;
                     var has_key_try = Object.keys(Q).filter(function(item, index) {
                         return item.indexOf(try_key + "|") == 0;
@@ -467,8 +544,8 @@ exports.QlearnAlgorithm = function(player_paths,main_code, Q, player_mistakes) {
             }) //end of paths from player
 
             //now that we have done all updates for this player, we must update the user_index in the db!
-            var user_path = ppt.seq.split('-');
-            exports.updatePlayerPathIndex(ppt.id,user_path.length);
+            var u_path = ppt.seq.split('-');
+            exports.updatePlayerPathIndex(ppt.id,u_path.length);
 
 
         }); //end of q table generation
@@ -478,17 +555,16 @@ exports.QlearnAlgorithm = function(player_paths,main_code, Q, player_mistakes) {
         console.log("Have to update " + update_keys_array.length.toString() + " entries");
 
         //update Q-table first
-        exports.updateQlearnTableAll(main_code,update_keys_array.sort(),Q).then(function (up) {
+        exports.updateQlearnTableAll(main_code,update_keys_array.sort(),Q,"adaptive").then(function (up) {
 
             console.log("Updated " + up.toString() + " entries");
             //once the Q-table is constructed, generate the seq and return
-            var new_seq = QlearnAlgorithmConstruct(Q,SEQ_HORIZON,p_mc);
+            //encode current player mistakes: will use in generating path
+            var p_mc = encodeMistakes(player_mistakes);
+            var new_seq = QlearnAlgorithmConstruct(Q,1,p_mc,main_player_path);
             resolve(new_seq);
-
         }, function (err) {
-
             error(err)
-
         })
 
 
@@ -502,25 +578,19 @@ exports.QlearnAlgorithm = function(player_paths,main_code, Q, player_mistakes) {
 exports.QlearnAlgorithmStatic = function(main_code,player_paths){
     return new Promise(function (resolve, error) {
 
-        //player paths have all the paths
-        //player_paths is an array of objects where
-        //each row is {seq: ... ,
-        //  tiles_collected: ... ,
-        // times_completed: ... , number_moves: ...}
 
         var Q = {};
-
-
         //for (var i = 0; i < REP_N; i++) {
         player_paths.forEach(function(ppt) {
 
             //convert to all keys we have to update
-            var q_to_push = convertPathToKeys(ppt);
+            var q_to_push = convertPathToKeys(ppt,"static");
             q_to_push.forEach(function(q_update){
-                //add the player mistakes in the key
+                //make the key as state | action Q[key] -> Q[state,action]
                 var key = q_update.state + "|" + q_update.action;
                 var next_state = q_update.next_state;
                 var value = q_update.value;
+
 
 
                 //if key not in Q then init it
@@ -543,15 +613,12 @@ exports.QlearnAlgorithmStatic = function(main_code,player_paths){
                 Q[key] = (1.0 - ALPHA) * Q[key] + ALPHA * (value + LAMBDA * max_next_Q);
 
 
-
             }) //end of paths from player
 
         }); //end of q table generation
-        //once the Q-table is constructed, generate the seq and return
-        var new_seq = QlearnAlgorithmConstructOld(Q,SEQ_HORIZON);
-        resolve(new_seq);
 
-
+        //return the Q-table
+        resolve(Q)
 
     })
 };
@@ -565,6 +632,24 @@ exports.updatePlayerPathIndex = function(path_id,new_index) {
         connection.queryAsync('update tileoscope_paths set user_index=? where id=?',[new_index,path_id]).then(
             function(data) {
                 resolve(data)
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
+//fetch user path
+exports.fetchPlayerPath = function(user_id) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+        connection.queryAsync('select seq from tileoscope_paths where user_id=? limit 1 ',[user_id]).then(
+            function(data) {
+                if (data.length == 0) {
+                    resolve("")
+                } else {
+                    resolve(data[0].seq)
+                }
             }, function(err) {
                 error(err);
             });
@@ -593,8 +678,9 @@ function convertQtableFormat(data){
     var q_table = {};
     //make them in the form we need Q[key] = value
     // since we cannot have unique index with state, we will use the id as a shorthand, we need this info passed somehow
+    //we need the unique index to update things in mysql
     data.forEach(function(item){
-        var key = item.q_state + "|" + item.q_action + "|" + item.q_player_mistakes + "|" +  item.id;
+        var key = item.q_state + "|" + item.q_action + "|"  +  item.id;
         q_table[key] = item.q_value;
 
     });
@@ -602,10 +688,33 @@ function convertQtableFormat(data){
 }
 
 
-//given Q table, construct a sequence of size n: adaptive with mistakes and softmax
-function QlearnAlgorithmConstruct(Q,size_n,p_mistakes) {
+function convertQtableFormatNoKey(data){
+    var q_table = {};
+    //make them in the form we need Q[key] = value
+    // since we cannot have unique index with state, we will use the id as a shorthand, we need this info passed somehow
+    //we need the unique index to update things in mysql
+    data.forEach(function(item){
+        var key = item.q_state + "|" + item.q_action
+        q_table[key] = item.q_value;
+
+    });
+    return(q_table)
+}
+
+
+//given Q table, construct a sequence of size n
+//if static, p_mistakes is N everywhere
+function QlearnAlgorithmConstruct(Q,size_n,p_mistakes,user_path) {
+
+
+    if (user_path === undefined){
+        user_path = ''
+    }
 
     var pth = [];
+    if (user_path.length > 0) {
+        pth = user_path.split('-');
+    }
 
     for (var i = 0; i < size_n; i++) {
 
@@ -619,10 +728,10 @@ function QlearnAlgorithmConstruct(Q,size_n,p_mistakes) {
             state_arr = pth;
         }
 
-        if (state_arr.length == 0){
+        if (state_arr.length === 0){
             state = ""
         } else {
-            state = state_arr.join("-")
+            state = state_arr.join("-") + "/" + p_mistakes
         }
 
 
@@ -633,7 +742,7 @@ function QlearnAlgorithmConstruct(Q,size_n,p_mistakes) {
         var pick_act = [];
         var norm_w = 0;
         ACTIONS.forEach(function(try_act){
-            var try_key = state + "|" + try_act + "|" + p_mistakes;
+            var try_key = state + "|" + try_act ;
             var try_Q = 0.0;
 
             //must add key in it
@@ -648,9 +757,7 @@ function QlearnAlgorithmConstruct(Q,size_n,p_mistakes) {
             if (Q.hasOwnProperty(try_key)) {
                 try_Q = parseFloat(Q[try_key]);
             }
-            // } else {
-            //     try_Q = -99.0;
-            // }
+
 
             //if softmax, then use softmax function to normalize weights
             // else used squared value of function
@@ -665,11 +772,10 @@ function QlearnAlgorithmConstruct(Q,size_n,p_mistakes) {
             pick_act.push(try_act);
         });
 
-        //normalize weights of choices
         // console.log(pick_w);
         // console.log(pick_act);
 
-
+        //normalize weights of choices
         var pick_w_norm = [];
         for (var j = 0; j < pick_w.length; j++) {
             if (norm_w > 0) {
@@ -681,6 +787,7 @@ function QlearnAlgorithmConstruct(Q,size_n,p_mistakes) {
 
         // pick random weighted
         max_act = chance.weighted(pick_act, pick_w_norm);
+        console.log("Next pick: " + max_act)
         pth.push(max_act);
 
     }
@@ -689,6 +796,7 @@ function QlearnAlgorithmConstruct(Q,size_n,p_mistakes) {
 
 };
 
+//TODO: RETIRE
 function QlearnAlgorithmConstructOld(Q,size_n) {
 
     var pth = [];
@@ -765,7 +873,7 @@ function QlearnAlgorithmConstructOld(Q,size_n) {
 
 
 
-//update that player ended round
+//Alternative way of updating that player ended round. Not currently used
 exports.updatePlayerEnded = function(user_id,hit_id) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
@@ -778,8 +886,6 @@ exports.updatePlayerEnded = function(user_id,hit_id) {
                 });
     });
 };
-
-
 
 
 
@@ -806,63 +912,12 @@ function encodeMistakes(num_m){
     }
 }
 
-// function convertPathToKeys(rand_traj_raw) {
-//
-//     //for a given user path, convert to array of objects:
-//     // { state: , action: , collected: , next_state}, ...
-//
-//     var rand_traj_seq = rand_traj_raw.seq.split('-');
-//     var rand_traj_tiles = rand_traj_raw.tiles_collected.split('-');
-//
-//     var q_array_path = [];
-//     var pos = rand_traj_seq.length - 1; //start from end
-//     while (pos + STATE_LEN > 0) {
-//         for (var i = 0; i <= STATE_LEN; i++) {
-//
-//             var start_pos = pos - i;
-//             if (start_pos < 0) {
-//                 start_pos = 0
-//             }
-//             var example_seq = rand_traj_seq.slice(start_pos, pos + 1);
-//             var example_tiles_c = rand_traj_tiles.slice(start_pos, pos + 1);
-//             if (example_seq.length) {
-//                 var action = example_seq.pop();
-//                 var collected = parseInt(example_tiles_c.pop());
-//                 var value = collected * WEIGHTS[action];
-//                 var state = example_seq.join('-');
-//                 //next state is going to be one step after. but if we picked the end,
-//                 // then they quit, so X
-//                 var next_state = "";
-//                 var next_state_arr = [];
-//                 if (pos == rand_traj_seq.length - 1) {
-//                     next_state = "X";
-//                 } else {
-//                     next_state_arr = example_seq.concat([action]);
-//                     //if it is more than length 3, cut it to last 3
-//                     if (next_state_arr.length > STATE_LEN) {
-//                         next_state_arr = next_state_arr.slice(-STATE_LEN)
-//                     }
-//                     next_state = next_state_arr.join('-')
-//                 }
-//                 var obj = {
-//                     'state': state,
-//                     'action': action,
-//                     'value': value,
-//                     'next_state': next_state,
-//                 };
-//                 q_array_path.push(obj)
-//             }
-//         }
-//         pos = pos - 1;
-//     }
-//     return q_array_path;
-//
-// }
 
-function convertPathToKeys(rand_traj_raw) {
+
+function convertPathToKeys(rand_traj_raw,mode) {
 
     //for a given user path, convert to array of objects:
-    // { state: , action: , collected: , next_state}, ...
+    // { state: , action: , value: , next_state}
 
     //console.log("Path: " + rand_traj_raw.seq);
     //console.log("Collected: " + rand_traj_raw.tiles_collected);
@@ -870,6 +925,7 @@ function convertPathToKeys(rand_traj_raw) {
 
     var rand_traj_seq = rand_traj_raw.seq.split('-');
     var rand_traj_tiles = rand_traj_raw.tiles_collected.split('-');
+    var rand_traj_mistakes = rand_traj_raw.number_mistakes.split('-');
 
     //this is what is the first thing we must see
     var user_index = rand_traj_raw.user_index || 0;
@@ -891,11 +947,31 @@ function convertPathToKeys(rand_traj_raw) {
             }
             var example_seq = rand_traj_seq.slice(start_pos, pos + 1);
             var example_tiles_c = rand_traj_tiles.slice(start_pos, pos + 1);
+            var example_mistakes = rand_traj_mistakes.slice(start_pos, pos + 1);
+
             if (example_seq.length) {
                 var action = example_seq.pop();
+                var next_mistake = parseInt(example_mistakes.pop());
+
+
                 var collected = parseInt(example_tiles_c.pop());
                 var value = collected * WEIGHTS[action];
+
+
                 var state = example_seq.join('-');
+
+                //state is history + performance we were
+                if (state !== "") {
+
+                    var perf = encodeMistakes(parseInt(example_mistakes.pop()));
+                    //if in static, disregard user performance in state
+                    if (mode === "static"){
+                        perf = "N";
+                    }
+                    state = state + "/" + perf
+                }
+
+
                 //next state is going to be one step after. but if we picked the end,
                 // then they quit, so X
                 var next_state = "";
@@ -908,18 +984,24 @@ function convertPathToKeys(rand_traj_raw) {
                 }
 
 
-
+                //if we quit, next state is simply quit
+                //else, is the new history + performance when we took action
                 if(path_quit){
                     next_state = "X";
                 } else {
-                    next_state = next_state_arr.join('-');
+                    var n_perf = encodeMistakes(parseInt(next_mistake));
+                    if (mode === "static"){
+                        n_perf = "N";
+                    }
+                    next_state = next_state_arr.join('-') + "/" +   n_perf;
                 }
 
                 var obj = {
                     'state': state,
                     'action': action,
                     'value': value,
-                    'next_state': next_state,
+                    'next_state': next_state
+
                 };
                 console.log(obj);
                 q_array_path.push(obj)
@@ -930,3 +1012,11 @@ function convertPathToKeys(rand_traj_raw) {
     return q_array_path;
 
 }
+
+//Function filterResponses: filter array based on some criteria
+function filterResponses(array, criteria) {
+    return array.filter(function (obj) {
+        return Object.keys(criteria).every(function (c) {
+            return obj[c] == criteria[c];
+        });})
+};

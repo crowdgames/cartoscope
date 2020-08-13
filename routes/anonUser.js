@@ -34,6 +34,8 @@ router.get('/startAnon/:pCode',
       var genetic_tree = req.query.tree; //whether the task is MCTS tree
       var qlearn = req.query.qlearn; //whether we are doing qlearn
       var no_turk_params = 0;
+      var image_loop = req.query.image_loop; //whether we are doing loop after finishing dataset
+
 
       if (req.query.hasOwnProperty("participantId")){
           no_turk_params = 1;
@@ -65,6 +67,9 @@ router.get('/startAnon/:pCode',
                 //if qlearn, pick between random and optimal
                 if (qlearn){
                     red_link += '&qlearn=1';
+                }
+                if (parseInt(image_loop)){
+                    red_link += '&image_loop=1';
                 }
             res.redirect(red_link);
           });
@@ -106,7 +111,7 @@ router.get('/startAnon/:pCode',
 
             } else {
 
-                console.log("Not logged in")
+                console.log("Not logged in");
 
                 var red_link = '/consentForm.html#/consent?project=' + req.params.pCode + '&' +
                     querystring.stringify(req.query);

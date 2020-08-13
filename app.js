@@ -19,6 +19,8 @@ var results = require('./routes/results');
 var dynamicr = require('./routes/dynamic');
 var tileoscope = require('./routes/tileoscope');
 var inaturalist = require('./routes/inaturalist');
+var qlearn = require('./routes/qlearn');
+
 var trials = require('./routes/trials');
 
 
@@ -102,6 +104,7 @@ app.use('/api/dynamic', dynamicr);
 app.use('/api/tileoscope', tileoscope);
 app.use('/api/inat', inaturalist);
 app.use('/api/trials', trials);
+app.use('/api/qlearn', qlearn);
 
 
 

@@ -26,7 +26,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
             chain:-1,
             genetic: 0,
             tree:0,
-            qlearn:0
+            qlearn:0,
+            image_loop: 0
         },
         controller: 'instructionController'
     });
@@ -49,7 +50,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
             fromChain:0,
             genetic: 0,
             tree:0,
-            qlearn:0
+            qlearn:0,
+            image_loop: 0
         },
         // controller: 'exampleController'
     });
@@ -72,7 +74,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
             fromChain:0,
             genetic: 0,
             tree:0,
-            qlearn:0
+            qlearn:0,
+            image_loop:0
         },
         // controller: 'exampleController'
     });
@@ -120,6 +123,7 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
         var qlearn = $stateParams.qlearn;
         vm.params.participantId= $stateParams.participantId;
         vm.params.trialId= $stateParams.trialId;
+        var image_loop = $stateParams.image_loop;
 
 
 
@@ -579,6 +583,12 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
             if (parseInt(qlearn)){
                 qs += '&qlearn=' + qlearn;
             }
+
+            if (parseInt(image_loop)){
+                qs += '&image_loop=' + image_loop
+            }
+
+
 
 
             //console.log('reqParams ', reqParams);
@@ -1376,6 +1386,10 @@ module.controller('mTurkController', ['$window','$scope','$location','$state','$
         if ($scope.params.qlearn == "1"){
             qs += '&qlearn=1'
         }
+        //if image_loop in params, pass it
+        if ($scope.params.image_loop == "1"){
+            qs += '&image_loop=1'
+        }
 
         window.location.replace('/api/anon/startAnon/' + $scope.params.project + '?' + qs.substr(1));
     }
@@ -1433,6 +1447,7 @@ module.controller('instructionController', ['$window','$scope', '$state','$state
         var genetic = $scope.params.genetic || 0;
         var genetic_tree = $scope.params.tree || 0;
         var qlearn = $scope.params.qlearn || 0;
+        var image_loop = $scope.params.image_loop || 0;
 
         //Check if coming with mturk parameters or not
 
@@ -1513,7 +1528,8 @@ module.controller('instructionController', ['$window','$scope', '$state','$state
                     fromChain: fromChain,
                     genetic: genetic,
                     tree: genetic_tree,
-                    qlearn:qlearn
+                    qlearn:qlearn,
+                    image_loop: image_loop
                 };
 
                 //adjust parameters depending on mturk platform

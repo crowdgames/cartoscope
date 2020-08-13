@@ -1085,7 +1085,7 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
             //check if user exists:
             anonUserDB.findConsentedMTurkWorker(anonUser.workerId, projectID,anonUser.hitId).then(function(user) {
                 if (user.id) {
-                    console.log("User exists.Fetching sequence")
+                    console.log("User exists.Fetching sequence");
                     //res.status(200).send({user_id:user.id, project_code: projectID});
                     //retrieve from genetic id
                     tileDB.getCreatedSequenceTileoscope(user.genetic_id).then(function(genetic_data) {
@@ -1129,7 +1129,7 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
                         }
                         //func = "generateQlearnOptimalSequenceTileoscopeOld";
                         func = "generateSequenceQlearnStatic";
-                        f_call = qlearnDB[func](projectID,train_h)
+                        f_call = qlearnDB[func](projectID,train_h,workerId)
                     }
 
                     f_call.then(function(genetic_data){
@@ -1169,29 +1169,31 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
                 player_mistakes = parseInt(req.query.player_mistakes);
             }
 
+
             //if in online case of qlearn, we need to generate a sequence every time we get asked and update the table accordingly
             var f_online = "generateQlearnOptimalSequenceTileoscopeOnline";
 
-            qlearnDB[f_online](projectID,player_mistakes).then(function(genetic_data){
+            qlearnDB[f_online](projectID,player_mistakes,workerId).then(function(genetic_data){
 
                 console.log(genetic_data);
-                var genetic_id = genetic_data.genetic_id;
+                // var genetic_id = genetic_data.genetic_id;
                 var genetic_seq = genetic_data.seq;
                 //add them as mturk worker and return genetic sequence
                 //BUT! If they exist update the genetic id!
-                console.log(genetic_id);
+                console.log(genetic_seq.split('-').length)
+                res.send(genetic_data);
 
-                anonUserDB.addMTurkWorkerUpdateSequence(anonUser, projectID, 1, 1, genetic_id).then(function (userID) {
-                    //find user then return corresponding user id and project code
-                    anonUserDB.findConsentedMTurkWorker(anonUser.workerId, projectID,anonUser.hitId).then(function(user) {
-                        if (user.id) {
-                            //res.status(200).send({user_id:user.id, project_code: projectID});
-                            res.setHeader('Access-Control-Allow-Origin', '*');
-                            var res_obj = {seq:genetic_data.seq,method:genetic_data.method};
-                            res.send(res_obj);
-                        }
-                    })
-                });
+                // anonUserDB.addMTurkWorkerUpdateSequence(anonUser, projectID, 1, 1, genetic_id).then(function (userID) {
+                //     //find user then return corresponding user id and project code
+                //     anonUserDB.findConsentedMTurkWorker(anonUser.workerId, projectID,anonUser.hitId).then(function(user) {
+                //         if (user.id) {
+                //             //res.status(200).send({user_id:user.id, project_code: projectID});
+                //             res.setHeader('Access-Control-Allow-Origin', '*');
+                //             var res_obj = {seq:genetic_data.seq,method:genetic_data.method};
+                //             res.send(res_obj);
+                //         }
+                //     })
+                // });
 
             },function(err) {
                 console.log('err ', err);

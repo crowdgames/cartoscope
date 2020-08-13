@@ -256,6 +256,76 @@ router.get('/gettask/:code', [filters.requireLogin], function(req, res, next) {
   });
 });
 
+//they never end
+router.get('/gettaskloop/:code', [filters.requireLogin], function(req, res, next) {
+    projectDB.getSingleProjectFromCode(req.params.code).then(function(project) {
+        // console.log("IN Task get task "+ project);
+        var showInOrder = project.inorder;
+        var user = req.session.passport.user;
+        var dataSetId = project['dataset_id'];
+        if (!dataSetId) {
+            res.status(500).send({error: 'No data set found'});
+        } else {
+            var dataSetSize = projectDB.getDataSetSize(dataSetId);
+            var getProgress = projectDB.getProgress(project.id, req.session.passport.user);
+            var userID = req.session.passport.user.id;
+            dataSetSize.catch(function(err) {
+                res.status(500).send({error: 'Data set not found'});
+                return -1;
+            });
+
+            getProgress.catch(function(err) {
+                res.status(500).send({error: 'Progress not found'});
+                return null;
+            });
+
+            Promise.join(dataSetSize, getProgress, function(dataSetSize, progressItem) {
+
+
+                if (dataSetSize == -1 || !progressItem) {
+                    res.status(500).send({error: 'Data set not found or Progress not created.'});
+                } else {
+                    var round = Math.floor(progressItem.progress/dataSetSize);
+
+
+                    //if we already did the entire set, go from beginning
+                    if (progressItem.progress >= dataSetSize){
+                        progressItem.progress =   progressItem.progress % dataSetSize;
+                        //we are using userID to shuffle, we should make a slight change to the string we use to alter the seed
+                        //otherwise they get the same order the next time
+                        console.log("Round:" + round)
+                        userID +=  round.toString()
+                    }
+
+                    console.log("User id:" + userID.substr(userID.length - 8));
+
+
+
+                    processItems(dataSetId, dataSetSize, progressItem, userID, user.type,showInOrder).then(function(data) {
+                        if (data) {
+                            res.send({
+                                items: data,
+                                dataset: dataSetId,
+                                finished: false
+                            });
+                        } else {
+                            res.send({
+                                dataset: dataSetId,
+                                items: [],
+                                finished: true
+                            });
+                        }
+                    }).catch(function(err) {
+                        res.status(500).send({error: err.code || 'Could not retrieve items'});
+                    });
+                }
+            });
+        }
+    }).catch(function(err) {
+        res.status(500).send({error: err.code || 'Task not found'});
+    });
+});
+
 //same as above but return specific limit ahead
 router.get('/gettask/:code/:limit', [filters.requireLogin], function(req, res, next) {
     projectDB.getSingleProjectFromCode(req.params.code).then(function(project) {
@@ -434,6 +504,7 @@ router.get('/startProject/:project', [filters.requireLogin], function(req, res, 
   var genetic = req.query.genetic;
   var genetic_tree = req.query.tree;
   var qlearn = req.query.qlearn;
+  var image_loop = req.query.image_loop;
   projectDB.getSingleProjectFromCode(req.params.project).then(checkDataSetReady).then(function(project) {
     if (user.anonymous) {
         console.log("Start project user");
@@ -448,6 +519,7 @@ router.get('/startProject/:project', [filters.requireLogin], function(req, res, 
                   partial_link = '/task.html#/genetic?code=';
               };
 
+
               //if coming from no params, fix url
 
               if (user.hasOwnProperty("participantID")) {
@@ -457,6 +529,10 @@ router.get('/startProject/:project', [filters.requireLogin], function(req, res, 
               } else {
                   var red_link = partial_link + req.params.project+ '&type='+req.session.passport.user.type +
                       '&workerID=' + user.workerID + '&hitID=' + user.hitID + '&assignmentID='+ user.assignmentID +'&chain=' + chain;
+              }
+
+              if (image_loop){
+                  red_link += "&image_loop=1"
               }
 
 
