@@ -9,6 +9,8 @@ var json2csv = require('json2csv');
 var d3 = require('d3');
 var CARTO_PORT = process.env.CARTO_PORT || '8081';
 var path = require('path');
+var d3 = require('d3');
+
 module.exports = router;
 
 
@@ -85,6 +87,32 @@ router.get('/surveyTG/:hit_id', function(req, res, next) {
         res.send(results);
     }, function(err) {
         res.status(400).send('survey results could not be generated!!!');
+    });
+});
+
+
+
+
+//Get raw HG data from all projects
+router.get('/hg_raw_data/', function(req, res, next) {
+
+    var hg_ids = [55,56,57,58,59,60];
+
+    resultDB.getRawResultsMultiplebyText(hg_ids).then(function(results) {
+
+
+        var groupedData = d3.nest()
+            .key(function(d) { return d.task_id })
+            .key(function(d) { return d.project_id })
+            .key(function(d) { return d.answer })
+            .rollup(function(v) { return v.length; })
+            .entries(results);
+        
+
+
+        res.send(groupedData);
+    }, function(err) {
+        res.status(400).send('raw HG results could not be retrieved');
     });
 });
 

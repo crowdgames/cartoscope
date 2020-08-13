@@ -289,3 +289,34 @@ exports.getSurveyVotesTGHIT = function(hit_id) {
     });
 
 }
+
+
+exports.getRawResultsMultiplebyTextGrouped = function(project_ids){
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+        connection.queryAsync('select task_id,project_id,answer as response_text ,count(*) as votes from response where project_id in (?) and task_id!=? group by task_id,project_id,response_text ',
+            [ project_ids.toString(),"dummy"]).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+
+}
+
+exports.getRawResultsMultiplebyText = function(project_ids){
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+        connection.queryAsync('select task_id,project_id,answer as response_text from response where project_id in (?) and task_id!=?',
+            [ project_ids.toString(),"dummy"]).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+
+}
