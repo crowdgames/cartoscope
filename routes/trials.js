@@ -100,13 +100,39 @@ router.get('/hgtest/:hit_id', function(req, res,next) {
     console.log(req.params);
 
     var hit_id = req.params.hit_id;
-
-
     var subprojects = ["UOYIiFeapnyI","ocioawiaGcjw","KyW6Ti9QUr4I","Srz9arMDwthQ","94yoCWhFkpMk","cXz6ImkmG9k5"];
     var pick_d = randomInt(0,subprojects.length - 1); //pick dataset [start,end]
     var project_code = subprojects[pick_d];
     var link = "kioskProject.html#/kioskStart/" + project_code + '?trialId=' + hit_id;
     res.redirect('http://cartosco.pe/' + link); // send to project page
+
+});
+
+
+//healthy gulf: Landloss Lookout, mturk randomized
+router.get('/generateHGLinks/:hit_id', function(req, res,next) {
+
+    console.log(req.params);
+
+    var hit_id = req.params.hit_id;
+    var subprojects = {
+        'erosion': 'UOYIiFeapnyI',
+        'farming': 'ocioawiaGcjw',
+        'oil & gas' : 'KyW6Ti9QUr4I',
+        'shipping': 'Srz9arMDwthQ',
+        'sea level rise': '94yoCWhFkpMk',
+        'restoration': 'cXz6ImkmG9k5'
+    };
+
+    var link_object = {};
+    link_object.description = "To do one of the available projects, follow its respective link from the list below."
+
+    Object.keys(subprojects).forEach(function (item) {
+
+        link_object[item] = 'http://cartosco.pe/kioskProject.html#/kioskStart/' + subprojects[item] + '?trialId=' + hit_id;
+    })
+
+    res.send(link_object); // send the list
 
 });
 
