@@ -310,7 +310,7 @@ exports.getRawResultsMultiplebyText = function(project_ids){
     return new Promise(function(resolve, error) {
         var connection = db.get();
 
-        connection.queryAsync('select task_id,project_id,answer as response_text from response where project_id in (?) and task_id!=?',
+        connection.queryAsync(' select r.task_id,r.project_id,r.response_text as answer,p.unique_code from response as r left join projects as p on r.project_id=p.id where project_id in(?) and task_id!=? \n',
             [ project_ids.toString(),"dummy"]).then(
             function(data) {
                 resolve(data);

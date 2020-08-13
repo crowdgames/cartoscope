@@ -107,7 +107,7 @@ router.get('/hg_raw_data/', function(req, res, next) {
             .key(function(d) { return d.answer })
             .rollup(function(v) { return v.length; })
             .entries(results);
-        
+
 
 
         res.send(groupedData);
