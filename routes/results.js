@@ -110,7 +110,6 @@ router.get('/hg_raw_data', function(req, res, next) {
 router.get('/hg_raw_data/csv', function(req, res, next) {
 
     var hg_ids = [55,56,57,58,59,60];
-    var hg_ids = [69]
 
     resultDB.getRawResultsMultiplebyTextGrouped(hg_ids).then(function(results) {
 
