@@ -114,8 +114,14 @@ router.get('/checkExpertProgress/:hit_code', function(req, res, next) {
 router.get('/hg_raw_data', function(req, res, next) {
 
     var hg_ids = [55,56,57,58,59,60];
+    var dataset_id = "0k9ceCYzyqLt1pR"
 
-    resultDB.getRawResultsMultiplebyTextGrouped(hg_ids).then(function(results) {
+    // hg_ids =[69]
+    // dataset_id = "jtUC5ek9sbokHao"
+
+
+
+    resultDB.getRawResultsMultiplebyTextGrouped(hg_ids,dataset_id).then(function(results) {
         res.send(results);
     }, function(err) {
         console.log(err)
@@ -127,10 +133,15 @@ router.get('/hg_raw_data', function(req, res, next) {
 router.get('/hg_raw_data/csv', function(req, res, next) {
 
     var hg_ids = [55,56,57,58,59,60];
+    var dataset_id = "0k9ceCYzyqLt1pR";
 
-    resultDB.getRawResultsMultiplebyTextGrouped(hg_ids).then(function(results) {
+    // hg_ids =[69]
+    // dataset_id = "jtUC5ek9sbokHao"
 
-        var fields = ['image','majority_answer','majority_count','majority_percentage','project']
+
+    resultDB.getRawResultsMultiplebyTextGrouped(hg_ids,dataset_id).then(function(results) {
+
+        var fields = ['image','lat','lon','majority_answer','majority_count','majority_percentage','project','image_url']
         var csv_results = []
 
 
@@ -139,16 +150,19 @@ router.get('/hg_raw_data/csv', function(req, res, next) {
             var obj = results[image_key];
             Object.keys(obj).forEach(function(pkey){
                 var item = obj[pkey];
+
+
                 csv_results.push({
                     image: image_key,
+                    lat: item.lat,
+                    lon:item.lon,
                     majority_answer: item.majority,
                     majority_count: item.majority_count,
                     majority_percentage: item.majority_count/item.total,
-                    project: pkey
+                    project: pkey,
+                    image_url: item.image_url
                 })
             })
-            console.log(csv_results)
-
 
         });
 

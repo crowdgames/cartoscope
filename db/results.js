@@ -291,14 +291,14 @@ exports.getSurveyVotesTGHIT = function(hit_id) {
 }
 
 
-exports.getRawResultsMultiplebyTextGrouped = function(project_ids){
+exports.getRawResultsMultiplebyTextGrouped = function(project_ids,dataset_id){
     return new Promise(function(resolve, error) {
         var connection = db.get();
 
-        var query = 'select r.task_id,r.project_id,r.response_text as answer,p.unique_code,p.name  ,count(*) as votes from response as r left join projects as p on p.id=r.project_id ' +
-            'where r.project_id in ('+ project_ids.toString() + ' ) and task_id!=\'dummy\' group by task_id,project_id,response_text '
+        var query = 'select r.task_id,r.project_id,r.response_text as answer,p.unique_code,p.name,d.x,d.y  ,count(*) as votes from response as r left join projects as p on p.id=r.project_id ' +
+            'left join dataset_' + dataset_id + ' as d on d.name=r.task_id where r.project_id in ('+ project_ids.toString() + ' ) and task_id!=\'dummy\' group by task_id,x,y,project_id,response_text '
 
-        var grouped_data = {}
+        var grouped_data = {};
 
         connection.queryAsync(query).then(
             function(data) {
@@ -312,7 +312,10 @@ exports.getRawResultsMultiplebyTextGrouped = function(project_ids){
                             total:0,
                             majority: item.answer,
                             majority_count: item.votes,
-                            unique_code: item.unique_code}
+                            unique_code: item.unique_code,
+                            lat: item.x,
+                            lon: item.y,
+                            image_url: 'cartosco.pe/api/tasks/getImageFree/' + dataset_id + '/' + item.task_id  + '.jpg'}
                     }
                     grouped_data[item.task_id][item.name][item.answer] = item.votes;
                     grouped_data[item.task_id][item.name].total += item.votes;
