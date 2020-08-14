@@ -138,11 +138,20 @@ router.get('/hg_raw_data/csv', function(req, res, next) {
     // hg_ids =[69]
     // dataset_id = "jtUC5ek9sbokHao"
 
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = today.getFullYear();
+
+    var current_date = mm + '/' + dd + '/' + yyyy;
+    var current_date_file = '[' +mm + '_' + dd + '_' + yyyy + ']';
+
+
 
     resultDB.getRawResultsMultiplebyTextGrouped(hg_ids,dataset_id).then(function(results) {
 
-        var fields = ['image','lat','lon','majority_answer','majority_count','majority_percentage','project','image_url']
-        var csv_results = []
+        var fields = ['image','lat','lon','majority_answer','majority_count','majority_percentage','project','image_url','date_pulled']
+        var csv_results = [];
 
 
         Object.keys(results).forEach(function(image_key){
@@ -160,7 +169,8 @@ router.get('/hg_raw_data/csv', function(req, res, next) {
                     majority_count: item.majority_count,
                     majority_percentage: item.majority_count/item.total,
                     project: pkey,
-                    image_url: item.image_url
+                    image_url: item.image_url,
+                    date_pulled:current_date
                 })
             })
 
@@ -168,7 +178,7 @@ router.get('/hg_raw_data/csv', function(req, res, next) {
 
         var csv = json2csv({ data: csv_results, fields: fields });
         //Send back CSV file:
-        res.attachment('landloss_results.csv');
+        res.attachment(current_date_file +'_landloss_results.csv');
         res.status(200).send(csv);
 
 

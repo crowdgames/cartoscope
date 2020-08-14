@@ -300,6 +300,14 @@ exports.getRawResultsMultiplebyTextGrouped = function(project_ids,dataset_id){
 
         var grouped_data = {};
 
+
+        var today = new Date();
+        var dd = String(today.getDate()).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        var yyyy = today.getFullYear();
+
+        var current_date = mm + '/' + dd + '/' + yyyy;
+
         connection.queryAsync(query).then(
             function(data) {
 
@@ -315,7 +323,8 @@ exports.getRawResultsMultiplebyTextGrouped = function(project_ids,dataset_id){
                             unique_code: item.unique_code,
                             lat: item.x,
                             lon: item.y,
-                            image_url: 'cartosco.pe/api/tasks/getImageFree/' + dataset_id + '/' + item.task_id  + '.jpg'}
+                            image_url: 'cartosco.pe/api/tasks/getImageFree/' + dataset_id + '/' + item.task_id  + '.jpg',
+                            date_pulled: current_date}
                     }
                     grouped_data[item.task_id][item.name][item.answer] = item.votes;
                     grouped_data[item.task_id][item.name].total += item.votes;
