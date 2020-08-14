@@ -302,11 +302,12 @@ exports.getRawResultsMultiplebyTextGrouped = function(project_ids,dataset_id){
 
 
         var today = new Date();
-        var dd = String(today.getDate()).padStart(2, '0');
-        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-        var yyyy = today.getFullYear();
+        var dd = today.getDate().toString()
+        var mm = (today.getMonth() + 1).toString();  //January is 0!
+        var yyyy = today.getFullYear().toString();
 
         var current_date = mm + '/' + dd + '/' + yyyy;
+
 
         connection.queryAsync(query).then(
             function(data) {

@@ -114,7 +114,7 @@ router.get('/checkExpertProgress/:hit_code', function(req, res, next) {
 router.get('/hg_raw_data', function(req, res, next) {
 
     var hg_ids = [55,56,57,58,59,60];
-    var dataset_id = "0k9ceCYzyqLt1pR"
+    var dataset_id = "0k9ceCYzyqLt1pR";
 
     // hg_ids =[69]
     // dataset_id = "jtUC5ek9sbokHao"
@@ -139,10 +139,10 @@ router.get('/hg_raw_data/csv', function(req, res, next) {
     // dataset_id = "jtUC5ek9sbokHao"
 
     var today = new Date();
-    var dd = String(today.getDate()).padStart(2, '0');
-    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-    var yyyy = today.getFullYear();
-
+    var dd = today.getDate().toString()
+    var mm = (today.getMonth() + 1).toString();  //January is 0!
+    var yyyy = today.getFullYear().toString();
+    
     var current_date = mm + '/' + dd + '/' + yyyy;
     var current_date_file = '[' +mm + '_' + dd + '_' + yyyy + ']';
 
