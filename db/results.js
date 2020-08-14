@@ -298,10 +298,33 @@ exports.getRawResultsMultiplebyTextGrouped = function(project_ids){
         var query = 'select r.task_id,r.project_id,r.response_text as answer,p.unique_code,p.name  ,count(*) as votes from response as r left join projects as p on p.id=r.project_id ' +
             'where r.project_id in ('+ project_ids.toString() + ' ) and task_id!=\'dummy\' group by task_id,project_id,response_text '
 
+        var grouped_data = {}
 
         connection.queryAsync(query).then(
             function(data) {
-                resolve(data);
+
+                data.forEach(function(item){
+                    if (!grouped_data.hasOwnProperty(item.task_id)){
+                        grouped_data[item.task_id] = {}
+                    };
+                    if (!grouped_data[item.task_id].hasOwnProperty(item.name)){
+                        grouped_data[item.task_id][item.name] = {
+                            total:0,
+                            majority: item.answer,
+                            majority_count: item.votes,
+                            unique_code: item.unique_code}
+                    }
+                    grouped_data[item.task_id][item.name][item.answer] = item.votes;
+                    grouped_data[item.task_id][item.name].total += item.votes;
+                    if (item.votes > grouped_data[item.task_id][item.name].majority_count  ) {
+                        grouped_data[item.task_id][item.name].majority_count = item.votes;
+                        grouped_data[item.task_id][item.name].majority = item.answer
+                    }
+                });
+                resolve(grouped_data)
+
+
+
             }, function(err) {
                 error(err);
             });

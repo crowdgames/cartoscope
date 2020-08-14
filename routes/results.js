@@ -98,37 +98,50 @@ router.get('/hg_raw_data', function(req, res, next) {
 
     var hg_ids = [55,56,57,58,59,60];
 
+    resultDB.getRawResultsMultiplebyTextGrouped(hg_ids).then(function(results) {
+        res.send(results);
+    }, function(err) {
+        console.log(err)
+        res.status(400).send('raw HG results could not be retrieved');
+    });
+});
 
-    var grouped_data = {}
-    
+//Get raw HG data from all projects
+router.get('/hg_raw_data/csv', function(req, res, next) {
+
+    var hg_ids = [55,56,57,58,59,60];
+    var hg_ids = [69]
 
     resultDB.getRawResultsMultiplebyTextGrouped(hg_ids).then(function(results) {
 
-        results.forEach(function(item){
+        var fields = ['image','majority_answer','majority_count','majority_percentage','project']
+        var csv_results = []
 
-            if (!grouped_data.hasOwnProperty(item.task_id)){
-                grouped_data[item.task_id] = {}
-            };
 
-            if (!grouped_data[item.task_id].hasOwnProperty(item.name)){
-                grouped_data[item.task_id][item.name] = {
-                    total:0,
-                    majority: item.answer,
-                    majority_count: item.votes,
-                    unique_code: item.unique_code}
-            }
+        Object.keys(results).forEach(function(image_key){
 
-            grouped_data[item.task_id][item.name][item.answer] = item.votes;
-            grouped_data[item.task_id][item.name].total += item.votes;
-            if (item.votes > grouped_data[item.task_id][item.name].majority_count  ) {
-                grouped_data[item.task_id][item.name].majority_count = item.votes;
-                grouped_data[item.task_id][item.name].majority = item.answer
-            }
+            var obj = results[image_key];
+            Object.keys(obj).forEach(function(pkey){
+                var item = obj[pkey];
+                csv_results.push({
+                    image: image_key,
+                    majority_answer: item.majority,
+                    majority_count: item.majority_count,
+                    majority_percentage: item.majority_count/item.total,
+                    project: pkey
+                })
+            })
+            console.log(csv_results)
+
+
         });
 
+        var csv = json2csv({ data: csv_results, fields: fields });
+        //Send back CSV file:
+        res.attachment('landloss_results.csv');
+        res.status(200).send(csv);
 
 
-        res.send(grouped_data);
     }, function(err) {
         console.log(err)
         res.status(400).send('raw HG results could not be retrieved');
