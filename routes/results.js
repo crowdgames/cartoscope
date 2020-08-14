@@ -100,7 +100,7 @@ router.get('/checkExpertProgress/:hit_code', function(req, res, next) {
         resultDB.getHGExpertProgress(wids).then(function(results) {
             res.send(results);
         }, function(err) {
-            console.log(err)
+            console.log(err);
             res.status(400).send('raw HG results could not be retrieved');
         });
     }, function(err) {

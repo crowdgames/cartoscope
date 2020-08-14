@@ -372,10 +372,15 @@ exports.getHGExpertProgress = function(worker_ids){
     return new Promise(function(resolve, error) {
         var connection = db.get();
 
-        connection.queryAsync('select rr.user_id,rr.name,count(*) as progress from ' +
-            '(select r.user_id,r.response_text,p.name from response as r left join projects as p on p.id=r.project_id where r.user_id in (?) and r.response_text !=?) ' +
-            'as rr group by rr.user_id,rr.name ',
-            [ worker_ids.toString(),"dummy"]).then(
+        var wid_string = [];
+        worker_ids.forEach(function(id){
+            wid_string.push("\'" + id + "\'")
+        });
+        var query = 'select rr.user_id,rr.name,count(*) as progress from ' +
+            '(select r.user_id,r.response_text,p.name from response as r left join projects as p on p.id=r.project_id where r.user_id in (' + wid_string.toString() +
+            ') and r.response_text !=\'dummy\') as rr group by rr.user_id,rr.name';
+
+        connection.queryAsync(query).then(
             function(data) {
                 resolve(data);
             }, function(err) {
