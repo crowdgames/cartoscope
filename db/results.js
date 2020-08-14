@@ -346,3 +346,41 @@ exports.getRawResultsMultiplebyText = function(project_ids){
     });
 
 }
+
+
+exports.getExpertsWID = function(exp_code){
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+        connection.queryAsync('select workerID from kiosk_workers where hitID=? ',
+            [ exp_code]).then(
+            function(data) {
+                var wid_list = [];
+                data.forEach(function(wid){
+                    wid_list.push(wid.workerID)
+                });
+                resolve(wid_list);
+            }, function(err) {
+                error(err);
+            });
+    });
+
+}
+
+
+exports.getHGExpertProgress = function(worker_ids){
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+        connection.queryAsync('select rr.user_id,rr.name,count(*) as progress from ' +
+            '(select r.user_id,r.response_text,p.name from response as r left join projects as p on p.id=r.project_id where r.user_id in (?) and r.response_text !=?) ' +
+            'as rr group by rr.user_id,rr.name ',
+            [ worker_ids.toString(),"dummy"]).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+
+}

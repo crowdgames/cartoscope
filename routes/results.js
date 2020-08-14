@@ -91,6 +91,23 @@ router.get('/surveyTG/:hit_id', function(req, res, next) {
 });
 
 
+//Check Expert progress
+router.get('/checkExpertProgress/:hit_code', function(req, res, next) {
+
+    var hg_ids = [55,56,57,58,59,60];
+
+    resultDB.getExpertsWID(req.params.hit_code).then(function(wids) {
+        resultDB.getHGExpertProgress(wids).then(function(results) {
+            res.send(results);
+        }, function(err) {
+            console.log(err)
+            res.status(400).send('raw HG results could not be retrieved');
+        });
+    }, function(err) {
+        console.log(err)
+        res.status(400).send('worker ids could not be fetched');
+    });
+});
 
 
 //Get raw HG data from all projects
