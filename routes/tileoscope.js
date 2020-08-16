@@ -1316,13 +1316,15 @@ router.get('/getTileoscopeARProjects', function(req,res,next){
     tileDB.getTileoscopeARProjects().then(function(data) {
 
         var d = [];
+        var inat = [];
         data.forEach(function(item){
             if (item.short_name_friendly && item.unique_code){
-                d.push(item.unique_code + '_' + item.short_name_friendly)
+                d.push(item.unique_code + '_' + item.short_name_friendly);
+                inat.push(item.is_inaturalist);
             }
         });
 
-        var obj = {'names':d};
+        var obj = {'names':d, 'inaturalist': inat};
         res.send(obj)
     }, function(error){
         console.log(error);
