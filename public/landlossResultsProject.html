@@ -1,0 +1,64 @@
+<div class="container" ng-controller="landlossResultsController">
+    <center>
+
+
+        <div class="row">
+            <h1 style="color: black">Results & Contributions</h1>
+        </div>
+
+        <div class="row" ng-show="successProject">
+            <p> Below you can see how other people have contributed to the project. You can see results
+                by answer by clicking on the buttons below. Zoom in for more detailed results.
+            </p>
+        </div>
+
+        <div class="row" ng-show="showMap">
+           <!--TODO: MAP HERE-->
+            <h2>Map coming soon!</h2>
+        </div>
+
+        <div class="row" ng-show="showMap">
+            <!--TODO: Ability to pick HERE-->
+        </div>
+
+
+
+
+
+
+        <div class="row" ng-hide="successProject">
+                <h2>Results coming soon!</h2>
+        </div>
+
+        <div class="row" ng-if="external_signup">
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+                <p>Would you like to participate in other projects like this or learn more about environmental issues along the Gulf or Mexico?
+                    Fill in this information to sign up. Make sure to hit the blue Submit button to complete the sign up!</p>
+                <iframe id="iframe_div2"
+                            ng-src="{{getExternalFrame(external_signup)}}"
+                        style="width: 100%;height:800px" >
+                </iframe>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+
+
+
+        <div class="row">
+                <h3>Thank you for taking the time to contribute to our study!</h3>
+                <div ng-show="successProject">
+                    <button class="submit-button" ng-click="downloadCSVLandLoss()" style="margin-top: 20px;
+            border-radius: 8px;
+            background-color: #9cdc1f;
+            color: #000;
+            font-size: 18px;
+            text-align: center;
+            outline: none;
+            border: none;
+            padding: 10px 25px;">Download Results</button>
+                </div>
+            </div>
+    </center>
+
+</div>

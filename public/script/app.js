@@ -57,8 +57,16 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
         name: 'kioskProject',
         url: '/kioskProject/:pCode',
         controller: function($scope, $window, $stateParams) {
-
             $window.location.href = '/kioskProject.html#/kioskStart/' + $stateParams.pCode;
+        }
+    });
+
+    $stateProvider.state({
+        name: 'landlossProject',
+        url: '/hglandloss',
+        controller: function($scope, $window, $stateParams) {
+
+            $window.location.href = '/kioskProject.html#/hg_landloss';
         }
     });
 

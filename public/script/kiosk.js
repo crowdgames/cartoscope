@@ -219,6 +219,50 @@ module.config(function($stateProvider, $urlRouterProvider, $cookiesProvider) {
         controller: 'heatMapProjectController'
     });
 
+    $stateProvider.state({
+        name: 'resultsLandLossProject',
+        url: '/resultsHG',
+        params: {
+            landloss: true
+        },
+        views: {
+            nav: {
+                templateUrl: './navbar.html'
+            },
+            content: {
+                templateUrl: 'landlossResultsProject.html'
+            },
+            footer: {
+                templateUrl: '../footer.html'
+            }
+        },
+        controller: 'landlossResultsController'
+    });
+
+    $stateProvider.state({
+        name: 'hgProject',
+        url: '/hg_landloss',
+        params: {
+            landloss: true
+        },
+        views: {
+            nav: {
+                templateUrl: './navbar.html'
+            },
+            content: {
+                templateUrl: 'templates/kiosk/appLandLoss.html',
+            },
+            footer: {
+                templateUrl: '../footer.html'
+            }
+        },
+        //templateUrl: 'templates/kiosk/appDefault.html',
+        controller: 'landlossController'
+    });
+
+
+
+
     $urlRouterProvider.otherwise('/');
 });
 
@@ -1566,6 +1610,330 @@ module.controller('gridMapProjectController',
 });
 
 
+module.controller('landlossResultsController',
+    function($scope, $http, $window,$stateParams,$timeout,$location,$sce,NgMap) {
+
+
+
+        //change this if we want gridMap instead of heatMap
+        $scope.gridMap = false;
+
+        $scope.successProject = false;
+        $scope.showMap = false;
+
+        $window.document.title ="Results";
+
+        $scope.external_signup = "https://www.healthygulf.org/updates";
+
+
+        $scope.getExternalFrame = function(link){
+            return  $sce.trustAsResourceUrl(link)
+        };
+
+
+        $scope.point_array =  ['/images/markers/marker_green2.svg',
+            '/images/markers/marker_yellow2.svg',
+            '/images/markers/marker_orange2.svg',
+            '/images/markers/marker_red2.svg',
+            '/images/markers/marker_blue2.svg',
+            '/images/markers/marker_purple2.svg',
+            '/images/markers/marker_grey.svg'];
+
+
+        function count_unique(arr, key){
+
+            var flags = [], output = [], l = arr.length, i;
+            for( i=0; i<l; i++) {
+
+                var itm = arr[i];
+                if( flags[itm[key]]) continue;
+                flags[itm[key]] = true;
+                output.push(itm[key]);
+            }
+
+            return output.length;
+        }
+
+        function get_unique(arr, key){
+
+            var flags = [], output = [], l = arr.length, i;
+            for( i=0; i<l; i++) {
+
+                var itm = arr[i];
+                if( flags[itm[key]]) continue;
+                flags[itm[key]] = true;
+                output.push(itm[key]);
+            }
+
+            return output;
+        }
+
+        //Function generate_gradient: gradient array based on rgb array
+        // Different opacity
+        function generate_gradient(color) {
+
+            var g = [];
+            var op = 0;
+            //blue: 0,0,255 - 0,50,255 - 0,100,255 - 0,150,255 - 0,200,255
+
+            for (i = 0; i < 6; i++) {
+                g.push('rgba(' + color[0] + ' , ' + color[1] + ', ' + color[2] + ', ' + op + ')');
+                op = op + 0.20;
+            }
+            return g;
+        }
+
+
+
+        //CSV Download Project
+        $scope.downloadCSVLandLoss = function(){
+            //Download the results
+            location.href='/api/results/hg_raw_data/csv/';
+        };
+
+
+        $scope.toggleGridMap = toggleGridMap;
+        function toggleGridMap(){
+            $scope.gridMap = !$scope.gridMap;
+        }
+
+        $scope.recenterMap = recenterMap;
+        function recenterMap(){
+            NgMap.getMap().then(function(map) {
+
+                map.setZoom(7);
+                var old_Center = new google.maps.LatLng($scope.results1[0].x,$scope.results1[0].y);
+                map.setCenter(old_Center)
+            })
+        }
+
+        $scope.InitMap = InitMap;
+        function InitMap (zoom){
+
+            //generate first map
+            $scope.map1 = {
+                center: {
+                    latitude: parseFloat($scope.results1[0].x),
+                    longitude: parseFloat($scope.results1[0].y)
+                },
+                streetViewControl: false,
+                zoom: zoom,
+                bounds: {}
+            };
+            NgMap.getMap().then(function(map) {
+
+                if($scope.fromTileARUser){
+
+                    $scope.plot_tileoscope_user_points(map,function(res){
+                        if ($scope.gridMap){
+                            $scope.drawGrid()
+                        } else {
+                            $scope.update_heatmap(1);
+                        }
+                    })
+
+                }else {
+                    if ($scope.gridMap){
+                        $scope.drawGrid()
+                    } else {
+                        $scope.update_heatmap(1);
+                    }
+                }
+
+
+
+            })
+        }
+
+        //function that draws the initial grid
+        $scope.drawGrid = drawGrid;
+        function drawGrid () {
+
+            NgMap.getMap().then(function(map) {
+
+
+                $scope.rectArr = []
+                $scope.showGrid = false;
+                var NE = map.getBounds().getNorthEast();
+                var SW = map.getBounds().getSouthWest();
+                var aNorth  =   map.getBounds().getNorthEast().lat();
+                var aEast   =   map.getBounds().getNorthEast().lng();
+                var aSouth  =   map.getBounds().getSouthWest().lat();
+                var aWest   =   map.getBounds().getSouthWest().lng();
+
+
+                var width = 5.0;
+                var height = 5.0;
+                var l_dist = SW.lng() - NE.lng();
+                var b_dist = SW.lat() - NE.lat();
+                var lat_icrement = b_dist / width;
+                var lng_increment =l_dist / height;
+
+                var cnt = 0;
+                for (var i = 0; i < height; i++) {
+                    for (var j = 0; j < width; j++) {
+                        var rSW = new google.maps.LatLng(NE.lat() + (lat_icrement * i), NE.lng() + (lng_increment * j));
+                        var rNE = new google.maps.LatLng(NE.lat() + (lat_icrement * (i + 1)), NE.lng() + (lng_increment * (j + 1)));
+                        var rBounds = new google.maps.LatLngBounds(rSW,rNE);
+                        var rNW =  new google.maps.LatLng(rNE.lat(), rSW.lng());
+                        var rSE = new google.maps.LatLng(rSW.lat(), rNE.lng());
+
+                        var rectangle = {
+                            ne:{lat:rNE.lat(),lng:rNE.lng()},
+                            nw:{lat:rNW.lat(),lng:rNW.lng()},
+                            sw:{lat:rSW.lat(),lng:rSW.lng()},
+                            se:{lat:rSE.lat(),lng:rSE.lng()},
+                            strokeColor: '#000000',
+                            strokeOpacity: 0,
+                            strokeWeight: 0,
+                            fillColor: '#FFFFFF',
+                            fillOpacity: 0.1,
+                            id: cnt
+                        };
+                        cnt+=1;
+                        //store all rects here
+                        $scope.rectArr.push(rectangle);
+
+                    }
+                }
+                $scope.showGrid= true;
+                setGridColors(); //do this now
+            })
+
+        }
+
+        function checkIfWithinBounds(rec,point){
+            var polyCoords = [];
+            polyCoords.push(rec.ne);
+            polyCoords.push(rec.nw);
+            polyCoords.push(rec.sw);
+            polyCoords.push(rec.se);
+            var polygon = new google.maps.Polygon({paths: polyCoords});
+            var isIn = google.maps.geometry.poly.containsLocation(point,polygon);
+            return isIn;
+        }
+
+        //function to determine color of grid
+        function setGridColors(){
+
+            NgMap.getMap().then(function(map) {
+
+                for (var j = 0; j < $scope.rectArr.length; j++) {
+                    var rect = $scope.rectArr[j];
+                    var possible_colors = $scope.hex_array.length;
+                    var major_counter = new Array(possible_colors+1).join('0').split('').map(parseFloat);
+                    var hasOne = false;
+                    $scope.results1.forEach(function (item){
+
+                        var mk = new google.maps.LatLng(parseFloat(item.x), parseFloat(item.y)); //get position of image
+                        //check if it contains:
+                        if (checkIfWithinBounds(rect,mk)){
+                            var col = parseInt(item.color);
+                            major_counter[col-1]+=1;
+                            hasOne = true;
+                        }
+                    });
+                    //we have all counts, must find max now:
+                    if (hasOne){
+                        var max_color = -1;
+                        var max_cnt = -1;
+                        for (var i = 0; i < major_counter.length; i++) {
+                            if (major_counter[i] > max_cnt){
+                                max_color = i;
+                                max_cnt = major_counter[i];
+                            }
+                        }
+                        rect.fillColor = $scope.hex_array[max_color];
+                        rect.fillOpacity = 0.35;
+                        $scope.rectArr[j] = rect;
+                    }
+                }
+
+
+            })
+        }
+
+        $scope.update_heatmap = function (answer){
+
+            NgMap.getMap().then(function(map) {
+
+                heatmap = map.heatmapLayers.heatID;
+
+                var geodata = [];
+                //Mapping of answers to colors:
+                if (answer != 'all') {
+
+                    //Filter data based on answer clicked
+                    var answer_results = filterResponses(
+                        //$scope.results1, {answer: "\"" + answer + "\""});
+                        $scope.results1, {color: parseInt(answer)});
+
+                } else {
+                    var answer_results = $scope.results1;
+                }
+
+                //console.log(answer_results.length);
+
+                // Transform the data for the heatmap:
+                answer_results.forEach(function (item) {
+                    geodata.push(new google.maps.LatLng(parseFloat(item.x), parseFloat(item.y)));
+                });
+
+
+                //set the data for the heatmap
+                $scope.pointArr1 = new google.maps.MVCArray(geodata);
+                heatmap.setData($scope.pointArr1 );
+
+                //change the gradient
+                var gradient = generate_gradient(gradients[ans_colors[answer]]);
+                heatmap.set('gradient',gradient);
+            });
+        };
+
+
+
+        $scope.update_Markers = function (answer){
+
+            NgMap.getMap().then(function(map) {
+
+                $scope.pointMarkers.forEach(function (item) {
+                    if (answer === "reset") {
+                        item.setMap(map)
+                    } else {
+                        if (item.icon == $scope.point_array[answer-1]){
+                            item.setMap(map)
+                        } else {
+                            item.setMap(null)
+                        }
+                    }
+                });
+            })
+        };
+
+        //Function filterResponses: filter results based on some criteria
+        function filterResponses(array, criteria) {
+            return array.filter(function (obj) {
+                return Object.keys(criteria).every(function (c) {
+                    return obj[c] == criteria[c];
+                });})
+        };
+
+
+        $http.get('/api/results/hg_raw_data/' ).then(function(pdata) {
+
+
+            console.log(pdata.data)
+            $scope.successProject = true;
+            //TODO: Map viz with data here
+            $scope.showMap = false;
+
+        }, function (err) {
+            console.log("whoops")
+
+        });
+    });
+
+
 
 module.controller('appController', ['$scope', '$location', function($scope, $location) {
     $scope.params = $location.search();
@@ -2294,6 +2662,7 @@ module.controller('kioskProjectController', ['$window','$scope','$location','$st
         $scope.isMturk = false;
         $scope.hit_id = "kiosk";
 
+
         if ($location.search().hasOwnProperty("trialId")){
             $scope.isMturk = true
             $scope.hit_id = $location.search().trialId;
@@ -2326,7 +2695,6 @@ module.controller('kioskProjectController', ['$window','$scope','$location','$st
             $scope.video_url = $sce.trustAsResourceUrl($scope.proj_data.video_url);
 
             $scope.cover_pic = $scope.proj_data.cover_pic;
-
             $scope.cover_pic_path = 'api/project/getProjectPic/' + $stateParams.pCode;
 
 
@@ -2412,26 +2780,147 @@ module.controller('kioskProjectController', ['$window','$scope','$location','$st
         }
     }]);
 
+module.controller('landlossController', ['$window','$scope','$location','$state','$stateParams','$http', '$cookies', '$sce',
+    function($window,$scope,$location,$state,$stateParams,$http, $cookies, $sce ){
+        $window.document.title = "Cartoscope";
+
+        $scope.project_title = "";
+        $scope.project_desc = "";
+        $scope.showSource = false;
+        $scope.showCC = false;
+        $scope.proj_data = {};
+        $scope.showConsentMturk = false;
+        $scope.isMturk = false;
+        $scope.hit_id = "kiosk";
+
+        $scope.is_landloss = true;
+
+
+        if ($location.search().hasOwnProperty("trialId")){
+            $scope.isMturk = true
+            $scope.hit_id = $location.search().trialId;
+        }
+
+        $scope.acceptConsent = function() {
+            $scope.showConsentMturk = false;
+            //TODO: We are hiding the navbar because we only want them to do the task
+            //document.getElementById("navB").style.display = "block";
+        };
+
+        $scope.showVideo = true
+        $scope.video_url = $sce.trustAsResourceUrl('https://www.youtube.com/embed/yCx0H7bBxPk');
+        $scope.cover_pic_path = 'api/project/getProjectPic/UOYIiFeapnyI';
+
+        //if mturk, first show consent!
+        if ($scope.isMturk) {
+            document.getElementById("navB").style.display = "none";
+            $scope.showConsentMturk = true;
+        }
+
+
+        //Get the creator name from the collaborators:
+        //get collaborator info from db
+        $http.get('/api/user/getAboutInfoCreator/' + $stateParams.pCode).then(function(cdata){
+            if (cdata.data && cdata.data.length >0){
+                $scope.creator = cdata.data[0].name;
+                $scope.showCC = true;
+            }
+        }).catch(function(error){
+
+        });
+
+        //return random integer [min,max]
+        function randomInt(min,max){
+            return (Math.floor(Math.random() * (max - min + 1) ) + min);
+        }
+
+
+        $scope.assignProject = function() {
+            //console.log($stateParams);
+
+            $scope.params = $location.search();
+
+            var subprojects = ["UOYIiFeapnyI","ocioawiaGcjw","KyW6Ti9QUr4I","Srz9arMDwthQ","94yoCWhFkpMk","cXz6ImkmG9k5"];
+            var pick_d = randomInt(0,subprojects.length - 1); //pick dataset [start,end]
+            var project_code = subprojects[pick_d];
+
+            console.log(project_code)
+
+            //check for cookie and set it if it doesnt exist
+            if(!$cookies.get('kiosk')){
+                $cookies.put('kiosk', lil.uuid());
+            }
+
+            $http.get('/api/tasks/getInfoFree/' + project_code).then(function(pdata) {
+
+                $scope.proj_data = pdata.data[0];
+                //getProjects Code dynamically
+                $http.get('/api/anon/startKioskProject/' + project_code).then(function(e, data) {
+                    //console.log('e', e, data);
+                    // $scope.params.project = e.data.projectID;
+                    $scope.workerId = e.data.workerID;
+                    $scope.project = e.data.project;
+                    var type= JSON.parse($scope.proj_data.template);
+                    $scope.projectType = type.selectedTaskType;
+
+                    $http.get('/api/anon/consentKiosk/' + project_code + '?' + 'workerId='+ $scope.workerId+'&cookie='+$cookies.get('kiosk')+'&hitID='+ $scope.hit_id)
+                        .then(function(e, data) {
+                            //console.log('data ', e.data.workerId);
+                            $state.go('examples', {pCode: project_code, workerId: e.data.workerId, projectType: $scope.projectType, kioskId:1, hitId: $scope.hit_id});
+                            //window.location.replace('/api/anon/startKiosk/' + $scope.params.project+ '?workerId='+e.data.workerId+'&kioskId=1');
+                        }, function(err) {
+                            alert('error'+ err);
+                        });
+
+                }, function(err) {
+                    console.log('error', err);
+                });
+            })
+
+
+        }
+
+
+
+    }]);
+
+
+
 module.controller('navController', ['$scope','$window','$location', '$stateParams', function($scope,$window, $location,$stateParams) {
 
      $scope.setPage = setPage;
 
      $scope.navcode = $stateParams.pCode;
 
-     if ($scope.navcode != undefined){
+
+     $scope.hg_landloss = $stateParams.landloss;
+
+
+     if ($scope.navcode != undefined ){
          //if we have a code then replace hrefs for relevant pages:
          $scope.home_link = "/kioskProject.html#/kioskStart/" + $scope.navcode;
          $scope.about_link = "#/about/" + $scope.navcode;
          $scope.results_link = "#/results/" + $scope.navcode;
          $scope.toc_link = "#/termsOfUse/" +  $scope.navcode;
-     } else {
+     }  else {
          //if we have don't have a code then replace go to cmnh view
          $scope.home_link = "#/cmnh";
          $scope.about_link = "#/about";
          $scope.results_link = "#/results";
          $scope.toc_link = "#/termsOfUse";
-
      }
+
+     if ($scope.hg_landloss){
+         $scope.home_link = "kioskProject.html#/hg_landloss"
+         $scope.results_link = "#/resultsHG";
+     }
+
+     $scope.showTerms = function(){
+         $('#termsModal').appendTo("body").modal('show');
+     }
+
+
+
 
     function setPage(location){
         return location === $location.path();

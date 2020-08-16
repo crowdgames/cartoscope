@@ -120,7 +120,6 @@ router.get('/hg_raw_data', function(req, res, next) {
     // dataset_id = "jtUC5ek9sbokHao"
 
 
-
     resultDB.getRawResultsMultiplebyTextGrouped(hg_ids,dataset_id).then(function(results) {
         res.send(results);
     }, function(err) {
@@ -142,7 +141,7 @@ router.get('/hg_raw_data/csv', function(req, res, next) {
     var dd = today.getDate().toString()
     var mm = (today.getMonth() + 1).toString();  //January is 0!
     var yyyy = today.getFullYear().toString();
-    
+
     var current_date = mm + '/' + dd + '/' + yyyy;
     var current_date_file = '[' +mm + '_' + dd + '_' + yyyy + ']';
 

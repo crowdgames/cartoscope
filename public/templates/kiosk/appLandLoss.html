@@ -1,0 +1,205 @@
+<div class="container " ng-controller="landlossController">
+
+    <div ng-if="!showConsentMturk">
+
+        <div class="row intro"  style="text-align: center">
+            <h1 class="col-sm-12 projectName" style="font-size: 36px;margin-top:50px;"><span style="font-size: 20px;">WELCOME TO</span></br>
+                <b><span style="">Land Loss Lookout</span></b></h1>
+        </div>
+
+
+
+    <div ng-if="cover_pic != 'default'" class="row"  style="text-align: center">
+        <br>
+        <img ng-src="{{cover_pic_path}}" alt="project logo" style="width: 200px; height: auto"/>
+    </div>
+
+
+
+                <div class="col-sm-12" style="">
+                    <center>
+            <p class="description " style="font-size: 22px; ">
+                Ensuring that the Gulf of Mexico is protected from pollution and wetland destruction requires constant vigilance and monitoring.
+                Often along the Gulf Coast, the best way to keep an eye out is from the air.
+                Help Healthy Gulf identify patterns by looking at aerial images of the area.
+            </p>
+
+                    <div ng-hide="showCC"  >
+                        <p ng-if="showSource" >
+                            <a style="color: black;" target="_blank" ng-href="{{image_source}}">
+
+                                <span ng-if="projectType != 'ngs'">Image Source </span>
+                                <span ng-if="projectType == 'ngs'">Map Source </span>
+                        </a>
+                        </p>
+                    </div>
+                    <div ng-show="showCC"  >
+                        <p ng-if="showSource" >Images from  <a style="color: black;" target="_blank" ng-href="{{image_source}}">
+                            {{creator}}</a> under a <a href="https://creativecommons.org/licenses/by-nc-sa/2.0/" target="_blank">Creative Commons</a> licence.
+                        </p>
+                    </div>
+
+
+            </center>
+        </div>
+
+        <br>
+        <br>
+
+        <div class="row" ng-show="showVideo" style="text-align: center;margin-bottom:20px;">
+
+            <div class="col-lg-3 col-md-3 col-sm-0 col-xs-0"></div>
+
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12" ng-show="video_url.indexOf('youtube') != -1">
+
+            <!--<iframe style="width:600px;height: 400px" ng-src="{{video_url  }}" ></iframe>-->
+                <div class=" video-container" >
+                    <iframe width="560" height="315" class="" ng-src="{{video_url  }}" allowfullscreen></iframe>
+                </div>
+                <small>Watch video for more information</small>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-0 col-xs-0"></div>
+
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" ng-show="video_url.indexOf('youtube') == -1">
+                    <video  class=" border border-primary" width="600" height="400" controls src="{{video_url }}">
+                    </video>
+            </div>
+
+        </div>
+
+        <div class="row" style="text-align: center;margin-bottom:20px;">
+            <a ng-click="assignProject()" style="cursor: pointer">
+                <img src="../../images/contribute_btn_on_started.png"
+                     onmouseover="this.src='../../images/contribute_btn_hover_started.png'"
+                     onmouseleave="this.src='../../images/contribute_btn_on_started.png'"
+                     class="contribute"/>
+            </a>
+            <br>
+            <small>Contributing is free and anonymous.</small>
+        </div>
+        <div class="row">
+            <div style="text-align: center;margin: 1%;margin-top:2%;">
+                <p>Cartoscope is open-source. Code available on:</p><a href="https://github.com/crowdgames/cartoscope-backend">
+                    <img src="../../images/github-logo.png" alt="Github" style="width: 150px; height: 50px;"/>
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <!--Show terms if coming from MTurk-->
+        <div ng-if="showConsentMturk">
+
+                    <div class="row">
+                        <!--<div class="col-lg-7 col-md-7 col-sm-7"></div>-->
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <b>Northeastern University,</b></br>
+                            <b>Department of: Computer and Information Science; Health Sciences</b>
+                            <br/>
+                            <b>Name of Investigator(s): Seth Cooper; Sara Wylie</b>
+                            <br/>
+                            <b>Title of Project: Crowdsourced Data Analysis and Mapping</b>
+                        </div>
+                        <!--<div class="col-lg-1 col-md-1 col-sm-1"></div>-->
+                    </div>
+
+                    <div class="row">
+                        <!--<div class="col-sm-1 col-xs-1"></div>-->
+                        <div class="col-md-12 col-sm-12 col-xs-12"><p class="h5"><b>Request to Participate in Research</b></p></div>
+                        <!--<div class="col-sm-1 col-xs-1"></div>-->
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12"><p>We would like to invite you to participate in a web-based online crowd sourcing task.
+                            The task is part of a research study whose purpose is to examine how different variations in the presentation
+                            of crowd sourced data analysis and mapping can affect accuracy and engagement. You may receive a different
+                            interface with different task parameters than other participants. Your interaction data will be recorded
+                            and analyzed. This task should take about 20 minutes to complete.</p></div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <p>We are asking you to participate in this study because you are a member of Amazon’s
+                                Mechanical Turk - a crowdsourcing platform.
+                                <b>You must be fluent in English and be at least 18 years old to take this survey.</b>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <p><b>The decision to participate in this research project is voluntary.</b>
+                                You do not have to participate and you can refuse to participate in the task.
+                                Even if you begin the web-based online task, you can stop at any time.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <p><b>There are no foreseeable risks or discomforts to you for taking part in this study.</b>
+                                <b>There are no direct benefits to you from participating in this study.</b>
+                                However, your responses may help us learn more about engagement and performance in citizen science.
+                                <b>For completing the task, you will receive a payment as indicated on your crowdsourcing platform.</b>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <p>Your part in this study is anonymous to the researchers. However, because of the nature of web-based tasks,
+                                it is possible that respondents could be identified by the IP address or other electronic record associated with
+                                the response. Neither the researcher nor anyone involved with this study will be capturing those data. Any
+                                reports or publications based on this research will use only group data and will not identify you or any individual
+                                as being affiliated with this project. The only individually-identifying data we receive from Mechanical Turk
+                                are your unique identifier and your country. Your data are also stored on Mechanical Turk's servers, and the
+                                data there are subject to the Amazon Mechanical Turk Privacy Notice and Participation Agreement.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-10 col-xs-10">
+                            <p><b>If you have any questions regarding electronic privacy,</b> please feel free to contact Mark Nardone, NU’s
+                                Director of Information Security via phone at 617-373-7901, or via email at privacy@neu.edu.
+                            </p>
+                            <p><b>If you have any questions about this study,</b> please feel free to contact Seth Cooper, Email:
+                                seth.cooper.study@gmail.com, or Sara Wylie, Email: s.wylie@neu.edu, the people mainly responsible for the
+                                research.
+                            </p>
+                            <p>
+                                <b>If you have any questions regarding your rights as a research participant,</b> please contact Nan C. Regina,
+                                Director, Human Subject Research Protection, Mail Stop: 560-177, Northeastern University, Boston, MA 02115.
+                                Tel:
+                                617.373.4588, Email: n.regina@neu.edu. You may call anonymously if you wish.
+                            </p>
+                            <p>
+                                <b>This study has been reviewed and approved by the Northeastern University Institutional Review Board
+                                    (#16-05-17).</b>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-10 col-xs-10">
+                            <p>Thank you for your time.</p>
+                            <p>Seth Cooper and Sara Wylie</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-10 col-xs-10">
+                            <p><b>By clicking on the link below you are indicating that you consent to participate in this study. Please print
+                                out a copy of this consent form for your records.</b>
+                            </p>
+                        </div>
+                    </div>
+
+            <div class="row" style="text-align: center">
+                <!--<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">-->
+                <button ng-click="acceptConsent()" class="consent-button">Agree</button>
+                <!--</div>-->
+            </div>
+        </div>
+
+</div>

@@ -3,18 +3,164 @@
         <span ng-class="{'selected': setPage('/')}">
         <a style="color: black;" href={{home_link}} >HOME</a>
         </span>
-        <span class="circ-sep"></span>
-        <span ng-class="{'selected': setPage('/about')}" >
-        <a style="color: black;" href={{about_link}} >ABOUT</a>
-        </span>
+        <!--<span  class="circ-sep"></span>-->
+        <!--<span ng-class="{'selected': setPage('/about')}" >-->
+        <!--<a style="color: black;" href={{about_link}} >ABOUT</a>-->
+        <!--</span>-->
         <span class="circ-sep"></span>
         <span ng-class="{'selected': setPage('/results')}">
             <a style="color: black;" href={{results_link}} >RESULTS</a>
         </span>
         <span class="circ-sep"></span>
         <span ng-class="{'selected':setPage('/termsOfUse')}">
-            <a style="color: black;" href={{toc_link}}>TERMS OF USE</a>
+            <a style="color: black;cursor: pointer;" ng-click="showTerms()">TERMS OF USE</a>
         </span>
     </div>
+
+
+
+
+    <!--Terms-->
+    <div class="modal" tabindex="-1" role="dialog" id="termsModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Terms & Conditions</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" style="overflow-y: auto;height: 450px;">
+                    <div id="termsDiv" style="overflow: auto;">
+
+                        <p>Northeastern University,</br>
+                            Department of: Computer and Information Science; Health Sciences</b>
+                            <br/>
+                            Name of Investigator(s): Seth Cooper; Sara Wylie
+                            <br/>
+                            Title of Project: Crowdsourced Data Analysis and Mapping
+                        </p>
+                        <h3 class="section-title" style="color:black">Request to Participate in Research</h3>
+
+                        <p>We would like to invite you to participate in a web-based online crowdsourcing project.
+                            The task is part of a research study whose purpose is to examine how different variations in the presentation
+                            of crowdsourced data analysis and mapping can affect accuracy and engagement.
+                            You may receive a different interface with different task parameters than other participants.
+                            Your interaction data will be recorded and analyzed. You may participate as long as you want.</p>
+
+
+                        <p>We are asking you to participate in this study because of your interest in this citizen science platform
+                            <b class="section-title">You must be at least 18 years old to participate in this project.</b>
+                        </p>
+
+
+                        <p><b class="section-title">The decision to participate in this research project is voluntary.</b>
+                            You do not have to participate and you can refuse to participate in the task.
+                            Even if you begin the project, you can stop at any time.
+                        </p>
+
+
+                        <p><b class="section-title">There are no foreseeable risks or discomforts to you for taking part in this study.</b>
+                            <b class="section-title">There are no direct benefits to you from participating in this study.</b>
+                            However, your responses may help us learn more about engagement and performance in citizen science.
+                            <b>You will not be paid for your participation in this study.</b>
+                        </p>
+
+
+                        <p>By creating an account and/or continuing to use the website or associated communication channels, you acknowledge that:
+                        </p>
+                        <ol type="a">
+                            <li><p>
+                                <b >Your creation of an account and participation in this project may make you identifiable.</b> Your username, additional profile information provided by you
+                                or derived from your participation, postings, and any images you upload, may be publicly visible on the project’s
+                                website and any derived media such as screenshots and demonstrations. Your email will be kept confidential.
+                            </p>
+                            </li>
+                            <li>
+                                <p>
+                                    <b> We record interactions with the website, forums, chat, and other communication channels, many of which are public.</b>
+                                    We may record your IP address or use cookies. The website also stores your profile information, postings, and interactions.
+                                    These interactions may be logged and analyzed for research. Please be aware that since areas of the chat and website are publicly available,
+                                    we are unable to prevent any third party from independently observing these channels.
+                                </p>
+                            </li>
+                            <li>
+                                <p>
+                                    <b >We may post surveys on the website.</b> To better understand who participates in the project, we may occasionally post research surveys on the website.
+                                    These surveys will ask basic questions about topics such as motivation or demographic information, such as age, gender, and education level.
+                                    Participation in these surveys is entirely voluntary.
+                                </p>
+                            </li>
+                            <li>
+                                <p>
+                                    <b > Data used for research may be made public or shared with collaborators.</b> Data and analysis may be shown on the website and used in external publications, presentations,
+                                    promotional materials, and other public venues. Data logged by the website may be shared with domain experts for analysis. 
+                                    Reports or publications based on experimental data gathered during this research will use group data or will anonymize the identity of any individual.
+                                    In the event that you have made a contribution for which you might be identified, we will contact you for permission before externally associating data analysis
+                                    with your account name. However, your account name and other account information may appear without explicit permission in external demonstrations of the game
+                                    or website, including presentations, videos, screenshots, and publications.
+                                </p>
+                            </li>
+                            <li>
+                                <p>
+                                    <b >The project may terminate, suspend, or block your account at any time.</b> The project may remove any data or postings you have provided.
+                                </p>
+                            </li>
+                            <li>
+                                <p>
+                                    <b >Project members may contact you with your account email.</b>  When creating an account, you provide an email address.  This email address may occasionally be used to contact you in relation to the project.
+                                </p>
+                            </li>
+                            <li>
+                                <p><span class="section-title">You may only upload images that you have rights to do so, and those images become public domain.</span></p>
+                            </li>
+                            <li>
+                                <p>
+                                    <span class="section-title">You can opt out of further data gathering at any time. </span> To do so, discontinue use of the website, forums, chat, and other communication channels associated with the project.
+                                </p>
+                            </li>
+                            <li>
+                                <p>
+                                    <span class="section-title"> This policy may change in the future. </span> This policy may change at any time. You will be asked to agree to the new terms.
+                                </p>
+                            </li>
+
+                        </ol>
+
+
+                        <p><span class="section-title">If you have any questions regarding electronic privacy,</span> please feel free to contact Mark Nardone, NU’s
+                            Director of Information Security via phone at 617-373-7901, or via email at privacy@neu.edu.
+                        </p>
+                        <p><span class="section-title">If you have any questions about this study,</span> please feel free to contact Seth Cooper, Email:
+                            seth.cooper.study@gmail.com, or Sara Wylie, Email: s.wylie@neu.edu, the people mainly responsible for the
+                            research.
+                        </p>
+                        <p>
+                            <span class="section-title">If you have any questions regarding your rights as a research participant,</span> please contact Nan C. Regina,
+                            Director, Human Subject Research Protection, Mail Stop: 560-177, Northeastern University, Boston, MA 02115.
+                            Tel:
+                            617.373.4588, Email: n.regina@neu.edu. You may call anonymously if you wish.
+                        </p>
+                        <p>
+                            <span class="section-title">This study has been reviewed and approved by the Northeastern University Institutional Review Board
+                                (#16-05-17).</span>
+                        </p>
+
+
+                        <p>Thank you for your time.</p>
+                        <p>Seth Cooper and Sara Wylie</p>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
 
 </div>
