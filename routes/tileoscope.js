@@ -1317,15 +1317,34 @@ router.get('/getTileoscopeARProjects', function(req,res,next){
 
         var d = [];
         var inat = [];
+        var pArr = [];
+        var dat_ids = [];
+        var im_arr = [];
         data.forEach(function(item){
+
             if (item.short_name_friendly && item.unique_code){
                 d.push(item.unique_code + '_' + item.short_name_friendly);
                 inat.push(item.is_inaturalist);
+                dat_ids.push(item.dataset_id);
+                var p = projectDB.getRandomImageThumbnail(item.dataset_id);
+                pArr.push(p)
+                im_arr.push("invalid"); //just want this array to reach the right size so I can replace accordingly
             }
         });
 
-        var obj = {'names':d, 'inaturalist': inat};
-        res.send(obj)
+        Promise.all(pArr).then(function (dim) {
+            dim.forEach(function(it){
+                var key = Object.keys(it)[0]
+                var ind_or = dat_ids.indexOf(key)
+                im_arr[ind_or] = it[key]
+            });
+            var obj = {'names':d, 'inaturalist': inat, 'thumbnails': im_arr};
+            res.send(obj)
+
+
+        })
+
+
     }, function(error){
         console.log(error);
         res.status(404).send(error)

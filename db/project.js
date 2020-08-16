@@ -3,7 +3,10 @@
  */
 var db = require('../db/db');
 var Promise = require('bluebird');
+var fs = require('fs');
+var path = require('path');
 var databaseName = process.env.CARTO_DB_NAME;
+
 
 exports.isCodeUnique = function(uniqueCode, done) {
   var connection = db.get();
@@ -669,6 +672,25 @@ exports.getImageSimilar = function(datasetId,name) {
             function(data) {
                 console.log(data)
                 resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
+//get a random image from the dataset
+exports.getRandomImageThumbnail = function(datasetId) {
+    var tableName = 'dataset_' + datasetId;
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        var query_line = 'SELECT name FROM ' + tableName + ' ORDER BY RAND() LIMIT 1';
+        connection.queryAsync(query_line).then(
+            function(data) {
+                var ret_ob = {};
+                var image = data[0].name;
+                var image_path = path.resolve('dataset/' + datasetId + '/' + image + '.jpg');
+                ret_ob[datasetId] = fs.readFileSync(image_path, {encoding: 'base64'});
+                resolve(ret_ob);
             }, function(err) {
                 error(err);
             });
