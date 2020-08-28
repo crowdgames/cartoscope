@@ -142,7 +142,7 @@
                     </div>
                     <div class="col-md-2" >
                         <span>
-                        Image Preview <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
+                            Preview <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
                                       data-placement="right" style="color: #9cdc1f;"
                                       title="Click on the image to see it bigger."></i>
                         </span>
@@ -206,11 +206,18 @@
                 </div>
 
                 <!--image-->
-                <div class="col-md-2">
+                <div class="col-md-2" ng-if="project.task.selectedTaskType !='ngs'" >
                     <img style="width: 75px;cursor: pointer;"  class="img-thumbnail"
                          ng-src="{{getTutorialImage(item.image_name,item.in_dataset)}}"
                          ng-click="showBiggerImage(item.image_name,item.in_dataset)">
                 </div>
+
+                <div class="col-md-2" ng-if="project.task.selectedTaskType =='ngs'" >
+                    <img style="width: 75px;cursor: pointer;"  class="img-thumbnail"
+                         src="../../../images/placeholder-image.png"
+                         ng-click="showNGSPreview(location_dict[item.image_name])">
+                </div>
+
 
                 <!-- pick answer from template-->
                 <div class="col-md-2" >

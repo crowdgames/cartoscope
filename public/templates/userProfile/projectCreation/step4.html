@@ -41,7 +41,7 @@
             Upload Dataset Link
         </span>
         <span class="txt" ng-if="project.task.selectedTaskType == 'ngs' ">
-            Input NGS Map URL
+            Input NGS Map URL. Click <a target="_blank" href="https://storms.ngs.noaa.gov/">here</a> to view some examples.
         </span>
         <div ng-show="project.task.selectedTaskType != 'ngs' && uploadMethod == 0 ">
             <input class="invite" placeholder="Data set URL here..." ng-model="project.dataSetLink">
@@ -93,7 +93,7 @@
         <div ng-show="project.task.selectedTaskType == 'ngs' ">
 
             <span class="txt">
-            AND: Upload CSV
+            AND: Upload a .zip or .tar containing at least one .csv file with locations. Each .csv should have the following columns: latitude, longtitude, name.
             </span>
             <br>
 

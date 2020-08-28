@@ -1603,6 +1603,7 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
     $scope.received_code = 0;
     $scope.tutorial_items = [];
     $scope.dataset_image_list = [];
+    $scope.location_dict = {};
 
     $scope.add_tutorial_text = "Add tutorial";
 
@@ -1674,6 +1675,19 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
         if (!in_dataset){
             link = '../../images/Tutorials/'  + img
         }
+
+        window.open(link);
+    };
+
+    $scope.showNGSPreview = function(obj){
+
+        if ( !obj.hasOwnProperty("zoom")){
+            obj.zoom = 16
+        }
+        //example: https://storms.ngs.noaa.gov/storms/laura/index.html#7/29.862/-93.567
+        var link = $scope.project.image_source + "#" + obj.zoom +  '/' + obj.x + '/' + obj.y;
+
+
         window.open(link);
     };
 
@@ -1695,9 +1709,17 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
         $http.get('/api/project/getProjectPoints/' + $scope.project.unique_code).then(function (sdata) {
 
             sdata.data.forEach(function(item){
-                //TODO: here we also get x,y coordinates,we will need these for location tutorials
+                //here we also get x,y coordinates,we will need these for location tutorials
                 //TODO: we will also need to set the zoom level.
-                $scope.dataset_image_list.push(  item.name + '.jpg');
+                if ($scope.project.task.selectedTaskType !== "tagging"){
+
+                    $scope.dataset_image_list.push(  item.name);
+                    //default zoom here
+                    $scope.location_dict[item.name] = {x: item.x, y: item.y, zoom:16} ;
+                } else {
+                    $scope.dataset_image_list.push(  item.name + '.jpg');
+                }
+
             });
             //then see if we have anything already
             $scope.fetchTutorialItems();
@@ -1720,13 +1742,21 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
 
         for (var i = 0; i < $scope.tutorial_items.length; i++) {
 
-            tutorial_items_to_send[i].ask_user = parseInt(tutorial_items_to_send[i].ask_user)
+            tutorial_items_to_send[i].ask_user = parseInt(tutorial_items_to_send[i].ask_user);
             tutorial_items_to_send[i].image_name = tutorial_items_to_send[i].image_name.replace($scope.project.unique_code + '/', "");
             delete tutorial_items_to_send[i].template;
             delete tutorial_items_to_send[i].points_file;
             delete tutorial_items_to_send[i].point_selection;
             delete tutorial_items_to_send[i].unique_code;
             delete tutorial_items_to_send[i].id;
+            //if mapping, we need additional info
+            if($scope.project.task.selectedTaskType !== "tagging"){
+                tutorial_items_to_send[i].x = $scope.location_dict[tutorial_items_to_send[i].image_name].x;
+                tutorial_items_to_send[i].y = $scope.location_dict[tutorial_items_to_send[i].image_name].y;
+                tutorial_items_to_send[i].zoom = $scope.location_dict[tutorial_items_to_send[i].image_name].zoom
+                tutorial_items_to_send[i].image_source = $scope.project.image_source;
+            }
+
             //everything that was null before should be deleted!
             Object.keys(tutorial_items_to_send[i]).forEach(function(ky){
                 if (tutorial_items_to_send[i][ky] == null) {
