@@ -1695,6 +1695,8 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
         $http.get('/api/project/getProjectPoints/' + $scope.project.unique_code).then(function (sdata) {
 
             sdata.data.forEach(function(item){
+                //TODO: here we also get x,y coordinates,we will need these for location tutorials
+                //TODO: we will also need to set the zoom level.
                 $scope.dataset_image_list.push(  item.name + '.jpg');
             });
             //then see if we have anything already

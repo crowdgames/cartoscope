@@ -260,7 +260,7 @@ function downloadLocal(loc,downloadID, projectID,ar_ready,remove_before) {
                         .on('finish', function (code) {
                             //finish: function(code) {
                             console.log("Finished");
-                            readDataSetFiles(dirName, downloadID).then(imageCompressionLibWithExif.processData).then(function (data) {
+                            readDataSetFiles(dirName, downloadID,1).then(imageCompressionLibWithExif.processData).then(function (data) {
                                 console.log('data in read files', data);
                                 projectDB.createDataSetTable(downloadID).then(function (d) {
                                     var pArr = [];
@@ -393,7 +393,7 @@ function downloadLocal(loc,downloadID, projectID,ar_ready,remove_before) {
                         // });
 
 
-                            readDataSetFiles(dirName, downloadID).then(imageCompressionLibWithExif.processData).then(function(data) {
+                            readDataSetFiles(dirName, downloadID,1).then(imageCompressionLibWithExif.processData).then(function(data) {
                             console.log('data in read files', data);
                             projectDB.createDataSetTable(downloadID).then(function(d) {
                                 var pArr = [];
@@ -785,7 +785,7 @@ function downloadNGS(loc,downloadID, projectID,map_link) {
                     console.error('ERROR', err);
                 })
                 .on('finish', function (code) {
-                    readDataSetFiles(dirName, downloadID).then(readCSVs).then(function(data) {
+                    readDataSetFiles(dirName, downloadID,0).then(readCSVs).then(function(data) {
                         projectDB.createDataSetTable(downloadID).then(function(d) {
                             var pArr = [];
                             for (var i in data) {
@@ -851,7 +851,7 @@ function downloadNGS(loc,downloadID, projectID,map_link) {
                 else
                     console.log('unzip successfully.');
 
-                readDataSetFiles(dirName, downloadID).then(readCSVs).then(function(data) {
+                readDataSetFiles(dirName, downloadID,0).then(readCSVs).then(function(data) {
                     console.log('data in read files', data);
                     projectDB.createDataSetTable(downloadID).then(function(d) {
                         var pArr = [];
@@ -966,7 +966,7 @@ function downloadDrop(loc, downloadID, projectID) {
                     untar.on('close', function(code) {
                         console.log('code ', code);
                         if (code == 0) {
-                            readDataSetFiles(dirName, downloadID).then(imageCompressionLibNoExif.processData).then(function(data) {
+                            readDataSetFiles(dirName, downloadID,1).then(imageCompressionLibNoExif.processData).then(function(data) {
                                 console.log('data in read files', data);
                                 projectDB.createDataSetTable(downloadID).then(function(d) {
                                     var pArr = [];
@@ -1015,7 +1015,7 @@ function downloadDrop(loc, downloadID, projectID) {
                         else
                             console.log('unzip successfully.');
 
-                        readDataSetFiles(dirName, downloadID).then(imageCompressionLibWithExif.processData).then(function(data) {
+                        readDataSetFiles(dirName, downloadID,1).then(imageCompressionLibWithExif.processData).then(function(data) {
                             console.log('data in read files', data);
                             projectDB.createDataSetTable(downloadID).then(function(d) {
                                 var pArr = [];
@@ -1085,7 +1085,7 @@ function downloadRec(loc, downloadID, projectID, regex) {
             return err;
           }
           deleteFolderRecursive(downloadDir + downloadID);
-          readDataSetFiles(dirName, downloadID).then(imageCompressionLibWithExif.processData).then(function(data) {
+          readDataSetFiles(dirName, downloadID,1).then(imageCompressionLibWithExif.processData).then(function(data) {
             projectDB.createDataSetTable(downloadID).then(function(d) {
               //  console.log('data ', data);
               var pArr = [];
@@ -1166,7 +1166,7 @@ function download2(loc, downloadID, projectID) {
           untar.on('close', function(code) {
 
             if (code == 0) {
-              readDataSetFiles(dirName, downloadID).then(imageCompressionLibNoExif.processData).then(function(data) {
+              readDataSetFiles(dirName, downloadID,1).then(imageCompressionLibNoExif.processData).then(function(data) {
 
                 projectDB.createDataSetTable(downloadID).then(function(d) {
                   var pArr = [];
@@ -1217,7 +1217,14 @@ function assignDownloadID(done) {
   });
 }
 
-function readDataSetFiles(dirName, dataSetID) {
+function readDataSetFiles(dirName, dataSetID,mode) {
+
+    //if mode: 1 , then it is photos
+    //otherwise it is CSV
+
+    if (mode == undefined){
+        mode = 1
+    }
 
 
   var p = new Promise(function(resolve, error) {
@@ -1229,9 +1236,9 @@ function readDataSetFiles(dirName, dataSetID) {
         items.forEach(function (it){
 
            // if (it.charAt(0) != '.' && it.charAt(0) != '_'){
-
-            if (it.endsWith('.jpg') || it.endsWith('.png')){
-
+            if (mode && (it.endsWith('.jpg') || it.endsWith('.png'))){
+                filtered_items.push(it);
+            } else if (mode === 0 && it.endsWith('.csv') ){
                 filtered_items.push(it);
             }
 
@@ -1425,11 +1432,18 @@ function readCSVs(files) {
             var dirName = this.dirName;
             //read all csvs then for all points found, return the
             Promise.all(pArr).then(function(dataArr) {
+                var counter = 0
                 for (var i in dataArr) {
                     var data = dataArr[i];
                     if (data != null) {
                         for (var p in data){
                             var or_point = data[p];
+
+                            if (or_point.name == undefined) {
+                                or_point.name = "poi" + counter;
+                                counter = counter + 1;
+                            }
+
                             if (or_point.name != undefined){
                             //make sure the formats are x,y for latitude longitude
                             var point = {};
