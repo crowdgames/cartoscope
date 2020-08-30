@@ -42,9 +42,9 @@ router.get('/compareTGCC/:hit_id', function(req, res, next) {
     //     {'interface': 'TG', 'dataset': 'cab' , 'name': 'catdogs_big'}
     // ];
     var possibles_pool = [
-        {'interface': 'CC', 'dataset': 'EGHiAhY5ucce' , 'name': 'bridges'},
-        {'interface': 'TG', 'dataset': 'brb' , 'name': 'bridges_big'},
-        {'interface': 'TG', 'dataset': 'brb0' , 'name': 'bridges_big_0'}
+        {'interface': 'CC', 'dataset': 'I9LEzE0k0qxJ' , 'name': 'animals'},
+        {'interface': 'TG', 'dataset': 'avesmam0' , 'name': 'animals_0_ground'},
+        {'interface': 'TG', 'dataset': 'avesmam33' , 'name': 'animals_33_ground'}
     ];
 
     var hit_id = req.params.hit_id;
