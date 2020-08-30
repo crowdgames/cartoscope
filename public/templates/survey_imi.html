@@ -48,7 +48,7 @@
                 <hr>
                 <div class="form-group row " >
                     <center>
-                        <h4>{{likert_q.question}}<span ng-if="req_answers" style="color:#9CDC18">*</span></h4>
+                        <h4>{{likert_q.question}}<span ng-if="req_answers" class="required_answer">*</span></h4>
                         <label class="col-form-label" >Not at all true</label>
                         <label class="col-form-label" ng-repeat="n in getNumber(likert_q.value)">
                             <input type="radio" name="{{likert_q.question}}" style="margin:20px" ng-model="likert_q.answer" ng-value=n  />
@@ -64,7 +64,7 @@
             <div class="form-group row" ng-repeat="likert_q in questions_imi.competence">
                 <center>
                     <hr>
-                    <h4>{{likert_q.question}}<span ng-if="req_answers" style="color:#9CDC18">*</span></h4>
+                    <h4>{{likert_q.question}}<span ng-if="req_answers" class="required_answer">*</span></h4>
                     <label class="col-form-label" >Not at all true</label>
                     <label class="col-form-label" ng-repeat="n in getNumber(likert_q.value)">
                         <input type="radio" name="{{likert_q.question}}" style="margin:20px" ng-model="likert_q.answer" ng-value=n  />
@@ -79,7 +79,7 @@
             <div class="form-group row" ng-repeat="likert_q in questions_imi.effort">
                 <center>
                     <hr>
-                    <h4>{{likert_q.question}}<span ng-if="req_answers" style="color:#9CDC18">*</span></h4>
+                    <h4>{{likert_q.question}}<span ng-if="req_answers" class="required_answer">*</span></h4>
                     <label class="col-form-label" >Not at all true</label>
                     <label class="col-form-label" ng-repeat="n in getNumber(likert_q.value)">
                         <input type="radio" name="{{likert_q.question}}" style="margin:20px" ng-model="likert_q.answer" ng-value=n  />
@@ -94,7 +94,7 @@
             <div class="form-group row" ng-repeat="likert_q in questions_imi.pressure">
                 <center>
                     <hr>
-                    <h4>{{likert_q.question}}<span ng-if="req_answers" style="color:#9CDC18">*</span></h4>
+                    <h4>{{likert_q.question}}<span ng-if="req_answers" class="required_answer">*</span></h4>
                     <label class="col-form-label" >Not at all true</label>
                     <label class="col-form-label" ng-repeat="n in getNumber(likert_q.value)">
                         <input type="radio" name="{{likert_q.question}}" style="margin:20px" ng-model="likert_q.answer" ng-value=n  />
@@ -109,7 +109,7 @@
             <div class="form-group row" ng-repeat="likert_q in questions_imi.choice">
                 <center>
                     <hr>
-                    <h4>{{likert_q.question}}<span ng-if="req_answers" style="color:#9CDC18">*</span></h4>
+                    <h4>{{likert_q.question}}<span ng-if="req_answers" class="required_answer">*</span></h4>
                     <label class="col-form-label" >Not at all true</label>
                     <label class="col-form-label" ng-repeat="n in getNumber(likert_q.value)">
                         <input type="radio" name="{{likert_q.question}}" style="margin:20px" ng-model="likert_q.answer" ng-value=n  />

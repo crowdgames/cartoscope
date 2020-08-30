@@ -1177,7 +1177,6 @@ module.controller('surveyIMIController', ['$scope', '$http', '$state', '$locatio
         $scope.userType = $scope.params.userType;
     }
 
-    console.log($scope.trialId);
 
     //Generate numbers for radio buttons for Likert (7 scales)
     $scope.getNumber = function(n){
