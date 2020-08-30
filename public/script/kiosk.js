@@ -18,7 +18,11 @@ module.filter("textBreaks", ['$sce', function ($sce) {
             var new_text = x.replace(/\\n/g, "<br/>");
             // new_text = x.replace(/n/g, "<br/>");
             //trim first and last quote:
-            new_text =  new_text.slice(1,-1);
+            if (new_text.charAt(0) === "'") {
+                new_text =  new_text.slice(1,-1);
+            }
+
+
             return $sce.trustAsHtml(new_text);
         } else {
             return(x)

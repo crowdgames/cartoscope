@@ -14,13 +14,23 @@
         <img ng-src="{{cover_pic_path}}" alt="project logo" style="width: 200px; height: auto"/>
     </div>
 
+        <div class="row" >
+            <center>
+
+            <div class="col-sm-12" ng-bind-html="project_desc | textBreaks">
+
+            </div>
+            </center>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12" style="">
+                <center>
+                    <!--<p class="description " style="font-size: 22px; ">-->
+                    <!--{{project_desc}}-->
+                    <!--</p>-->
 
 
-                <div class="col-sm-12" style="">
-                    <center>
-            <p class="description " style="font-size: 22px; ">
-                {{project_desc}}
-            </p>
 
                     <div ng-hide="showCC"  >
                         <p ng-if="showSource" >
@@ -28,7 +38,7 @@
 
                                 <span ng-if="projectType != 'ngs'">Image Source </span>
                                 <span ng-if="projectType == 'ngs'">Map Source </span>
-                        </a>
+                            </a>
                         </p>
                     </div>
                     <div ng-show="showCC"  >
@@ -38,8 +48,13 @@
                     </div>
 
 
-            </center>
+                </center>
+            </div>
         </div>
+
+
+
+
 
         <br>
         <br>
