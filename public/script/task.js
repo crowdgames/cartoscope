@@ -986,7 +986,12 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           vm.req_amount = vm.data.req_count;
           vm.survey_t = vm.data.survey_type || 'IMI';
           vm.survey_type = 'survey' +  vm.survey_t;
-          console.log(vm.survey_type);
+
+          if (vm.data.template.selectedTaskType === "ngs"){
+              if (vm.data.ngs_zoom){
+                  dZoom = vm.data.ngs_zoom
+              }
+          }
 
 
           if (parseInt(vm.req_amount) == 0) {
