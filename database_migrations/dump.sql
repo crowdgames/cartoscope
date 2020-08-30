@@ -205,6 +205,7 @@ CREATE TABLE `projects` (
    `video_url` varchar(2048) DEFAULT NULL,
    `slider_text` text DEFAULT NULL,
    `external_sign_up` text DEFAULT NULL,
+   `ngs_zoom` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_code_UNIQUE` (`unique_code`),
   KEY `Creator_idx` (`creatorID`),
