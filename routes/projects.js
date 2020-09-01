@@ -719,6 +719,25 @@ router.get('/:id/unarchive', function(req, res, next) {
   });
 });
 
+router.get('/ngs_locations/:code', function(req, res, next) {
+
+    var loc_links = [];
+
+    projectDB.getProjectFromCode(req.params.code).then(function(p_data){
+        projectDB.getDataSetNames2(p_data[0].dataset_id).then(function(locs){
+            locs.forEach(function(obj) {
+                    loc_links.push(p_data[0].image_source + "#" + p_data[0].ngs_zoom + '/' + obj.x + '/' + obj.y);
+                });
+            res.send(loc_links)
+        })
+    }).catch(function(error) {
+        res.status(400).send({error: error.body || 'Project couldn\'t be fetched'});
+    });
+});
+
+
+
+
 //
 // //fix for issues with codes!
 // router.post('/:id/survey', [filters.requireLogin], function(req, res, next) {
