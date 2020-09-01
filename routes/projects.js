@@ -719,7 +719,7 @@ router.get('/:id/unarchive', function(req, res, next) {
   });
 });
 
-router.get('/ngs_locations/:code', function(req, res, next) {
+router.get('/ngsLocations/:code', function(req, res, next) {
 
     var loc_links = [];
 
