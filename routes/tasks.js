@@ -597,7 +597,6 @@ router.post('/submit', [filters.requireLogin, filters.requiredParamHandler(['tas
 
     //If markers task, don't increase the progress as long as the multiple flag is up
     if (multiple) {
-
         projectDB.addResponse(userID, projectID, taskID, response,centerLat, centerLon,response_text)
             .then(function(data) {
                 // console.log('data inserted', data);
@@ -605,7 +604,6 @@ router.post('/submit', [filters.requireLogin, filters.requiredParamHandler(['tas
             }).catch(function(err) {
             res.status(500).send({err: err.code || 'Could not submit response'});
         });
-
     } else {
 
         projectDB.addResponse(userID, projectID, taskID, response,centerLat, centerLon,response_text)
@@ -632,4 +630,35 @@ router.post('/updateProgress', [filters.requireLogin, filters.requiredParamHandl
                 }).catch(function(err) {
                 res.status(500).send({err: err.code || 'Could not update progress'});
             });
+    });
+
+
+router.post('/submitCairn', [filters.requireLogin, filters.requiredParamHandler(['projectID', 'message', 'progress'])],
+    function(req, res, next) {
+        //var taskID = req.body.taskID;
+
+        var message = req.body.message;
+        var progress = req.body.progress;
+        var projectID = req.body.projectID;
+        var userID = req.session.passport.user.id;
+
+        projectDB.storeCairnMessage(userID, projectID, message, progress)
+            .then(function(data) {
+                // console.log('data inserted', data);
+
+                //TODO: Fetch messages at this point
+                projectDB.fetchCairnMessage(userID, projectID, progress)
+                    .then(function(cairn_data) {
+                        // console.log('data inserted', data);
+                        res.send(cairn_data);
+                    }).catch(function(err) {
+                    res.status(500).send({err: err.code || 'Could not fetch other cairn'});
+                });
+
+
+            }).catch(function(err) {
+            res.status(500).send({err: err.code || 'Could not submit cairn'});
+        });
+
+
     });

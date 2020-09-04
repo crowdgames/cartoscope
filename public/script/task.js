@@ -159,6 +159,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.getFullIframe = getFullIframe;
       vm.injectMarkerInFrame = injectMarkerInFrame;
 
+
       vm.map={};
       vm.lat="";
       vm.lang="";
@@ -221,6 +222,48 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       } else {
           $scope.cont_button = "GO TO SURVEY"
       }
+      vm.cairn_messages = [];
+      vm.showCairnMessages = false;
+      vm.submitCairn = function(msg){
+          vm.cairn_messages = [];
+
+          vm.cairnTitle = "Great! See what others have left for you!";
+          //store cairn
+          var body = {
+              projectID: vm.data.id,
+              message: msg,
+              progress: vm.data.progress
+          };
+          $http.post('/api/tasks/submitCairn', body).then(function(cairn_data){
+              //we get back messages from others, prep and show!
+              cairn_data.data.forEach(function(item){
+                  vm.cairn_messages.push(item.message)
+              });
+              vm.showCairnMessages = true;
+          })
+      };
+
+
+      vm.cairnTitle = "Pick a message for others to find!";
+      vm.fetchCairns = function() {
+
+          vm.showCairnMessages = false;
+         vm.cairn_options = [];
+          //Read them from csv:
+          d3.csv('/images/cairn_message_list.csv', function (csv_data) {
+              d3.shuffle(csv_data);
+              for(var i = 0, length = 4; i < length; i++){
+                  vm.cairn_options.push(csv_data[i].message)
+              }
+          });
+      };
+
+      vm.resetCairnModal = function(){
+          vm.fetchCairns();
+          $("#cairnModal").modal('hide');
+      }
+
+
 
 
       //for NGS tasks
@@ -281,7 +324,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
 
       };
-
 
 
       vm.makeSliderObj = function(){
@@ -870,7 +912,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                       vm.alertLoop();
                   }
 
-
                   //if flight path, change color of marker for the image that was just voted
                   if (vm.showFlightPath) {
                       $scope.geoMarkers.some(function (item) {
@@ -887,6 +928,11 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                           return found;
                       })
                   }
+
+                  if (vm.show_cairns > 0  && vm.data.progress %  vm.show_cairns === 0) {
+                      $("#cairnModal").modal('show')
+                  }
+
               });
           }
 
@@ -986,6 +1032,11 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           vm.req_amount = vm.data.req_count;
           vm.survey_t = vm.data.survey_type || 'IMI';
           vm.survey_type = 'survey' +  vm.survey_t;
+          vm.show_cairns = vm.data.show_cairns || 0; //if it has cairns
+
+          if(vm.show_cairns){
+              vm.fetchCairns();
+          }
 
           if (vm.data.template.selectedTaskType === "ngs"){
               if (vm.data.ngs_zoom){

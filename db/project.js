@@ -1255,3 +1255,35 @@ exports.setSurveyType = function(unique_code,survey_type) {
             });
     });
 };
+
+
+//store cairn message from Cartoscope
+exports.storeCairnMessage = function(userID, projectID, message, progress) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+        connection.queryAsync('insert into cartoscope_cairns (user_id,project_id,message,level_number) VALUES(?,?,?,?) on DUPLICATE KEY UPDATE message= VALUES(message)',
+            [userID, projectID, message, progress]).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
+
+//fetch all cairns for this project and position
+exports.fetchCairnMessage = function(userID, projectID, progress) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+        connection.queryAsync('select message from cartoscope_cairns where user_id !=? and project_id=? and level_number=? order by id desc limit 4',
+            [userID, projectID, progress]).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};

@@ -206,6 +206,7 @@ CREATE TABLE `projects` (
    `slider_text` text DEFAULT NULL,
    `external_sign_up` text DEFAULT NULL,
    `ngs_zoom` int(11) DEFAULT NULL,
+   `show_cairns` int(11) DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_code_UNIQUE` (`unique_code`),
   KEY `Creator_idx` (`creatorID`),
@@ -415,6 +416,22 @@ CREATE TABLE `tileoscope_cairns` (
    UNIQUE KEY `unique_index` (`user_id`,`level_id`,`level_number`)
 
 ) ENGINE=InnoDB AUTO_INCREMENT=212 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+DROP TABLE IF EXISTS `cartoscope_cairns`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `cartoscope_cairns` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(128) DEFAULT NULL,
+  `project_id` varchar(128) DEFAULT NULL,
+  `level_number` int(11),
+  `message` TEXT DEFAULT NULL,
+  `time_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+   UNIQUE KEY `unique_index` (`user_id`,`project_id`,`level_number`)
+
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 

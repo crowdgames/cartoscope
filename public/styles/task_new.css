@@ -190,6 +190,25 @@ div.jx-slider {
     cursor: pointer;
 }
 
+.cairnButton, .cairnButton2{
+    background-image: url('../images/cairn2.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 50%;
+    color: #FFFFFF;
+    font-size: 18px;
+    /*background-repeat: no-repeat;*/
+    padding: 40px 0;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+
+.cairnButton:hover{
+    opacity: 0.80;
+    cursor: pointer;
+}
+
 
 
 #maps {
