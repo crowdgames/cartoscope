@@ -1469,10 +1469,12 @@ module.controller('instructionController', ['$window','$scope', '$state','$state
 
             if (parseInt($scope.req_amount) == 0) {
 
-                $scope.req_text = "You may complete any number of subtasks before clicking the \"Go to Survey\" button to finish."
+                // $scope.req_text = "You may complete any number of subtasks before clicking the \"Go to Survey\" button to finish."
+                $scope.req_text = "You may categorize any number of images before clicking the \"Go to Survey\" button to finish."
+
                 $scope.req_text2 = "may complete any number of"
             } else {
-                $scope.req_text = "You must complete at least " + $scope.req_amount + " subtasks in order to continue to the survey."
+                $scope.req_text = "You must categorize at least " + $scope.req_amount + " images   in order to continue to the survey."
                 $scope.req_text2 = "must complete " + $scope.req_amount + " "
             }
 
