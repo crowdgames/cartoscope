@@ -2702,16 +2702,11 @@ module.controller('kioskProjectController', ['$window','$scope','$location','$st
             $scope.cover_pic_path = 'api/project/getProjectPic/' + $stateParams.pCode;
 
 
-
             //if mturk, first show consent!
             if ($scope.isMturk) {
-
                 document.getElementById("navB").style.display = "none";
-
                 $scope.showConsentMturk = true;
             }
-
-
 
 
             if ($scope.image_source != null) {
@@ -2735,11 +2730,12 @@ module.controller('kioskProjectController', ['$window','$scope','$location','$st
             }).catch(function(error){
 
             });
-
-
-
-
         });
+
+
+        $scope.showTerms = function(){
+            $('#termsModal2').appendTo("body").modal('show');
+        }
 
 
 
