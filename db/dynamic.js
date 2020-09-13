@@ -624,14 +624,16 @@ exports.generateQlearnOptimalSequenceTileoscope = function(main_code) {
 
 
 //pick greedy for qlearn comps Tileoscope
-exports.pickGreedySequenceTileoscope = function(main_code) {
+exports.selectGreedySequence = function(main_code,dm) {
 
     return new Promise(function(resolve, error) {
         var connection = db.get();
+        console.log(main_code)
         connection.queryAsync('SELECT id as genetic_id,seq,method from tileoscope_task_genetic_sequences where unique_code_main=? and active=1 and method="greedy" ORDER BY RAND() LIMIT 1 ',
             [main_code])
             .then(
                 function(data) {
+                    console.log(data)
                     resolve(data[0]);
                 }, function(err) {
                     error(err);
@@ -705,6 +707,22 @@ exports.pickGeneticSequenceTileoscope = function(main_code,dm) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
         connection.queryAsync('SELECT id as genetic_id,seq,method from tileoscope_task_genetic_sequences where unique_code_main=? and not method like \'tree%\' and not method like \'qlearn%\'  and active=1 ORDER BY RAND() LIMIT 1 ',
+            [main_code])
+            .then(
+                function(data) {
+                    resolve(data[0]);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};
+
+//pick an already generated sequence from the db
+exports.pickGreedySequence = function(main_code,dm) {
+
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT id as genetic_id,seq,method from tileoscope_task_genetic_sequences where unique_code_main=? and not method like \'greedy%\' and not method like \'qlearn%\'  and active=1 ORDER BY RAND() LIMIT 1 ',
             [main_code])
             .then(
                 function(data) {

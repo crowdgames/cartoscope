@@ -24,19 +24,29 @@ var SOFTMX = true; // whether to use softmax vs squared
 
 var MISTAKE_SWITCH = 4; //was 2
 
-var ACTIONS = ['44_CaDo_C4_M0',
-                '55_TeNoTeG_C8_M0',
-                '66_BrNoBrG_C12_M0',
-                'CAIRNM'
-                ];
+// var ACTIONS = ['44_CaDo_C4_M0',
+//                 '55_TeNoTeG_C8_M0',
+//                 '66_BrNoBrG_C12_M0',
+//                 'CAIRNM'
+//                 ];
+var ACTIONS = ['44_CaDo_C10_M0',
+    '55_TeNoTeG_C10_M0',
+    '66_BrNoBrG_C10_M0',
+    'CAIRNM'
+];
 
 
 var WEIGHTS = {
     'CAIRNM': 0,
     '44_RB_C4_M0': 0.5, //replace with cats dogs
+    '44_RB_C10_M0': 0.5, //replace with cats dogs
     '44_CaDo_C4_M0': 0.5,
+    '44_CaDo_C10_M0': 0.5,
     '55_TeNoTeG_C8_M0': 1 ,
-    '66_BrNoBrG_C12_M0': 1.2
+    '55_TeNoTeG_C10_M0': 1 ,
+    '66_BrNoBrG_C12_M0': 1.2,
+    '66_BrNoBrG_C10_M0': 1.2
+
 };
 
 
@@ -657,6 +667,19 @@ exports.fetchPlayerPath = function(user_id) {
     });
 };
 
+//how many people in each condition of the hit based on data from moves
+exports.getConditionDistributions = function(hit_id) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+        connection.queryAsync('select t.method, count(*) from (select DISTINCT user_id,hit_id,JSON_EXTRACT(response, \'$.method\') as method from tileoscope_moves where hit_id=?) as t group by method;',[hit_id]).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};
 
 //update user path
 exports.updatePlayerQuit = function(path_id) {
@@ -904,7 +927,7 @@ function convertPathToKeys(rand_traj_raw,mode) {
 
             if (example_seq.length) {
                 var action = example_seq.pop();
-                console.log("Action: " + action)
+                //console.log("Action: " + action)
                 var next_mistake = parseInt(example_mistakes.pop());
 
 
@@ -958,7 +981,7 @@ function convertPathToKeys(rand_traj_raw,mode) {
                     'value': value,
                     'next_state': next_state
                 };
-                console.log(obj);
+                //console.log(obj);
                 q_array_path.push(obj)
             }
         }

@@ -992,7 +992,7 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
 
 
     //if one of the two missing, then error!
-    var projectID = req.query.tree || req.query.qlearn ||req.query.qlearng  || req.query.qlearnO || req.query.genetic || req.query.random || "featured";
+    var projectID = req.query.tree || req.query.qlearn ||req.query.qlearng  || req.query.qlearnO || req.query.genetic || req.query.random || req.query.greedy || "featured";
     var workerId = req.query.workerId || req.query.participantId;
 
 
@@ -1008,6 +1008,7 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
             assignmentId: req.query.assignmentId || "tileoscope",
             submitTo: req.query.submitTo || "tileoscope"
         };
+
 
 
         //for cases requiring trees (or generating from pools that are stored in the root of a tree)
@@ -1080,7 +1081,8 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
             });
         }
         //for for cases that don't require tree
-        else if (req.query.hasOwnProperty("qlearn") || req.query.hasOwnProperty("qlearng") || req.query.hasOwnProperty("genetic")){
+        else if (req.query.hasOwnProperty("qlearn") || req.query.hasOwnProperty("qlearng") || req.query.hasOwnProperty("genetic") || req.query.hasOwnProperty("greedy")){
+
 
             //check if user exists:
             anonUserDB.findConsentedMTurkWorker(anonUser.workerId, projectID,anonUser.hitId).then(function(user) {
@@ -1107,6 +1109,9 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
                     console.log("User not found. Creating...");
                     var gen_q = 0;
 
+                    console.log(req.query)
+
+
                     // var func = "createUserSequenceQlearnTileoscope";
                     //var func = "generateSequenceQlearnStatic";
 
@@ -1118,6 +1123,10 @@ router.get('/getSequenceTileoscopeWeb/', function(req, res, next) {
                     }
                     if (req.query.hasOwnProperty("qlearng")) {
                         gen_q = 1
+                    }
+
+                    if (req.query.hasOwnProperty("greedy")) {
+                        func = "selectGreedySequence"
                     }
 
                     var f_call = dynamicDB[func](projectID,gen_q);

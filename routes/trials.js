@@ -84,7 +84,7 @@ router.get('/compareTGQ/:hit_id', function(req, res, next) {
     // 'qlearn=' + hit_id + '&train_hit=O01MB2E67SUU',
     var possibles = [
         'qlearnO='+ hit_id,
-        'genetic=GNEPFHZXA6QL',
+        'greedy=' + hit_id,
         'random=' + hit_id
     ];
 
