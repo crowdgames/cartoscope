@@ -55,3 +55,18 @@ router.get('/fetchQTable/:main_code/:mode', function(req, res, next) {
         res.status(500).send(err)
     })
 });
+
+
+router.post('/simulateNextLevel', function(req, res, next) {
+
+    qlearnDB.fetchQTableByCode(req.body.main_code,req.body.mode).then(function(Q) {
+
+        var Q_format = qlearnDB.convertQtableFormat(Q);
+        var res_seq = qlearnDB.QlearnAlgorithmConstruct(Q_format,req.body.path_size,qlearnDB.encodeMistakes(req.body.player_mistakes),req.body.user_path);
+        console.log(res_seq)
+        res.send(res_seq.join('-'))
+    },function(err){
+        console.log(err);
+        res.status(500).send(err)
+    })
+});

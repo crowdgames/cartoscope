@@ -22,6 +22,9 @@ var d3 = require('d3');
 var CARTO_PORT = process.env.CARTO_PORT || '8081';
 var salt = process.env.CARTO_SALT;
 
+var Chance = require('chance'); //for random weighted
+var chance = new Chance();
+
 var path = require('path');
 module.exports = router;
 
@@ -48,8 +51,11 @@ router.get('/compareTGCC/:hit_id', function(req, res, next) {
     ];
 
     var hit_id = req.params.hit_id;
-    var pick_d = randomInt(0,possibles_pool.length - 1); //pick dataset [start,end]
-    var selected_d = possibles_pool[pick_d];
+    // var pick_d = randomInt(0,possibles_pool.length - 1); //pick dataset [start,end]
+
+    var selected_d = chance.pickone(possibles_pool);
+
+    // var selected_d = possibles_pool[pick_d];
     var interface_version = selected_d.interface;
     var dataset = selected_d.dataset;
     var link = "";
@@ -75,15 +81,18 @@ router.get('/compareTGQ/:hit_id', function(req, res, next) {
     var hit_id= req.params.hit_id;
     var train_hit = req.params.train_hit;
 
+    // 'qlearn=' + hit_id + '&train_hit=O01MB2E67SUU',
     var possibles = [
-        'qlearn=' + hit_id + '&train_hit=O01MB2E67SUU',
         'qlearnO='+ hit_id,
         'genetic=GNEPFHZXA6QL',
         'random=' + hit_id
     ];
 
-    var pick_d = randomInt(0,possibles.length - 1); //pick dataset
-    var selected_d = possibles[pick_d];
+    // var pick_d = randomInt(0,possibles.length - 1); //pick dataset
+    // var selected_d = possibles[pick_d];
+
+    var selected_d = chance.pickone(possibles);
+
 
 
     var link = 'http://cartosco.pe/Tiles/?' + selected_d +'&trialId=' + hit_id ;
@@ -101,8 +110,10 @@ router.get('/hgtest/:hit_id', function(req, res,next) {
 
     var hit_id = req.params.hit_id;
     var subprojects = ["UOYIiFeapnyI","ocioawiaGcjw","KyW6Ti9QUr4I","Srz9arMDwthQ","94yoCWhFkpMk","cXz6ImkmG9k5"];
-    var pick_d = randomInt(0,subprojects.length - 1); //pick dataset [start,end]
-    var project_code = subprojects[pick_d];
+    //var pick_d = randomInt(0,subprojects.length - 1); //pick dataset [start,end]
+
+    var project_code = chance.pickone(subprojects);
+    // var project_code = subprojects[pick_d];
     var link = "kioskProject.html#/kioskStart/" + project_code + '?trialId=' + hit_id;
     res.redirect('http://cartosco.pe/' + link); // send to project page
 

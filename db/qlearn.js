@@ -17,10 +17,12 @@ var chance = new Chance();
 
 
 // var ALPHA = 0.001;
-
-var ALPHA = 0.01;
+//var ALPHA = 0.01;
+var ALPHA = 0.1;
 var LAMBDA = 0.95;
 var SOFTMX = true; // whether to use softmax vs squared
+
+var MISTAKE_SWITCH = 4; //was 2
 
 var ACTIONS = ['44_CaDo_C4_M0',
                 '55_TeNoTeG_C8_M0',
@@ -43,7 +45,7 @@ var STATE_LEN = 2;
 // var REP_N = 300000; //CHI-PLAY
 var REP_N = 1; //not used anymore
 
-var SEQ_HORIZON = 15; //how much ahead should I generate
+var SEQ_HORIZON = 25; //how much ahead should I generate
 
 
 
@@ -128,8 +130,8 @@ exports.generateSequenceQlearnStatic = function(main_code,train_id,user_id) {
             if (Q.length > 0) {
 
                 //format from db format to object:
-                var Q_format = convertQtableFormat(Q);
-                var res_seq = QlearnAlgorithmConstruct(Q_format,SEQ_HORIZON,"N","");
+                var Q_format = exports.convertQtableFormat(Q);
+                var res_seq = exports.QlearnAlgorithmConstruct(Q_format,SEQ_HORIZON,"N","");
                 var seq_conv = res_seq.join('-');
                 //send seq data
                 resolve(
@@ -141,9 +143,9 @@ exports.generateSequenceQlearnStatic = function(main_code,train_id,user_id) {
 
             } else {
                 //generate first then construct
-                console.log("No Qtable. Generating first")
+                console.log("No Qtable. Generating first");
                 exports.generateQTableStatic(main_code,train_id).then(function(c_q){
-                    var res_seq = QlearnAlgorithmConstruct(c_q,SEQ_HORIZON,"N","");
+                    var res_seq = exports.QlearnAlgorithmConstruct(c_q,SEQ_HORIZON,"N","");
                     var seq_conv = res_seq.join('-');
                     resolve(
                         {
@@ -199,7 +201,7 @@ exports.generateQTableStatic = function(main_code,train_id) {
                     })
                 },function(err){
                     console.log("Error getting paths from training to build Q-table static");
-                    console.log(err)
+                    console.log(err);
                     error(err)
                 })
 
@@ -292,11 +294,11 @@ exports.generateQlearnOptimalSequenceTileoscopeOnline = function(main_code, play
 
                         //if no paths, but we have table, then just spit sequence using table we have
                         if (Q.length > 0) {
-                            Q_format = convertQtableFormat(Q);
+                            Q_format = exports.convertQtableFormat(Q);
                         }
 
                         //get next level
-                        var res_seq = QlearnAlgorithmConstruct(Q_format,1,encodeMistakes(player_mistakes),user_path);
+                        var res_seq = exports.QlearnAlgorithmConstruct(Q_format,1,exports.encodeMistakes(player_mistakes),user_path);
 
                         //convert sequence to comptible string for Tile-o-Scope
                         var seq_conv = res_seq.join('-');
@@ -310,7 +312,7 @@ exports.generateQlearnOptimalSequenceTileoscopeOnline = function(main_code, play
                     } else {
                         //QLEARN FUNCTION HERE should return the sequence
 
-                        Q_format = convertQtableFormat(Q);
+                        Q_format = exports.convertQtableFormat(Q);
 
                         exports.QlearnAlgorithm(tile_paths,main_code,Q_format,player_mistakes,user_path).then(function(res_seq){
 
@@ -367,13 +369,13 @@ exports.updateQlearnTableOne = function(main_code,q_key,q_value,mode) {
         var q_state = kk[0];
         var q_player_mistakes = q_state.split('/')[1] || 'N'; //if we are in the static version, then we don't have performance
         var q_id = 0;
-        if (kk.length == 4){
-            q_id = parseInt(kk[3])
+        if (kk.length === 3){
+            q_id = parseInt(kk[2])
         }
 
         //if id is undefined, we do simple insert
 
-        if (q_id == 0) {
+        if (q_id === 0) {
 
             console.log("Will insert:");
             console.log(unique_code_main, q_state, q_action, q_player_mistakes, parseFloat(q_value))
@@ -391,7 +393,7 @@ exports.updateQlearnTableOne = function(main_code,q_key,q_value,mode) {
 
         } else {
 
-            //console.log("Will update:");
+            console.log("Will update:");
             console.log(unique_code_main, q_state, q_action, parseFloat(q_value),q_id);
             connection.queryAsync('update tileoscope_qtable set q_value=? where id=?',[parseFloat(q_value),q_id]).then(
                 function(data) {
@@ -470,9 +472,8 @@ exports.QlearnAlgorithm = function(player_paths,main_code, Q, player_mistakes,ma
         if (Q == undefined || Q.length == 0){
             Q = {};
         }
-        console.log("Qtable before");
-        console.log(Q);
-
+        // console.log("Qtable before");
+        // console.log(Q);
 
 
         // array that keeps track of how many entries in table need to be updated
@@ -560,8 +561,8 @@ exports.QlearnAlgorithm = function(player_paths,main_code, Q, player_mistakes,ma
             console.log("Updated " + up.toString() + " entries");
             //once the Q-table is constructed, generate the seq and return
             //encode current player mistakes: will use in generating path
-            var p_mc = encodeMistakes(player_mistakes);
-            var new_seq = QlearnAlgorithmConstruct(Q,1,p_mc,main_player_path);
+            var p_mc = exports.encodeMistakes(player_mistakes);
+            var new_seq = exports.QlearnAlgorithmConstruct(Q,1,p_mc,main_player_path);
             resolve(new_seq);
         }, function (err) {
             error(err)
@@ -674,7 +675,7 @@ exports.updatePlayerQuit = function(path_id) {
 
 
 
-function convertQtableFormat(data){
+exports.convertQtableFormat = function(data){
     var q_table = {};
     //make them in the form we need Q[key] = value
     // since we cannot have unique index with state, we will use the id as a shorthand, we need this info passed somehow
@@ -704,7 +705,7 @@ function convertQtableFormatNoKey(data){
 
 //given Q table, construct a sequence of size n
 //if static, p_mistakes is N everywhere
-function QlearnAlgorithmConstruct(Q,size_n,p_mistakes,user_path) {
+exports.QlearnAlgorithmConstruct = function(Q,size_n,p_mistakes,user_path) {
 
 
     if (user_path === undefined){
@@ -721,12 +722,16 @@ function QlearnAlgorithmConstruct(Q,size_n,p_mistakes,user_path) {
         var state = "";
         var state_arr = [];
 
+        console.log("Path:");
+        console.log(pth);
+
         //if the state is bigger than STATE LEN, get the last STATE-LEN items
         if (pth.length > STATE_LEN){
             state_arr = pth.slice(-STATE_LEN);
         } else {
             state_arr = pth;
         }
+
 
         if (state_arr.length === 0){
             state = ""
@@ -741,9 +746,10 @@ function QlearnAlgorithmConstruct(Q,size_n,p_mistakes,user_path) {
         var pick_w = [];
         var pick_act = [];
         var norm_w = 0;
+        var not_selected = [];
         ACTIONS.forEach(function(try_act){
             var try_key = state + "|" + try_act ;
-            var try_Q = 0.0;
+            var try_Q = 0;
 
             //must add key in it
             var has_key = Object.keys(Q).filter(function(item, index) {
@@ -756,7 +762,11 @@ function QlearnAlgorithmConstruct(Q,size_n,p_mistakes,user_path) {
 
             if (Q.hasOwnProperty(try_key)) {
                 try_Q = parseFloat(Q[try_key]);
+            } else{
+                not_selected.push(try_act)
             }
+            //pick the unused ones
+
 
 
             //if softmax, then use softmax function to normalize weights
@@ -785,83 +795,21 @@ function QlearnAlgorithmConstruct(Q,size_n,p_mistakes,user_path) {
             }
         }
 
-        // pick random weighted
-        max_act = chance.weighted(pick_act, pick_w_norm);
+        //if we have items that we havent selected, then pick one of them
+        if(not_selected.length){
+            // pick one of the not selected at random
+            console.log("Will pick from: " + not_selected)
+            max_act = chance.pickone(not_selected);
+        } else {
+            // pick random weighted
+            console.log("Will pick random weighted")
+            max_act = chance.weighted(pick_act, pick_w_norm);
+        }
+
+        //max_act = chance.weighted(pick_act, pick_w_norm);
+
+
         console.log("Next pick: " + max_act)
-        pth.push(max_act);
-
-    }
-    //return path in array form
-    return(pth);
-
-};
-
-//TODO: RETIRE
-function QlearnAlgorithmConstructOld(Q,size_n) {
-
-    var pth = [];
-
-    for (var i = 0; i < size_n; i++) {
-
-        var state = "";
-        var state_arr = [];
-
-        //if the state is bigger than STATE LEN, get the last 3 items
-        if (pth.length > STATE_LEN){
-            state_arr = pth.slice(-STATE_LEN);
-        } else {
-            state_arr = pth;
-        }
-
-        if (state_arr.length == 0){
-            state = ""
-        } else {
-            state = state_arr.join("-")
-        }
-
-
-        var max_act = "";
-        var max_Q = -99.0;
-        var tq_n = 0;
-        var pick_w = [];
-        var pick_act = [];
-        var norm_w = 0;
-        ACTIONS.forEach(function(try_act){
-            var try_key = state + "|" + try_act ;
-            var try_Q = 0.0;
-
-            if (Q.hasOwnProperty(try_key)){
-                try_Q = parseFloat(Q[try_key]);
-            } else {
-                try_Q = -99.0;
-            }
-
-            //if softmax, then use softmax function to normalize weights
-            // else used squared value of function
-            if (SOFTMX){
-                tq_n = Math.exp(try_Q);
-            } else {
-                tq_n = Math.pow(try_Q, 2);
-            }
-
-            norm_w = norm_w + tq_n;
-            pick_w.push(tq_n);
-            pick_act.push(try_act);
-        });
-
-        //normalize weights of choices
-
-        var pick_w_norm = [];
-        for (var j = 0; j < pick_w.length; j++) {
-            if (norm_w > 0) {
-                pick_w_norm[j] = pick_w[j] *1.0 / norm_w
-            } else {
-                pick_w_norm[j] = 1.0
-            }
-        }
-
-        // pick random weighted
-        max_act = chance.weighted(pick_act, pick_w_norm);
         pth.push(max_act);
 
     }
@@ -896,7 +844,7 @@ function randomInt(min,max){
     return (Math.floor(Math.random() * (max - min + 1) ) + min);
 }
 
-function encodeMistakes(num_m){
+exports.encodeMistakes = function(num_m){
     //if n = 0 : G
     //if n < 2 : B
     //if n > 2 :U
@@ -905,7 +853,7 @@ function encodeMistakes(num_m){
         return 'N'
     } else if (num_m == 0) {
         return 'G'
-    } else if ( num_m < 2) {
+    } else if ( num_m < MISTAKE_SWITCH) {
         return 'B'
     } else {
         return 'U'
@@ -934,6 +882,9 @@ function convertPathToKeys(rand_traj_raw,mode) {
 
     //console.log("Quit: " + path_quit + " index: "  + user_index);
 
+    // console.log("Fullp path:")
+    // console.log(rand_traj_seq);
+
 
     var q_array_path = [];
     var pos = rand_traj_seq.length - 1; //start from end
@@ -948,28 +899,32 @@ function convertPathToKeys(rand_traj_raw,mode) {
             var example_seq = rand_traj_seq.slice(start_pos, pos + 1);
             var example_tiles_c = rand_traj_tiles.slice(start_pos, pos + 1);
             var example_mistakes = rand_traj_mistakes.slice(start_pos, pos + 1);
+            // console.log("Example:")
+            // console.log(example_seq);
 
             if (example_seq.length) {
                 var action = example_seq.pop();
+                console.log("Action: " + action)
                 var next_mistake = parseInt(example_mistakes.pop());
 
 
                 var collected = parseInt(example_tiles_c.pop());
                 var value = collected * WEIGHTS[action];
 
-
                 var state = example_seq.join('-');
 
                 //state is history + performance we were
                 if (state !== "") {
 
-                    var perf = encodeMistakes(parseInt(example_mistakes.pop()));
+                    var perf = exports.encodeMistakes(parseInt(example_mistakes.pop()));
                     //if in static, disregard user performance in state
                     if (mode === "static"){
                         perf = "N";
                     }
                     state = state + "/" + perf
                 }
+
+                // console.log("State: " + state);
 
 
                 //next state is going to be one step after. but if we picked the end,
@@ -986,10 +941,11 @@ function convertPathToKeys(rand_traj_raw,mode) {
 
                 //if we quit, next state is simply quit
                 //else, is the new history + performance when we took action
-                if(path_quit){
+                if(path_quit && pos === rand_traj_seq.length - 1 ){
                     next_state = "X";
+                    value = 0;
                 } else {
-                    var n_perf = encodeMistakes(parseInt(next_mistake));
+                    var n_perf = exports.encodeMistakes(parseInt(next_mistake));
                     if (mode === "static"){
                         n_perf = "N";
                     }
@@ -1001,7 +957,6 @@ function convertPathToKeys(rand_traj_raw,mode) {
                     'action': action,
                     'value': value,
                     'next_state': next_state
-
                 };
                 console.log(obj);
                 q_array_path.push(obj)
