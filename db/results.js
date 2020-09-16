@@ -290,6 +290,20 @@ exports.getSurveyVotesTGHIT = function(hit_id) {
 
 }
 
+exports.getSurveyVotesTGHITRaw = function(hit_id) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('select * from tileoscope_survey where hit_id=? ',
+            [ hit_id]).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+
+}
+
 
 exports.getRawResultsMultiplebyTextGrouped = function(project_ids,dataset_id){
     return new Promise(function(resolve, error) {

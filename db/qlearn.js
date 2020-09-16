@@ -198,7 +198,7 @@ exports.generateQTableStatic = function(main_code,train_id) {
 
          console.log("Fetching paths from: ",train_id);
             //then get paths from designated random train hit:
-            tileDB.getTileoscopePaths(train_id).then(function(tile_paths) {
+            tileDB.getTileoscopePathsRandom(train_id).then(function(tile_paths) {
 
                 console.log("Fetched: " + tile_paths.length + " paths.");
 

@@ -90,6 +90,17 @@ router.get('/surveyTG/:hit_id', function(req, res, next) {
     });
 });
 
+//Get survey results from HIT from Tile-o-Scope Grid
+router.get('/surveyTGRaw/:hit_id', function(req, res, next) {
+
+    var hit_id = req.params.hit_id;
+    resultDB.getSurveyVotesTGHITRaw(hit_id).then(function(results) {
+        res.send(results);
+    }, function(err) {
+        res.status(400).send('survey results could not be generated!!!');
+    });
+});
+
 
 //Check Expert progress
 router.get('/checkExpertProgress/:hit_code', function(req, res, next) {

@@ -150,6 +150,20 @@ exports.getTileoscopePaths = function(hitId) {
     });
 };
 
+//get all paths for hit id (same as unique code)
+exports.getTileoscopePathsRandom = function(hitId) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+        connection.queryAsync('select * from tileoscope_paths where hit_id=? and method="tree_random" ORDER BY RAND()',[hitId]).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+};
+
 exports.getTileoscopePathsQlearnO = function(hitId) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
