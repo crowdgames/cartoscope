@@ -155,7 +155,7 @@ exports.getTileoscopePathsRandom = function(hitId) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
 
-        connection.queryAsync('select * from tileoscope_paths where hit_id=? and method="tree_random" ORDER BY RAND()',[hitId]).then(
+        connection.queryAsync('select * from tileoscope_paths where hit_id=? and method="tree_random" ORDER BY RAND() LIMIT 50',[hitId]).then(
             function(data) {
                 resolve(data);
             }, function(err) {
