@@ -50,6 +50,14 @@ var WEIGHTS = {
 };
 
 
+var PERF_WEIGHTS = {
+    "N": 1,
+    "G": 1,
+    "B": 0.5,
+    "U": 0.2
+}
+
+
 
 var STATE_LEN = 2;
 // var REP_N = 300000; //CHI-PLAY
@@ -745,8 +753,8 @@ exports.QlearnAlgorithmConstruct = function(Q,size_n,p_mistakes,user_path) {
         var state = "";
         var state_arr = [];
 
-        console.log("Path:");
-        console.log(pth);
+        // console.log("Path:");
+        // console.log(pth);
 
         //if the state is bigger than STATE LEN, get the last STATE-LEN items
         if (pth.length > STATE_LEN){
@@ -792,6 +800,7 @@ exports.QlearnAlgorithmConstruct = function(Q,size_n,p_mistakes,user_path) {
 
 
 
+
             //if softmax, then use softmax function to normalize weights
             // else used squared value of function
             if (SOFTMX){
@@ -803,18 +812,19 @@ exports.QlearnAlgorithmConstruct = function(Q,size_n,p_mistakes,user_path) {
             norm_w = norm_w + tq_n;
             pick_w.push(tq_n);
             pick_act.push(try_act);
+
         });
 
         // console.log(pick_w);
         // console.log(pick_act);
+
+
 
         //normalize weights of choices
         var pick_w_norm = [];
         for (var j = 0; j < pick_w.length; j++) {
             if (norm_w > 0) {
                 pick_w_norm[j] = pick_w[j] *1.0 / norm_w
-            } else {
-                pick_w_norm[j] = 1.0
             }
         }
 
@@ -825,7 +835,9 @@ exports.QlearnAlgorithmConstruct = function(Q,size_n,p_mistakes,user_path) {
             max_act = chance.pickone(not_selected);
         } else {
             // pick random weighted
-            console.log("Will pick random weighted")
+            console.log("Will pick random weighted");
+            console.log(pick_act)
+            console.log(pick_w_norm);
             max_act = chance.weighted(pick_act, pick_w_norm);
         }
 
@@ -974,6 +986,9 @@ function convertPathToKeys(rand_traj_raw,mode) {
                     }
                     next_state = next_state_arr.join('-') + "/" +   n_perf;
                 }
+                //WEIGH BY PERF
+                value = value * PERF_WEIGHTS[exports.encodeMistakes(parseInt(next_mistake))];
+
 
                 var obj = {
                     'state': state,

@@ -1172,7 +1172,8 @@ module.controller('surveyIMIController', ['$scope', '$http', '$state', '$locatio
         $scope.fromTileoscope = 1;
         $scope.participantId = $scope.params.workerId ||  $scope.params.participantId;
         $scope.trialId = $scope.params.hitId ||  $scope.params.trialId;
-        $scope.userType = "mTurk"
+        $scope.userType = "mTurk";
+        $scope.sequence_method = $scope.params.method || "none"
     } else {
         $scope.userType = $scope.params.userType;
     }
@@ -1291,6 +1292,7 @@ module.controller('surveyIMIController', ['$scope', '$http', '$state', '$locatio
             if ($scope.fromTileoscope){
                 link = '/api/project/surveyTileoscope';
                 data.participantId = $scope.participantId;
+                data.method = $scope.sequence_method;
             }
 
             $http.post(link, JSON.stringify(data)).then(function(data) {
