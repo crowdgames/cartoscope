@@ -1736,10 +1736,12 @@ module.controller('landlossResultsController',
                         id: pointId,
                         icon: $scope.icon_array[color_index]
                     });
+
+                    console.log(item.image_url)
                     point_marker.templateUrl = 'infowindow_templateLandloss.html';
                     point_marker.templateParameter = {
                         id:   pointId,
-                        image: "/api/tasks/getImageFree/"+ item.unique_code + "/" + key,
+                        image: "/api/tasks/getImageFree/"+ item.unique_code + "/" + key + ".jpg" ,
                         majority_percentage: Math.round(100*item.majority_count/item.total) + "%"
                     };
 
