@@ -39,7 +39,7 @@
 
         <div ng-show="showMap" class="row">
 
-            <h3> Use the buttons below to pick a pattern and explore where other users found have found it so far!  </h3>
+            <h3> Use the buttons below to pick a pattern and explore where it has been identified so far!  </h3>
 
             <button class="btn-lg  " placeholder="Option" ng-repeat="option in landloss_positives_buttons track by $index "
 
@@ -63,8 +63,8 @@
         <div class="row" ng-if="external_signup">
             <div class="col-md-1"></div>
             <div class="col-md-10">
-                <p>Would you like to participate in other projects like this or learn more about environmental issues along the Gulf or Mexico?
-                    Fill in this information to sign up. Make sure to hit the blue Submit button to complete the sign up!</p>
+                <h3>Would you like to participate in other projects like this or learn more about environmental issues along the Gulf or Mexico?
+                    Fill in this information to sign up. Make sure to hit the blue Submit button to complete the sign up!</h3>
                 <iframe id="iframe_div2"
                             ng-src="{{getExternalFrame(external_signup)}}"
                         style="width: 100%;height:600px" >
@@ -76,7 +76,7 @@
 
 
         <div class="row">
-                <h3>Thank you for taking the time to contribute to our study!</h3>
+                <h3>Click below to export results:</h3>
                 <div ng-show="successProject">
                     <button class="submit-button" ng-click="downloadCSVLandLoss()" style="margin-top: 20px;
             border-radius: 8px;
