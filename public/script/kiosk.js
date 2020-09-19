@@ -1627,7 +1627,7 @@ module.controller('landlossResultsController',
 
         $window.document.title ="Results";
 
-        $scope.external_signup = "https://www.healthygulf.org/updates";
+        $scope.external_signup = "https://secure.everyaction.com/c5MDPHxLyUmAb4-c_xjrvg2";
 
 
         $scope.getExternalFrame = function(link){
@@ -1643,49 +1643,20 @@ module.controller('landlossResultsController',
             '/images/markers/marker_purple2.svg',
             '/images/markers/marker_grey.svg'];
 
+        $scope.hex_array = ['#9cdc1f',
+            '#FFF200',
+            '#F7941D',
+            '#ff0000',
+            '#0072BC',
+            '#8a2be2'
+        ];
 
-        function count_unique(arr, key){
-
-            var flags = [], output = [], l = arr.length, i;
-            for( i=0; i<l; i++) {
-
-                var itm = arr[i];
-                if( flags[itm[key]]) continue;
-                flags[itm[key]] = true;
-                output.push(itm[key]);
-            }
-
-            return output.length;
-        }
-
-        function get_unique(arr, key){
-
-            var flags = [], output = [], l = arr.length, i;
-            for( i=0; i<l; i++) {
-
-                var itm = arr[i];
-                if( flags[itm[key]]) continue;
-                flags[itm[key]] = true;
-                output.push(itm[key]);
-            }
-
-            return output;
-        }
-
-        //Function generate_gradient: gradient array based on rgb array
-        // Different opacity
-        function generate_gradient(color) {
-
-            var g = [];
-            var op = 0;
-            //blue: 0,0,255 - 0,50,255 - 0,100,255 - 0,150,255 - 0,200,255
-
-            for (i = 0; i < 6; i++) {
-                g.push('rgba(' + color[0] + ' , ' + color[1] + ', ' + color[2] + ', ' + op + ')');
-                op = op + 0.20;
-            }
-            return g;
-        }
+        $scope.icon_array =  ['/images/dots/cs_green_dot.svg',
+            '/images/dots/cs_yellow_dot.svg',
+            '/images/dots/cs_orange_dot.svg',
+            '/images/dots/cs_red_dot.svg',
+            '/images/dots/cs_blue_dot.svg',
+            '/images/dots/cs_purple_dot.svg'];
 
 
 
@@ -1696,240 +1667,130 @@ module.controller('landlossResultsController',
         };
 
 
-        $scope.toggleGridMap = toggleGridMap;
-        function toggleGridMap(){
-            $scope.gridMap = !$scope.gridMap;
-        }
 
-        $scope.recenterMap = recenterMap;
-        function recenterMap(){
-            NgMap.getMap().then(function(map) {
+        $scope.InitMap = InitMapLandLoss;
+        function InitMapLandLoss (zoom){
 
-                map.setZoom(7);
-                var old_Center = new google.maps.LatLng($scope.results1[0].x,$scope.results1[0].y);
-                map.setCenter(old_Center)
-            })
-        }
+            $scope.update_landloss_Markers($scope.landloss_positives[0],0)
 
-        $scope.InitMap = InitMap;
-        function InitMap (zoom){
-
-            //generate first map
+            //generate map
             $scope.map1 = {
                 center: {
-                    latitude: parseFloat($scope.results1[0].x),
-                    longitude: parseFloat($scope.results1[0].y)
+                    latitude: parseFloat(29.905498110016907),
+                    longitude: parseFloat(-90.26941133000318)
                 },
                 streetViewControl: false,
                 zoom: zoom,
-                bounds: {}
+                markers: $scope.landlossMarkers,
+                markersEvents: {
+                    click: function (marker, eventName, model) {
+                        $scope.map1.window.model = model;
+                        $scope.map1.window.show = true;
+                    }
+                },
+                window: {
+                    marker: {},
+                    show: false,
+                    closeClick: function () {
+                        this.show = false;
+                    },
+                    options: {}
+                }
             };
-            NgMap.getMap().then(function(map) {
-
-                if($scope.fromTileARUser){
-
-                    $scope.plot_tileoscope_user_points(map,function(res){
-                        if ($scope.gridMap){
-                            $scope.drawGrid()
-                        } else {
-                            $scope.update_heatmap(1);
-                        }
-                    })
-
-                }else {
-                    if ($scope.gridMap){
-                        $scope.drawGrid()
-                    } else {
-                        $scope.update_heatmap(1);
-                    }
-                }
-
-
-
-            })
-        }
-
-        //function that draws the initial grid
-        $scope.drawGrid = drawGrid;
-        function drawGrid () {
-
-            NgMap.getMap().then(function(map) {
-
-
-                $scope.rectArr = []
-                $scope.showGrid = false;
-                var NE = map.getBounds().getNorthEast();
-                var SW = map.getBounds().getSouthWest();
-                var aNorth  =   map.getBounds().getNorthEast().lat();
-                var aEast   =   map.getBounds().getNorthEast().lng();
-                var aSouth  =   map.getBounds().getSouthWest().lat();
-                var aWest   =   map.getBounds().getSouthWest().lng();
-
-
-                var width = 5.0;
-                var height = 5.0;
-                var l_dist = SW.lng() - NE.lng();
-                var b_dist = SW.lat() - NE.lat();
-                var lat_icrement = b_dist / width;
-                var lng_increment =l_dist / height;
-
-                var cnt = 0;
-                for (var i = 0; i < height; i++) {
-                    for (var j = 0; j < width; j++) {
-                        var rSW = new google.maps.LatLng(NE.lat() + (lat_icrement * i), NE.lng() + (lng_increment * j));
-                        var rNE = new google.maps.LatLng(NE.lat() + (lat_icrement * (i + 1)), NE.lng() + (lng_increment * (j + 1)));
-                        var rBounds = new google.maps.LatLngBounds(rSW,rNE);
-                        var rNW =  new google.maps.LatLng(rNE.lat(), rSW.lng());
-                        var rSE = new google.maps.LatLng(rSW.lat(), rNE.lng());
-
-                        var rectangle = {
-                            ne:{lat:rNE.lat(),lng:rNE.lng()},
-                            nw:{lat:rNW.lat(),lng:rNW.lng()},
-                            sw:{lat:rSW.lat(),lng:rSW.lng()},
-                            se:{lat:rSE.lat(),lng:rSE.lng()},
-                            strokeColor: '#000000',
-                            strokeOpacity: 0,
-                            strokeWeight: 0,
-                            fillColor: '#FFFFFF',
-                            fillOpacity: 0.1,
-                            id: cnt
-                        };
-                        cnt+=1;
-                        //store all rects here
-                        $scope.rectArr.push(rectangle);
-
-                    }
-                }
-                $scope.showGrid= true;
-                setGridColors(); //do this now
-            })
-
-        }
-
-        function checkIfWithinBounds(rec,point){
-            var polyCoords = [];
-            polyCoords.push(rec.ne);
-            polyCoords.push(rec.nw);
-            polyCoords.push(rec.sw);
-            polyCoords.push(rec.se);
-            var polygon = new google.maps.Polygon({paths: polyCoords});
-            var isIn = google.maps.geometry.poly.containsLocation(point,polygon);
-            return isIn;
-        }
-
-        //function to determine color of grid
-        function setGridColors(){
-
-            NgMap.getMap().then(function(map) {
-
-                for (var j = 0; j < $scope.rectArr.length; j++) {
-                    var rect = $scope.rectArr[j];
-                    var possible_colors = $scope.hex_array.length;
-                    var major_counter = new Array(possible_colors+1).join('0').split('').map(parseFloat);
-                    var hasOne = false;
-                    $scope.results1.forEach(function (item){
-
-                        var mk = new google.maps.LatLng(parseFloat(item.x), parseFloat(item.y)); //get position of image
-                        //check if it contains:
-                        if (checkIfWithinBounds(rect,mk)){
-                            var col = parseInt(item.color);
-                            major_counter[col-1]+=1;
-                            hasOne = true;
-                        }
-                    });
-                    //we have all counts, must find max now:
-                    if (hasOne){
-                        var max_color = -1;
-                        var max_cnt = -1;
-                        for (var i = 0; i < major_counter.length; i++) {
-                            if (major_counter[i] > max_cnt){
-                                max_color = i;
-                                max_cnt = major_counter[i];
-                            }
-                        }
-                        rect.fillColor = $scope.hex_array[max_color];
-                        rect.fillOpacity = 0.35;
-                        $scope.rectArr[j] = rect;
-                    }
-                }
-
-
-            })
-        }
-
-        $scope.update_heatmap = function (answer){
-
-            NgMap.getMap().then(function(map) {
-
-                heatmap = map.heatmapLayers.heatID;
-
-                var geodata = [];
-                //Mapping of answers to colors:
-                if (answer != 'all') {
-
-                    //Filter data based on answer clicked
-                    var answer_results = filterResponses(
-                        //$scope.results1, {answer: "\"" + answer + "\""});
-                        $scope.results1, {color: parseInt(answer)});
-
-                } else {
-                    var answer_results = $scope.results1;
-                }
-
-                //console.log(answer_results.length);
-
-                // Transform the data for the heatmap:
-                answer_results.forEach(function (item) {
-                    geodata.push(new google.maps.LatLng(parseFloat(item.x), parseFloat(item.y)));
-                });
-
-
-                //set the data for the heatmap
-                $scope.pointArr1 = new google.maps.MVCArray(geodata);
-                heatmap.setData($scope.pointArr1 );
-
-                //change the gradient
-                var gradient = generate_gradient(gradients[ans_colors[answer]]);
-                heatmap.set('gradient',gradient);
-            });
-        };
-
-
-
-        $scope.update_Markers = function (answer){
-
-            NgMap.getMap().then(function(map) {
-
-                $scope.pointMarkers.forEach(function (item) {
-                    if (answer === "reset") {
-                        item.setMap(map)
-                    } else {
-                        if (item.icon == $scope.point_array[answer-1]){
-                            item.setMap(map)
-                        } else {
-                            item.setMap(null)
-                        }
-                    }
-                });
-            })
-        };
-
-        //Function filterResponses: filter results based on some criteria
-        function filterResponses(array, criteria) {
-            return array.filter(function (obj) {
-                return Object.keys(criteria).every(function (c) {
-                    return obj[c] == criteria[c];
-                });})
-        };
-
-
-        $http.get('/api/results/hg_raw_data/' ).then(function(pdata) {
-
-
-            console.log(pdata.data)
             $scope.successProject = true;
+
+        }
+
+
+        $scope.update_landloss_Markers = function (pattern,color_index){
+
+            $scope.landlossMarkers = [];
+            //for every item in the original data, if majority matches picked pattern then add to map:
+            var pointId = 0;
+
+            //change button colors here
+            $scope.landloss_positives_buttons[$scope.active_pattern].active = false;
+            $scope.active_pattern = color_index;
+            $scope.landloss_positives_buttons[$scope.active_pattern].active = true;
+
+
+            var map_patterns_projects = {
+                "Sea Level Rise": "Land Loss Lookout: Identifying Sea Level Rise",
+                "Farming": "Land Loss Lookout: Identifying Farming",
+                "Oil and Gas": "Land Loss Lookout: Identifying Oil & Gas",
+                "Restoration": "Land Loss Lookout: Identifying Restoration",
+                "Shipping": "Land Loss Lookout: Identifying Shipping",
+                "Shoreline Erosion": "Land Loss Lookout: Shoreline Erosion"
+            };
+
+            var project_key = map_patterns_projects[pattern];
+                Object.keys($scope.raw_data).forEach(function (key) {
+
+                    var item = $scope.raw_data[key][project_key];
+
+
+                    var point_marker = new google.maps.Marker({
+                        latitude: parseFloat(item.lat) ,
+                        longitude: parseFloat(item.lon) ,
+                        title: item.image_url,
+                        id: pointId,
+                        icon: $scope.icon_array[color_index]
+                    });
+                    point_marker.templateUrl = 'infowindow_templateLandloss.html';
+                    point_marker.templateParameter = {
+                        id:   pointId,
+                        image: "/api/tasks/getImageFree/"+ item.unique_code + "/" + key,
+                        majority_percentage: Math.round(100*item.majority_count/item.total) + "%"
+                    };
+
+                    if (item.majority === pattern){
+                        $scope.landlossMarkers.push(point_marker);
+                    }
+                    pointId = pointId + 1;
+                });
+
+        };
+        //Options we want to focus on:
+        $scope.landloss_positives_buttons = [
+            {"pattern":"Sea Level Rise",
+                "color": $scope.hex_array[0],
+                "active": true
+            },
+            {"pattern":"Farming",
+                "color": $scope.hex_array[1],
+                "active": false
+            },
+            {"pattern":"Oil and Gas",
+                "color": $scope.hex_array[2],
+                "active": false
+            },
+            {"pattern":"Restoration",
+                "color": $scope.hex_array[3],
+                "active": false
+            },
+            {"pattern":"Shipping",
+                "color": $scope.hex_array[4],
+                "active": false
+            },
+            {"pattern":"Shoreline Erosion",
+                "color": $scope.hex_array[5],
+                "active": false
+            }
+        ];
+        $scope.landloss_positives = ["Sea Level Rise","Farming","Oil and Gas","Restoration","Shipping","Shoreline Erosion"];
+        $scope.active_pattern = 0;
+        $scope.button_pattern_selected = ['#FFFFFF','#FFFFFF','#FFFFFF','#FFFFFF','#FFFFFF','#FFFFFF'];
+
+        $scope.landlossMarkers = [];
+
+        var link =  '/api/results/hg_raw_data/';
+        $http.get(link ).then(function(pdata) {
+
+            $scope.raw_data = pdata.data; //all the data
+
             //TODO: Map viz with data here
-            $scope.showMap = false;
+            $scope.showMap = true;
+            $scope.InitMap(7);
 
         }, function (err) {
             console.log("whoops")

@@ -12,22 +12,52 @@
             </p>
         </div>
 
-        <div class="row" ng-show="showMap">
-           <!--TODO: MAP HERE-->
-            <h2>Map coming soon!</h2>
+        <div class="row" >
+
+            <!--</div>-->
+            <div id="map_canvas" ng-if="successProject">
+
+                <ui-gmap-google-map center="map1.center" zoom="map1.zoom" draggable="true" options="options" bounds="map1.bounds">
+                    <!--<ui-gmap-markers  ng-hide="showMarkers" models="workerResultsTransformed" coords="'self'" icon="'icon'" events="map1.markersEvents">-->
+
+                    <!--<ui-gmap-windows show="'showWindow'" closeClick="'closeClick'" templateUrl="'templateUrl'" templateParameter="'templateParameter'" ng-cloak>-->
+                    <!--</ui-gmap-windows>-->
+                    <!--</ui-gmap-markers>-->
+
+
+                    <ui-gmap-markers models="landlossMarkers" coords="'self'" icon="'icon'" events="map1.markersEvents">
+
+                        <ui-gmap-windows show="'showWindow'" closeClick="'closeClick'" templateUrl="'templateUrl'" templateParameter="'templateParameter'" ng-cloak>
+                        </ui-gmap-windows>
+                    </ui-gmap-markers>
+
+                </ui-gmap-google-map>
+            </div>
         </div>
 
-        <div class="row" ng-show="showMap">
-            <!--TODO: Ability to pick HERE-->
+
+
+        <div ng-show="showMap" class="row">
+
+            <h3> Use the buttons below to pick a pattern and explore where other users found have found it so far!  </h3>
+
+            <button class="btn-lg  " placeholder="Option" ng-repeat="option in landloss_positives_buttons track by $index "
+
+                    style=" margin-right:10px;
+                    background-color: {{option.active ? option.color : 'white'}};
+                    border-color: {{hex_array[$index]}};
+                   border:2px solid {{hex_array[$index]}}; "
+                    ng-click="update_landloss_Markers(option.pattern,$index)">{{option.pattern}}</button>
         </div>
 
+        <br>
 
 
 
 
 
         <div class="row" ng-hide="successProject">
-                <h2>Results coming soon!</h2>
+                <h2>Results loading...</h2>
         </div>
 
         <div class="row" ng-if="external_signup">
@@ -37,7 +67,7 @@
                     Fill in this information to sign up. Make sure to hit the blue Submit button to complete the sign up!</p>
                 <iframe id="iframe_div2"
                             ng-src="{{getExternalFrame(external_signup)}}"
-                        style="width: 100%;height:800px" >
+                        style="width: 100%;height:600px" >
                 </iframe>
             </div>
             <div class="col-md-1"></div>
