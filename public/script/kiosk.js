@@ -1699,7 +1699,7 @@ module.controller('landlossResultsController',
             };
             $scope.successProject = true;
 
-        }
+        };
 
 
         $scope.update_landloss_Markers = function (pattern,color_index){
@@ -1737,10 +1737,15 @@ module.controller('landlossResultsController',
                         icon: $scope.icon_array[color_index]
                     });
 
+
+                    var image_path = 'api/tasks/getImageFree/' + item.dataset_id + '/' + key  + '.jpg';
+
                     point_marker.templateUrl = 'infowindow_templateLandloss.html';
                     point_marker.templateParameter = {
                         id:   pointId,
-                        image: 'api/tasks/getImageFree/' + item.dataset_id + '/' + key  + '.jpg',
+                        image: image_path,
+                        image_url: item.image_url,
+                        pattern: pattern,
                         majority_percentage: Math.round(100*item.majority_count/item.total) + "%"
                     };
 
@@ -1784,7 +1789,7 @@ module.controller('landlossResultsController',
 
         $scope.landlossMarkers = [];
 
-        var link =  '/api/results/hg_raw_data/';
+        var link = '/api/results/hg_raw_data/';
         $http.get(link ).then(function(pdata) {
 
             $scope.raw_data = pdata.data; //all the data
