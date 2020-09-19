@@ -1722,7 +1722,7 @@ module.controller('landlossResultsController',
                 "Shipping": "Land Loss Lookout: Identifying Shipping",
                 "Shoreline Erosion": "Land Loss Lookout: Shoreline Erosion"
             };
-            
+
             var project_key = map_patterns_projects[pattern];
                 Object.keys($scope.raw_data).forEach(function (key) {
 
@@ -1784,7 +1784,7 @@ module.controller('landlossResultsController',
 
         $scope.landlossMarkers = [];
 
-        var link =  "http://cartosco.pe" + '/api/results/hg_raw_data/';
+        var link = '/api/results/hg_raw_data/';
         $http.get(link ).then(function(pdata) {
 
             $scope.raw_data = pdata.data; //all the data
