@@ -1740,7 +1740,7 @@ module.controller('landlossResultsController',
                     point_marker.templateUrl = 'infowindow_templateLandloss.html';
                     point_marker.templateParameter = {
                         id:   pointId,
-                        image: 'api/tasks/getImageFree/' + item.dataset_id + '/' + item.key  + '.jpg',
+                        image: 'api/tasks/getImageFree/' + item.dataset_id + '/' + key  + '.jpg',
                         majority_percentage: Math.round(100*item.majority_count/item.total) + "%"
                     };
 
@@ -1784,12 +1784,11 @@ module.controller('landlossResultsController',
 
         $scope.landlossMarkers = [];
 
-        var link = '/api/results/hg_raw_data/';
+        var link =  '/api/results/hg_raw_data/';
         $http.get(link ).then(function(pdata) {
 
             $scope.raw_data = pdata.data; //all the data
 
-            //TODO: Map viz with data here
             $scope.showMap = true;
             $scope.InitMap(7);
 
