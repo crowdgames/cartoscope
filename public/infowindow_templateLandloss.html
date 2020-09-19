@@ -3,5 +3,6 @@
             <!--<img data-ng-attr-src="{{:: parameter.title }}">-->
         <!--</div>-->
         <p> Confidence: {{parameter.majority_percentage}}</p>
-        <img ng-src="{{parameter.image}}" style="width: 50px">
+        <img ng-src="{{parameter.image}}" style="width: 100px" ng-click="window.open(parameter.image,'_blank')">
+        <small>Click on image to view.</small>
     </div>
