@@ -1722,7 +1722,7 @@ module.controller('landlossResultsController',
                 "Shipping": "Land Loss Lookout: Identifying Shipping",
                 "Shoreline Erosion": "Land Loss Lookout: Shoreline Erosion"
             };
-
+            
             var project_key = map_patterns_projects[pattern];
                 Object.keys($scope.raw_data).forEach(function (key) {
 
@@ -1737,11 +1737,10 @@ module.controller('landlossResultsController',
                         icon: $scope.icon_array[color_index]
                     });
 
-                    console.log(item.image_url)
                     point_marker.templateUrl = 'infowindow_templateLandloss.html';
                     point_marker.templateParameter = {
                         id:   pointId,
-                        image: "/api/tasks/getImageFree/"+ item.unique_code + "/" + key + ".jpg" ,
+                        image: 'api/tasks/getImageFree/' + item.dataset_id + '/' + item.key  + '.jpg',
                         majority_percentage: Math.round(100*item.majority_count/item.total) + "%"
                     };
 
@@ -1785,7 +1784,7 @@ module.controller('landlossResultsController',
 
         $scope.landlossMarkers = [];
 
-        var link =  '/api/results/hg_raw_data/';
+        var link =  "http://cartosco.pe" + '/api/results/hg_raw_data/';
         $http.get(link ).then(function(pdata) {
 
             $scope.raw_data = pdata.data; //all the data

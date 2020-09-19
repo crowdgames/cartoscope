@@ -336,6 +336,7 @@ exports.getRawResultsMultiplebyTextGrouped = function(project_ids,dataset_id){
                             majority: item.answer,
                             majority_count: item.votes,
                             unique_code: item.unique_code,
+                            dataset_id: dataset_id,
                             lat: item.x,
                             lon: item.y,
                             image_url: 'cartosco.pe/api/tasks/getImageFree/' + dataset_id + '/' + item.task_id  + '.jpg',
