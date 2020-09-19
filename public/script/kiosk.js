@@ -2673,7 +2673,7 @@ module.controller('landlossController', ['$window','$scope','$location','$state'
             //document.getElementById("navB").style.display = "block";
         };
 
-        $scope.showVideo = true
+        $scope.showVideo = true;
         $scope.video_url = $sce.trustAsResourceUrl('https://www.youtube.com/embed/yCx0H7bBxPk');
         $scope.cover_pic_path = 'api/project/getProjectPic/UOYIiFeapnyI';
 
@@ -2698,6 +2698,10 @@ module.controller('landlossController', ['$window','$scope','$location','$state'
         //return random integer [min,max]
         function randomInt(min,max){
             return (Math.floor(Math.random() * (max - min + 1) ) + min);
+        }
+
+        $scope.showTerms = function(){
+            $('#termsModal2').appendTo("body").modal('show');
         }
 
 
