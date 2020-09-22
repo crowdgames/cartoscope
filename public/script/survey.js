@@ -155,7 +155,9 @@ module.config(function($stateProvider, $urlRouterProvider) {
               $scope.exit = exit;
           }
 
-          
+          $scope.exit = exit;
+
+
           function exitHealthyGulf(){
               $window.location.href='kioskProject.html#/hg_landloss/';
 
