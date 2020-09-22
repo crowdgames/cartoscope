@@ -145,8 +145,22 @@ module.config(function($stateProvider, $urlRouterProvider) {
           $scope.showSource = false;
           $scope.showMarkers = false;
 
+          var hg_subprojects = ["UOYIiFeapnyI","ocioawiaGcjw","KyW6Ti9QUr4I","Srz9arMDwthQ","94yoCWhFkpMk","cXz6ImkmG9k5"];
 
-          $scope.exit = exit;
+          //if we are in one of the healthy gulf projects, we should go to main hub page
+          //FUTURE TODO: have a column for hub project and use that to take to main hub page
+          if (hg_subprojects.indexOf($scope.project) !== -1) {
+              $scope.exit = exitHealthyGulf;
+          } else {
+              $scope.exit = exit;
+          }
+
+          
+          function exitHealthyGulf(){
+              $window.location.href='kioskProject.html#/hg_landloss/';
+
+          }
+
           function exit(){
 
               console.log($stateParams.hitId)
@@ -1374,7 +1388,7 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
 
     $scope.trialId = $scope.params.hitId ||  $scope.params.trialId || "kiosk";
 
-    console.log($scope.trialId)
+    console.log($scope.trialId);
 
 
     $scope.survey_questions = [];
