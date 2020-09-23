@@ -146,16 +146,22 @@ module.config(function($stateProvider, $urlRouterProvider) {
           $scope.showMarkers = false;
 
           var hg_subprojects = ["UOYIiFeapnyI","ocioawiaGcjw","KyW6Ti9QUr4I","Srz9arMDwthQ","94yoCWhFkpMk","cXz6ImkmG9k5"];
+          $scope.is_landloss = false;
 
 
           //if we are in one of the healthy gulf projects, we should go to main hub page
           //FUTURE TODO: have a column for hub project and use that to take to main hub page
           if (hg_subprojects.indexOf($scope.project) !== -1) {
               $scope.exit = exitHealthyGulf;
+              $scope.is_landloss = true
           } else {
               $scope.exit = exit;
           }
 
+          //take them back to main HG LandLoss page results
+          $scope.landlossResults = function (){
+              $window.location.href='./kioskProject.html#/resultsHG';
+          };
 
           //take them back to main HG LandLoss page
           function exitHealthyGulf(){

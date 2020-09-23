@@ -8,6 +8,7 @@
         <p> Below you can see how
             you and other people have contributed to the project. The heatmap visualization corresponds to everyone's contributions.
             Your personal contributions are indicated by colored markers. Each color corresponds to the category you chose.
+            You can click on any marker to see the corresponding image.
         </p>
     </div>
 
@@ -127,8 +128,21 @@
             text-align: center;
             outline: none;
             border: none;
-            padding: 10px 25px;">Finish</button>
+            padding: 10px 25px;">Home</button>
 
+
+            </div>
+
+            <div class="row" ng-if="is_landloss">
+                <button  class="submit-button" ng-click="landlossResults()" style="margin-top: 20px;
+            border-radius: 8px;
+            background-color: #9cdc1f;
+            color: #000;
+            font-size: 18px;
+            text-align: center;
+            outline: none;
+            border: none;
+            padding: 10px 25px;">View Results from all projects</button>
             </div>
 
 
