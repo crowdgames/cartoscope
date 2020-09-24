@@ -170,7 +170,6 @@ module.config(function($stateProvider, $urlRouterProvider) {
 
           function exit(){
 
-              console.log($stateParams.hitId)
               //if we have a hit Id, then send them to hit code page!
               if ($stateParams.hitId && $stateParams.hitId != "kiosk") {
                   $state.go('hitCode', {hitCode: $scope.workerId});
@@ -1591,11 +1590,16 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
             $http.post(link, JSON.stringify(data)).then(function(data) {
                 // console.log('data',data.data);
                 //console.log(data.data.hitCode);
-                if (data.data.hitCode) {
+                if (data.data.hitCode && $scope.userType == 'mTurk') {
                     $state.go('hitCode', {hitCode: data.data.hitCode});
                 } else if (data.data.heatMap) {
                     $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId, hitId: $scope.trialId });
+                } else {
+                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId, hitId: $scope.trialId });
                 }
+
+
+
             }, function(err) {
                 if ($scope.userType == 'mTurk') {
 
