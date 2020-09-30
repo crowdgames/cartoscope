@@ -309,7 +309,7 @@ exports.getSurveyAnswersLandLoss = function(project_ids) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
 
-        var query = 'select response from survey where  hitID=\'kiosk\' and project_id in (' + project_ids.toString() + ')'
+        var query = 'select * from survey where  hitID=\'kiosk\' and project_id in (' + project_ids.toString() + ')'
         connection.queryAsync(query).then(
             function(data) {
                 resolve(data);
