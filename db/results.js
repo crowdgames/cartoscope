@@ -305,18 +305,60 @@ exports.getSurveyVotesTGHITRaw = function(hit_id) {
 }
 
 
-exports.getRawResultsMultiplebyTextGrouped = function(project_ids,dataset_id){
+exports.getSurveyAnswersLandLoss = function(project_ids) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+        var query = 'select response from survey where  hitID=\'kiosk\' and project_id in (' + project_ids.toString() + ')'
+        connection.queryAsync(query).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+
+};
+
+
+//get ungrouped raw votes, exclude mturk data
+exports.getLandLossRawVotes = function(project_ids){
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+
+        connection.queryAsync(' select r.*,u.hitID from response as r left join kiosk_workers as u on r.user_id = u.workerID where r.task_id!=\'dummy\' and u.hitID=\'kiosk\' and r.project_id in (?)',
+            [ project_ids.toString()]).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+
+}
+
+
+exports.getRawResultsMultiplebyTextGrouped = function(project_ids,dataset_id,include_mturk){
     return new Promise(function(resolve, error) {
         var connection = db.get();
 
         var query = 'select r.task_id,r.project_id,r.response_text as answer,p.unique_code,p.name,d.x,d.y  ,count(*) as votes from response as r left join projects as p on p.id=r.project_id ' +
-            'left join dataset_' + dataset_id + ' as d on d.name=r.task_id where r.project_id in ('+ project_ids.toString() + ' ) and task_id!=\'dummy\' group by task_id,x,y,project_id,response_text '
+            'left join dataset_' + dataset_id + ' as d on d.name=r.task_id where r.project_id in ('+ project_ids.toString() + ' ) and task_id!=\'dummy\'  group by task_id,x,y,project_id,response_text '
+
+        //make sure we exclude mturk workers if asked
+        if (!include_mturk){
+            query = 'select v.task_id,v.project_id,v.answer,v.unique_code,v.name,v.x,v.y,count(*) as votes from ' +
+                '(select r.task_id,r.project_id,r.response_text as answer,p.unique_code,p.name,d.x,d.y,k.hitID,r.user_id  from response as r left join projects as p on p.id=r.project_id ' +
+                'left join dataset_'+ dataset_id + '  as d on d.name=r.task_id left join kiosk_workers as k on r.user_id=k.workerID where k.hitID=\'kiosk\' and r.project_id in (' +  project_ids.toString() + ') ' +
+                'and task_id!=\'dummy\' and DATE(timestamp) >= \'2020-09-23\' ) as v group by task_id,x,y,project_id,answer '
+        }
 
         var grouped_data = {};
 
 
         var today = new Date();
-        var dd = today.getDate().toString()
+        var dd = today.getDate().toString();
         var mm = (today.getMonth() + 1).toString();  //January is 0!
         var yyyy = today.getFullYear().toString();
 
@@ -416,4 +458,21 @@ exports.getHGExpertProgress = function(worker_ids){
             });
     });
 
+}
+
+exports.getLandLossVisitorsTimeline = function(){
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+
+        var query = 'select DATE(r.timestamp) as date,count(DISTINCT(user_id)) as users_contributed from ' +
+            '( select user_id,project_id,timestamp from response WHERE  DATE(timestamp) >= \'2020-09-23\' and project_id >=55 and project_id <=60) as r group by date';
+
+        connection.queryAsync(query).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
 }

@@ -6,6 +6,8 @@ var router = express.Router();
 var multer = require('multer');
 var validator = require('validator');
 var http = require('http');
+var https = require('https');
+var request = require("request");
 var url = require('url');
 var mailer = require('../scripts/mailer');
 var path = require('path');
@@ -74,6 +76,9 @@ router.post('/upload',  [filters.requireLogin, filters.requiredParamHandler(['fi
 
       //console.log('options ', options);
 
+        var ar_ready = req.body.ar_ready;
+        var remove_before = req.body.is_slider;
+
       assignDownloadID(function(downloadID) {
 
         var rq = http.request(options, function(rr) {
@@ -100,13 +105,20 @@ router.post('/upload',  [filters.requireLogin, filters.requiredParamHandler(['fi
 
           }else if(options.host == 'www.dropbox.com'){
               console.log('in dropBox');
-              res.send({
-                  uniqueCode: downloadID
-              });
+
               // status queued
               downloadStatus.setStatus(downloadID, 0, function(err, res) {
               });
-              downloadDrop(body.file, downloadID, req.body.projectID);
+              //download folder from Dropbox. If successful, then return uniqueCode to continue flow, else return error
+              downloadDrop(body.file, downloadID, req.body.projectID,ar_ready,remove_before, function(d){
+                      res.send({
+                          uniqueCode: downloadID
+                      });
+              },
+                  function (err) {
+                  res.status(500).send(err);
+
+                  });
 
 
           } else {
@@ -897,106 +909,57 @@ function downloadNGS(loc,downloadID, projectID,map_link) {
 }
 
 
-function downloadDrop(loc, downloadID, projectID) {
+
+
+function downloadDrop(loc, downloadID, projectID,ar_ready,remove_before,success,error) {
     console.log('In Download2');
-    projectDB.addDataSetID(projectID, downloadID).then(function() {
+    projectDB.addDataSetID(projectID, downloadID).then(function () {
         // Status starting Download
-        downloadStatus.setStatus(downloadID, 1, function(err, res) {
+        downloadStatus.setStatus(downloadID, 1, function (err, res) {
 
         });
 
         var downloadDir = 'temp/';
         var datasetDir = 'dataset/';
-        console.log('Before Wget');
 
         if (!fs.existsSync(downloadDir + downloadID)) {
             console.log('before making directory');
             console.log(downloadDir + downloadID)
             fs.mkdirSync(downloadDir + downloadID);
         }
-        var wget = 'wget --max-redirect=20 ' + '-O ' + downloadDir + downloadID +'/download-drop.zip'+ ' ' + loc;
-        console.log('wget ', wget);
+        // var wget = 'wget --max-redirect=20 ' + '-O ' + downloadDir + downloadID +'/download-drop.zip'+ ' ' + loc;
+        // console.log('wget ', wget);
 
-        exec(wget, {maxBuffer: 1024 * 10000000}, function(err) {
+        var dest = downloadDir + downloadID + '/download-drop.zip';
 
-            if (err) {
-                // status error with file
-                console.log('error');
-                console.log(err);
-                downloadStatus.setStatus(downloadID, -1, function(err, res) {
-                });
-            } else {
-                // status downloaded
-                console.log('In success setting download status');
-                downloadStatus.setStatus(downloadID, 2, function(err, res) {
-                });
-                // var filename = url.parse(loc).pathname;
-                // var parsedFilename = path.parse(filename);
-                // console.log('filename ', filename, " ..... ", parsedFilename);
-                // var type = parsedFilename.ext;
+        console.log("Will store dropbox URL in: " + dest);
 
-                var dirName = 'dataset/' + downloadID;
+        var dirName = 'dataset/' + downloadID;
+        if (!fs.existsSync(dirName)) {
+            fs.mkdirSync(dirName);
+        }
 
+        var link = loc;
+        var firstPart = link.split("=")[0];
+        link = firstPart + '=1';
 
+        var response_stream = request(link)
+        response_stream.on('error', function(err) {
+            //handle the error
+            console.log("Error")
+            error(err)
+        });
 
-                if (!fs.existsSync(dirName)) {
-                    fs.mkdirSync(dirName);
-                }
-
-                var filename = downloadDir + downloadID + '/download-drop.zip';
-                var parsedFilename = path.parse(filename);
-                console.log('filename ', filename, " ..... ", parsedFilename);
-                var type = parsedFilename.ext;
-
-                if (type == '.gz' || type == '.tar') {
-                    console.log('TAR FILE');
-
-                    var tarFile = 'temp/' + downloadID;
-
-                    // status started unzipping
-                    downloadStatus.setStatus(downloadID, 3, function(err, res) {
-                    });
-
-                    var untar = spawn('tar', ['-xvf', tarFile, '-C', dirName + '/.']);
-
-                    untar.stdout.on('data', function(data) {
-                        console.log('on tar data', data)
-                    });
-
-                    untar.on('close', function(code) {
-                        console.log('code ', code);
-                        if (code == 0) {
-                            readDataSetFiles(dirName, downloadID,1).then(imageCompressionLibNoExif.processData).then(function(data) {
-                                console.log('data in read files', data);
-                                projectDB.createDataSetTable(downloadID).then(function(d) {
-                                    var pArr = [];
-                                    for (var i in data) {
-                                        var name = i;
-                                        var x = data[i].x;
-                                        var y = data[i].y;
-                                        var p = projectDB.createDataSetItem(downloadID, name, x, y);
-                                        p.catch(function(err) {
-                                            return null;
-                                        });
-                                        pArr.push(p);
-                                    }
-
-                                    Promise.all(pArr).then(function(data) {
-                                        downloadStatus.setStatus(downloadID, 4, function(err, res) {
-                                        });
-                                    });
-                                });
-                            }).catch(function(err) {
-                                downloadStatus.setStatus(downloadID, 4, function(err, res) {
-                                });
-                            });
-                        }
-                    });
-
-                } else if (type == '.zip') {
+        response_stream.on('response', function (response) {
+                response_stream.pipe(fs.createWriteStream(dest));
+                response_stream.on('end', function () {
+                    // all done
+                    console.log("Done")
                     console.log('ZIP FILE');
 
-                    var zip = 'temp/' + downloadID+ '/download-drop.zip';
+                    var zip = dest;
+
+                    console.log(loc);
 
                     fs.chmod(zip, 0o755, function(err){
                         if(err) throw err;
@@ -1006,14 +969,23 @@ function downloadDrop(loc, downloadID, projectID) {
                     downloadStatus.setStatus(downloadID, 3, function(err, res) {
                     });
 
-                   // var un = fs.createReadStream(zip).pipe(unzip.Extract({ path: dirName+"/"+downloadID }));
-                    console.log(zip, dirName);
+                    // var un = fs.createReadStream(zip).pipe(unzip.Extract({ path: dirName+"/"+downloadID }));
 
                     Minizip.unzip(zip, dirName, function(err) {
                         if (err)
                             console.log(err);
                         else
                             console.log('unzip successfully.');
+
+                        //unzip will require moving everything from the resulting folder to parent folder
+
+                        console.log(zip);
+                        console.log(dirName);
+
+                        // mv('source/dir', 'dest/a/b/c/dir', {mkdirp: true}, function(err) {
+                        //
+                        // });
+
 
                         readDataSetFiles(dirName, downloadID,1).then(imageCompressionLibWithExif.processData).then(function(data) {
                             console.log('data in read files', data);
@@ -1023,28 +995,101 @@ function downloadDrop(loc, downloadID, projectID) {
                                     var name = i;
                                     var x = data[i].x;
                                     var y = data[i].y;
-                                    var p = projectDB.createDataSetItem(downloadID, name, x, y);
-                                    p.catch(function(err) {
-                                        return null;
-                                    });
-                                    pArr.push(p);
+
+                                    //make sure we don't try to add entry with issues
+
+                                    var is_before = 0;
+
+                                    if (remove_before){
+                                        if (name.startsWith("before_")){
+                                            is_before = 1;
+                                        }
+                                    }
+
+                                    //only add item if we have valid coords or we have slider task and is before image
+                                    if (!isNaN(x) && !isNaN(y) && !is_before) {
+                                        var p = projectDB.createDataSetItem(downloadID, name, x, y);
+                                        //catch and print error but do not cause problem
+                                        p.catch(function (err) {
+                                            console.log(err)
+                                        });
+                                        pArr.push(p);
+                                    }
                                 }
 
                                 Promise.all(pArr).then(function(data) {
-                                    downloadStatus.setStatus(downloadID, 4, function(err, res) {
+
+                                    fs.unlink(zip, (err) => {
+                                        if (err) throw err;
+                                        console.log('Compressed file was deleted');
                                     });
+
+                                    //TODO: IF AR READY, must make the json files if we got a csv with attribution
+                                    if (ar_ready){
+
+                                        console.log("Generating JSON Files");
+
+                                        readAttributionsFromCSV(dirName,projectID).then(function (attr_data) {
+
+                                            //for each data, create a file
+                                            var attrArr = [];
+
+                                            for (var i = 0; i < attr_data.length; i++) {
+
+                                                var p = createAttributionItem(dirName,projectID,attr_data[i]);
+                                                //catch and print error but do not cause problem
+                                                p.catch(function (err) {
+                                                    console.log(err)
+                                                });
+                                                attrArr.push(p);
+                                            }
+                                            //make sure we are done after all json files created
+                                            Promise.all(attrArr).then(function (data) {
+
+                                                //json files ready
+                                                //TODO: MAKE SURE THERE IS A JSON FILE FOR EVERY IMAGE
+                                                tileDB.setARStatus(projectID, 2, function (err, res) {
+                                                    success();
+                                                });
+
+
+                                            })
+
+
+                                        }).catch(function (err) {
+                                            //mailer.mailer(email, 'done', '<b> Error downloading file ' + filename + ' </b>');
+                                            console.log(err)
+                                            console.log("Error creating attributions file");
+
+                                            tileDB.setARStatus(projectID, 0, function (err, res) {
+                                                error(err)
+                                            });
+
+                                        })
+
+                                    }
+
+
+                                    downloadStatus.setStatus(downloadID, 4, function(err, res) {
+                                        success()
+
+                                    });
+
                                 });
                             });
                         }).catch(function(err) {
                             downloadStatus.setStatus(downloadID, 4, function(err, res) {
+                                error(err)
                             });
                         });
                     });
+                })
+        })
 
-                }
-            }
-        });
-    });
+
+
+
+    })
 }
 
 function downloadRec(loc, downloadID, projectID, regex) {

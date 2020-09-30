@@ -122,6 +122,18 @@ router.get('/checkExpertProgress/:hit_code', function(req, res, next) {
 
 
 //Get raw HG data from all projects
+router.get('/landloss_progress_timeline', function(req, res, next) {
+
+    resultDB.getLandLossVisitorsTimeline().then(function(results) {
+        res.send(results);
+    }, function(err) {
+        console.log(err)
+        res.status(400).send('Error retrieving user timeline for Land Loss projects');
+    });
+});
+
+
+//Get raw HG data from all projects
 router.get('/hg_raw_data', function(req, res, next) {
 
     var hg_ids = [55,56,57,58,59,60];
@@ -130,8 +142,55 @@ router.get('/hg_raw_data', function(req, res, next) {
     // hg_ids =[69]
     // dataset_id = "jtUC5ek9sbokHao"
 
+    resultDB.getRawResultsMultiplebyTextGrouped(hg_ids,dataset_id,true).then(function(results) {
+        res.send(results);
+    }, function(err) {
+        console.log(err)
+        res.status(400).send('raw HG results could not be retrieved');
+    });
+});
 
-    resultDB.getRawResultsMultiplebyTextGrouped(hg_ids,dataset_id).then(function(results) {
+//Get raw HG data from all projects
+router.get('/hg_raw_data_launch', function(req, res, next) {
+
+    var hg_ids = [55,56,57,58,59,60];
+    var dataset_id = "0k9ceCYzyqLt1pR";
+
+    //hg_ids =[69]
+    //dataset_id = "jtUC5ek9sbokHao"
+
+    resultDB.getRawResultsMultiplebyTextGrouped(hg_ids,dataset_id,false).then(function(results) {
+        res.send(results);
+    }, function(err) {
+        console.log(err)
+        res.status(400).send('raw HG results could not be retrieved');
+    });
+});
+
+//Get raw HG survey data from all projects
+router.get('/hg_raw_data_survey', function(req, res, next) {
+
+    var hg_ids = [55,56,57,58,59,60];
+    // hg_ids =[69]
+    // dataset_id = "jtUC5ek9sbokHao"
+    resultDB.getSurveyAnswersLandLoss(hg_ids).then(function(results) {
+        res.send(results);
+    }, function(err) {
+        console.log(err)
+        res.status(400).send('raw HG results could not be retrieved');
+    });
+});
+
+
+//Get raw HG data from all projects, ungrouped votes for analysis
+router.get('/hg_raw_votes_launch', function(req, res, next) {
+
+    var hg_ids = [55,56,57,58,59,60];
+
+    //hg_ids =[69]
+    //dataset_id = "jtUC5ek9sbokHao"
+
+    resultDB.getLandLossRawVotes(hg_ids).then(function(results) {
         res.send(results);
     }, function(err) {
         console.log(err)
