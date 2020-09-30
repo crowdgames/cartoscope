@@ -327,8 +327,10 @@ exports.getLandLossRawVotes = function(project_ids){
         var connection = db.get();
 
 
-        connection.queryAsync(' select r.*,u.hitID from response as r left join kiosk_workers as u on r.user_id = u.workerID where r.task_id!=\'dummy\' and u.hitID=\'kiosk\' and r.project_id in (?)',
-            [ project_ids.toString()]).then(
+        var  query = 'select r.* from response as r left join kiosk_workers as u on r.user_id = u.workerID where r.task_id!=\'dummy\' and u.hitID=\'kiosk\' and r.project_id in ( '+project_ids.toString() + ') ' +
+            'and DATE(timestamp) >= \'2020-09-23\'';
+
+        connection.queryAsync(query).then(
             function(data) {
                 resolve(data);
             }, function(err) {
