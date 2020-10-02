@@ -82,7 +82,7 @@ CREATE TABLE `kiosk_workers` (
   `projectID` varchar(128) DEFAULT NULL,
   `consented` int(1) DEFAULT '1',
   `cookieID` varchar(120) DEFAULT NULL,
-  `hitID`` varchar(128) default NULL,
+  `hitID` varchar(128) default NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_index` (`workerID`,`projectID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=350 DEFAULT CHARSET=latin1;
@@ -569,8 +569,8 @@ CREATE TABLE `tileoscope_genetic_tree` (
   `fitness_function_mean` FLOAT DEFAULT NULL,
   `people` int(11) DEFAULT '0',
   `ignore_codes` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`),
- UNIQUE KEY (`unique_code_main`, `node`)
+  PRIMARY KEY (`id`)
+ -- UNIQUE KEY (`unique_code_main`, `node`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
