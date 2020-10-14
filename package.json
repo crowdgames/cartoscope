@@ -52,7 +52,6 @@
     "validator": "^5.5.0"
   },
   "devDependencies": {
-    "node-minizip": "^0.3.0",
     "unzip": "^0.1.11"
   }
 }
