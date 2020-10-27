@@ -272,11 +272,46 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       vm.handleSoapstones = () => {
           if (vm.data.progress % vm.tasksToCompleteTillSoapstoneCreation === 0) {
+              // Show the create modal
+              let soapstoneForm = document.getElementById("soapstone-form");
+              let soapstone = vm.randomSoapstone();
+              vm.replaceFormElemsWithSoapstone(soapstoneForm, soapstone);
               $("#soapstoneCreateModal").modal('show');
           }
           else if (vm.data.progress % vm.tasksToCompleteTillSoapstoneMsg === 0) {
+              // Show a message someone else has left
               $("#soapstoneMsgModal").modal('show');
           }
+      }
+
+
+      vm.randomSoapstone = () => {
+          var soapStones = [["Hi there ", ["Bob", "Jeff", "Sandra"], "it's nice to meet you!"],
+              ["I love your ", ["hats", "french toasts", "incredible pecs"], ", they look amazing!"]];
+          return soapStones[Math.floor(Math.random() * soapStones.length)];
+      }
+
+      vm.replaceFormElemsWithSoapstone = (form, soapstone) => {
+          // clear form
+          form.innerHTML = '';
+          soapstone.forEach(function (elem) {
+              if (typeof elem === "string") {
+                  var label = document.createElement("form");
+                  label.innerText = elem;
+                  form.appendChild(label);
+              }
+              else {
+                  var selector = document.createElement("select");
+                  selector.setAttribute("class", "custom-select mr-sm-2");
+                  elem.forEach(function (optionStr) {
+                      var option = document.createElement("option");
+                      option.setAttribute("value", optionStr);
+                      option.innerText = optionStr;
+                      selector.appendChild(option);
+                  });
+                  form.appendChild(selector);
+              }
+          });
       }
 
       //for NGS tasks
