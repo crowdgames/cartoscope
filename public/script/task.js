@@ -263,9 +263,20 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           $("#cairnModal").modal('hide');
       }
 
-      //SOAPSTONES EXPERIMENTATION
-      vm.showSoapstoneMsg = function() {
-          $("#soapstoneCreateModal").modal('show');
+      // ==============================
+      // SOAPSTONE CODE
+      // ==============================
+      
+      vm.tasksToCompleteTillSoapstoneMsg      = 2;
+      vm.tasksToCompleteTillSoapstoneCreation = 5;
+
+      vm.handleSoapstones = () => {
+          if (vm.data.progress % vm.tasksToCompleteTillSoapstoneCreation === 0) {
+              $("#soapstoneCreateModal").modal('show');
+          }
+          else if (vm.data.progress % vm.tasksToCompleteTillSoapstoneMsg === 0) {
+              $("#soapstoneMsgModal").modal('show');
+          }
       }
 
       //for NGS tasks
@@ -934,7 +945,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   if (vm.show_cairns > 0  && vm.data.progress %  vm.show_cairns === 0) {
                       $("#cairnModal").modal('show')
                   }
-                  vm.showSoapstoneMsg();
+                  vm.handleSoapstones();
               });
           }
 
