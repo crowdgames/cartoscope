@@ -274,7 +274,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           if (vm.data.progress % vm.tasksToCompleteTillSoapstoneCreation === 0) {
               // Show the create modal
               let soapstoneForm = document.getElementById("soapstone-form");
-              let soapstone = vm.randomSoapstone();
+              let soapstone     = vm.randomSoapstone();
               vm.replaceFormElemsWithSoapstone(soapstoneForm, soapstone);
               $("#soapstoneCreateModal").modal('show');
           }
@@ -283,7 +283,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               $("#soapstoneMsgModal").modal('show');
           }
       }
-
 
       vm.randomSoapstone = () => {
           var soapStones = [["Hi there ", ["Bob", "Jeff", "Sandra"], "it's nice to meet you!"],
@@ -314,6 +313,15 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           });
       }
 
+      vm.submitSoapstone = () => {
+          let soapstoneFormValues = Array.from(document.getElementById("soapstone-form").children)
+                                         .map((child) =>
+                                               child.value ? child.value : child.innerText)
+                                         .join(" ");
+          // TODO send to backend
+          $("#soapstoneCreateModal").modal('hide');
+          console.log(soapstoneFormValues);
+      }
       //for NGS tasks
       function getFullIframe(){
 

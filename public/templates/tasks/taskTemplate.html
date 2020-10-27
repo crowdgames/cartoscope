@@ -580,20 +580,11 @@
                 <div class="modal-body">
                     <p>Create a Soapstone!!!</p>
                     <form class="form-inline" method="post" action="/forminfo" id="soapstone-form">
-                            <!---
-                                    <label for="email">My favorite car is the</label>
-                                    <select class="custom-select mr-sm-2" id="cars" name="cars">
-                                    <option value="volvo">Volvo</option>
-                                    <option value="camry">Camry</option>
-                                    <option value="sedan">Sedan</option>
-                                    </select>
-                                    <label>because it is so sexy</label>
-                                    <button type="submit" class="btn btn-primary">Submit</button>
-                            -->
+                            <!--- This form is filled dynamically with js -->
                     </form> 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-primary" ng-click="model.submitSoapstone()">Submit</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
             </div>
