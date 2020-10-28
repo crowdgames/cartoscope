@@ -5,7 +5,7 @@ var module = angular.module('taskApp', ['ui.router', 'ngMap','configApp','ngJuxt
 
 //change \n to br
 module.filter("textBreaks", ['$sce', function ($sce) {
-    return function (x) {
+    return function (x: any) {
         if (x){
             // var new_text = x.replace(new RegExp('\\n', 'g'), '<br/>');
             var new_text = x.replace(/\\n/g, "<br/>");
@@ -21,18 +21,18 @@ module.filter("textBreaks", ['$sce', function ($sce) {
     }
 }]);
 
-var latCenter;
-var lngCenter;
+var latCenter: any;
+var lngCenter: any;
 var dZoom = 15;
 
-module.config(['$locationProvider', function($locationProvider) {
+module.config(['$locationProvider', function($locationProvider: any) {
   // $locationProvider.html5Mode({
   //   enabled: true,
   //   requireBase: false,
   // });
 }]);
 
-module.config(function($stateProvider, $urlRouterProvider) {
+module.config(function($stateProvider: any, $urlRouterProvider: any) {
   
   $stateProvider.state({
     name: 'tasks',
@@ -41,8 +41,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
     controller: 'taskController',
       controllerAs: 'model',
     resolve: {
-      userData: ['$http', function($http) {
-        return $http.get('/api/user').then(function(data) {
+      userData: ['$http', function($http: any) {
+        return $http.get('/api/user').then(function(data: any) {
           return data.data[0];
         }).catch(function() {
           return null;
@@ -58,8 +58,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
         controller: 'geneticTaskController',
         controllerAs: 'model',
         resolve: {
-            userData: ['$http', function($http) {
-                return $http.get('/api/user').then(function(data) {
+            userData: ['$http', function($http: any) {
+                return $http.get('/api/user').then(function(data: any) {
                     return data.data[0];
                 }).catch(function() {
                     return null;
@@ -136,7 +136,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
 
 
-      var vm = this;
+      var vm: any = this;
       vm.centerChanged = centerChanged;
       vm.zoomChanged = zoomChanged;
       vm.fetchCenter = fetchCenter;
@@ -260,7 +260,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       vm.resetCairnModal = function(){
           vm.fetchCairns();
-          $("#cairnModal").modal('hide');
+          (<any>$("#cairnModal")).modal('hide');
       }
 
       // ==============================
@@ -276,11 +276,11 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               let soapstoneForm = document.getElementById("soapstone-form");
               let soapstone     = vm.randomSoapstone();
               vm.replaceFormElemsWithSoapstone(soapstoneForm, soapstone);
-              $("#soapstoneCreateModal").modal('show');
+              (<any>$("#soapstoneCreateModal")).modal('show');
           }
           else if (vm.data.progress % vm.tasksToCompleteTillSoapstoneMsg === 0) {
               // Show a message someone else has left
-              $("#soapstoneMsgModal").modal('show');
+              (<any>$("#soapstoneMsgModal")).modal('show');
           }
       }
 
@@ -290,7 +290,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           return soapStones[Math.floor(Math.random() * soapStones.length)];
       }
 
-      vm.replaceFormElemsWithSoapstone = (form, soapstone) => {
+      vm.replaceFormElemsWithSoapstone = (form: HTMLElement, soapstone: (string | string[])[]) => {
           // clear form
           form.innerHTML = '';
           soapstone.forEach(function (elem) {
@@ -314,12 +314,12 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       }
 
       vm.submitSoapstone = () => {
-          let soapstoneFormValues = Array.from(document.getElementById("soapstone-form").children)
+          let soapstoneFormValues = Array.from(document.getElementById("soapstone-form")!.children)
                                          .map((child) =>
                                                child.value ? child.value : child.innerText)
                                          .join(" ");
           // TODO send to backend
-          $("#soapstoneCreateModal").modal('hide');
+          (<any>$("#soapstoneCreateModal")).modal('hide');
           console.log(soapstoneFormValues);
       }
       //for NGS tasks

@@ -13,6 +13,10 @@
     ]
   },
   "dependencies": {
+    "@types/angular": "^1.7.3",
+    "@types/d3": "^5.16.3",
+    "@types/googlemaps": "^3.40.2",
+    "@types/jquery": "^3.5.3",
     "archiver": "^3.0.0",
     "async": "^2.0.1",
     "bcrypt": "^2.0.1",
