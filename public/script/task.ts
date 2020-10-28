@@ -263,9 +263,9 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           (<any>$("#cairnModal")).modal('hide');
       }
 
-      // ==============================
-      // SOAPSTONE CODE
-      // ==============================
+      /* ==============================
+       * SOAPSTONE CODE
+       * ============================== */ 
       
       vm.tasksToCompleteTillSoapstoneMsg      = 2;
       vm.tasksToCompleteTillSoapstoneCreation = 5;
@@ -285,8 +285,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       }
 
       vm.randomSoapstone = () => {
-          var soapStones = [["Hi there ", ["Bob", "Jeff", "Sandra"], "it's nice to meet you!"],
-              ["I love your ", ["hats", "french toasts", "incredible pecs"], ", they look amazing!"]];
+          var soapStones = [["Hi there ", ["Bob", "Jeff", "Sandra"], "it's nice to meet you!", ["falafel", "cheezit", "semaphore"]],
+                            ["I love your ", ["hats", "french toasts", "incredible pecs"], ", they look amazing!", ["option 1", "option 2", "option 3"]]];
           return soapStones[Math.floor(Math.random() * soapStones.length)];
       }
 
@@ -315,8 +315,11 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       vm.submitSoapstone = () => {
           let soapstoneFormValues = Array.from(document.getElementById("soapstone-form")!.children)
-                                         .map((child) =>
-                                               child.value ? child.value : child.innerText)
+                                         .map((child) => 
+                                                 child.localName === "select" 
+                                                       ? (child as HTMLSelectElement).value
+                                                       : (child as HTMLFormElement).innerText
+                                         )
                                          .join(" ");
           // TODO send to backend
           (<any>$("#soapstoneCreateModal")).modal('hide');
