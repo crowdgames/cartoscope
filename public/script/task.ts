@@ -288,9 +288,14 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           let body = { projectID: vm.data.id };
           // TODO this should not be a post
           $http.post('api/tasks/getCairns', body).then((serverReturn: any) => {
-              let message: string = serverReturn.data[0].message;
-              document.getElementById("soapstone-msg-text")!.innerText = message;
-              (<any>$("#soapstoneMsgModal")).modal('show');
+              if (serverReturn.data.length > 0) {
+                  let message: string = serverReturn.data[0].message;
+                  document.getElementById("soapstone-msg-text")!.innerText = message;
+                  (<any>$("#soapstoneMsgModal")).modal('show');
+              }
+              else {
+                  console.log("No relevant soapstone messages found");
+              }
           });
       }
 
