@@ -280,8 +280,18 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           }
           else if (vm.data.progress % vm.tasksToCompleteTillSoapstoneMsg === 0) {
               // Show a message someone else has left
-              (<any>$("#soapstoneMsgModal")).modal('show');
+              vm.showNewSoapstoneMsg();
           }
+      }
+
+      vm.showNewSoapstoneMsg = () => {
+          let body = { projectID: vm.data.id };
+          // TODO this should not be a post
+          $http.post('api/tasks/getCairns', body).then((serverReturn: any) => {
+              let message: string = serverReturn.data[0].message;
+              document.getElementById("soapstone-msg-text")!.innerText = message;
+              (<any>$("#soapstoneMsgModal")).modal('show');
+          });
       }
 
       vm.randomSoapstone = () => {
@@ -315,24 +325,25 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       vm.submitSoapstone = () => {
           let soapstoneFormValues = Array.from(document.getElementById("soapstone-form")!.children)
-                                         .map((child) => 
-                                                 child.localName === "select" 
-                                                       ? (child as HTMLSelectElement).value
-                                                       : (child as HTMLFormElement).innerText
-                                         )
-                                         .join(" ");
+              .map((child) => 
+                   child.localName === "select" 
+                       ? (child as HTMLSelectElement).value
+                       : (child as HTMLFormElement).innerText
+                  )
+              .join(" ");
           let body = {
-                  projectID: vm.data.id,
-                  message: soapstoneFormValues,
-                  progress: vm.data.progress
+              projectID: vm.data.id,
+              message: soapstoneFormValues,
+              progress: vm.data.progress
           };
           console.log(vm.data.progress);
           $http.post('api/tasks/submitSoapstone', body).then((data: object) => {
-                  console.log(data);
+              console.log(data);
           });
           (<any>$("#soapstoneCreateModal")).modal('hide');
           console.log(soapstoneFormValues);
       }
+
       //for NGS tasks
       function getFullIframe(){
 

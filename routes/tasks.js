@@ -680,7 +680,7 @@ router.post('/submitSoapstone', [filters.requireLogin, filters.requiredParamHand
             .catch((err) => res.status(500).send({err: err.code || 'Could not submit cairn'}));
     });
 
-router.get('/getCairns', [filters.requiredParamHandler(['projectID'])], (req, res) => {
+router.post('/getCairns', [filters.requiredParamHandler(['projectID'])], (req, res) => {
     let numberRequested = req.body.number || 1;
     let projectID       = req.body.projectID;
     let userID          = req.session.passport.user ? req.session.passport.user.id : -1; // -1 is fine, since userID is only used to filter cairns we shouldn't return
