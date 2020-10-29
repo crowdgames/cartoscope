@@ -1287,3 +1287,11 @@ exports.fetchCairnMessage = function(userID, projectID, progress) {
             });
     });
 };
+
+exports.getCairnsForProject = (userID, projectID, numberCairnsRequested) => {
+    return new Promise((resolve, error) => 
+        db.get()
+          .queryAsync('select message from cartoscope_cairns where user_id !=? and project_id=? order by rand() desc limit ?', [userID, projectID, numberCairnsRequested])
+          .then(resolve, error)
+    );
+};
