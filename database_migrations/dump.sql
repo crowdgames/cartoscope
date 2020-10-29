@@ -425,6 +425,7 @@ CREATE TABLE `cartoscope_cairns` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` varchar(128) DEFAULT NULL,
   `project_id` varchar(128) DEFAULT NULL,
+  `cairn_type` varchar(128) DEFAULT NULL,
   `level_number` int(11),
   `message` TEXT DEFAULT NULL,
   `time_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

@@ -642,7 +642,7 @@ router.post('/submitCairn', [filters.requireLogin, filters.requiredParamHandler(
         var projectID = req.body.projectID;
         var userID = req.session.passport.user.id;
 
-        projectDB.storeCairnMessage(userID, projectID, message, progress)
+        projectDB.storeCairnMessage(userID, projectID, message, progress, "cairn")
             .then(function(data) {
                 // console.log('data inserted', data);
 
@@ -661,4 +661,21 @@ router.post('/submitCairn', [filters.requireLogin, filters.requiredParamHandler(
         });
 
 
+    });
+
+router.post('/submitSoapstone', [filters.requireLogin, filters.requiredParamHandler(['projectID', 'message', 'progress'])],
+    (req, res) => {
+        //var taskID = req.body.taskID;
+
+        var message   = req.body.message;
+        var progress  = req.body.progress;
+        var projectID = req.body.projectID;
+        var userID    = req.session.passport.user.id;
+
+        projectDB.storeCairnMessage(userID, projectID, message, progress, "soapstone")
+            .then((data) => {
+                console.log("data inserted", data);
+                res.send("success!");
+            })
+            .catch((err) => res.status(500).send({err: err.code || 'Could not submit cairn'}));
     });

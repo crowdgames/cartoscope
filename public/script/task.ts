@@ -321,7 +321,15 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                                                        : (child as HTMLFormElement).innerText
                                          )
                                          .join(" ");
-          // TODO send to backend
+          let body = {
+                  projectID: vm.data.id,
+                  message: soapstoneFormValues,
+                  progress: vm.data.progress
+          };
+          console.log(vm.data.progress);
+          $http.post('api/tasks/submitSoapstone', body).then((data: object) => {
+                  console.log(data);
+          });
           (<any>$("#soapstoneCreateModal")).modal('hide');
           console.log(soapstoneFormValues);
       }
