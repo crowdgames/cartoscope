@@ -665,22 +665,23 @@ exports.generateTileoscopeARDatasetInfoJSON = function(unique_code) {
                     }
 
 
-                    for (cat in tut_categories){
+                        dataset_info_json.categoriesLabel.forEach(function(cat){
+                            //use the first of each category as the representative
+                            tut_images.push(tut_categories[cat][0]);
 
-                        //use the first of each category as the representative
-                        tut_images.push(tut_categories[cat][0]);
+                            //TODO: Right now we are only pushing pairs to tutorial
+                            if (tut_categories[cat].length >= 2) {
 
-                        //TODO: Right now we are only pushing pairs to tutorial
-                        if (tut_categories[cat].length >= 2) {
+                                console.log("Adding images")
+                                dataset_info_json.tutorial.push(tut_categories[cat][0]);
+                                dataset_info_json.tutorial.push(tut_categories[cat][1]);
 
-                            console.log("Adding images")
-                            dataset_info_json.tutorial.push(tut_categories[cat][0]);
-                            dataset_info_json.tutorial.push(tut_categories[cat][1]);
+                            }
+                        })
 
-                        }
-                    }
 
                     dataset_info_json.categoriesSample = tut_images;
+
 
                     //add tutorial explanation stuff here
                     dataset_info_json.tutorial_explanations = tut_explanation_array;
