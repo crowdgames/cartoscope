@@ -136,6 +136,76 @@ router.post('/addTutorialItems', function(req, res, next) {
 });
 
 
+//duplicate tutorial based on other project
+router.get('/duplicateTutorial/:projectCodeOld/:projectCodeNew', function(req, res, next) {
+    var projectCodeOld = req.params.projectCodeOld;
+    var projectCodeNew = req.params.projectCodeNew;
+
+    //get everything from old tutorial;
+    projectDB.getTutorialFromCode(projectCodeOld).then(function(tutorial_data) {
+
+        //update unique code to make sure we are fetching things correctly:
+        for (var i = 0; i < tutorial_data.length; i++) {
+
+            tutorial_data[i].ask_user = parseInt(tutorial_data[i].ask_user);
+            delete tutorial_data[i].template;
+            delete tutorial_data[i].points_file;
+            delete tutorial_data[i].point_selection;
+            delete tutorial_data[i].unique_code;
+            delete tutorial_data[i].id;
+            tutorial_data[i].in_dataset = 0;
+            tutorial_data[i].duplicated_entry = 1; //to make sure paths are correct when copying
+
+            //everything that was null before should be deleted!
+            Object.keys(tutorial_data[i]).forEach(function(ky){
+                if (tutorial_data[i][ky] == null) {
+                    delete tutorial_data[i][ky]
+                }
+            })
+        }
+        //add items:
+        Promise.each(tutorial_data, function(item, index, arrayLength) {
+            //promises will be done in order
+            return projectDB.insertTutorialItems(projectCodeNew, item).then(function(result_item) {
+                return result_item; // Doesn't matter
+            });
+        }).then(function(result) {
+            // This will run after the last step is done
+            res.status(200).send("Tutorial duplicated successfully!")
+        });
+
+    }, function(err) {
+        res.status(400).send('results could not be generated!!!');
+    });
+});
+
+
+
+//duplicate custom survey
+router.get('/duplicatesurveyItems/:projectCodeOld/:projectCodeNew', function(req, res, next) {
+
+    //get previous survey items
+    var old_project = req.params.projectCodeOld;
+    var new_project = req.params.projectCodeNew;
+
+    projectDB.getCustomSurveyItems(old_project).then(function(survey_data) {
+
+        var survey_body = JSON.parse(survey_data.survey_form);
+
+        projectDB.addCustomSurveyItem(new_project,survey_body).then(function(data) {
+            res.status(200).send("Survey duplicated successfully!")
+        }).catch(function(error) {
+            console.log(error)
+            res.status(400).send({error: error.body || 'Survey items could not be stored for ' + new_project});
+        });
+
+    }).catch(function(error) {
+        console.log(error)
+        res.status(400).send({error: error.body || 'Survey items could not be found for ' + old_project});
+    });
+});
+
+
 
 
 router.get('/getTutorial/:projectCode', function(req, res, next) {
@@ -350,7 +420,8 @@ router.post('/add', [fupload.single('file'), filters.requireLogin, filters.requi
         if (isValidImage(result)) {
           fs.renameSync(req.file.path, 'profile_photos/' + filename);
           generateUniqueProjectCode().then(function(projectCode) {
-            projectDB.addProject(body.name, req.session.passport.user.id, body.description, filename, projectCode,body.short_name,body.short_name_friendly, body.short_description, body.is_inaturalist).then(
+            projectDB.addProject(body.name, req.session.passport.user.id, body.description, filename, projectCode,body.short_name,body.short_name_friendly, body.short_description,
+                body.is_inaturalist,body.scistarter_link,body.external_sign_up).then(
               function(result) {
                 console.log('result '+ result);
                 res.send({id: result.insertId, code: projectCode});
@@ -369,7 +440,8 @@ router.post('/add', [fupload.single('file'), filters.requireLogin, filters.requi
       
     } else {
       generateUniqueProjectCode().then(function(projectCode) {
-        projectDB.addProject(body.name, req.session.passport.user.id, body.description, filename, projectCode,body.short_name,body.short_name_friendly,body.short_description, body.is_inaturalist).then(
+        projectDB.addProject(body.name, req.session.passport.user.id, body.description, filename, projectCode,body.short_name,body.short_name_friendly,body.short_description,
+            body.is_inaturalist,body.scistarter_link,body.external_sign_up).then(
           function(result) {
             res.send({id: result.insertId, code: projectCode});
           }, function(err) {
@@ -502,7 +574,8 @@ router.post('/updateProjectInfoMain', [fupload.single('file'), filters.requireLo
 
                 if (isValidImage(result)) {
                     fs.renameSync(req.file.path, 'profile_photos/' + filename);
-                    projectDB.updateDescriptionName(req.body.projectID, req.body.description,req.body.name,req.body.short_name, req.body.short_name_friendly,req.body.short_description,req.body.is_inaturalist,filename).
+                    projectDB.updateDescriptionName(req.body.projectID, req.body.description,req.body.name,req.body.short_name, req.body.short_name_friendly,
+                        req.body.short_description,req.body.is_inaturalist,filename,body.scistarter_link,body.external_sign_up).
                     then(function(result) {
                         if (result.affectedRows == 1) {
                             res.send({'status': 'done'});
@@ -519,7 +592,8 @@ router.post('/updateProjectInfoMain', [fupload.single('file'), filters.requireLo
             });
 
         } else {
-            projectDB.updateDescriptionName(req.body.projectID, req.body.description,req.body.name,req.body.short_name, req.body.short_name_friendly,req.body.short_description,req.body.is_inaturalist,filename).
+            projectDB.updateDescriptionName(req.body.projectID, req.body.description,req.body.name,req.body.short_name,
+                req.body.short_name_friendly,req.body.short_description,req.body.is_inaturalist,filename,body.scistarter_link,body.external_sign_up).
             then(function(result) {
                 if (result.affectedRows == 1) {
                     res.send({'status': 'done'});

@@ -26,7 +26,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
             templateUrl: 'templates/survey_tlx.html',
             controller: 'surveyTLXController',
             params: {
-                hitId:''
+                hitId:'',
+                contributions: 0
             }
   });
 
@@ -36,7 +37,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
         templateUrl: 'templates/survey_game.html',
         controller: 'surveyGAMEontroller',
         params: {
-            hitId:''
+            hitId:'',
+            contributions: 0
         }
     });
 
@@ -46,7 +48,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
         templateUrl: 'templates/survey_game.html',
         controller: 'surveyGAMEontroller',
         params: {
-            hitId:''
+            hitId:'',
+            contributions: 0
         }
     });
 
@@ -56,7 +59,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
         templateUrl: 'templates/survey_imi.html',
         controller: 'surveyIMIController',
         params: {
-            hitId:''
+            hitId:'',
+            contributions: 0
         }
     });
 
@@ -67,7 +71,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
         templateUrl: 'templates/survey_custom.html',
         controller: 'surveyCUSTOMController',
         params: {
-            hitId:''
+            hitId:'',
+            contributions: 0
         }
     });
 
@@ -130,7 +135,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
           workerId: '',
           project: '',
           hitId:null,
-          hitCode: null
+          hitCode: null,
+          contributions: 0
       },
 
       controller: function ($scope,$stateParams, $state, $window, $http, $sce, heatMapProject1, heatMapProject2) {
@@ -388,6 +394,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
                   });})
           };
 
+
+
           $http.get('/api/tasks/getInfoFree/' + $scope.project).then(function(pdata) {
 
 
@@ -399,6 +407,17 @@ module.config(function($stateProvider, $urlRouterProvider) {
                   if ($scope.image_source != null) {
                       $scope.showSource = true;
                   }
+
+
+              // scistarter data:
+              $scope.has_scistarter_link = false;
+              if ($scope.proj_data.hasOwnProperty('scistarter_link') && $scope.proj_data.scistarter_link != null ){
+                  $scope.sci_starter_link = $sce.trustAsResourceUrl($scope.proj_data.scistarter_link) ;
+                  $scope.has_scistarter_link = true;
+                  //TODO: contributions number
+                  $scope.scistarter_contributions = parseInt($state.params.contributions) - 1;
+              }
+
 
 
 
@@ -1006,7 +1025,7 @@ module.controller('surveyTLXController', ['$scope', '$http', '$state', '$locatio
                 if (data.data.hitCode) {
                     $state.go('hitCode', {hitCode: data.data.hitCode});
                 } else if (data.data.heatMap) {
-                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId});
+                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId, contributions: $scope.params.contributions});
                 }
             }, function(err) {
                 if ($scope.userType == 'mTurk') {
@@ -1120,7 +1139,7 @@ module.controller('surveyGAMEontroller', ['$scope', '$http', '$state', '$locatio
                 if (data.data.hitCode) {
                     $state.go('hitCode', {hitCode: data.data.hitCode});
                 } else if (data.data.heatMap) {
-                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId});
+                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId, contributions: $scope.params.contributions});
                 }
             }, function(err) {
                 if ($scope.userType == 'mTurk') {
@@ -1321,7 +1340,7 @@ module.controller('surveyIMIController', ['$scope', '$http', '$state', '$locatio
                 if (data.data.hitCode) {
                     $state.go('hitCode', {hitCode: data.data.hitCode});
                 } else if (data.data.heatMap) {
-                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId, hitId: $scope.trialId });
+                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId, hitId: $scope.trialId, contributions: $scope.params.contributions });
                 }
             }, function(err) {
                 if ($scope.userType == 'mTurk') {
@@ -1593,9 +1612,9 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
                 if (data.data.hitCode && $scope.userType == 'mTurk') {
                     $state.go('hitCode', {hitCode: data.data.hitCode});
                 } else if (data.data.heatMap) {
-                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId, hitId: $scope.trialId });
+                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId, hitId: $scope.trialId , contributions: $scope.params.contributions});
                 } else {
-                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId, hitId: $scope.trialId });
+                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId, hitId: $scope.trialId , contributions: $scope.params.contributions});
                 }
 
 

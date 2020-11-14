@@ -23,11 +23,12 @@ exports.isCodeUnique = function(uniqueCode, done) {
     });
 };
 
-exports.addProject = function(name, userID, desc, picID, uniqueCode, short_name, short_name_friendly, short_description, is_inaturalist) {
+exports.addProject = function(name, userID, desc, picID, uniqueCode, short_name, short_name_friendly, short_description, is_inaturalist,scistarter_link,external_sign_up) {
   return new Promise(function(resolve, reject) {
+
     var connection = db.get();
-    connection.queryAsync('INSERT INTO projects (name,creatorID,description,cover_pic,unique_code,short_name,short_name_friendly,short_description, is_inaturalist) VALUES(?,?,?,?,?,?,?,?,?)',
-      [name, userID, desc, picID, uniqueCode,short_name,short_name_friendly,short_description,is_inaturalist]).then(
+    connection.queryAsync('INSERT INTO projects (name,creatorID,description,cover_pic,unique_code,short_name,short_name_friendly,short_description, is_inaturalist,scistarter_link,external_sign_up) VALUES(?,?,?,?,?,?,?,?,?,?,?)',
+      [name, userID, desc, picID, uniqueCode,short_name,short_name_friendly,short_description,is_inaturalist,scistarter_link,external_sign_up]).then(
       function(result) {
         resolve(result);
       }).catch(function(err) {
@@ -179,11 +180,11 @@ exports.updateARReady = function(projectId, ar_ready) {
 };
 
 
-exports.updateDescriptionName = function(projectId, description,name,short_name,short_name_friendly,short_description,is_inaturalist,cover_pic) {
+exports.updateDescriptionName = function(projectId, description,name,short_name,short_name_friendly,short_description,is_inaturalist,cover_pic,scistarter_link,external_sign_up) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
-        connection.queryAsync('UPDATE projects SET description=? , name=?, short_name=?, short_name_friendly=?, short_description=?, is_inaturalist=?, cover_pic=? WHERE id=?',
-            [description,name, short_name,short_name_friendly, short_description, is_inaturalist,cover_pic,projectId]).then(
+        connection.queryAsync('UPDATE projects SET description=? , name=?, short_name=?, short_name_friendly=?, short_description=?, is_inaturalist=?, cover_pic=?, scistarter_link=?,external_sign_up=? WHERE id=?',
+            [description,name, short_name,short_name_friendly, short_description, is_inaturalist,cover_pic,scistarter_link,external_sign_up,projectId]).then(
             function(data) {
                 resolve(data);
             }, function(err) {
@@ -559,6 +560,7 @@ exports.duplicateShortName = function(project) {
 };
 
 
+
 exports.getNumberOfContributers = function(project) {
   return new Promise(function(resolve, error) {
     var connection = db.get();
@@ -829,6 +831,13 @@ exports.insertTutorialItems = function(projectId,data){
             image_path =  data.image_name;
         }
 
+        //if we are duplicating stuff from other project.
+        if (data.hasOwnProperty("duplicated_entry") && parseInt(data.duplicated_entry) == 1){
+            image_path =  data.image_name;
+            data.explanation =  data.explanation .slice(1,-1); //fix for ' appearing when duplicating
+            delete data.duplicated_entry;
+        }
+
         var query = 'INSERT INTO tutorial (unique_code, template, point_selection, points_file';
         query2 = ' SELECT unique_code, template, point_selection, points_file';
 
@@ -873,7 +882,7 @@ exports.insertTutorialItems = function(projectId,data){
                 error(err);
             });
     });
-}
+};
 
 
 

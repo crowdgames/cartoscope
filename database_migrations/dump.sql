@@ -207,6 +207,7 @@ CREATE TABLE `projects` (
    `external_sign_up` text DEFAULT NULL,
    `ngs_zoom` int(11) DEFAULT NULL,
    `show_cairns` int(11) DEFAULT 0,
+   `scistarter_link` text default NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_code_UNIQUE` (`unique_code`),
   KEY `Creator_idx` (`creatorID`),
