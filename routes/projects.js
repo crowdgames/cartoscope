@@ -993,6 +993,26 @@ router.post('/:id/survey', [filters.requireLogin], function(req, res, next) {
     }
 });
 
+//store external survey responses
+router.post('/surveyExternal' , function(req, res, next) {
+
+            //generate a random user string
+            var random_worker_id = generateUniqueWorkerId();
+
+            projectDB.addSurvey(random_worker_id, 0, req.body,req.body.trialId).then(
+                function(data) {
+                    console.log('inside function ... '+ data);
+                    res.send({external_survey: 1, workerId: random_worker_id});
+
+                },
+                function(err) {
+                    console.log(err)
+                    res.status(500).send({
+                        error: err
+                    })
+                });
+});
+
 
 //storing to survey tileoscope
 router.post('/surveyTileoscope', function(req, res, next) {
@@ -1203,4 +1223,16 @@ function readDataSetFiles(dirName, dataSetID) {
   });
   p.bind({});
   return p;
+}
+
+
+function generateUniqueWorkerId() {
+    //return new Promise(function(resolve) {
+    var worker_id = randomString.generate({
+        length: 12,
+        charset: 'alphanumeric'
+    });
+    //    resolve(projectCode);
+    // });
+    return worker_id;
 }

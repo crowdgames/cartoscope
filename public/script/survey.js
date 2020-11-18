@@ -1413,6 +1413,9 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
 
     $scope.trialId = $scope.params.hitId ||  $scope.params.trialId || "kiosk";
 
+    //if we are using survey that doesnt correspond to a project
+    $scope.external_survey =  parseInt($scope.params.external_survey) || 0;
+
     console.log($scope.trialId);
 
 
@@ -1492,7 +1495,10 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
     $http.get('/api/project/surveyItems/' +   $scope.params.code).then(function(sdata) {
 
 
-        $scope.getProjectPic($scope.params.code);
+        //if we are using survey that doesnt correspond to a project
+        if (!$scope.external_survey){
+            $scope.getProjectPic($scope.params.code);
+        }
 
         var survey_items_all = JSON.parse(sdata.data.survey_form);
 
@@ -1561,7 +1567,6 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
 
                 $scope.survey_questions.push(push_obj)
 
-                //TODO: survey type: external!
             }
 
         })
@@ -1606,6 +1611,10 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
                 data.trialId = $scope.trialId;
             }
 
+            if($scope.external_survey){
+                link = 'api/project/surveyExternal';
+            }
+
             $http.post(link, JSON.stringify(data)).then(function(data) {
                 // console.log('data',data.data);
                 //console.log(data.data.hitCode);
@@ -1613,6 +1622,9 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
                     $state.go('hitCode', {hitCode: data.data.hitCode});
                 } else if (data.data.heatMap) {
                     $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId, hitId: $scope.trialId , contributions: $scope.params.contributions});
+                }  else if (data.data.external_survey){
+                    alert('Survey responses stored succesfully!')
+
                 } else {
                     $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId, hitId: $scope.trialId , contributions: $scope.params.contributions});
                 }
