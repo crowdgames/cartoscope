@@ -120,6 +120,23 @@ router.get('/hgtest/:hit_id', function(req, res,next) {
 });
 
 
+//healthy gulf: Landloss Lookout, mturk randomized, different options
+router.get('/hg_test_options/:hit_id', function(req, res,next) {
+
+    console.log(req.params);
+
+    var hit_id = req.params.hit_id;
+    var subprojects = ["94yoCWhFkpMk","MJbcJPO38rFk","EIhOZ2UtTwoN","h2TteFoNPfsH"];
+    //var pick_d = randomInt(0,subprojects.length - 1); //pick dataset [start,end]
+
+    var project_code = chance.pickone(subprojects);
+    // var project_code = subprojects[pick_d];
+    var link = "kioskProject.html#/kioskStart/" + project_code + '?trialId=' + hit_id;
+    res.redirect('http://cartosco.pe/' + link); // send to project page
+
+});
+
+
 //healthy gulf: Landloss Lookout, mturk randomized
 router.get('/generateHGLinks/:hit_id', function(req, res,next) {
 
