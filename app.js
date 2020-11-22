@@ -109,11 +109,24 @@ app.use('/api/qlearn', qlearn);
 
 
 
-//ar game download
+//ar game download (no logging)
 app.get('/ar_apk', function(req, res) {
 
     var version1 = 'https://drive.google.com/open?id=1-iiiuU_KfkUDYtNGIlJnLcQh0NJ5u-d4'
-    var version2 = 'https://drive.google.com/open?id=1kPyDCCdUKpRpLfMOMFOGYkE4HAlpPVmy'
+    var version2 = 'https://drive.google.com/open?id=1kPyDCCdUKpRpLfMOMFOGYkE4HAlpPVmy';
+
+    var version_unlogged = "https://drive.google.com/file/d/1-iiiuU_KfkUDYtNGIlJnLcQh0NJ5u-d4/view?usp=sharing"
+
+    res.redirect(version_unlogged);
+});
+
+//ar game download (no logging)
+app.get('/ar_apk_log', function(req, res) {
+
+    var version1 = 'https://drive.google.com/open?id=1-iiiuU_KfkUDYtNGIlJnLcQh0NJ5u-d4'
+    var version2 = 'https://drive.google.com/file/d/1Ki4XAQmMcQU92-06vC5ueCLjV6VPQ6w5/view?usp=sharing';
+
+    //var version_unlogged = "https://drive.google.com/file/d/1-iiiuU_KfkUDYtNGIlJnLcQh0NJ5u-d4/view?usp=sharing"
 
     res.redirect(version2);
 });
