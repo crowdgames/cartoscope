@@ -255,6 +255,20 @@ exports.getSurveyVotesHIT = function(hit_id) {
 
 }
 
+exports.getSurveyVotesHITExternal = function(hit_id) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('select * from survey where hitID=?',
+            [ hit_id]).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+
+}
+
 exports.getSurveyVotesHITKiosk = function(hit_id) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
