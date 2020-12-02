@@ -144,6 +144,19 @@ router.get('/landloss_progress_timeline', function(req, res, next) {
 });
 
 
+
+//Get quick snapshot of contributions for today
+router.get('/landloss_progress_today', function(req, res, next) {
+
+    resultDB.getLandLossVisitorsStatsToday().then(function(results) {
+        res.send(results);
+    }, function(err) {
+        console.log(err)
+        res.status(400).send('Error retrieving quick snapshot of contributions for today for Land Loss Project');
+    });
+});
+
+
 //Get raw HG data from all projects
 router.get('/hg_raw_data', function(req, res, next) {
 
