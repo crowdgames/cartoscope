@@ -146,9 +146,20 @@ router.get('/landloss_progress_timeline', function(req, res, next) {
 
 
 //Get quick snapshot of contributions for today
-router.get('/landloss_progress_today', function(req, res, next) {
+router.get('/landloss_snapshot_today', function(req, res, next) {
 
     resultDB.getLandLossVisitorsStatsToday().then(function(results) {
+        res.send(results);
+    }, function(err) {
+        console.log(err)
+        res.status(400).send('Error retrieving quick snapshot of contributions for today for Land Loss Project');
+    });
+});
+
+//Get quick snapshot of contributions from soft launch
+router.get('/landloss_snapshot_launch', function(req, res, next) {
+
+    resultDB.getLandLossVisitorsStatsLaunch().then(function(results) {
         res.send(results);
     }, function(err) {
         console.log(err)
