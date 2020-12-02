@@ -498,9 +498,9 @@ exports.getLandLossVisitorsStatsToday = function(){
         var connection = db.get();
 
 
-        var query = "select p.name,r.labels_today,r.users_today from (select project_id,count(*) as labels_today,count(distinct user_id) as users_today from" +
-            " response WHERE DATE(`timestamp`) = CURDATE() and response_text!=\"dummy\" and project_id>=55 " +
-            "and project_id<=60 group by project_id) as r left join projects as p on p.id=r.project_id"
+        var query = "select p.name,r.labels_today,r.users_today,r.images_today from (select project_id,count(*) as labels_today,count(distinct user_id) as users_today, count(distinct task_id) as images_today " +
+            "from response WHERE DATE(`timestamp`) = CURDATE() and response_text!=\"dummy\" and project_id>=55 and project_id<=60 group by project_id) as r " +
+            "left join projects as p on p.id=r.project_id;";
 
         connection.queryAsync(query).then(
             function(data) {
