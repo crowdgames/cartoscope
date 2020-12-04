@@ -168,6 +168,29 @@ router.get('/landloss_snapshot_launch', function(req, res, next) {
 });
 
 
+//Get quick snapshot of contributions for today
+router.get('/landloss_snapshot_date/:date', function(req, res, next) {
+
+    resultDB.getLandLossVisitorsStatsDate(req.params.date).then(function(results) {
+        res.send(results);
+    }, function(err) {
+        console.log(err)
+        res.status(400).send('Error retrieving quick snapshot of contributions for today for Land Loss Project');
+    });
+});
+
+//Get quick snapshot of contributions for today
+router.get('/landloss_snapshot_dates/', function(req, res, next) {
+
+    resultDB.getLandLossVisitorsStatsByDates().then(function(results) {
+        res.send(results);
+    }, function(err) {
+        console.log(err)
+        res.status(400).send('Error retrieving quick snapshot of contributions for today for Land Loss Project');
+    });
+});
+
+
 //Get raw HG data from all projects
 router.get('/hg_raw_data', function(req, res, next) {
 
