@@ -1420,6 +1420,8 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
 
 
     $scope.survey_questions = [];
+    $scope.survey_questions_shuffled = [];
+
 
     $scope.alertError = function(msg) {
         swal({
@@ -1565,11 +1567,27 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
                     push_obj.required = false
                 }
 
-                $scope.survey_questions.push(push_obj)
+                //if we want some questions shuffled, we keep them separte, shuffle then add
+                if (sv.hasOwnProperty("shuffle") && sv.shuffle == true) {
+                    $scope.survey_questions_shuffled.push(push_obj)
+                } else {
+                    $scope.survey_questions.push(push_obj)
+
+                }
+
 
             }
 
         })
+
+        //shuffle the shuffled questions here and add to the rest:
+        shuffleArray($scope.survey_questions_shuffled);
+        $scope.survey_questions = $scope.survey_questions.concat($scope.survey_questions_shuffled);
+        
+
+
+
+
         //console.log($scope.survey_questions)
 
     }, function(err) {
