@@ -555,11 +555,12 @@ exports.getLandLossVisitorsStatsByDates = function(){
         var connection = db.get();
 
 
-        var query = "select p.name,r.labels_launch,r.users_launch,r.images_launch,r.positives_launch,r.negatives_launch,r.date from (select project_id,count(*) as labels_launch,count(distinct user_id) as users_launch, " +
-            "count(distinct task_id) as images_launch, count(case when response_text not like \"No%\" then response_text end) as positives_launch, count(case when response_text like \"No%\" then response_text end) as negatives_launch, " +
-            "DATE(timestamp) as date from response " +
-            "WHERE DATE(`timestamp`) >= \"2020-09-23\" and response_text!=\"dummy\" and project_id>=55 and project_id<=60 group by  date, project_id) as r left join projects as p on p.id=r.project_id";
+        var query = "select DATE(r.timestamp) as date_submitted,p.name,r.labels_launch,r.users_launch,r.images_launch,r.positives_launch,r.negatives_launch from (select timestamp,project_id,count(*) as labels_launch,count(distinct user_id) as users_launch, " +
+            "count(distinct task_id) as images_launch, count(case when response_text not like \"No%\" then response_text end) as positives_launch, count(case when response_text like \"No%\" then response_text end) as negatives_launch " +
+            "from response " +
+            "WHERE DATE(`timestamp`) >= \"2020-09-23\" and response_text!=\"dummy\" and project_id>=55 and project_id<=60 group by timestamp, project_id) as r left join projects as p on p.id=r.project_id";
 
+        
         connection.queryAsync(query).then(
             function(data) {
                 resolve(data);
