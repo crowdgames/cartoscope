@@ -420,6 +420,64 @@ exports.getCreatedSequenceTileoscope = function(id) {
     });
 };
 
+//get the simple sequence by unique code
+exports.getTGSequencebyCode = function(unique_code) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT * from tileoscope_task_genetic_sequences where unique_code_main=?  ', [unique_code])
+            .then(
+                function(data) {
+                    resolve(data);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};
+
+
+
+//add a simple sequence with unique code
+exports.addTGSequence = function(seq,seq_method,unique_code,level_pool) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('INSERT INTO tileoscope_task_genetic_sequences (unique_code_main,seq,active,method) VALUES (?,?,1,?)', [unique_code,seq,seq_method])
+            .then(
+                function(data) {
+                    resolve(data);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};
+
+
+//get the simple pool by unique code
+exports.getTGPoolbyCode = function(unique_code) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT * from tileoscope_genetic_tree where unique_code_main=?  ', [unique_code])
+            .then(
+                function(data) {
+                    resolve(data);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};
+
+//add a seq pool with unique code
+exports.addTGSPool = function(seq,seq_method,unique_code,level_pool) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('INSERT INTO tileoscope_genetic_tree (unique_code_main,pool,active,node) VALUES (?,?,1,?)', [unique_code,level_pool,"start"])
+            .then(
+                function(data) {
+                    resolve(data);
+                }, function(err) {
+                    error(err);
+                });
+    });
+};
 
 
 
