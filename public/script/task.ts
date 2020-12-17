@@ -290,8 +290,16 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           $http.post('api/tasks/getCairns', body).then((serverReturn: any) => {
               if (serverReturn.data.length > 0) {
                   let message: string = serverReturn.data[0].message;
-                  document.getElementById("soapstone-msg-text")!.innerText = message;
-                  (<any>$("#soapstoneMsgModal")).modal('show');
+                   Toastify({
+                     text: "Someone left you a message: " + message,
+                     duration: 10000,
+                     destination: 'https://github.com/apvarun/toastify-js',
+                     newWindow: true,
+                     close: true,
+                     gravity: "top", // `top` or `bottom`
+                     positionLeft: true, // `true` or `false`
+                     backgroundColor: "#4663ac"
+                   }).showToast();
               }
               else {
                   console.log("No relevant soapstone messages found");
