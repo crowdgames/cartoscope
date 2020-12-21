@@ -888,6 +888,7 @@ router.post('/addTGGame', function(req, res, next) {
     var level_pool  = req.body.pool;
     var is_memory = req.body.is_memory;
 
+
     var game_url = "http://cartosco.pe/Tiles/?"+ seq_method  + "=" + unique_code;
 
     if (is_memory) {
@@ -905,7 +906,7 @@ router.post('/addTGGame', function(req, res, next) {
         //make sure pool is appropriately formatted
         res.status(400).send('You need to separate sequences in the pool with commas!');
 
-    } else if (seq_method !== "random" || seq_method !=="genetic" || seq_method!== "greedy"){
+    } else if (seq_method !== "random" && seq_method !== "genetic" && seq_method !== "greedy"){
         //TODO: expand this with qlearn modes
         res.status(400).send('Sequence method not supported yet: '  + seq_method);
     } else {
