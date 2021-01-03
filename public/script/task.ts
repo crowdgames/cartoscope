@@ -267,7 +267,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
        * SOAPSTONE CODE
        * ============================== */ 
       
-      vm.tasksToCompleteTillSoapstoneMsg      = 2;
+      vm.tasksToCompleteTillSoapstoneMsg      = 200000000;
+      vm.tasksToCompleteTillPhysics           = 3;
       vm.tasksToCompleteTillSoapstoneCreation = 5;
 
       vm.handleSoapstones = () => {
@@ -282,11 +283,15 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               // Show a message someone else has left
               vm.showNewSoapstoneMsg();
           }
+          else if (vm.data.progress % vm.tasksToCompleteTillPhysics === 0) {
+              // Show a message someone else has left
+              vm.showPhysicsModal();
+          }
       }
 
       vm.showNewSoapstoneMsg = () => {
           let body = { projectID: vm.data.id };
-          // TODO this should not be a post
+          // TODO this should be a get
           $http.post('api/tasks/getCairns', body).then((serverReturn: any) => {
               if (serverReturn.data.length > 0) {
                   let message: string = serverReturn.data[0].message;
@@ -354,6 +359,45 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           });
           (<any>$("#soapstoneCreateModal")).modal('hide');
           console.log(soapstoneFormValues);
+      }
+
+      vm.showPhysicsModal = () => {
+          console.log("Physics should be popping up");
+          (<any>$("#physicsModal")).modal('show');
+          /**
+          // module aliases
+          let Engine = Matter.Engine,
+              Render = Matter.Render,
+              World = Matter.World,
+              Bodies = Matter.Bodies;
+
+          // create an engine
+          let engine = Engine.create();
+
+          // create a renderer
+          let render = Render.create({
+              element: document.body,
+              engine: engine
+          });
+
+          // create two boxes and a ground
+          let boxA = Bodies.rectangle(400, 200, 80, 80);
+          let boxB = Bodies.rectangle(450, 50, 80, 80);
+          let ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
+
+          // add all of the bodies to the world
+          World.add(engine.world, [boxA, boxB, ground]);
+
+          // run the engine
+          Engine.run(engine);
+
+          // run the renderer
+          Render.run(render);
+          **/
+      }
+
+      vm.submitPhysics = () => {
+          console.log("Physics Submitted");
       }
 
       //for NGS tasks
@@ -2757,31 +2801,3 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
 
     }]);
 
-// module aliases
-var Engine = Matter.Engine,
-    Render = Matter.Render,
-    World = Matter.World,
-    Bodies = Matter.Bodies;
-
-// create an engine
-var engine = Engine.create();
-
-// create a renderer
-var render = Render.create({
-    element: document.body,
-    engine: engine
-});
-
-// create two boxes and a ground
-var boxA = Bodies.rectangle(400, 200, 80, 80);
-var boxB = Bodies.rectangle(450, 50, 80, 80);
-var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
-
-// add all of the bodies to the world
-World.add(engine.world, [boxA, boxB, ground]);
-
-// run the engine
-Engine.run(engine);
-
-// run the renderer
-Render.run(render);
