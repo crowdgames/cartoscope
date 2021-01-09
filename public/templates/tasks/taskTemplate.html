@@ -571,6 +571,26 @@
         </div>
     </div>
 
+    <!--Emoji Pick Modal-->
+    <div class="modal fade" id="emojiModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Pick an emoji</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="emojiBody">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" ng-click="model.submitEmoji()">Submit</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!--Physics Modal-->
     <div class="modal fade" id="physicsModal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">

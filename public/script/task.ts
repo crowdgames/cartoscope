@@ -285,7 +285,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           }
           else if (vm.data.progress % vm.tasksToCompleteTillPhysics === 0) {
               // Show a message someone else has left
-              vm.showPhysicsModal();
+              vm.showEmojiModal();
+              // vm.showPhysicsModal();
           }
       }
 
@@ -361,9 +362,13 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           console.log(soapstoneFormValues);
       }
 
-        vm.isPhysicsModalCreated = false;
-        // set up the physics modal to create the physics playground when it is first opened
-        $('#physicsModal').on('shown.bs.modal', () => {
+      vm.submitEmoji = () => {
+          console.log("submitted emoji");
+      }
+
+      vm.isPhysicsModalCreated = false;
+      // set up the physics modal to create the physics playground when it is first opened
+      $('#physicsModal').on('shown.bs.modal', () => {
           if (!vm.isPhysicsModalCreated) {
               console.log("reloooading");
               vm.isPhysicsModalCreated = true;
@@ -435,9 +440,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           }
       });
 
-      vm.showPhysicsModal = () => {
-          (<any>$("#physicsModal")).modal('show');
-      }
+      vm.showPhysicsModal = () => (<any>$("#physicsModal")).modal('show')
+      vm.showEmojiModal   = () => (<any>$("#emojiModal")).modal('show')
 
       vm.submitPhysics = () => {
           console.log("Physics Submitted");
