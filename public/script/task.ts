@@ -366,74 +366,74 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
         $('#physicsModal').on('shown.bs.modal', () => {
           if (!vm.isPhysicsModalCreated) {
               console.log("reloooading");
-            vm.isPhysicsModalCreated = true;
-            // module aliases
-            let Engine          = Matter.Engine,
-                Render          = Matter.Render,
-                World           = Matter.World,
-                MouseConstraint = Matter.MouseConstraint,
-                Mouse           = Matter.Mouse,
-                Bodies          = Matter.Bodies;
+              vm.isPhysicsModalCreated = true;
+              // module aliases
+              let Engine          = Matter.Engine,
+                  Render          = Matter.Render,
+                  World           = Matter.World,
+                  MouseConstraint = Matter.MouseConstraint,
+                  Mouse           = Matter.Mouse,
+                  Bodies          = Matter.Bodies;
 
-            // create an engine
-            let engine = Engine.create();
+              // create an engine
+              let engine = Engine.create();
 
-            let physicsHost = document.getElementById("physicsBody")!;
+              let physicsHost = document.getElementById("physicsBody")!;
 
-            // create a renderer
-            var render = Render.create({
-              element: physicsHost,
-              engine: engine,
-              options: {
-                width: 465,
-                height: 600,
-                wireframes: false
-              }
-            });
+              // create a renderer
+              var render = Render.create({
+                  element: physicsHost,
+                  engine: engine,
+                  options: {
+                      width: 465,
+                      height: 600,
+                      wireframes: false
+                  }
+              });
 
-            var mouse = Mouse.create(render.canvas),
-              mouseConstraint = MouseConstraint.create(engine, {
-              mouse: mouse,
-              constraint: {
-                stiffness: 0.2,
-                render: {
-                  visible: false
-                }
-              }
-            });
+              var mouse = Mouse.create(render.canvas),
+                  mouseConstraint = MouseConstraint.create(engine, {
+                  mouse: mouse,
+                  constraint: {
+                      stiffness: 0.2,
+                      render: {
+                          visible: false
+                      }
+                  }
+              });
 
-            // create two boxes and a ground
-            var boxA = Bodies.rectangle(400, 200, 80, 80, {
-              render :{
-                sprite: {
-                  texture: 'images/logo.png',
-                  xScale: 1,
-                  yScale: 1
-                }
-              }
-            });
-            var boxB = Bodies.rectangle(450, 50, 80, 80, {
-              render :{
-                sprite: {
-                  texture: 'images/logo.png',
-                  xScale: 1,
-                  yScale: 1
-                }
-              }
-            });
-            var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
+              // create two boxes and a ground
+              var boxA = Bodies.rectangle(400, 200, 80, 80, {
+                  render :{
+                      sprite: {
+                          texture: 'images/logo.png',
+                          xScale: 1,
+                          yScale: 1
+                      }
+                  }
+              });
+              var boxB = Bodies.rectangle(450, 50, 80, 80, {
+                  render :{
+                      sprite: {
+                          texture: 'images/logo.png',
+                          xScale: 1,
+                          yScale: 1
+                      }
+                  }
+              });
+              var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
 
-            // add all of the bodies to the world
-            World.add(engine.world, [boxA, boxB, ground]);
-            World.add(engine.world, mouseConstraint);
+              // add all of the bodies to the world
+              World.add(engine.world, [boxA, boxB, ground]);
+              World.add(engine.world, mouseConstraint);
 
-            // run the engine
-            Engine.run(engine);
+              // run the engine
+              Engine.run(engine);
 
-            // run the renderer
-            Render.run(render);
+              // run the renderer
+              Render.run(render);
           }
-        });
+      });
 
       vm.showPhysicsModal = () => {
           (<any>$("#physicsModal")).modal('show');
