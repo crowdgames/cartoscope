@@ -626,6 +626,12 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           });
       };
 
+      $scope.isMainTaskImgHidden = false;
+      vm.handleDebug = () => {
+          console.log("Debugging");
+          $scope.isMainTaskImgHidden = !$scope.isMainTaskImgHidden;
+      }
+
       function handleEnd($window){
 
           if (!userData) {
