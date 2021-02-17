@@ -576,7 +576,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Pick an emoji</h5>
+                    <h5 class="modal-title">How do you feel right now?</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -585,29 +585,28 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-2">
-                                <img src="../../images/emojis/angry.png" width="60" height="60"></img>
+                                <img src="../../images/emojis/thinking.png" width="70" height="70" ng-click="model.submitEmoji('thinking')" data-dismiss="modal"></img>
                             </div>
                             <div class="col-md-2">
-                                <img src="../../images/emojis/weary.png" width="60" height="60"></img>
+                                <img src="../../images/emojis/weary.png" width="70" height="70" ng-click="model.submitEmoji('weary')" data-dismiss="modal"></img>
                             </div>
                             <div class="col-md-2">
-                                <img src="../../images/emojis/grinning.png" width="60" height="60"></img>
+                                <img src="../../images/emojis/grinning.png" width="70" height="70" ng-click="model.submitEmoji('grinning')" data-dismiss="modal"></img>
                             </div>
                             <div class="col-md-2">
-                                <img src="../../images/emojis/thinking.png" width="60" height="60"></img>
+                                <img src="../../images/emojis/angry.png" width="70" height="70" ng-click="model.submitEmoji('angry')" data-dismiss="modal"></img>
                             </div>
                             <div class="col-md-2">
-                                <img src="../../images/emojis/concerned.png" width="60" height="60"></img>
+                                <img src="../../images/emojis/concerned.png" width="70" height="70" ng-click="model.submitEmoji('concerned')" data-dismiss="modal"></img>
                             </div>
                             <div class="col-md-2">
-                                <img src="../../images/emojis/tongue_out.png" width="60" height="60"></img>
+                                <img src="../../images/emojis/tongue_out.png" width="70" height="70" ng-click="model.submitEmoji('tongue_out')" data-dismiss="modal"></img>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" ng-click="model.submitEmoji()">Submit</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" ng-click="model.submitEmoji('cancel')">Close</button>
                 </div>
             </div>
         </div>
