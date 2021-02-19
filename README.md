@@ -4,7 +4,7 @@
 1.  `git clone https://github.com/crowdgames/cartoscope-backend.git`
 
 
-2.  Install Node, MySQL and Wget:
+2.  Install Node, MySQL and Wget (note, the node version may matter. For me, node 10.19.0 works but 15.9.0 does not. I'm unsure if that is an issue I have or if it is relevant to this whole project):
 	1. ##### Windows installation
 		1. Windows users follow the link to install Node: http://blog.teamtreehouse.com/install-node-js-npm-windows
 		2. When installing MySQL server, make sure the **lower_case_table_names is set to 2 and that passwords use Legacy Authentication Method is selected**
