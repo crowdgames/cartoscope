@@ -298,8 +298,14 @@
     </div>
 
     <div class="row" style="text-align: center;" ng-if="model.data.template.selectedTaskType == 'tagging'">
-        <div class="col-sm-12" id="img" ng-hide="isMainTaskImgHidden">
+        <div class="col-sm-2" id="img">
+            <p>Hello!</p>
+        </div>
+        <div class="col-sm-8" id="img" ng-hide="isMainTaskImgHidden">
             <img id="task-img" style="max-height:450px" class="img-responsive img-task" ng-src="{{model.getNextTask()}}" ng-click="model.showBiggerImg()">
+        </div>
+        <div class="col-sm-2" id="img">
+            <p>Hello!</p>
         </div>
     </div>
     <div class="row" style="text-align: center;" ng-if="model.data.template.selectedTaskType == 'tagging'">
