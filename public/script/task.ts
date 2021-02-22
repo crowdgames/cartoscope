@@ -627,9 +627,11 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       };
 
       $scope.isMainTaskImgHidden = false;
+      $scope.isMatterDivHidden = true;
       vm.handleDebug = () => {
           console.log("Debugging");
           $scope.isMainTaskImgHidden = !$scope.isMainTaskImgHidden;
+          $scope.isMatterDivHidden = !$scope.isMatterDivHidden;
       }
 
       function handleEnd($window){
