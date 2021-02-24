@@ -298,15 +298,14 @@
     </div>
 
     <div class="row" style="text-align: center;" ng-if="model.data.template.selectedTaskType == 'tagging'">
-        <div class="col-sm-2" id="img">
+        <div class="col-sm-3" id="img">
         </div>
-        <div class="col-sm-8" id="img" ng-hide="isMainTaskImgHidden">
+        <div class="col-sm-6" id="img" ng-hide="isMainTaskImgHidden">
             <img id="task-img" style="max-height:450px" class="img-responsive img-task" ng-src="{{model.getNextTask()}}" ng-click="model.showBiggerImg()">
         </div>
-        <div class="col-sm-8" ng-hide="isMatterDivHidden">
-            <p>GENERAL KENOBI</p>
+        <div class="col-sm-6" id="physicsBody" ng-hide="isMatterDivHidden" ng-init="model.initializePhysics()">
         </div>
-        <div class="col-sm-2" id="img">
+        <div class="col-sm-3" id="img">
         </div>
     </div>
     <div>
@@ -597,6 +596,7 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-2">
+                                <!-- TODO could this be an ng-repeat?-->
                                 <img src="../../images/emojis/thinking.png" width="70" height="70" ng-click="model.submitEmoji('thinking')" data-dismiss="modal"></img>
                             </div>
                             <div class="col-md-2">
@@ -634,7 +634,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body" id="physicsBody">
+                <div class="modal-body">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" ng-click="model.submitSoapstone()">Submit</button>

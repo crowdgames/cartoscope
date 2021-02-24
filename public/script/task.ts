@@ -369,92 +369,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           vm.showPhysicsModal();
       }
 
-      vm.isPhysicsModalCreated = false;
-      vm.engine = null;
-      vm.emojiToAdd = "";
-      // set up the physics modal to create the physics playground when it is first opened
-      $('#physicsModal').on('shown.bs.modal', () => {
-          let Engine          = Matter.Engine,
-              Render          = Matter.Render,
-              World           = Matter.World,
-              MouseConstraint = Matter.MouseConstraint,
-              Mouse           = Matter.Mouse,
-              Bodies          = Matter.Bodies;
-          if (!vm.isPhysicsModalCreated) {
-              console.log("reloooading");
-              vm.isPhysicsModalCreated = true;
-              // module aliases
-
-              // create an engine
-              vm.engine = Engine.create();
-
-              let physicsHost = document.getElementById("physicsBody")!;
-
-              // create a renderer
-              var render = Render.create({
-                  element: physicsHost,
-                  engine: vm.engine,
-                  options: {
-                      width: 465,
-                      height: 600,
-                      wireframes: false
-                  }
-              });
-
-              var mouse = Mouse.create(render.canvas),
-                  mouseConstraint = MouseConstraint.create(vm.engine, {
-                  mouse: mouse,
-                  constraint: {
-                      stiffness: 0.2,
-                      render: {
-                          visible: false
-                      }
-                  }
-              });
-
-              var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
-              var leftWall = Bodies.rectangle(0, 300, 10, 610, { isStatic: true });
-              var rightWall = Bodies.rectangle(470, 300, 10, 610, { isStatic: true });
-
-              // add all of the bodies to the world
-              World.add(vm.engine.world, [ground, leftWall, rightWall]);
-              World.add(vm.engine.world, mouseConstraint);
-
-              // run the engine
-              Engine.run(vm.engine);
-
-              // run the renderer
-              Render.run(render);
-              let emojiArray = ["angry", "concerned", "grinning", "thinking", "tongue_out", "weary"];
-              let randomMoji = emojiArray[Math.floor(Math.random()*emojiArray.length)];
-              for (let i = 0; i < 50; i++) {
-                  randomMoji = emojiArray[Math.floor(Math.random()*emojiArray.length)];
-                  let newEmoji = Bodies.circle(400, 200, 20, {
-                      render :{
-                          sprite: {
-                              texture: 'images/emojis/' + randomMoji + '.png',
-                              xScale: 0.1,
-                              yScale: 0.1
-                          }
-                      }
-                      "restitution": 0.8;
-                  });
-                  World.add(vm.engine.world, [newEmoji]);
-              }
-          } 
-          let newEmoji = Bodies.circle(400, 200, 20, {
-              render :{
-                  sprite: {
-                      texture: 'images/emojis/' + vm.emojiToAdd + '.png',
-                      xScale: 0.1,
-                      yScale: 0.1
-                  }
-              }
-              "restitution": 0.8;
-          });
-          World.add(vm.engine.world, [newEmoji]);
-      });
-
       vm.showPhysicsModal = () => (<any>$("#physicsModal")).modal('show')
       vm.showEmojiModal   = () => (<any>$("#emojiModal")).modal('show')
 
@@ -632,6 +546,88 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           console.log("Debugging");
           $scope.isMainTaskImgHidden = !$scope.isMainTaskImgHidden;
           $scope.isMatterDivHidden = !$scope.isMatterDivHidden;
+          // vm.makePhysics();
+      }
+      vm.initializePhysics = () => {
+          let Engine          = Matter.Engine,
+              Render          = Matter.Render,
+              World           = Matter.World,
+              MouseConstraint = Matter.MouseConstraint,
+              Mouse           = Matter.Mouse,
+              Bodies          = Matter.Bodies;
+          console.log("Beginning creation of physics div");
+          vm.isPhysicsModalCreated = true;
+          // module aliases
+
+          // create an engine
+          vm.engine = Engine.create({enableSleeping: true});
+
+          let physicsHost = document.getElementById("physicsBody")!;
+
+          // create a renderer
+          var render = Render.create({
+              element: physicsHost,
+              engine: vm.engine,
+              options: {
+                  width: 465,
+                  height: 600,
+                  wireframes: false
+              }
+          });
+
+          var mouse = Mouse.create(render.canvas),
+              mouseConstraint = MouseConstraint.create(vm.engine, {
+              mouse: mouse,
+              constraint: {
+                  stiffness: 0.2,
+                  render: {
+                      visible: false
+                  }
+              }
+          });
+
+          var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
+          var leftWall = Bodies.rectangle(0, 300, 10, 610, { isStatic: true });
+          var rightWall = Bodies.rectangle(470, 300, 10, 610, { isStatic: true });
+
+          // add all of the bodies to the world
+          World.add(vm.engine.world, [ground, leftWall, rightWall]);
+          World.add(vm.engine.world, mouseConstraint);
+
+          // run the engine
+          Engine.run(vm.engine);
+
+          // run the renderer
+          Render.run(render);
+          let emojiArray = ["angry", "concerned", "grinning", "thinking", "tongue_out", "weary"];
+          let randomMoji = emojiArray[Math.floor(Math.random()*emojiArray.length)];
+          for (let i = 0; i < 50; i++) {
+              randomMoji = emojiArray[Math.floor(Math.random()*emojiArray.length)];
+              let newEmoji = Bodies.circle(400, 200, 20, {
+                  render :{
+                      sprite: {
+                          texture: 'images/emojis/' + randomMoji + '.png',
+                          xScale: 0.1,
+                          yScale: 0.1
+                      }
+                  }
+                  "restitution": 0.8;
+              });
+              World.add(vm.engine.world, [newEmoji]);
+          } 
+          /**
+          let newEmoji = Bodies.circle(400, 200, 20, {
+              render :{
+                  sprite: {
+                      texture: 'images/emojis/' + vm.emojiToAdd + '.png',
+                      xScale: 0.1,
+                      yScale: 0.1
+                  }
+              }
+              "restitution": 0.8;
+          });
+          World.add(vm.engine.world, [newEmoji]);
+          */
       }
 
       function handleEnd($window){
