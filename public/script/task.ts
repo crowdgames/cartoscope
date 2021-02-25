@@ -575,7 +575,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           // module aliases
 
           // create an engine
-          vm.engine = Engine.create({enableSleeping: true});
+          vm.engine = Engine.create();
 
           let physicsHost = document.getElementById("physicsBody")!;
 
