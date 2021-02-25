@@ -7,7 +7,7 @@
                         ng-click="model.skipToSurvey()" style="height: 45px;" ng-show="showSurvButton">{{cont_button}}</button>
                 <button ng-switch-when="kiosk" class="btn btn-default btn-primary done-button"
                         ng-click="model.handleEnd()" style="height: 45px;">I'M DONE</button>
-                <button ng-switch-when="kiosk" class="btn btn-default btn-primary done-button"
+                <button class="btn btn-default btn-primary done-button"
                         ng-click="model.handleDebug()" style="height: 45px;">DEBUG</button>
                 <button ng-switch-default class="btn btn-default btn-primary done-button"
                         ng-click="model.handleFinish()" style="height: 45px;">I'M DONE</button>
@@ -303,7 +303,10 @@
         <div class="col-sm-6" id="img" ng-hide="isMainTaskImgHidden">
             <img id="task-img" style="max-height:450px" class="img-responsive img-task" ng-src="{{model.getNextTask()}}" ng-click="model.showBiggerImg()">
         </div>
-        <div class="col-sm-6" id="physicsBody" ng-hide="isMatterDivHidden" ng-init="model.initializePhysics()">
+        <div class="col-sm-6" ng-hide="isMatterDivHidden">
+                <div id="physicsBody" ng-init="model.initializePhysics()">
+                </div>
+                <button class="btn btn-default btn-primary done-button" ng-click="model.hidePhysicsDiv()" style="height: 45px;">Get back to the tasks</button>
         </div>
         <div class="col-sm-3" id="img">
         </div>

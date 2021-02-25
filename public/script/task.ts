@@ -366,7 +366,20 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           console.log("submitted emoji");
           console.log(n);
           vm.emojiToAdd = n;
-          vm.showPhysicsModal();
+          vm.showPhysicsDiv();
+      }
+
+      vm.showPhysicsDiv = () => {
+          $scope.isMainTaskImgHidden = !$scope.isMainTaskImgHidden;
+          $scope.isMatterDivHidden   = !$scope.isMatterDivHidden;
+          console.log("starting runner");
+          Render.run(vm.render);
+      }
+
+      vm.hidePhysicsDiv = () => {
+          $scope.isMainTaskImgHidden = !$scope.isMainTaskImgHidden;
+          $scope.isMatterDivHidden   = !$scope.isMatterDivHidden;
+          Render.stop(vm.render);
       }
 
       vm.showPhysicsModal = () => (<any>$("#physicsModal")).modal('show')
@@ -546,15 +559,17 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           console.log("Debugging");
           $scope.isMainTaskImgHidden = !$scope.isMainTaskImgHidden;
           $scope.isMatterDivHidden = !$scope.isMatterDivHidden;
-          // vm.makePhysics();
+          console.log(vm.engine.enabled);
       }
+
+      let Engine          = Matter.Engine,
+          Render          = Matter.Render,
+          Runner          = Matter.Runner,
+          World           = Matter.World,
+          MouseConstraint = Matter.MouseConstraint,
+          Mouse           = Matter.Mouse,
+          Bodies          = Matter.Bodies;
       vm.initializePhysics = () => {
-          let Engine          = Matter.Engine,
-              Render          = Matter.Render,
-              World           = Matter.World,
-              MouseConstraint = Matter.MouseConstraint,
-              Mouse           = Matter.Mouse,
-              Bodies          = Matter.Bodies;
           console.log("Beginning creation of physics div");
           vm.isPhysicsModalCreated = true;
           // module aliases
@@ -565,7 +580,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           let physicsHost = document.getElementById("physicsBody")!;
 
           // create a renderer
-          var render = Render.create({
+          vm.render = Render.create({
               element: physicsHost,
               engine: vm.engine,
               options: {
@@ -575,7 +590,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               }
           });
 
-          var mouse = Mouse.create(render.canvas),
+          var mouse = Mouse.create(vm.render.canvas),
               mouseConstraint = MouseConstraint.create(vm.engine, {
               mouse: mouse,
               constraint: {
@@ -595,10 +610,10 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           World.add(vm.engine.world, mouseConstraint);
 
           // run the engine
-          Engine.run(vm.engine);
+          Runner.run(vm.engine);
 
           // run the renderer
-          Render.run(render);
+          // Render.run(vm.render);
           let emojiArray = ["angry", "concerned", "grinning", "thinking", "tongue_out", "weary"];
           let randomMoji = emojiArray[Math.floor(Math.random()*emojiArray.length)];
           for (let i = 0; i < 50; i++) {
@@ -610,11 +625,13 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                           xScale: 0.1,
                           yScale: 0.1
                       }
-                  }
-                  "restitution": 0.8;
+                  },
+                  "restitution": 0.8
               });
               World.add(vm.engine.world, [newEmoji]);
           } 
+
+          // Runner.stop(vm.render);
           /**
           let newEmoji = Bodies.circle(400, 200, 20, {
               render :{
@@ -961,6 +978,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       function submit(option,option_text) {
 
+          // A player is attempting to submit when there is no task visible, just ignore
+          if ($scope.isMainTaskImgHidden) return;
           vm.showModal();
           //if markers task, loop through all markers and submit the selected ones, ignore submit button option
           if (vm.showMarkerPoints) {
