@@ -616,20 +616,29 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           // Render.run(vm.render);
           let emojiArray = ["angry", "concerned", "grinning", "thinking", "tongue_out", "weary"];
           let randomMoji = emojiArray[Math.floor(Math.random()*emojiArray.length)];
-          for (let i = 0; i < 50; i++) {
-              randomMoji = emojiArray[Math.floor(Math.random()*emojiArray.length)];
-              let newEmoji = Bodies.circle(400, 200, 20, {
-                  render :{
-                      sprite: {
-                          texture: 'images/emojis/' + randomMoji + '.png',
-                          xScale: 0.1,
-                          yScale: 0.1
-                      }
-                  },
-                  "restitution": 0.8
-              });
-              World.add(vm.engine.world, [newEmoji]);
-          } 
+
+          let i = 50;
+
+          var interval = setInterval(() => {
+              if (i > 0) {
+                  randomMoji = emojiArray[Math.floor(Math.random()*emojiArray.length)];
+                  let newEmoji = Bodies.circle(Math.random() * 400 + 20, 200, 20, {
+                      render :{
+                          sprite: {
+                              texture: 'images/emojis/' + randomMoji + '.png',
+                              xScale: 0.1,
+                              yScale: 0.1
+                          }
+                      },
+                      "restitution": 0.8
+                  });
+                  World.add(vm.engine.world, [newEmoji]);
+                  i--;
+              }
+              else {
+                  window.clearInterval(interval);
+              }
+          }, 500);
 
           // Runner.stop(vm.render);
           /**
