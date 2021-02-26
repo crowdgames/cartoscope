@@ -300,8 +300,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                    Toastify({
                      text: "Someone left you a message: " + message,
                      duration: 10000,
-                     destination: 'https://github.com/apvarun/toastify-js',
-                     newWindow: true,
                      close: true,
                      gravity: "top", // `top` or `bottom`
                      positionLeft: true, // `true` or `false`
@@ -368,18 +366,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           console.log("submitted emoji");
           console.log(submittedEmoji);
           vm.showPhysicsDiv();
-          let newEmoji = Bodies.circle(Math.random() * 400 + 20, 200, 20, {
-              render :{
-                  sprite: {
-                      texture: 'images/emojis/' + submittedEmoji + '.png',
-                      xScale: 0.1,
-                      yScale: 0.1
-                  }
-              },
-              "restitution": 0.8
-          });
-          World.add(vm.engine.world, [newEmoji]);
-
+          vm.addEmojiToPhysics(submittedEmoji);
           let body = {
               projectID: vm.data.id,
               message: submittedEmoji,
@@ -389,6 +376,20 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           $http.post('api/tasks/submitCairn', body).then((data: object) => {
               console.log(data);
           });
+      }
+
+      vm.addEmojiToPhysics = (emojiToAdd: string) => {
+          let newEmoji = Bodies.circle(Math.random() * 400 + 20, 200, 20, {
+              render :{
+                  sprite: {
+                      texture: 'images/emojis/' + emojiToAdd + '.png',
+                      xScale: 0.1,
+                      yScale: 0.1
+                  }
+              },
+              "restitution": 0.8
+          });
+          World.add(vm.engine.world, [newEmoji]);
       }
 
       vm.showPhysicsDiv = () => {
@@ -469,30 +470,17 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           // run the engine
           Runner.run(vm.engine);
 
-          let emojiArray = ["angry", "concerned", "grinning", "thinking", "tongue_out", "weary"];
-
-          let i = 50;
-          // TODO rather than randomly create emojis, grab them from the database
-          var interval = setInterval(() => {
-              if (i > 0) {
-                  let randomMoji = emojiArray[Math.floor(Math.random()*emojiArray.length)];
-                  let newEmoji = Bodies.circle(Math.random() * 400 + 20, 200, 20, {
-                      render :{
-                          sprite: {
-                              texture: 'images/emojis/' + randomMoji + '.png',
-                              xScale: 0.1,
-                              yScale: 0.1
-                          }
-                      },
-                      "restitution": 0.8
-                  });
-                  World.add(vm.engine.world, [newEmoji]);
-                  i--;
-              }
-              else {
-                  window.clearInterval(interval);
-              }
-          }, 50);
+          let body = { projectID: vm.data.id, cairnType: "emoji", number: 50 };
+          $http.post('api/tasks/getCairns', body).then((serverReturn: object) => {
+              if (serverReturn["data"].length > 0) {
+                  serverReturn["data"].forEach((cairn: object, index: number) =>
+                      setTimeout(() => {
+                          let emojiFromDatabase = cairn["message"];
+                          vm.addEmojiToPhysics(emojiFromDatabase);
+                      }, index * 50))
+              } 
+              else console.error("No relevant emojis found");
+          });
       }
 
       //for NGS tasks
