@@ -269,8 +269,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
        * ============================== */ 
       
       vm.tasksToCompleteTillSoapstoneMsg      = 2;
-      vm.tasksToCompleteTillPhysics           = 300000000;
-      vm.tasksToCompleteTillSoapstoneCreation = 5;
+      vm.tasksToCompleteTillPhysics           = 5;
+      vm.tasksToCompleteTillSoapstoneCreation = 7;
 
       vm.handleSoapstones = () => {
           if (vm.data.progress % vm.tasksToCompleteTillSoapstoneCreation === 0) {
@@ -364,23 +364,42 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           console.log(soapstoneFormValues);
       }
 
-      vm.submitEmoji = (n: string) => {
+      vm.submitEmoji = (submittedEmoji: string) => {
           console.log("submitted emoji");
-          console.log(n);
-          vm.emojiToAdd = n;
+          console.log(submittedEmoji);
           vm.showPhysicsDiv();
+          let newEmoji = Bodies.circle(Math.random() * 400 + 20, 200, 20, {
+              render :{
+                  sprite: {
+                      texture: 'images/emojis/' + submittedEmoji + '.png',
+                      xScale: 0.1,
+                      yScale: 0.1
+                  }
+              },
+              "restitution": 0.8
+          });
+          World.add(vm.engine.world, [newEmoji]);
+
+          let body = {
+              projectID: vm.data.id,
+              message: submittedEmoji,
+              cairnType: "emoji",
+              progress: vm.data.progress
+          };
+          $http.post('api/tasks/submitCairn', body).then((data: object) => {
+              console.log(data);
+          });
       }
 
       vm.showPhysicsDiv = () => {
-          $scope.isMainTaskImgHidden = !$scope.isMainTaskImgHidden;
-          $scope.isMatterDivHidden   = !$scope.isMatterDivHidden;
-          console.log("starting runner");
+          $scope.isMainTaskImgHidden = true;
+          $scope.isMatterDivHidden   = false;
           Render.run(vm.render);
       }
 
       vm.hidePhysicsDiv = () => {
-          $scope.isMainTaskImgHidden = !$scope.isMainTaskImgHidden;
-          $scope.isMatterDivHidden   = !$scope.isMatterDivHidden;
+          $scope.isMainTaskImgHidden = false;
+          $scope.isMatterDivHidden   = true;
           Render.stop(vm.render);
       }
 
@@ -473,7 +492,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               else {
                   window.clearInterval(interval);
               }
-          }, 500);
+          }, 50);
       }
 
       //for NGS tasks
