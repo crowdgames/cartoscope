@@ -268,8 +268,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
        * SOAPSTONE CODE
        * ============================== */ 
       
-      vm.tasksToCompleteTillSoapstoneMsg      = 200000000;
-      vm.tasksToCompleteTillPhysics           = 3;
+      vm.tasksToCompleteTillSoapstoneMsg      = 2;
+      vm.tasksToCompleteTillPhysics           = 300000000;
       vm.tasksToCompleteTillSoapstoneCreation = 5;
 
       vm.handleSoapstones = () => {
@@ -292,7 +292,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       }
 
       vm.showNewSoapstoneMsg = () => {
-          let body = { projectID: vm.data.id };
+          let body = { projectID: vm.data.id, cairnType: "soapstone" };
           // TODO this should be a get
           $http.post('api/tasks/getCairns', body).then((serverReturn: any) => {
               if (serverReturn.data.length > 0) {
@@ -439,9 +439,9 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               }
           });
 
-          var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
-          var leftWall = Bodies.rectangle(0, 300, 10, 610, { isStatic: true });
-          var rightWall = Bodies.rectangle(470, 300, 10, 610, { isStatic: true });
+          var ground    = Bodies.rectangle(400 , 610 , 810 , 60  , { isStatic: true });
+          var leftWall  = Bodies.rectangle(0   , 300 , 10  , 610 , { isStatic: true });
+          var rightWall = Bodies.rectangle(470 , 300 , 10  , 610 , { isStatic: true });
 
           // add all of the bodies to the world
           World.add(vm.engine.world, [ground, leftWall, rightWall]);
