@@ -223,6 +223,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.cairn_messages = [];
       vm.showCairnMessages = false;
       vm.submitCairn = function(msg){
+          console.error("The old Cairn code is triggering, and this should not be happening. Disable it");
+          /**
           vm.cairn_messages = [];
 
           vm.cairnTitle = "Great! See what others have left for you!";
@@ -239,6 +241,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               });
               vm.showCairnMessages = true;
           })
+          */
       };
 
 
