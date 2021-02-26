@@ -134,8 +134,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
   function($scope, $location, $http, userData,  $window, $timeout, NgMap, $q,$sce,  heatMapProject1, heatMapProject2) {
       $window.document.title = "Tasks";
 
-
-
       var vm: any = this;
       vm.centerChanged = centerChanged;
       vm.zoomChanged = zoomChanged;
@@ -308,7 +306,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                    }).showToast();
               }
               else {
-                  console.log("No relevant soapstone messages found");
+                  console.error("No relevant soapstone messages found");
               }
           });
       }
@@ -387,6 +385,109 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       vm.submitPhysics = () => {
           console.log("Physics Submitted");
+      }
+
+      $scope.isMainTaskImgHidden = false;
+      $scope.isMatterDivHidden = true;
+      vm.handleDebug = () => {
+          console.log("Debugging");
+          $scope.isMainTaskImgHidden = !$scope.isMainTaskImgHidden;
+          $scope.isMatterDivHidden = !$scope.isMatterDivHidden;
+          console.log(vm.engine.enabled);
+      }
+
+      let Engine          = Matter.Engine,
+          Render          = Matter.Render,
+          Runner          = Matter.Runner,
+          World           = Matter.World,
+          MouseConstraint = Matter.MouseConstraint,
+          Mouse           = Matter.Mouse,
+          Bodies          = Matter.Bodies;
+      vm.initializePhysics = () => {
+          console.log("Beginning creation of physics div");
+          vm.isPhysicsModalCreated = true;
+          // module aliases
+
+          // create an engine
+          vm.engine = Engine.create();
+
+          let physicsHost = document.getElementById("physicsBody")!;
+
+          // create a renderer
+          vm.render = Render.create({
+              element: physicsHost,
+              engine: vm.engine,
+              options: {
+                  width: 465,
+                  height: 600,
+                  wireframes: false
+              }
+          });
+
+          var mouse = Mouse.create(vm.render.canvas),
+              mouseConstraint = MouseConstraint.create(vm.engine, {
+              mouse: mouse,
+              constraint: {
+                  stiffness: 0.2,
+                  render: {
+                      visible: false
+                  }
+              }
+          });
+
+          var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
+          var leftWall = Bodies.rectangle(0, 300, 10, 610, { isStatic: true });
+          var rightWall = Bodies.rectangle(470, 300, 10, 610, { isStatic: true });
+
+          // add all of the bodies to the world
+          World.add(vm.engine.world, [ground, leftWall, rightWall]);
+          World.add(vm.engine.world, mouseConstraint);
+
+          // run the engine
+          Runner.run(vm.engine);
+
+          // run the renderer
+          // Render.run(vm.render);
+          let emojiArray = ["angry", "concerned", "grinning", "thinking", "tongue_out", "weary"];
+          let randomMoji = emojiArray[Math.floor(Math.random()*emojiArray.length)];
+
+          let i = 50;
+
+          var interval = setInterval(() => {
+              if (i > 0) {
+                  randomMoji = emojiArray[Math.floor(Math.random()*emojiArray.length)];
+                  let newEmoji = Bodies.circle(Math.random() * 400 + 20, 200, 20, {
+                      render :{
+                          sprite: {
+                              texture: 'images/emojis/' + randomMoji + '.png',
+                              xScale: 0.1,
+                              yScale: 0.1
+                          }
+                      },
+                      "restitution": 0.8
+                  });
+                  World.add(vm.engine.world, [newEmoji]);
+                  i--;
+              }
+              else {
+                  window.clearInterval(interval);
+              }
+          }, 500);
+
+          // Runner.stop(vm.render);
+          /**
+          let newEmoji = Bodies.circle(400, 200, 20, {
+              render :{
+                  sprite: {
+                      texture: 'images/emojis/' + vm.emojiToAdd + '.png',
+                      xScale: 0.1,
+                      yScale: 0.1
+                  }
+              }
+              "restitution": 0.8;
+          });
+          World.add(vm.engine.world, [newEmoji]);
+          */
       }
 
       //for NGS tasks
@@ -553,108 +654,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           });
       };
 
-      $scope.isMainTaskImgHidden = false;
-      $scope.isMatterDivHidden = true;
-      vm.handleDebug = () => {
-          console.log("Debugging");
-          $scope.isMainTaskImgHidden = !$scope.isMainTaskImgHidden;
-          $scope.isMatterDivHidden = !$scope.isMatterDivHidden;
-          console.log(vm.engine.enabled);
-      }
-
-      let Engine          = Matter.Engine,
-          Render          = Matter.Render,
-          Runner          = Matter.Runner,
-          World           = Matter.World,
-          MouseConstraint = Matter.MouseConstraint,
-          Mouse           = Matter.Mouse,
-          Bodies          = Matter.Bodies;
-      vm.initializePhysics = () => {
-          console.log("Beginning creation of physics div");
-          vm.isPhysicsModalCreated = true;
-          // module aliases
-
-          // create an engine
-          vm.engine = Engine.create();
-
-          let physicsHost = document.getElementById("physicsBody")!;
-
-          // create a renderer
-          vm.render = Render.create({
-              element: physicsHost,
-              engine: vm.engine,
-              options: {
-                  width: 465,
-                  height: 600,
-                  wireframes: false
-              }
-          });
-
-          var mouse = Mouse.create(vm.render.canvas),
-              mouseConstraint = MouseConstraint.create(vm.engine, {
-              mouse: mouse,
-              constraint: {
-                  stiffness: 0.2,
-                  render: {
-                      visible: false
-                  }
-              }
-          });
-
-          var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
-          var leftWall = Bodies.rectangle(0, 300, 10, 610, { isStatic: true });
-          var rightWall = Bodies.rectangle(470, 300, 10, 610, { isStatic: true });
-
-          // add all of the bodies to the world
-          World.add(vm.engine.world, [ground, leftWall, rightWall]);
-          World.add(vm.engine.world, mouseConstraint);
-
-          // run the engine
-          Runner.run(vm.engine);
-
-          // run the renderer
-          // Render.run(vm.render);
-          let emojiArray = ["angry", "concerned", "grinning", "thinking", "tongue_out", "weary"];
-          let randomMoji = emojiArray[Math.floor(Math.random()*emojiArray.length)];
-
-          let i = 50;
-
-          var interval = setInterval(() => {
-              if (i > 0) {
-                  randomMoji = emojiArray[Math.floor(Math.random()*emojiArray.length)];
-                  let newEmoji = Bodies.circle(Math.random() * 400 + 20, 200, 20, {
-                      render :{
-                          sprite: {
-                              texture: 'images/emojis/' + randomMoji + '.png',
-                              xScale: 0.1,
-                              yScale: 0.1
-                          }
-                      },
-                      "restitution": 0.8
-                  });
-                  World.add(vm.engine.world, [newEmoji]);
-                  i--;
-              }
-              else {
-                  window.clearInterval(interval);
-              }
-          }, 500);
-
-          // Runner.stop(vm.render);
-          /**
-          let newEmoji = Bodies.circle(400, 200, 20, {
-              render :{
-                  sprite: {
-                      texture: 'images/emojis/' + vm.emojiToAdd + '.png',
-                      xScale: 0.1,
-                      yScale: 0.1
-                  }
-              }
-              "restitution": 0.8;
-          });
-          World.add(vm.engine.world, [newEmoji]);
-          */
-      }
 
       function handleEnd($window){
 
@@ -984,7 +983,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           $http.post('/api/tasks/submit', body)
       }
 
-
       function submit(option,option_text) {
 
           // A player is attempting to submit when there is no task visible, just ignore
@@ -1182,7 +1180,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               vm.recenter();
           });
       };
-
 
       function fetchCenter(){
           //console.log('In get Center ');
