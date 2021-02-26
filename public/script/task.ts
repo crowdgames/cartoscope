@@ -396,7 +396,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           console.log("Debugging");
           $scope.isMainTaskImgHidden = !$scope.isMainTaskImgHidden;
           $scope.isMatterDivHidden = !$scope.isMatterDivHidden;
-          console.log(vm.engine.enabled);
       }
 
       let Engine          = Matter.Engine,
@@ -406,6 +405,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           MouseConstraint = Matter.MouseConstraint,
           Mouse           = Matter.Mouse,
           Bodies          = Matter.Bodies;
+
       vm.initializePhysics = () => {
           console.log("Beginning creation of physics div");
           vm.isPhysicsModalCreated = true;
@@ -449,16 +449,13 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           // run the engine
           Runner.run(vm.engine);
 
-          // run the renderer
-          // Render.run(vm.render);
           let emojiArray = ["angry", "concerned", "grinning", "thinking", "tongue_out", "weary"];
-          let randomMoji = emojiArray[Math.floor(Math.random()*emojiArray.length)];
 
           let i = 50;
-
+          // TODO rather than randomly create emojis, grab them from the database
           var interval = setInterval(() => {
               if (i > 0) {
-                  randomMoji = emojiArray[Math.floor(Math.random()*emojiArray.length)];
+                  let randomMoji = emojiArray[Math.floor(Math.random()*emojiArray.length)];
                   let newEmoji = Bodies.circle(Math.random() * 400 + 20, 200, 20, {
                       render :{
                           sprite: {
@@ -476,21 +473,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   window.clearInterval(interval);
               }
           }, 500);
-
-          // Runner.stop(vm.render);
-          /**
-          let newEmoji = Bodies.circle(400, 200, 20, {
-              render :{
-                  sprite: {
-                      texture: 'images/emojis/' + vm.emojiToAdd + '.png',
-                      xScale: 0.1,
-                      yScale: 0.1
-                  }
-              }
-              "restitution": 0.8;
-          });
-          World.add(vm.engine.world, [newEmoji]);
-          */
       }
 
       //for NGS tasks
