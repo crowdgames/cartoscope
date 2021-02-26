@@ -1260,7 +1260,7 @@ exports.setSurveyType = function(unique_code,survey_type) {
 //store cairn message from Cartoscope
 exports.storeCairnMessage = function(userID, projectID, message, progress, type) {
     return new Promise(function(resolve, error) {
-        var connection = db.get();
+        let connection = db.get();
 
         connection.queryAsync('insert into cartoscope_cairns (user_id,project_id,message,level_number, cairn_type) VALUES(?,?,?,?,?) on DUPLICATE KEY UPDATE message= VALUES(message)',
             [userID, projectID, message, progress, type]).then(
@@ -1288,10 +1288,10 @@ exports.fetchCairnMessage = function(userID, projectID, progress) {
     });
 };
 
-exports.getCairnsForProject = (userID, projectID, numberCairnsRequested) => {
+exports.getCairnsForProject = (userID, projectID, cairnType, numberCairnsRequested) => {
     return new Promise((resolve, error) => 
         db.get()
-          .queryAsync('select message from cartoscope_cairns where user_id !=? and project_id=? order by rand() desc limit ?', [userID, projectID, numberCairnsRequested])
+          .queryAsync('select message from cartoscope_cairns where user_id !=? and project_id=? and cairn_type=? order by rand() desc limit ?', [userID, projectID, cairnType, numberCairnsRequested])
           .then(resolve, error)
     );
 };

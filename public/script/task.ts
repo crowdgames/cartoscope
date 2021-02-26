@@ -353,10 +353,11 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           let body = {
               projectID: vm.data.id,
               message: soapstoneFormValues,
+              cairnType: "soapstone",
               progress: vm.data.progress
           };
           console.log(vm.data.progress);
-          $http.post('api/tasks/submitSoapstone', body).then((data: object) => {
+          $http.post('api/tasks/submitCairn', body).then((data: object) => {
               console.log(data);
           });
           (<any>$("#soapstoneCreateModal")).modal('hide');
