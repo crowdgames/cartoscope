@@ -273,6 +273,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.tasksToCompleteTillSoapstoneCreation = 7;
 
       vm.handleSoapstones = () => {
+          vm.timeCairnShownToPlayer = Math.floor(Date.now() / 1000);
           if (vm.data.progress % vm.tasksToCompleteTillSoapstoneCreation === 0) {
               // Show the create modal
               let soapstoneForm = document.getElementById("soapstone-form");
@@ -352,7 +353,9 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               projectID: vm.data.id,
               message: soapstoneFormValues,
               cairnType: "soapstone",
-              progress: vm.data.progress
+              progress: vm.data.progress,
+              time_shown_to_player: vm.timeCairnShownToPlayer,
+              task_name: vm.tasks[0]["name"]
           };
           console.log(vm.data.progress);
           $http.post('api/tasks/submitCairn', body).then((data: object) => {
@@ -371,7 +374,9 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               projectID: vm.data.id,
               message: submittedEmoji,
               cairnType: "emoji",
-              progress: vm.data.progress
+              progress: vm.data.progress,
+              time_shown_to_player: vm.timeCairnShownToPlayer,
+              task_name: vm.tasks[0]["name"]
           };
           $http.post('api/tasks/submitCairn', body).then((data: object) => {
               console.log(data);
@@ -405,7 +410,9 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       }
 
       vm.showPhysicsModal = () => (<any>$("#physicsModal")).modal('show')
-      vm.showEmojiModal   = () => (<any>$("#emojiModal")).modal('show')
+      vm.showEmojiModal   = () => {
+          (<any>$("#emojiModal")).modal('show')
+      }
 
       vm.submitPhysics = () => {
           console.log("Physics Submitted");
@@ -415,8 +422,9 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       $scope.isMatterDivHidden = true;
       vm.handleDebug = () => {
           console.log("Debugging");
-          $scope.isMainTaskImgHidden = !$scope.isMainTaskImgHidden;
-          $scope.isMatterDivHidden = !$scope.isMatterDivHidden;
+          console.log(vm.tasks);
+          // $scope.isMainTaskImgHidden = !$scope.isMainTaskImgHidden;
+          // $scope.isMatterDivHidden = !$scope.isMatterDivHidden;
       }
 
       let Engine          = Matter.Engine,
