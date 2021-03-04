@@ -468,11 +468,12 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           });
 
           var ground    = Bodies.rectangle(400 , 610 , 810 , 60  , { isStatic: true });
-          var leftWall  = Bodies.rectangle(0   , 300 , 10  , 610 , { isStatic: true });
-          var rightWall = Bodies.rectangle(470 , 300 , 10  , 610 , { isStatic: true });
+          var leftWall  = Bodies.rectangle(0   , 300 , 20  , 610 , { isStatic: true });
+          var rightWall = Bodies.rectangle(465 , 300 , 20  , 610 , { isStatic: true });
+          var topWall   = Bodies.rectangle(300 , 0   , 810  , 20 , { isStatic: true });
 
           // add all of the bodies to the world
-          World.add(vm.engine.world, [ground, leftWall, rightWall]);
+          World.add(vm.engine.world, [ground, leftWall, rightWall, topWall]);
           World.add(vm.engine.world, mouseConstraint);
 
           // run the engine
