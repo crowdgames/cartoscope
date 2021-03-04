@@ -306,7 +306,7 @@
         <div class="col-sm-6" ng-hide="isMatterDivHidden">
                     <p class="text-center" style="color:white;font-size:22px">How do you feel about this task? Below are the reactions of other players, click one of the faces to add your own reaction to the pile!</p>
             <div class="container-fluid">
-                <div class="row">
+                <div class="row" ng-hide="isEmojiPickerHidden">
                     <div class="col-md-2">
                         <!-- TODO could this be an ng-repeat?-->
                         <img src="../../images/emojis/thinking.png" width="70" height="70" ng-click="model.submitEmoji('thinking')" data-dismiss="modal"></img>

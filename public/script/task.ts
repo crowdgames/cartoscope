@@ -371,6 +371,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           console.log(submittedEmoji);
           vm.showPhysicsDiv();
           vm.addEmojiToPhysics(submittedEmoji);
+          $scope.isEmojiPickerHidden = true;
           let body = {
               projectID: vm.data.id,
               message: submittedEmoji,
@@ -385,7 +386,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       }
 
       vm.addEmojiToPhysics = (emojiToAdd: string) => {
-          let newEmoji = Bodies.circle(Math.random() * 400 + 20, 200, 20, {
+          let newEmoji = Bodies.circle(Math.random() * 400 + 20, 100, 20, {
               render :{
                   sprite: {
                       texture: 'images/emojis/' + emojiToAdd + '.png',
@@ -399,9 +400,12 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       }
 
       vm.showPhysicsDiv = () => {
+          vm.showModal();
           $scope.isMainTaskImgHidden = true;
           $scope.isMatterDivHidden   = false;
+          $scope.isEmojiPickerHidden = false;
           Render.run(vm.render);
+          vm.hideModal();
       }
 
       vm.hidePhysicsDiv = () => {
