@@ -300,12 +300,20 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               if (serverReturn.data.length > 0) {
                   let message: string = serverReturn.data[0].message;
                    Toastify({
-                     text: "Someone left you a message: " + message,
+                     text: message,
                      duration: 10000,
                      close: true,
                      gravity: "top", // `top` or `bottom`
                      positionLeft: true, // `true` or `false`
                      backgroundColor: "#4663ac"
+                   }).showToast();
+                   Toastify({
+                     text: "Another user left you a message: ",
+                     duration: 3000,
+                     close: true,
+                     gravity: "top", // `top` or `bottom`
+                     positionLeft: true, // `true` or `false`
+                     backgroundColor: "#CD6155"
                    }).showToast();
               }
               else {
