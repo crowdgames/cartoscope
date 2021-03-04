@@ -287,8 +287,9 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           }
           else if (vm.data.progress % vm.tasksToCompleteTillPhysics === 0) {
               // Show a message someone else has left
-              vm.showEmojiModal();
+              // vm.showEmojiModal();
               // vm.showPhysicsModal();
+              vm.showPhysicsDiv();
           }
       }
 
