@@ -336,8 +336,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               message: message,
               cairnType: cairnType,
               progress: vm.data.progress - 1,
-              time_shown_to_player: vm.timeCairnShownToPlayer,
-              task_name: vm.previousTaskName
+              timeWhenCairnShownToPlayer: vm.timeCairnShownToPlayer,
+              taskName: vm.previousTaskName
           };
           $http.post('api/tasks/submitCairn', body).then((data: object) => console.log(data));
       }
