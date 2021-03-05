@@ -380,11 +380,10 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               projectID: vm.data.id,
               message: message,
               cairnType: cairnType,
-              progress: vm.data.progress,
+              progress: vm.data.progress - 1,
               time_shown_to_player: vm.timeCairnShownToPlayer,
-              task_name: vm.tasks[0]["name"]
+              task_name: vm.previousTaskName
           };
-          console.log(vm.data.progress);
           $http.post('api/tasks/submitCairn', body).then((data: object) => console.log(data));
           vm.normalSoapstoneModalExit = false;
       }
@@ -431,9 +430,9 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               projectID: vm.data.id,
               message: message,
               cairnType: cairnType,
-              progress: vm.data.progress,
+              progress: vm.data.progress - 1,
               time_shown_to_player: vm.timeCairnShownToPlayer,
-              task_name: vm.tasks[0]["name"]
+              task_name: vm.previousTaskName
           };
           $http.post('api/tasks/submitCairn', body).then((data: object) => console.log(data));
           vm.submittedEmoji = "";
@@ -1124,6 +1123,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   option_text: option_text
 
               };
+
+              vm.previousTaskName = vm.tasks[0]["name"];
 
               $http.post('/api/tasks/submit', body).then(function() {
 
