@@ -39,6 +39,4 @@ One of my concerns about tying cairns to progression or images is that we may no
 
 == CAIRNS TODO ==
 
- - what if players don't submit a cairn at all?
- - fix timing / submission of emoji cairns
  - dynamic cairns resizing

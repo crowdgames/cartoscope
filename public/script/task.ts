@@ -364,18 +364,16 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                        : (child as HTMLFormElement).innerText
                   )
               .join(" ");
-          let cairnType: string;
-          let message: string;
-          if (vm.normalSoapstoneModalExit) {
-              console.log("submitting: " + soapstoneFormValues);
-              cairnType = "soapstone"
-              message = soapstoneFormValues;
-          }
-          else {
-              console.log("submitting empty soapstone");
-              cairnType = "empty-soapstone"
-              message = "";
-          }
+          if (vm.normalSoapstoneModalExit)
+              vm.submitCairn("soapstone", soapstoneFormValues);
+          else
+              vm.submitCairn("soapstone", "");
+          vm.normalSoapstoneModalExit = false;
+      }
+
+      vm.submitCairn = (baseCairnType: string, message: string) => {
+          let cairnType = message === "" ? "empty-" + baseCairnType : baseCairnType;
+          console.log("submitting cairn of type " + baseCairnType + " with message " + message);
           let body = {
               projectID: vm.data.id,
               message: message,
@@ -385,7 +383,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               task_name: vm.previousTaskName
           };
           $http.post('api/tasks/submitCairn', body).then((data: object) => console.log(data));
-          vm.normalSoapstoneModalExit = false;
       }
 
       vm.submittedEmoji = "";
@@ -423,18 +420,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           $scope.isMainTaskImgHidden = false;
           $scope.isMatterDivHidden   = true;
           Render.stop(vm.render);
-          let wasEmojiSubmitted = !(vm.submittedEmoji === "");
-          let cairnType = wasEmojiSubmitted ? "emoji" : "empty-emoji";
-          let message   = wasEmojiSubmitted ? vm.submittedEmoji : "";
-          let body = {
-              projectID: vm.data.id,
-              message: message,
-              cairnType: cairnType,
-              progress: vm.data.progress - 1,
-              time_shown_to_player: vm.timeCairnShownToPlayer,
-              task_name: vm.previousTaskName
-          };
-          $http.post('api/tasks/submitCairn', body).then((data: object) => console.log(data));
+          vm.submitCairn("emoji", vm.submittedEmoji);
           vm.submittedEmoji = "";
       }
 
