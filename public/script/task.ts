@@ -255,19 +255,19 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               if (serverReturn.data.length > 0) {
                   let message: string = serverReturn.data[0].message;
                    Toastify({
-                     text: message,
-                     duration: 10000,
-                     close: true,
-                     gravity: "top", // `top` or `bottom`
-                     positionLeft: true, // `true` or `false`
+                     text:            message,
+                     duration:        10000,
+                     close:           true,
+                     gravity:         "top", // `top` or `bottom`
+                     positionLeft:    true, // `true` or `false`
                      backgroundColor: "#4663ac"
                    }).showToast();
                    Toastify({
-                     text: "Another user left you a message: ",
-                     duration: 3000,
-                     close: true,
-                     gravity: "top", // `top` or `bottom`
-                     positionLeft: true, // `true` or `false`
+                     text:            "Another user left you a message: ",
+                     duration:        3000,
+                     close:           true,
+                     gravity:         "top", // `top` or `bottom`
+                     positionLeft:    true, // `true` or `false`
                      backgroundColor: "#CD6155"
                    }).showToast();
               }
@@ -332,12 +332,12 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           let cairnType = message === "" ? "empty-" + baseCairnType : baseCairnType;
           console.log("submitting cairn of type " + baseCairnType + " with message " + message);
           let body = {
-              projectID: vm.data.id,
-              message: message,
-              cairnType: cairnType,
-              progress: vm.data.progress - 1,
+              projectID:                  vm.data.id,
+              message:                    message,
+              cairnType:                  cairnType,
+              progress:                   vm.data.progress - 1,
               timeWhenCairnShownToPlayer: vm.timeCairnShownToPlayer,
-              taskName: vm.previousTaskName
+              taskName:                   vm.previousTaskName
           };
           $http.post('api/tasks/submitCairn', body).then((data: object) => console.log(data));
       }
