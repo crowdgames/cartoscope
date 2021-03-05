@@ -269,8 +269,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
        * ============================== */ 
       
       vm.tasksToCompleteTillSoapstoneMsg      = 2;
-      vm.tasksToCompleteTillPhysics           = 5;
-      vm.tasksToCompleteTillSoapstoneCreation = 7;
+      vm.tasksToCompleteTillPhysics           = 20;
+      vm.tasksToCompleteTillSoapstoneCreation = 3;
 
       vm.handleSoapstones = () => {
           vm.timeCairnShownToPlayer = Math.floor(Date.now() / 1000);
@@ -287,8 +287,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           }
           else if (vm.data.progress % vm.tasksToCompleteTillPhysics === 0) {
               // Show a message someone else has left
-              // vm.showEmojiModal();
-              // vm.showPhysicsModal();
               vm.showPhysicsDiv();
           }
       }
@@ -349,6 +347,14 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               }
           });
       }
+      $('#soapstoneCreateModal').on('hide.bs.modal', () => {
+          vm.submitSoapstone();
+      })
+
+      vm.normalSoapstoneModalExit = false;
+      vm.doNormalSoapstoneModalExit = () => {
+          vm.normalSoapstoneModalExit = true;
+      }
 
       vm.submitSoapstone = () => {
           let soapstoneFormValues = Array.from(document.getElementById("soapstone-form")!.children)
@@ -358,20 +364,29 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                        : (child as HTMLFormElement).innerText
                   )
               .join(" ");
+          let cairnType: string;
+          let message: string;
+          if (vm.normalSoapstoneModalExit) {
+              console.log("submitting: " + soapstoneFormValues);
+              cairnType = "soapstone"
+              message = soapstoneFormValues;
+          }
+          else {
+              console.log("submitting empty soapstone");
+              cairnType = "soapstone-empty"
+              message = "";
+          }
           let body = {
               projectID: vm.data.id,
-              message: soapstoneFormValues,
-              cairnType: "soapstone",
+              message: message,
+              cairnType: cairnType,
               progress: vm.data.progress,
               time_shown_to_player: vm.timeCairnShownToPlayer,
               task_name: vm.tasks[0]["name"]
           };
           console.log(vm.data.progress);
-          $http.post('api/tasks/submitCairn', body).then((data: object) => {
-              console.log(data);
-          });
-          (<any>$("#soapstoneCreateModal")).modal('hide');
-          console.log(soapstoneFormValues);
+          $http.post('api/tasks/submitCairn', body).then((data: object) => console.log(data));
+          vm.normalSoapstoneModalExit = false;
       }
 
       vm.submitEmoji = (submittedEmoji: string) => {
