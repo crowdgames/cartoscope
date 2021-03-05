@@ -269,7 +269,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
        * ============================== */ 
       
       vm.tasksToCompleteTillSoapstoneMsg      = 2;
-      vm.tasksToCompleteTillPhysics           = 20;
+      vm.tasksToCompleteTillPhysics           = 5;
       vm.tasksToCompleteTillSoapstoneCreation = 3;
 
       vm.handleSoapstones = () => {
@@ -389,23 +389,12 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           vm.normalSoapstoneModalExit = false;
       }
 
+      vm.submittedEmoji = "";
       vm.submitEmoji = (submittedEmoji: string) => {
-          console.log("submitted emoji");
-          console.log(submittedEmoji);
-          vm.showPhysicsDiv();
+          vm.submittedEmoji = submittedEmoji;
           vm.addEmojiToPhysics(submittedEmoji);
           $scope.isEmojiPickerHidden = true;
-          let body = {
-              projectID: vm.data.id,
-              message: submittedEmoji,
-              cairnType: "emoji",
-              progress: vm.data.progress,
-              time_shown_to_player: vm.timeCairnShownToPlayer,
-              task_name: vm.tasks[0]["name"]
-          };
-          $http.post('api/tasks/submitCairn', body).then((data: object) => {
-              console.log(data);
-          });
+          // The actual sending of the emoji to the database happens in hidePhysicsDiv
       }
 
       vm.addEmojiToPhysics = (emojiToAdd: string) => {
@@ -435,6 +424,19 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           $scope.isMainTaskImgHidden = false;
           $scope.isMatterDivHidden   = true;
           Render.stop(vm.render);
+          let wasEmojiSubmitted = !(vm.submittedEmoji === "");
+          let cairnType = wasEmojiSubmitted ? "emoji" : "empty-emoji";
+          let message   = wasEmojiSubmitted ? vm.submittedEmoji : "";
+          let body = {
+              projectID: vm.data.id,
+              message: message,
+              cairnType: cairnType,
+              progress: vm.data.progress,
+              time_shown_to_player: vm.timeCairnShownToPlayer,
+              task_name: vm.tasks[0]["name"]
+          };
+          $http.post('api/tasks/submitCairn', body).then((data: object) => console.log(data));
+          vm.submittedEmoji = "";
       }
 
       vm.showPhysicsModal = () => (<any>$("#physicsModal")).modal('show')
