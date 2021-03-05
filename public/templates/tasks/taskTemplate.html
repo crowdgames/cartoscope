@@ -590,19 +590,15 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Leave a message for someone else!</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <h3 class="modal-title">Would you like to leave a message for another user?</h5>
                 </div>
                 <div class="modal-body">
-                    <p>Create a Soapstone!!!</p>
                     <form class="form-inline" method="post" action="/forminfo" id="soapstone-form">
                             <!--- This form is filled dynamically with js -->
                     </form> 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" ng-click="model.submitSoapstone()">Submit</button>
+                    <button type="button" class="btn btn-primary" ng-click="model.doNormalSoapstoneModalExit()" data-dismiss="modal">Submit</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
             </div>
