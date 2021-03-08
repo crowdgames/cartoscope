@@ -231,7 +231,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                      duration:        10000,
                      close:           true,
                      gravity:         "top", // `top` or `bottom`
-                     positionLeft:    true, // `true` or `false`
+                     position:        "left",
                      backgroundColor: "#4663ac"
                    }).showToast();
                    Toastify({
@@ -239,7 +239,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                      duration:        3000,
                      close:           true,
                      gravity:         "top", // `top` or `bottom`
-                     positionLeft:    true, // `true` or `false`
+                     position:        "left",
                      backgroundColor: "#CD6155"
                    }).showToast();
               }
