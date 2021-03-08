@@ -77,58 +77,7 @@ module.controller('defaultController', ['$scope', '$location', function($scope, 
   $scope.uiMask.show = false;
 }]);
 
-
-
-
-// module.controller('MapController', ['$scope','$timeout', 'NgMap', function($scope, $timeout, NgMap) {
-//     var vm = this;
-//     vm.centerChanged = centerChanged;
-//     vm.zoomChanged = zoomChanged;
-//     vm.fetchCenter = fetchCenter;
-//     vm.map={};
-//     vm.lat="";
-//     vm.lang="";
-//
-//     //Map initialization
-//     NgMap.getMap().then(function(map) {
-//         vm.map = map;
-//         var myLatlng = new google.maps.LatLng(Number($scope.getLat()),Number($scope.getLng()));
-//         vm.map.setCenter(myLatlng);
-//         latCenter = vm.map.getCenter().lat();
-//         lngCenter = vm.map.getCenter().lng();
-//         vm.lat= latCenter;
-//         vm.lang = lngCenter;
-//         //console.log(latCenter, lngCenter);
-//     });
-//
-//     function fetchCenter(){
-//         console.log('In get Center ');
-//         var lng = $scope.getLng();
-//         var lat = $scope.getLat();
-//
-//         var myLatlng = new google.maps.LatLng(Number($scope.getLat()),Number($scope.getLng()));
-//         vm.map.setCenter(myLatlng);
-//
-//         return [lat,lng];
-//     }
-//
-//     function centerChanged() {
-//         console.log('IN center CHnaged' +vm.map.getCenter().lat(), vm.map.getCenter().lng() );
-//         $scope.centerLat = vm.map.getCenter().lat();
-//         $scope.centerLng = vm.map.getCenter().lng();
-//         latCenter = vm.map.getCenter().lat();
-//         lngCenter = vm.map.getCenter().lng();
-//     }
-//
-//     function zoomChanged() {
-//         console.log('IN ZOom CHnaged'+ vm.map.getCenter().lat(), vm.map.getCenter().lng());
-//         $scope.centerLat = vm.map.getCenter().lat();
-//         $scope.centerLng = vm.map.getCenter().lng();
-//         latCenter = vm.map.getCenter().lat();
-//         lngCenter = vm.map.getCenter().lng();
-//     }
-//
-// }]);
+// I deleted commented out map controller code here, see git if you want to look at it
 
 module.controller('taskController', ['$scope', '$location', '$http', 'userData', '$window', '$timeout', 'NgMap','$q', '$sce',  'heatMapProject1', 'heatMapProject2',
   function($scope, $location, $http, userData,  $window, $timeout, NgMap, $q,$sce,  heatMapProject1, heatMapProject2) {
@@ -223,34 +172,57 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       /* ==============================
        * CAIRN CODE
+       * TODO can this be abstracted to another file? I don't know how angular wooorks
        * ============================== */ 
       
       vm.tasksToCompleteTillSoapstoneMsg      = 2;
       vm.tasksToCompleteTillPhysics           = 5;
       vm.tasksToCompleteTillSoapstoneCreation = 3;
 
-      vm.handleSoapstones = () => {
+      vm.handleCairns = () => {
+          // note the time the cairn was created. Divide by 1000 because mysql wants second precision, not ms precision
           vm.timeCairnShownToPlayer = Math.floor(Date.now() / 1000);
+          // Pick one of the cairn types. else ifs because we don't want two at the same time
           if (vm.data.progress % vm.tasksToCompleteTillSoapstoneCreation === 0) {
-              // Show the create modal
-              let soapstoneForm = document.getElementById("soapstone-form");
-              let soapstone     = vm.randomSoapstone();
-              vm.replaceFormElemsWithSoapstone(soapstoneForm, soapstone);
-              (<any>$("#soapstoneCreateModal")).modal('show');
+              // Show the soapstone create modal
+              vm.startSoapstoneCreate();
           }
           else if (vm.data.progress % vm.tasksToCompleteTillSoapstoneMsg === 0) {
               // Show a message someone else has left
               vm.showNewSoapstoneMsg();
           }
           else if (vm.data.progress % vm.tasksToCompleteTillPhysics === 0) {
-              // Show a message someone else has left
-              vm.showPhysicsDiv();
+              // Allow the player to play with emoji stacking
+              vm.startEmojiCreate();
           }
       }
 
+      vm.submitCairn = (baseCairnType: string, message: string) => {
+          // if the message is empty, the cairnType should be "empty-" + cairnType
+          let cairnType = message === "" ? "empty-" + baseCairnType : baseCairnType;
+          console.log("submitting cairn of type " + baseCairnType + " with message " + message);
+          let body = {
+              projectID:                  vm.data.id,
+              message:                    message,
+              cairnType:                  cairnType,
+              progress:                   vm.data.progress - 1,
+              timeWhenCairnShownToPlayer: vm.timeCairnShownToPlayer,
+              taskName:                   vm.previousTaskName
+          };
+          $http.post('api/tasks/submitCairn', body).then((data: object) => console.log(data));
+      }
+
+      $scope.isDebugButtonHidden = false; // I'm actually unsure if this boolean actually works
+      // activated by hitting the debug button
+      vm.handleDebug = () => {
+          console.log("Debugging");
+          console.log(vm.tasks);
+      }
+
+      // == SOAPSTONE MSG CODE ==
       vm.showNewSoapstoneMsg = () => {
           let body = { projectID: vm.data.id, cairnType: "soapstone" };
-          // TODO this should be a get
+          // TODO this should be a get, but I think gets have to have body as part of the url
           $http.post('api/tasks/getCairns', body).then((serverReturn: any) => {
               if (serverReturn.data.length > 0) {
                   let message: string = serverReturn.data[0].message;
@@ -276,26 +248,43 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               }
           });
       }
+      // == END SOAPSTONE MSG CODE ==
+
+      // == SOAPSTONE CREATE CODE ==
+      // (Code for creating new soapstone messages, as opposed to displaying ones that already exist)
+      vm.startSoapstoneCreate = () => {
+          let soapstoneForm = document.getElementById("soapstone-form");
+          let soapstone     = vm.randomSoapstone();
+          vm.replaceFormElemsWithSoapstone(soapstoneForm, soapstone);
+          (<any>$("#soapstoneCreateModal")).modal('show');
+      }
 
       vm.randomSoapstone = () => {
-          var soapStones = [["Hi there", ["Bob,", "Jeff,", "Sandra,"], "it's nice to meet you! I love your", ["hat", "french toast", "incredible pecs"]]];
-          return soapStones[Math.floor(Math.random() * soapStones.length)];
+          // get a random soapstone template from this hardcoded list
+          let soapstones = [["Hi there", ["Bob,", "Jeff,", "Sandra,"], "it's nice to meet you! I love your", ["hat", "french toast", "incredible pecs"]]];
+          return soapstones[Math.floor(Math.random() * soapstones.length)];
       }
 
       vm.replaceFormElemsWithSoapstone = (form: HTMLElement, soapstone: (string | string[])[]) => {
+          /** given an HTML form and a soapstone template, we want to turn the HTML form into a soapstone form
+           *  A soapstone template is an array of (strings, or arrays of strings)
+           *  See docs/cairns.md for more information on what soapstones are
+           */
           // clear form
           form.innerHTML = '';
-          soapstone.forEach(function (elem) {
+          soapstone.forEach(elem => {
+              // If the element in the soapstone template is just a simple string, just add a textual label to the form to represent the element
               if (typeof elem === "string") {
-                  var label = document.createElement("form");
+                  let label = document.createElement("form");
                   label.innerText = elem;
                   form.appendChild(label);
               }
               else {
-                  var selector = document.createElement("select");
+                  // but if it's an array of strings, we want to create an options box that allows the user to choose between the various options in this array of strings
+                  let selector = document.createElement("select");
                   selector.setAttribute("class", "custom-select mr-sm-2");
-                  elem.forEach(function (optionStr) {
-                      var option = document.createElement("option");
+                  elem.forEach(optionStr => {
+                      let option = document.createElement("option");
                       option.setAttribute("value", optionStr);
                       option.innerText = optionStr;
                       selector.appendChild(option);
@@ -304,16 +293,20 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               }
           });
       }
+
       $('#soapstoneCreateModal').on('hide.bs.modal', () => {
+          // when the modal is hidden for any reason, submit the soapstone
           vm.submitSoapstone();
       })
 
-      vm.normalSoapstoneModalExit = false;
-      vm.doNormalSoapstoneModalExit = () => {
-          vm.normalSoapstoneModalExit = true;
+      // Was the modal hidden "normally", aka with the submit button, or was it hidden by clicking outside the modal / using the cancel button?
+      vm.soapstoneModalExitedUsingSubmitButton = false;
+      vm.doModalExitWithSubmitButton = () => {
+          vm.soapstoneModalExitedUsingSubmitButton = true;
       }
 
       vm.submitSoapstone = () => {
+          // extract the user submissions from the soapstone form on the modal
           let soapstoneFormValues = Array.from(document.getElementById("soapstone-form")!.children)
               .map((child) => 
                    child.localName === "select" 
@@ -321,35 +314,48 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                        : (child as HTMLFormElement).innerText
                   )
               .join(" ");
-          if (vm.normalSoapstoneModalExit)
+          // If the modal exited using the submit button, submit the message, otherwise submit something empty
+          if (vm.soapstoneModalExitedUsingSubmitButton)
               vm.submitCairn("soapstone", soapstoneFormValues);
           else
               vm.submitCairn("soapstone", "");
-          vm.normalSoapstoneModalExit = false;
+          // set soapstoneModalExitedUsingSubmitButton back to false so that we know for the next time the modal is used
+          vm.soapstoneModalExitedUsingSubmitButton = false;
+      }
+      // == END SOAPSTONE CREATE CODE ==
+
+      // == EMOJI CREATE CODE ==
+      $scope.isMainTaskImgHidden = false;
+      $scope.isPhysicsDivHidden  = true;
+
+      vm.startEmojiCreate = () => {
+          vm.showModal(); // this isn't necessary, and honestly there might be good reasons to remove it
+          $scope.isMainTaskImgHidden = true; // the div with the main task
+          $scope.isPhysicsDivHidden  = false; // the div with the ballpit of emojis
+          $scope.isEmojiPickerHidden = false; // the div with the buttons to select which emoji you want
+          Render.run(vm.render);
+          vm.hideModal();
       }
 
-      vm.submitCairn = (baseCairnType: string, message: string) => {
-          let cairnType = message === "" ? "empty-" + baseCairnType : baseCairnType;
-          console.log("submitting cairn of type " + baseCairnType + " with message " + message);
-          let body = {
-              projectID:                  vm.data.id,
-              message:                    message,
-              cairnType:                  cairnType,
-              progress:                   vm.data.progress - 1,
-              timeWhenCairnShownToPlayer: vm.timeCairnShownToPlayer,
-              taskName:                   vm.previousTaskName
-          };
-          $http.post('api/tasks/submitCairn', body).then((data: object) => console.log(data));
+      // activated by clicking the "return to tasks button"
+      vm.finishEmojiCreate = () => {
+          $scope.isMainTaskImgHidden = false;
+          $scope.isPhysicsDivHidden  = true;
+          Render.stop(vm.render);
+          vm.submitCairn("emoji", vm.submittedEmoji);
+          vm.submittedEmoji = "";
       }
 
+      // assume no emoji was submitted, fill this variable if one was
       vm.submittedEmoji = "";
       vm.submitEmoji = (submittedEmoji: string) => {
           vm.submittedEmoji = submittedEmoji;
-          vm.addEmojiToPhysics(submittedEmoji);
+          vm.addEmojiToPhysics(submittedEmoji); // add the emoji to the ballpit
           $scope.isEmojiPickerHidden = true;
-          // The actual sending of the emoji to the database happens in hidePhysicsDiv
+          // The actual sending of the emoji to the database happens in finishEmojiCreate
       }
 
+      // add the emoji to the ballpit
       vm.addEmojiToPhysics = (emojiToAdd: string) => {
           let newEmoji = Bodies.circle(Math.random() * 400 + 20, 100, 20, {
               render :{
@@ -364,41 +370,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           World.add(vm.engine.world, [newEmoji]);
       }
 
-      vm.showPhysicsDiv = () => {
-          vm.showModal();
-          $scope.isMainTaskImgHidden = true;
-          $scope.isMatterDivHidden   = false;
-          $scope.isEmojiPickerHidden = false;
-          Render.run(vm.render);
-          vm.hideModal();
-      }
-
-      vm.hidePhysicsDiv = () => {
-          $scope.isMainTaskImgHidden = false;
-          $scope.isMatterDivHidden   = true;
-          Render.stop(vm.render);
-          vm.submitCairn("emoji", vm.submittedEmoji);
-          vm.submittedEmoji = "";
-      }
-
-      vm.showPhysicsModal = () => (<any>$("#physicsModal")).modal('show')
-      vm.showEmojiModal   = () => {
-          (<any>$("#emojiModal")).modal('show')
-      }
-
-      vm.submitPhysics = () => {
-          console.log("Physics Submitted");
-      }
-
-      $scope.isMainTaskImgHidden = false;
-      $scope.isMatterDivHidden = true;
-      vm.handleDebug = () => {
-          console.log("Debugging");
-          console.log(vm.tasks);
-          // $scope.isMainTaskImgHidden = !$scope.isMainTaskImgHidden;
-          // $scope.isMatterDivHidden = !$scope.isMatterDivHidden;
-      }
-
+      // module aliases
       let Engine          = Matter.Engine,
           Render          = Matter.Render,
           Runner          = Matter.Runner,
@@ -407,12 +379,12 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           Mouse           = Matter.Mouse,
           Bodies          = Matter.Bodies;
 
+      // Activated by angular when the physics host (id physicsBody) is initialized
       vm.initializePhysics = () => {
           console.log("Beginning creation of physics div");
           vm.isPhysicsModalCreated = true;
-          // module aliases
 
-          // create an engine
+          // create an engine. Apparently a lot of this code is deprecated, but it's also from the matter tutorial so...
           vm.engine = Engine.create();
 
           let physicsHost = document.getElementById("physicsBody")!;
@@ -451,6 +423,10 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           // run the engine
           Runner.run(vm.engine);
 
+          vm.fillPhysicsWithEmojisFromDatabase();
+      }
+
+      vm.fillPhysicsWithEmojisFromDatabase = () => {
           let body = { projectID: vm.data.id, cairnType: "emoji", number: 50 };
           $http.post('api/tasks/getCairns', body).then((serverReturn: object) => {
               if (serverReturn["data"].length > 0) {
@@ -463,6 +439,10 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               else console.error("No relevant emojis found");
           });
       }
+
+      /* ==============================
+       * END CAIRN CODE
+       * ============================== */ 
 
       //for NGS tasks
       function getFullIframe(){
@@ -959,7 +939,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       function submit(option,option_text) {
 
-          // A player is attempting to submit when there is no task visible, just ignore
+          // if a player is attempting to submit when there is no task visible, just ignore
           if ($scope.isMainTaskImgHidden) return;
           vm.showModal();
           //if markers task, loop through all markers and submit the selected ones, ignore submit button option
@@ -1131,10 +1111,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                       })
                   }
 
-                  if (vm.show_cairns > 0  && vm.data.progress %  vm.show_cairns === 0) {
-                      $("#cairnModal").modal('show')
-                  }
-                  vm.handleSoapstones();
+                  vm.handleCairns();
               });
           }
 
@@ -1233,11 +1210,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           vm.req_amount = vm.data.req_count;
           vm.survey_t = vm.data.survey_type || 'IMI';
           vm.survey_type = 'survey' +  vm.survey_t;
-          vm.show_cairns = vm.data.show_cairns || 0; //if it has cairns
-
-          if(vm.show_cairns){
-              vm.fetchCairns();
-          }
 
           if (vm.data.template.selectedTaskType === "ngs"){
               if (vm.data.ngs_zoom){

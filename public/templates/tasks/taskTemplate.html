@@ -8,7 +8,7 @@
                 <button ng-switch-when="kiosk" class="btn btn-default btn-primary done-button"
                         ng-click="model.handleEnd()" style="height: 45px;">I'M DONE</button>
                 <button class="btn btn-default btn-primary done-button"
-                        ng-click="model.handleDebug()" style="height: 45px;">DEBUG</button>
+                        ng-click="model.handleDebug()" ng-hide="isDebugButtonHidden" style="height: 45px;">DEBUG</button>
                 <button ng-switch-default class="btn btn-default btn-primary done-button"
                         ng-click="model.handleFinish()" style="height: 45px;">I'M DONE</button>
             </div>
@@ -303,7 +303,7 @@
         <div class="col-sm-6" id="img" ng-hide="isMainTaskImgHidden">
             <img id="task-img" style="max-height:450px" class="img-responsive img-task" ng-src="{{model.getNextTask()}}" ng-click="model.showBiggerImg()">
         </div>
-        <div class="col-sm-6" ng-hide="isMatterDivHidden">
+        <div class="col-sm-6" ng-hide="isPhysicsDivHidden">
                     <p class="text-center" style="color:white;font-size:22px">How do you feel about this task? Below are the reactions of other players, click one of the faces to add your own reaction to the pile!</p>
             <div class="container-fluid">
                 <div class="row" ng-hide="isEmojiPickerHidden">
@@ -330,7 +330,7 @@
                 </div>
                 <div id="physicsBody" ng-init="model.initializePhysics()">
                 </div>
-                <button class="btn btn-default btn-primary done-button" ng-click="model.hidePhysicsDiv()" style="height: 45px;">Click here to return to images</button>
+                <button class="btn btn-default btn-primary done-button" ng-click="model.finishEmojiCreate()" style="height: 45px;">Click here to return to images</button>
         </div>
         <div class="col-sm-3" id="img">
         </div>
@@ -598,76 +598,12 @@
                     </form> 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" ng-click="model.doNormalSoapstoneModalExit()" data-dismiss="modal">Submit</button>
+                    <button type="button" class="btn btn-primary" ng-click="model.doModalExitWithSubmitButton()" data-dismiss="modal">Submit</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
     </div>
-
-    <!--Emoji Pick Modal-->
-    <div class="modal fade" id="emojiModal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">How do you feel right now?</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body" id="emojiBody">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-2">
-                                <!-- TODO could this be an ng-repeat?-->
-                                <img src="../../images/emojis/thinking.png" width="70" height="70" ng-click="model.submitEmoji('thinking')" data-dismiss="modal"></img>
-                            </div>
-                            <div class="col-md-2">
-                                <img src="../../images/emojis/weary.png" width="70" height="70" ng-click="model.submitEmoji('weary')" data-dismiss="modal"></img>
-                            </div>
-                            <div class="col-md-2">
-                                <img src="../../images/emojis/grinning.png" width="70" height="70" ng-click="model.submitEmoji('grinning')" data-dismiss="modal"></img>
-                            </div>
-                            <div class="col-md-2">
-                                <img src="../../images/emojis/angry.png" width="70" height="70" ng-click="model.submitEmoji('angry')" data-dismiss="modal"></img>
-                            </div>
-                            <div class="col-md-2">
-                                <img src="../../images/emojis/concerned.png" width="70" height="70" ng-click="model.submitEmoji('concerned')" data-dismiss="modal"></img>
-                            </div>
-                            <div class="col-md-2">
-                                <img src="../../images/emojis/tongue_out.png" width="70" height="70" ng-click="model.submitEmoji('tongue_out')" data-dismiss="modal"></img>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal" ng-click="model.submitEmoji('cancel')">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!--Physics Modal-->
-    <div class="modal fade" id="physicsModal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Play around!</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" ng-click="model.submitSoapstone()">Submit</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
 
 <script type="text/javascript">
   var obj = $("#task-img");
