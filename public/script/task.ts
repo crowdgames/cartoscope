@@ -394,8 +394,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               element: physicsHost,
               engine: vm.engine,
               options: {
-                  width: 465,
-                  height: 600,
+                  width: 450,
+                  height: 300,
                   wireframes: false
               }
           });
@@ -411,9 +411,9 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               }
           });
 
-          var ground    = Bodies.rectangle(400 , 610 , 810 , 60  , { isStatic: true });
-          var leftWall  = Bodies.rectangle(0   , 300 , 20  , 610 , { isStatic: true });
-          var rightWall = Bodies.rectangle(465 , 300 , 20  , 610 , { isStatic: true });
+          var ground    = Bodies.rectangle(300 , 310 , 810 , 60  , { isStatic: true });
+          var leftWall  = Bodies.rectangle(0   , 150 , 20  , 300 , { isStatic: true });
+          var rightWall = Bodies.rectangle(450 , 300 , 20  , 610 , { isStatic: true });
           var topWall   = Bodies.rectangle(300 , 0   , 810  , 20 , { isStatic: true });
 
           // add all of the bodies to the world
