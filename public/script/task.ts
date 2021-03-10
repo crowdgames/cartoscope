@@ -216,7 +216,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       // activated by hitting the debug button
       vm.handleDebug = () => {
           console.log("Debugging");
-          console.log(vm.tasks);
+          let physicsBody = document.getElementById("physicsBody");
+          vm.addEmojiToPhysics("thinking");
       }
 
       // == SOAPSTONE MSG CODE ==
@@ -357,7 +358,9 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       // add the emoji to the ballpit
       vm.addEmojiToPhysics = (emojiToAdd: string) => {
-          let newEmoji = Bodies.circle(Math.random() * 400 + 20, 100, 20, {
+          // add it near the top, in a random location on the x axis
+          // window.innerWidth / 4 because the physics window size is dynamic
+          let newEmoji = Bodies.circle(Math.random() * window.innerWidth / 4 + 30, 50, 20, {
               render :{
                   sprite: {
                       texture: 'images/emojis/' + emojiToAdd + '.png',
@@ -389,13 +392,15 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
           let physicsHost = document.getElementById("physicsBody")!;
 
+          let physHeight = window.innerHeight / 3;
+          let physWidth = window.innerWidth / 3;
           // create a renderer
           vm.render = Render.create({
               element: physicsHost,
               engine: vm.engine,
               options: {
-                  width: 450,
-                  height: 300,
+                  width: physWidth, // dynamically size the window based on browser size
+                  height: physHeight,
                   wireframes: false
               }
           });
@@ -411,10 +416,11 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               }
           });
 
-          var ground    = Bodies.rectangle(300 , 310 , 810 , 60  , { isStatic: true });
-          var leftWall  = Bodies.rectangle(0   , 150 , 20  , 300 , { isStatic: true });
-          var rightWall = Bodies.rectangle(450 , 300 , 20  , 610 , { isStatic: true });
-          var topWall   = Bodies.rectangle(300 , 0   , 810  , 20 , { isStatic: true });
+          // dynamically place the walls based on browser size
+          var ground    = Bodies.rectangle(physWidth , physHeight + 10 , physWidth * 4 , 60             , { isStatic: true });
+          var leftWall  = Bodies.rectangle(0         , physHeight      , 20            , physHeight * 4 , { isStatic: true });
+          var rightWall = Bodies.rectangle(physWidth , physHeight      , 20            , physHeight * 4 , { isStatic: true });
+          var topWall   = Bodies.rectangle(300       , 0               , physWidth * 4 , 20             , { isStatic: true });
 
           // add all of the bodies to the world
           World.add(vm.engine.world, [ground, leftWall, rightWall, topWall]);
