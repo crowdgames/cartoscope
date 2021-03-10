@@ -427,7 +427,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       }
 
       vm.fillPhysicsWithEmojisFromDatabase = () => {
-          let body = { projectID: vm.data.id, cairnType: "emoji", number: 50 };
+          let body = { projectID: vm.data.id, cairnType: "emoji", number: 30 };
           $http.post('api/tasks/getCairns', body).then((serverReturn: object) => {
               if (serverReturn["data"].length > 0) {
                   serverReturn["data"].forEach((cairn: object, index: number) =>
