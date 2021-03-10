@@ -417,10 +417,10 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           });
 
           // dynamically place the walls based on browser size
-          var ground    = Bodies.rectangle(physWidth , physHeight + 10 , physWidth * 4 , 60             , { isStatic: true });
-          var leftWall  = Bodies.rectangle(0         , physHeight      , 20            , physHeight * 4 , { isStatic: true });
-          var rightWall = Bodies.rectangle(physWidth , physHeight      , 20            , physHeight * 4 , { isStatic: true });
-          var topWall   = Bodies.rectangle(300       , 0               , physWidth * 4 , 20             , { isStatic: true });
+          var ground    = Bodies.rectangle(physWidth , physHeight + 45, physWidth * 4 , 100             , { isStatic: true });
+          var leftWall  = Bodies.rectangle(-45         , physHeight      , 100            , physHeight * 4 , { isStatic: true });
+          var rightWall = Bodies.rectangle(physWidth + 45 , physHeight      , 100            , physHeight * 4 , { isStatic: true });
+          var topWall   = Bodies.rectangle(300       , -45               , physWidth * 4 , 100             , { isStatic: true });
 
           // add all of the bodies to the world
           World.add(vm.engine.world, [ground, leftWall, rightWall, topWall]);
