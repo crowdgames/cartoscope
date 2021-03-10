@@ -200,7 +200,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.submitCairn = (baseCairnType: string, message: string) => {
           // if the message is empty, the cairnType should be "empty-" + cairnType
           let cairnType = message === "" ? "empty-" + baseCairnType : baseCairnType;
-          console.log("submitting cairn of type " + baseCairnType + " with message " + message);
+          console.log("submitting cairn of type " + cairnType + " with message " + message);
           let body = {
               projectID:                  vm.data.id,
               message:                    message,
