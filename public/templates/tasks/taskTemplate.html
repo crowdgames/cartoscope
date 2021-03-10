@@ -306,6 +306,8 @@
         <div class="col-sm-6" ng-hide="isPhysicsDivHidden">
                     <p class="text-center" style="color:white;font-size:22px">How do you feel about this task? Below are the reactions of other players, click one of the faces to add your own reaction to the pile!</p>
             <div class="container-fluid">
+                <div id="physicsBody" ng-init="model.initializePhysics()">
+                </div>
                 <div class="row" ng-hide="isEmojiPickerHidden">
                     <div class="col-md-2">
                         <!-- TODO could this be an ng-repeat?-->
@@ -327,8 +329,6 @@
                         <img src="../../images/emojis/tongue_out.png" width="70" height="70" ng-click="model.submitEmoji('tongue_out')" data-dismiss="modal"></img>
                     </div>
                 </div>
-                </div>
-                <div id="physicsBody" ng-init="model.initializePhysics()">
                 </div>
                 <button class="btn btn-default btn-primary done-button" ng-click="model.finishEmojiCreate()" style="height: 45px;">Click here to return to images</button>
         </div>
