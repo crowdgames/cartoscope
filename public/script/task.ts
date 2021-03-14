@@ -278,6 +278,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               if (typeof elem === "string") {
                   let label = document.createElement("label");
                   label.innerText = elem;
+                  label.innerHTML = "&nbsp;&nbsp;" + label.innerHTML + "&nbsp;&nbsp;";
                   form.appendChild(label);
               }
               else {
