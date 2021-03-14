@@ -304,7 +304,10 @@
             <img id="task-img" style="max-height:450px" class="img-responsive img-task" ng-src="{{model.getNextTask()}}" ng-click="model.showBiggerImg()">
         </div>
         <div class="col-sm-6" ng-hide="isPhysicsDivHidden">
-                    <p class="text-center" style="color:white;font-size:22px">How do you feel about this task? Below are the reactions of other players, click one of the faces to add your own reaction to the pile!</p>
+                    <p class="text-center" style="color:white;font-size:22px">
+Below are emojis selected by other players.
+
+You can add an emoji, if you want to. Pick one that describes how you're feeling!</p>
             <div class="container-fluid">
                 <div id="physicsBody" ng-init="model.initializePhysics()">
                 </div>
