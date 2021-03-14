@@ -39,4 +39,16 @@ One of my concerns about tying cairns to progression or images is that we may no
 
 == CAIRNS TODO ==
 
- - dynamic cairns resizing
+ - soapstone messages should be in one bubble
+ - soapstone generation should be in one line
+ - soapstone generation should be a hidden div, not a modal
+
+Below are emojis selected by other players. You can click the emojis to throw them around. 
+
+You can add an emoji, if you want to. Pick one that describes how you're feeling!
+
+ - maybe allow emojis to change if you reselect
+
+we may need to make changes to the progress bar
+
+home page might need to be changed because get started takes you to LLL but then LLL doesn't take you home...

@@ -300,7 +300,7 @@
     <div class="row" style="text-align: center;" ng-if="model.data.template.selectedTaskType == 'tagging'">
         <div class="col-sm-3" id="img">
         </div>
-        <div class="col-sm-6" id="img" ng-hide="isMainTaskImgHidden">
+        <div class="col-sm-6" id="img" ng-hide="isMainTaskHidden">
             <img id="task-img" style="max-height:450px" class="img-responsive img-task" ng-src="{{model.getNextTask()}}" ng-click="model.showBiggerImg()">
         </div>
         <div class="col-sm-6" ng-hide="isPhysicsDivHidden">
@@ -352,7 +352,7 @@
 
 
     <nav class="navbar navbar-fixed-bottom navbar-bottom" ng-if="model.data.template.selectedTaskType == 'tagging'">
-        <div class="container text-center" style="padding: 0;width: 100%;">
+        <div class="container text-center" style="padding: 0;width: 100%;" ng-hide="isMainTaskHidden">
             <div class="bottom-panel">
                 <div class="question" ng-if="model.data.template.selectedTaskType == 'tagging'" >
                     <span>{{model.data.template.question}}</span>

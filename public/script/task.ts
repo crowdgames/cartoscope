@@ -328,12 +328,12 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       // == END SOAPSTONE CREATE CODE ==
 
       // == EMOJI CREATE CODE ==
-      $scope.isMainTaskImgHidden = false;
+      $scope.isMainTaskHidden = false;
       $scope.isPhysicsDivHidden  = true;
 
       vm.startEmojiCreate = () => {
           vm.showModal(); // this isn't necessary, and honestly there might be good reasons to remove it
-          $scope.isMainTaskImgHidden = true; // the div with the main task
+          $scope.isMainTaskHidden = true; // the div with the main task
           $scope.isPhysicsDivHidden  = false; // the div with the ballpit of emojis
           $scope.isEmojiPickerHidden = false; // the div with the buttons to select which emoji you want
           Render.run(vm.render);
@@ -342,7 +342,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       // activated by clicking the "return to tasks button"
       vm.finishEmojiCreate = () => {
-          $scope.isMainTaskImgHidden = false;
+          $scope.isMainTaskHidden = false;
           $scope.isPhysicsDivHidden  = true;
           Render.stop(vm.render);
           vm.submitCairn("emoji", vm.submittedEmoji);
@@ -948,7 +948,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       function submit(option,option_text) {
 
           // if a player is attempting to submit when there is no task visible, just ignore
-          if ($scope.isMainTaskImgHidden) return;
+          if ($scope.isMainTaskHidden) return;
           vm.showModal();
           //if markers task, loop through all markers and submit the selected ones, ignore submit button option
           if (vm.showMarkerPoints) {
