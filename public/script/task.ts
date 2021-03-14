@@ -276,7 +276,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           soapstone.forEach(elem => {
               // If the element in the soapstone template is just a simple string, just add a textual label to the form to represent the element
               if (typeof elem === "string") {
-                  let label = document.createElement("form");
+                  let label = document.createElement("label");
                   label.innerText = elem;
                   form.appendChild(label);
               }
