@@ -37,6 +37,18 @@ var app = express();
 
 var multer = require('multer');
 
+// Force HTTPS for all requests
+var port = normalizePort(process.env.CARTO_PORT || '8081');
+var port_ssl = normalizePort(process.env.CARTO_PORT_SSL || '8082');
+
+function requireHTTPS(req, res, next) {
+  if (!req.secure && req.get('x-forwarded-proto') !== 'https' && process.env.CARTO_DEV !== "development") {
+    return res.redirect('https://' + req.get('host') + req.url);
+  }
+	next();
+}
+
+app.use(requireHTTPS);
 
 
 //app.use(cors());
@@ -299,9 +311,6 @@ app.use(function(err, req, res, next) {
   });
 });
 
-
-var port = normalizePort(process.env.CARTO_PORT || '8081');
-var port_ssl = normalizePort(process.env.CARTO_PORT_SSL || '8082');
 
 app.set('port', port);
 var server = http.createServer(app);

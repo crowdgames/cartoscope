@@ -63,6 +63,14 @@ For more information, follow this link: https://www.digitalocean.com/community/t
 		export CARTO_PORT_SSL=443
 		export CARTO_SSL_KEY='path/to/your/certificate.key'
 		export CARTO_SSL_CRT='path/to/your/certificate.crt'
+
+By default the server will redirect all routes to https. If you are developing on a VM, this may be inconvenient. You can remove redirect when testing locally with:
+
+```
+export CARTO_DEV='development'
+```
+
+When deploying the server, ensure that `CARTO_DEV` is not set to 'development'.
 		
 10. #### Python related installations:
 		Make sure pip is installed and then intall PIL
