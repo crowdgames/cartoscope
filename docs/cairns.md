@@ -40,8 +40,8 @@ One of my concerns about tying cairns to progression or images is that we may no
 == CAIRNS TODO ==
 
  - soapstone messages should be in one bubble
- - soapstone generation should be in one line
  - soapstone generation should be a hidden div, not a modal
+ - soapstone remove &nbsp when inserting into DB
 
 Below are emojis selected by other players. You can click the emojis to throw them around. 
 
