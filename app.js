@@ -321,6 +321,15 @@ const options = {
     key: fs.readFileSync(path.normalize(process.env.CARTO_SSL_KEY)),
     cert: fs.readFileSync(path.normalize(process.env.CARTO_SSL_CRT))
 };
+
+if (process.env.CARTO_DEV !== "development") {
+  options.ca = [
+    fs.readFileSync(path.normalize(process.env.CARTO_CA_BUNDLE).replace(':', '1')),
+    fs.readFileSync(path.normalize(process.env.CARTO_CA_BUNDLE).replace(':', '2')),
+    fs.readFileSync(path.normalize(process.env.CARTO_CA_BUNDLE).replace(':', '3'))
+  ];
+}
+
 var https_Server = https.createServer(options,app);
 
 // Connect to DB and if successful, start server on port
