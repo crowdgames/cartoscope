@@ -152,11 +152,17 @@ router.get('/getAvailableImagesReport/:sessionId', function(req, res, next) {
 
 
 router.post('/buildLocalDataset/:state&:city&:index', (req, res, next) => {
-	localDataset.buildDataSet(req.params.state, req.params.city, req.params.index, (error, message) => {
+	const state = req.params.state.toLowerCase();
+	const city = req.params.city.toLowerCase();
+
+	localDataset.buildDataSet(state, city, req.params.index, (error, message) => {
 		res.status(error ? 400 : 200).send(message); 
 	});
 });
 
 router.get('/getDataSet/:state&:city&:index', (req, res, next) => {
-	localDataset.zipAndSendDataSet(req.params.state, req.params.city, req.params.index, res);
+	const state = req.params.state.toLowerCase();
+  const city = req.params.city.toLowerCase();
+
+	localDataset.zipAndSendDataSet(state, city, req.params.index, res);
 });

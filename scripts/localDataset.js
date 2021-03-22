@@ -39,6 +39,7 @@ const validateUserInput = (state, city, callback) => {
     .on('close', () => {
       if (!found) {
         callback(true, 'Unable to find city and state.', null);
+				return;
       } 
     })
     .on('line', (line) => {
@@ -49,6 +50,7 @@ const validateUserInput = (state, city, callback) => {
       if (newState === state && newCity === city) {
         found = true;
         readInterface.close(); // stop extra processing and error message being sent
+				readInterface.removeAllListeners()
         callback(false, parseFloat(split[5]), parseFloat(split[6]));
       }
     });
@@ -206,6 +208,7 @@ const processData = (dir, data, dataset, usedIds, summaryData, callback) => {
 
   if (summaryData.filenames.length - summaryData.categoriesSample.length < DATASET_SIZE) {
     callback(true);
+		return;
   } else {
     for (const entry of Object.entries(dataset)) {
       if (entry[1].length === 2) {
@@ -217,9 +220,12 @@ const processData = (dir, data, dataset, usedIds, summaryData, callback) => {
     fs.writeFile(path.join(dir, `Dataset-Info.json`), JSON.stringify(summaryData, null, 2), (err) => {
       if (err) {
         console.log(err);
+				calback(true);
+				return;
       }
 
       callback(false);
+			return;
     });
   }
 };
@@ -241,6 +247,7 @@ const buildDataSet = (dir, latitude, longitude, dataset, usedIds, summaryData, r
           buildDataSet(dir, latitude, longitude, dataset, usedIds, summaryData, radius, callback);
         } else {
           callback(false);
+					return;
         }
       })
     })
@@ -248,6 +255,23 @@ const buildDataSet = (dir, latitude, longitude, dataset, usedIds, summaryData, r
       console.log(`\n\n${url}\n\n`);
       console.log(`Error: ${err}`);
     });
+};
+
+const destroyFileIfExists = (file) => {
+	fs.exists(file, (exists) => {
+    if (exists) {
+      fs.unlink(file, (err) => {
+        if (err) {
+          console.log(`Unable to delete: ${file}`);
+          console.log(err);
+        } else {
+          console.log(`Deleted: ${file}`);
+        }
+      });
+    } else {
+      console.log(`${file} already destroyed.`);
+    }
+  });
 };
 
 exports.buildDataSet = (state, city, indexNotConverted, callback) => {
@@ -261,6 +285,7 @@ exports.buildDataSet = (state, city, indexNotConverted, callback) => {
   validateUserInput(state, city, (error, latitude, longitude) => {
     if (error) {
       callback(false, 'Invalid city or state or both.');
+			return;
     } else {
       // If the driectory already exists than we can tell the caller that the dataset has been made
       // which we singify with no error being found. otherwise, we make a temp file to tell any
@@ -268,10 +293,12 @@ exports.buildDataSet = (state, city, indexNotConverted, callback) => {
       const dir = `dataset/location_${state}_${city}_v${index}`;
       if (fs.existsSync(dir)) {
         callback(false, 'Dataset already exists.');
+				return;
       } else {
         const lockFile = `${dir}.temp`;
         if (fs.existsSync(lockFile)) {
           callback(false, 'Dataset is being made.');
+					return;
         } else {
           fs.closeSync(fs.openSync(lockFile, 'w'));
           fs.mkdirSync(dir);
@@ -292,28 +319,16 @@ exports.buildDataSet = (state, city, indexNotConverted, callback) => {
           };
 
           buildDataSet(dir, latitude, longitude, {}, new Set(), summaryData, 2, (error) => {
-            if (error) {
-              callback(error, 'Error creating dataset. Contact admin.');
-							fs.rmdirSync(dir, { recursive: true });
-            } else {
-              callback(error, 'Dataset created!')
-            }
+						destroyFileIfExists(lockFile);
 
-            // handle destruction of lockfile
-            fs.exists(lockFile, (exists) => {
-              if (exists) {
-                fs.unlink(lockFile, (err) => {
-                  if (err) {
-                    console.log(`Unable to delete lockfile: ${lockFile}`);
-                    console.log(err);
-                  } else {
-                    console.log(`Deleted lockfile: ${lockFile}`);
-                  }
-                });
-              } else {
-                console.log(`${lockFile} already destroyed.`);
-              }
-            });
+            if (error) {
+							fs.rmdirSync(dir, { recursive: true });
+              callback(error, 'Error creating dataset. Contact admin.');
+							return;
+            } else {
+              callback(error, 'Dataset created!');
+							return;
+            }
           });
         }
       }
@@ -327,11 +342,13 @@ exports.zipAndSendDataSet = (state, city, index, res) => {
 	const lockFile = `${dir}.temp`;
 	
 	if (fs.existsSync(lockFile)) {
+		console.log(`dataset |${name}| is still being made`);
 		res.status(202).send('Dataset creation still in process');
 		return;
 	}
 
   if (!fs.existsSync(dir)) {
+		console.log(`dataset |${name}| does not exist. Error`);
     res.status(404).send('Dataset has not been made.');
     return;
   }
@@ -343,14 +360,17 @@ exports.zipAndSendDataSet = (state, city, index, res) => {
 		return;
 	}
 
+	console.log(`zipping data for ${name}`);
   const outputStream = fs.createWriteStream(zipName);
   const archive = archiver('zip');
 
 	outputStream.on('close', () => {
+		console.log(`zipping |${name}| complete, sending result.`);
 		res.download(zipName, `${name}.zip`);
 	});
 
 	archive.on('error', (err) => {
+		console.log(`unable ot zip |${name}|. Error.`);
 		res.status(404).send('Could not generate zip');
 	});
 
