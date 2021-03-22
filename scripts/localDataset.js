@@ -250,8 +250,14 @@ const buildDataSet = (dir, latitude, longitude, dataset, usedIds, summaryData, r
     });
 };
 
-exports.buildDataSet = (state, city, index, callback) => {
+exports.buildDataSet = (state, city, indexNotConverted, callback) => {
   console.warn('index not being used by create dataset');
+	const index = Number(indexNotConverted);
+	if (isNaN(index)) {
+		callback(true, 'Received index that was not a number. Contact admin.');
+		return;
+	}
+
   validateUserInput(state, city, (error, latitude, longitude) => {
     if (error) {
       callback(false, 'Invalid city or state or both.');
@@ -288,6 +294,7 @@ exports.buildDataSet = (state, city, index, callback) => {
           buildDataSet(dir, latitude, longitude, {}, new Set(), summaryData, 2, (error) => {
             if (error) {
               callback(error, 'Error creating dataset. Contact admin.');
+							fs.rmdirSync(dir, { recursive: true });
             } else {
               callback(error, 'Dataset created!')
             }
