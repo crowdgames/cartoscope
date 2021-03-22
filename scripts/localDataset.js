@@ -3,6 +3,7 @@
 const readline = require('readline');
 const fs = require('fs');
 
+const archiver = require('archiver');
 const axios = require('axios');
 const path = require('path');
 const uuid4 = require('uuid4');
@@ -312,3 +313,41 @@ exports.buildDataSet = (state, city, index, callback) => {
     }
   });
 }
+
+exports.zipAndSendDataSet = (state, city, index, res) => {
+	const name = `${state}_${city}_v${index}`;
+	const dir = `dataset/location_${name}`;
+	const lockFile = `${dir}.temp`;
+	
+	if (fs.existsSync(lockFile)) {
+		res.status(202).send('Dataset creation still in process');
+		return;
+	}
+
+  if (!fs.existsSync(dir)) {
+    res.status(404).send('Dataset has not been made.');
+    return;
+  }
+
+	const zipName = `ar_zip/location_${name}.zip`;
+	if (fs.existsSync(zipName)) {
+		console.log(`Dataset ${name} already exists. Sending result.`);
+		res.download(zipName, `${name}.zip`);
+		return;
+	}
+
+  const outputStream = fs.createWriteStream(zipName);
+  const archive = archiver('zip');
+
+	outputStream.on('close', () => {
+		res.download(zipName, `${name}.zip`);
+	});
+
+	archive.on('error', (err) => {
+		res.status(404).send('Could not generate zip');
+	});
+
+	archive.pipe(outputStream);
+	archive.directory(dir, false);
+  archive.finalize();
+};

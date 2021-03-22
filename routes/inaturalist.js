@@ -6,7 +6,7 @@ var tileDB = require('../db/tileoscope');
 var dynamicDB = require('../db/dynamic');
 var qlearnDB = require('../db/qlearn');
 var inatDB = require('../db/inaturalist');
-var buildDataSet = require('../scripts/localDataset').buildDataSet;
+var localDataset = require('../scripts/localDataset');
 
 var Promise = require('bluebird');
 
@@ -152,9 +152,11 @@ router.get('/getAvailableImagesReport/:sessionId', function(req, res, next) {
 
 
 router.post('/buildLocalDataset/:state&:city&:index', (req, res, next) => {
-	console.log('here!')
-	buildDataSet(req.params.state, req.params.city, req.params.index, (error, message) => {
-		console.log(error, message);
+	localDataset.buildDataSet(req.params.state, req.params.city, req.params.index, (error, message) => {
 		res.status(error ? 400 : 200).send(message); 
 	});
+});
+
+router.get('/getDataSet/:state&:city&:index', (req, res, next) => {
+	localDataset.zipAndSendDataSet(req.params.state, req.params.city, req.params.index, res);
 });
