@@ -6,6 +6,7 @@ var tileDB = require('../db/tileoscope');
 var dynamicDB = require('../db/dynamic');
 var qlearnDB = require('../db/qlearn');
 var inatDB = require('../db/inaturalist');
+var buildDataSet = require('../scripts/localDataset').buildDataSet;
 
 var Promise = require('bluebird');
 
@@ -147,4 +148,13 @@ router.get('/getAvailableImagesReport/:sessionId', function(req, res, next) {
     })
 
 
+});
+
+
+router.post('/buildLocalDataset/:state&:city&:index', (req, res, next) => {
+	console.log('here!')
+	buildDataSet(req.params.state, req.params.city, req.params.index, (error, message) => {
+		console.log(error, message);
+		res.status(error ? 400 : 200).send(message); 
+	});
 });
