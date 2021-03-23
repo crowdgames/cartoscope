@@ -107,13 +107,11 @@ const download = (dir, info, callback) => {
         });
     });
   })
-/*
   .catch((err) => {
     console.log(err);
     console.log(info);
 		callback();
   });
-*/
 };
 
 const validResult = (result) => {
@@ -252,13 +250,11 @@ const buildDataSet = (dir, latitude, longitude, dataset, usedIds, summaryData, r
         }
       })
     })
-		/*
     .catch((err) => {
       console.log(`\n\n${url}\n\n`);
       console.log(`Error: ${err}`);
 			callback(true, 'Unknown error encountered. Contact admin.');
     });
-*/
 };
 
 const destroyFileIfExists = (file) => {
