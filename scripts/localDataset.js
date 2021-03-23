@@ -56,7 +56,7 @@ const validateUserInput = (state, city, callback) => {
     });
 };
 
-const download = (dir, info) => {
+const download = (dir, info, callback) => {
   axios({
     method: 'get',
     url: info.url.replace('square', 'original'), // highest res photo
@@ -75,70 +75,78 @@ const download = (dir, info) => {
         .resize({width: 512, height: 512})
         .toFile(photoSaveName)
         .then(() => {
-          fs.unlink(photoSaveNameTemp, () => {});
+          fs.unlinkSync(photoSaveNameTemp);
+    
+          // given no error, write JSON file
+          const upperLicense = info.licenseCode.toUpperCase();
+          const licenseURL = acceptedLicenses[info.licenseCode];
+          const atr = `Image from [iNaturalist](https://www.inaturalist.org), ${info.attribution}, under [${upperLicense}](${licenseURL}), and may have been cropped or scaled.`;
+          const meta = {
+            id: info.id,
+            category: info.category,
+            category_hint: info.categoryHint,
+            attribution: atr,
+            latitude: info.latitude,
+            longitude: info.longitude,
+            source: {
+              name: 'iNaturalist',
+              url: 'https://www.inaturalist.org/',
+              observation_id: info.objID,
+              photo_id: info.photoID
+            }
+          };
+    
+          // encoding is defaulted to utf-8
+          fs.writeFile(path.join(dir, `${info.fileName}.json`), JSON.stringify(meta, null, 2), (err) => {
+            if (err) {
+              console.log(err);
+            }
+    
+            callback();
+          });
         });
     });
-
-    // given no error, write JSON file
-    const upperLicense = info.licenseCode.toUpperCase();
-    const licenseURL = acceptedLicenses[info.licenseCode];
-    const atr = `Image from [iNaturalist](https://www.inaturalist.org), ${info.attribution}, under [${upperLicense}](${licenseURL}), and may have been cropped or scaled.`;
-    const meta = {
-      id: info.id,
-      category: info.category,
-      category_hint: info.categoryHint,
-      attribution: atr,
-      latitude: info.latitude,
-      longitude: info.longitude,
-      source: {
-        name: 'iNaturalist',
-        url: 'https://www.inaturalist.org/',
-        observation_id: info.objID,
-        photo_id: info.photoID
-      }
-    };
-
-    // encoding is defaulted to utf-8
-    fs.writeFile(path.join(dir, `${info.fileName}.json`), JSON.stringify(meta, null, 2), (err) => {
-      if (err) {
-        console.log(err);
-      }
-    });
   })
+/*
   .catch((err) => {
     console.log(err);
     console.log(info);
-    process.exit(-1);
+		callback();
   });
+*/
 };
 
 const validResult = (result) => {
-  if (result === undefined) return false;
-  if (!('id' in result)) return false;
+	try {
+    if (result === undefined) return false;
+    if (!('id' in result)) return false;
 
-  if (!('license_code' in result)) return false;
-  if (result.license_code === null) return false;
-  if (!(result.license_code in acceptedLicenses)) return false;
+    if (!('license_code' in result)) return false;
+    if (result.license_code === null) return false;
+    if (!(result.license_code in acceptedLicenses)) return false;
   
-  if (!('taxon' in result)) return false;
-  if (!('rank' in result.taxon)) return false;
-  if (result.taxon.rank !== 'species')  return false;
-  if (!('default_photo' in result.taxon)) return false;
-  if (!('license_code' in result.taxon.default_photo)) return false;
-  if (result.taxon.default_photo.license_code === null) return false;
-  if (!(result.taxon.default_photo.license_code in acceptedLicenses)) return false;
+    if (!('taxon' in result)) return false;
+    if (!('rank' in result.taxon)) return false;
+    if (result.taxon.rank !== 'species')  return false;
+    if (!('default_photo' in result.taxon)) return false;
+    if (!('license_code' in result.taxon.default_photo)) return false;
+    if (result.taxon.default_photo.license_code === null) return false;
+    if (!(result.taxon.default_photo.license_code in acceptedLicenses)) return false;
 
-  if (!('photos' in result)) return false;
-  if (result.photos.length == 0) return false;
-  if (!('license_code' in result.photos[0])) return false;
-  if (result.photos[0].license_code === null) return false;
-  if (!(result.photos[0].license_code in acceptedLicenses)) return false;
+    if (!('photos' in result)) return false;
+    if (result.photos.length == 0) return false;
+    if (!('license_code' in result.photos[0])) return false;
+    if (result.photos[0].license_code === null) return false;
+    if (!(result.photos[0].license_code in acceptedLicenses)) return false;
 
-  if (!(result.photos[0].url.includes('https://inaturalist-open-data.s3'))) return false;
+    if (!(result.photos[0].url.includes('https://inaturalist-open-data.s3'))) return false;
 
-  if (result.photos[0].url === result.taxon.default_photo.url) return false;
+    if (result.photos[0].url === result.taxon.default_photo.url) return false;
 
-  return true;
+  	return true;
+	} catch {
+		return false;
+	}
 }
 
 const processData = (dir, data, dataset, usedIds, summaryData, callback) => {
@@ -210,13 +218,6 @@ const processData = (dir, data, dataset, usedIds, summaryData, callback) => {
     callback(true);
 		return;
   } else {
-    for (const entry of Object.entries(dataset)) {
-      if (entry[1].length === 2) {
-        download(dir, entry[1][0]);
-        download(dir, entry[1][1]);
-      }
-    }
-
     fs.writeFile(path.join(dir, `Dataset-Info.json`), JSON.stringify(summaryData, null, 2), (err) => {
       if (err) {
         console.log(err);
@@ -246,15 +247,18 @@ const buildDataSet = (dir, latitude, longitude, dataset, usedIds, summaryData, r
           console.log(`increasing radius for ${latitude}, ${longitude} to ${radius}`);
           buildDataSet(dir, latitude, longitude, dataset, usedIds, summaryData, radius, callback);
         } else {
-          callback(false);
+          callback(false, dataset);
 					return;
         }
       })
     })
+		/*
     .catch((err) => {
       console.log(`\n\n${url}\n\n`);
       console.log(`Error: ${err}`);
+			callback(true, 'Unknown error encountered. Contact admin.');
     });
+*/
 };
 
 const destroyFileIfExists = (file) => {
@@ -318,16 +322,31 @@ exports.buildDataSet = (state, city, indexNotConverted, callback) => {
             tutorial_explanations: []
           };
 
-          buildDataSet(dir, latitude, longitude, {}, new Set(), summaryData, 2, (error) => {
-						destroyFileIfExists(lockFile);
-
+          buildDataSet(dir, latitude, longitude, {}, new Set(), summaryData, 2, (error, dataset) => {
             if (error) {
 							fs.rmdirSync(dir, { recursive: true });
+							destroyFileIfExists(lockFile);
               callback(error, 'Error creating dataset. Contact admin.');
-							return;
             } else {
-              callback(error, 'Dataset created!');
-							return;
+              callback(error, 'Dataset is being created.');
+							
+							// Create Dataset
+              let filesDownloaded = 0;
+              const downloadCallback = () => {
+                ++filesDownloaded;
+                if (filesDownloaded == DATASET_SIZE*2) {
+									// if we don't wait a tick than we have a race condition where files
+									// may not be finished saving
+									process.nextTick(() => { destroyFileIfExists(lockFile); });
+                }
+              };
+
+              for (const entry of Object.entries(dataset)) {
+                if (entry[1].length === 2) {
+                  download(dir, entry[1][0], downloadCallback);
+                  download(dir, entry[1][1], downloadCallback);
+                }
+              }
             }
           });
         }
@@ -370,7 +389,8 @@ exports.zipAndSendDataSet = (state, city, index, res) => {
 	});
 
 	archive.on('error', (err) => {
-		console.log(`unable ot zip |${name}|. Error.`);
+    fs.rmdirSync(dir, { recursive: true });
+    fs.unlinkSync(zipName);
 		res.status(404).send('Could not generate zip');
 	});
 
