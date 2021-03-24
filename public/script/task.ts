@@ -180,6 +180,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.tasksToCompleteTillSoapstoneCreation = 3;
 
       vm.handleCairns = () => {
+          if (!vm.show_cairns) return;
           // note the time the cairn was created. Divide by 1000 because mysql wants second precision, not ms precision
           vm.timeCairnShownToPlayer = Math.floor(Date.now() / 1000);
           // Pick one of the cairn types. else ifs because we don't want two at the same time
@@ -1204,6 +1205,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           vm.req_amount = vm.data.req_count;
           vm.survey_t = vm.data.survey_type || 'IMI';
           vm.survey_type = 'survey' +  vm.survey_t;
+          vm.show_cairns = vm.data.show_cairns || 0;
 
           if (vm.data.template.selectedTaskType === "ngs"){
               if (vm.data.ngs_zoom){
