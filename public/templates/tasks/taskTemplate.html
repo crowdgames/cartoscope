@@ -323,6 +323,19 @@ You can add an emoji, if you want to. Pick one that describes how you're feeling
                 </div>
                 <button class="btn btn-default btn-primary done-button" ng-click="model.finishEmojiCreate()" style="height: 45px;">Click here to return to images</button>
         </div>
+        <div class="col-sm-6" ng-hide="isSoapstoneCreateHidden">
+            <p class="text-center" style="color:white;font-size:24px">Would you like to leave a message for another user?</p>
+            <br>
+            <br>
+            <br>
+            <form class="form-inline" method="post" action="/forminfo" id="soapstone-form">
+                <!--- This form is filled dynamically with js -->
+            </form> 
+            <br>
+            <br>
+            <button class="btn btn-default btn-primary done-button" ng-click="model.submitSoapstone()" style="height: 45px;">Submit</button>
+            <button class="btn btn-default btn-primary done-button" ng-click="model.submitEmptySoapstone()" style="height: 45px;">Skip</button>
+        </div>
         <div class="col-sm-3" id="img">
         </div>
     </div>
@@ -571,27 +584,6 @@ You can add an emoji, if you want to. Pick one that describes how you're feeling
 
                 </div>
 
-            </div>
-        </div>
-    </div>
-
-
-    <!--Soapstone Create Modal-->
-    <div class="modal fade" id="soapstoneCreateModal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title">Would you like to leave a message for another user?</h5>
-                </div>
-                <div class="modal-body">
-                    <form class="form-inline" method="post" action="/forminfo" id="soapstone-form">
-                            <!--- This form is filled dynamically with js -->
-                    </form> 
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" ng-click="model.doModalExitWithSubmitButton()" data-dismiss="modal">Submit</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
             </div>
         </div>
     </div>

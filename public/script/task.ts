@@ -199,7 +199,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       vm.submitCairn = (baseCairnType: string, message: string) => {
           // if the message is empty, the cairnType should be "empty-" + cairnType
-          let cairnType = message === "" ? "empty-" + baseCairnType : baseCairnType;
+          let cairnType = message.length === 0 ? "empty-" + baseCairnType : baseCairnType;
           console.log("submitting cairn of type " + cairnType + " with message " + message);
           let body = {
               projectID:                  vm.data.id,
@@ -244,12 +244,14 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       // == END SOAPSTONE MSG CODE ==
 
       // == SOAPSTONE CREATE CODE ==
+      $scope.isSoapstoneCreateHidden  = true;
       // (Code for creating new soapstone messages, as opposed to displaying ones that already exist)
       vm.startSoapstoneCreate = () => {
           let soapstoneForm = document.getElementById("soapstone-form");
           let soapstone     = vm.randomSoapstone();
           vm.replaceFormElemsWithSoapstone(soapstoneForm, soapstone);
-          (<any>$("#soapstoneCreateModal")).modal('show');
+          $scope.isSoapstoneCreateHidden = false;
+          $scope.isMainTaskHidden        = true;
       }
 
       vm.randomSoapstone = () => {
@@ -289,17 +291,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           });
       }
 
-      $('#soapstoneCreateModal').on('hide.bs.modal', () => {
-          // when the modal is hidden for any reason, submit the soapstone
-          vm.submitSoapstone();
-      })
-
-      // Was the modal hidden "normally", aka with the submit button, or was it hidden by clicking outside the modal / using the cancel button?
-      vm.soapstoneModalExitedUsingSubmitButton = false;
-      vm.doModalExitWithSubmitButton = () => {
-          vm.soapstoneModalExitedUsingSubmitButton = true;
-      }
-
       vm.submitSoapstone = () => {
           // extract the user submissions from the soapstone form on the modal
           let soapstoneFormValues = Array.from(document.getElementById("soapstone-form")!.children)
@@ -309,14 +300,17 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                        : (child as HTMLFormElement).innerText.trim() // remove &nbsp from both sides
                   )
               .join(" ");
-          // If the modal exited using the submit button, submit the message, otherwise submit something empty
-          if (vm.soapstoneModalExitedUsingSubmitButton)
-              vm.submitCairn("soapstone", soapstoneFormValues);
-          else
-              vm.submitCairn("soapstone", "");
-          // set soapstoneModalExitedUsingSubmitButton back to false so that we know for the next time the modal is used
-          vm.soapstoneModalExitedUsingSubmitButton = false;
+          vm.submitCairn("soapstone", soapstoneFormValues);
+          $scope.isSoapstoneCreateHidden = true;
+          $scope.isMainTaskHidden        = false;
       }
+
+      vm.submitEmptySoapstone = () => {
+          vm.submitCairn("soapstone", "");
+          $scope.isSoapstoneCreateHidden = true;
+          $scope.isMainTaskHidden        = false;
+      }
+
       // == END SOAPSTONE CREATE CODE ==
 
       // == EMOJI CREATE CODE ==

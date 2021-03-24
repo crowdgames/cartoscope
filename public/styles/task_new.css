@@ -39,6 +39,15 @@ body.mask .ui-mask-modal {
 .navbar-text {
     color: white;
 }
+label {
+    color: white;
+    font-size: 24px;
+}
+
+select {
+    font-size: 24px;
+}
+
 .img-title{
     color: white;
     text-align: center;
