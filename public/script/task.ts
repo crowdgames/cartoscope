@@ -314,7 +314,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               .map((child) => 
                    child.localName === "select" 
                        ? (child as HTMLSelectElement).value
-                       : (child as HTMLFormElement).innerText
+                       : (child as HTMLFormElement).innerText.trim() // remove &nbsp from both sides
                   )
               .join(" ");
           // If the modal exited using the submit button, submit the message, otherwise submit something empty
