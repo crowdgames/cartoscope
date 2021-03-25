@@ -213,7 +213,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           $http.post('api/tasks/submitCairn', body).then((data: object) => console.log(data));
       }
 
-      $scope.isDebugButtonHidden = false;
+      $scope.isDebugButtonHidden = true;
       // activated by hitting the debug button
       vm.handleDebug = () => {
           console.log("Debugging");
