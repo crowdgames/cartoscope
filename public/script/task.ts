@@ -257,7 +257,15 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       vm.randomSoapstone = () => {
           // get a random soapstone template from this hardcoded list
-          let soapstones = [["Hi there", ["Bob,", "Jeff,", "Sandra,"], "it's nice to meet you! I love your", ["hat", "french toast", "incredible pecs"]]];
+          // what a legendary datatype
+          let soapstones: (string | string[])[][] = [
+              ["Your", ["help", "participation", "effort"], "shows that you", ["really care about the gulf", "care about science", "want to help"], "! Thank you."],
+              ["Your", ["help", "participation", "effort", "time"], "is helping us", ["understand the world", "fight coastal damage", "save the planet"], "!"],
+              [["Thank you", "we appreciate you"], "for your continued", ["effort", "time", "aid"], "!"],
+              [["Together we can", "I know we can", "Thank you for helping to", "You, me, and the rest of this community can work together to"], ["save the Lousiana wetlands", "fight environmental damage", "advance science"]],
+              [["Keep up the good work", "Don't stop just yet :)", "Keep at it", "Good work", "Well done", "Nice job"], "!"],
+              ["You", ["are so helpful", "are doing great", "can do it", "are providing so much helpful data"], "!"],
+              [["Don't worry about getting it exactly right", "Do your best", "It's ok if you don't know", "It's ok if you mess up"], ["just tell us what you see", "we'll take care of the rest", "we use statistical techniques to get the most from your answers, your effort is extremely helpful"]]];
           return soapstones[Math.floor(Math.random() * soapstones.length)];
       }
 
