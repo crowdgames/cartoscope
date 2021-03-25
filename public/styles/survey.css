@@ -63,6 +63,25 @@ span.required_answer {
 
 }
 
+
+.sciStarterBanner{
+    background-color: #72aa1f;
+    padding: 5px;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.sciStarterBanner:hover {
+    background-color: #5a8c1f;
+    
+}
+
+
+
+
+
 .more-text {
     margin-top: 10px;
 }

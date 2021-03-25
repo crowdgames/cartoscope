@@ -101,6 +101,17 @@ router.get('/surveyTGRaw/:hit_id', function(req, res, next) {
     });
 });
 
+//Get survey results for external surveys
+router.get('/surveyExternal/:hit_id', function(req, res, next) {
+
+    var hit_id = req.params.hit_id;
+    resultDB.getSurveyVotesHITExternal(hit_id).then(function(results) {
+        res.send(results);
+    }, function(err) {
+        res.status(400).send('survey results could not be generated!!!');
+    });
+});
+
 
 //Check Expert progress
 router.get('/checkExpertProgress/:hit_code', function(req, res, next) {
@@ -129,6 +140,53 @@ router.get('/landloss_progress_timeline', function(req, res, next) {
     }, function(err) {
         console.log(err)
         res.status(400).send('Error retrieving user timeline for Land Loss projects');
+    });
+});
+
+
+
+//Get quick snapshot of contributions for today
+router.get('/landloss_snapshot_today', function(req, res, next) {
+
+    resultDB.getLandLossVisitorsStatsToday().then(function(results) {
+        res.send(results);
+    }, function(err) {
+        console.log(err)
+        res.status(400).send('Error retrieving quick snapshot of contributions for today for Land Loss Project');
+    });
+});
+
+//Get quick snapshot of contributions from soft launch
+router.get('/landloss_snapshot_launch', function(req, res, next) {
+
+    resultDB.getLandLossVisitorsStatsLaunch().then(function(results) {
+        res.send(results);
+    }, function(err) {
+        console.log(err)
+        res.status(400).send('Error retrieving quick snapshot of contributions for today for Land Loss Project');
+    });
+});
+
+
+//Get quick snapshot of contributions for today
+router.get('/landloss_snapshot_date/:date', function(req, res, next) {
+
+    resultDB.getLandLossVisitorsStatsDate(req.params.date).then(function(results) {
+        res.send(results);
+    }, function(err) {
+        console.log(err)
+        res.status(400).send('Error retrieving quick snapshot of contributions for today for Land Loss Project');
+    });
+});
+
+//Get quick snapshot of contributions for today
+router.get('/landloss_snapshot_dates/', function(req, res, next) {
+
+    resultDB.getLandLossVisitorsStatsByDates().then(function(results) {
+        res.send(results);
+    }, function(err) {
+        console.log(err)
+        res.status(400).send('Error retrieving quick snapshot of contributions for today for Land Loss Project');
     });
 });
 
@@ -171,13 +229,52 @@ router.get('/hg_raw_data_launch', function(req, res, next) {
 router.get('/hg_raw_data_survey', function(req, res, next) {
 
     var hg_ids = [55,56,57,58,59,60];
-    // hg_ids =[69]
+    //hg_ids =[69]
     // dataset_id = "jtUC5ek9sbokHao"
     resultDB.getSurveyAnswersLandLoss(hg_ids).then(function(results) {
         res.send(results);
     }, function(err) {
         console.log(err)
         res.status(400).send('raw HG results could not be retrieved');
+    });
+});
+
+
+//Get raw survey data from all LLL projects in csv format
+router.get('/hg_raw_data_survey/csv', function(req, res, next) {
+
+    var hg_ids = [55,56,57,58,59,60];
+    //hg_ids =[69]
+    resultDB.getSurveyAnswersLandLoss(hg_ids).then(function(results) {
+
+        var fields = Object.keys(JSON.parse(results[results.length-1].response));
+        fields.push('timestamp');
+        fields.push('project_id');
+        var csv_results = [];
+
+        results.forEach(function(survey_response){
+            var csv_obj = {};
+            csv_obj.timestamp = survey_response.timestamp;
+            csv_obj.project_id = survey_response.project_id;
+            var resp_obj = JSON.parse(survey_response.response);
+            Object.keys(resp_obj).forEach(function(skey){
+                if (fields.indexOf(skey) !== -1){
+                    if (resp_obj[skey].hasOwnProperty('answer')){
+                        csv_obj[skey] = resp_obj[skey].answer
+                    } else {
+                        csv_obj[skey] = resp_obj[skey]
+                    }
+                }
+            });
+            csv_results.push(csv_obj)
+        });
+        var csv = json2csv({ data: csv_results, fields: fields });
+        //Send back CSV file:
+        res.attachment('landloss_survey_results.csv');
+        res.status(200).send(csv);
+    }, function(err) {
+        console.log(err)
+        res.status(400).send('CSV survey results could not be generated');
     });
 });
 

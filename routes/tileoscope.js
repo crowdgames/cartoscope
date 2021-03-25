@@ -864,27 +864,89 @@ router.get('/getTutorialItems/:main_code', function(req, res, next) {
 //Get Tileoscope AR actions for specific session id
 router.get('/getARActionsByDataset/:dataset', function(req, res, next) {
 
-
     //if one of the two missing, then error!
     var dataset = req.params.dataset;
-
     //make sure there is a project
     tileDB.getTileoscopeARActionsByDataset(dataset).then(function(actions) {
-
         res.send(actions);
-
     }, function(err) {
         console.log('err ', err);
         res.status(404).send('No trial found.');
     });
 
-
 });
 
 
-//TODO: Batch submit matches when user comes back online
+
+//Handy endpoint for adding new TG game sequences to the server
+router.post('/addTGGame', function(req, res, next) {
 
 
+    var seq = req.body.seq;
+    var seq_method = req.body.method;
+    var unique_code = req.body.unique_code;
+    var level_pool  = req.body.pool;
+    var is_memory = req.body.is_memory;
+
+
+    var game_url = "http://cartosco.pe/Tiles/?"+ seq_method  + "=" + unique_code;
+
+    if (is_memory) {
+        game_url = game_url + "&memory=true";
+    }
+
+
+    if (seq === undefined || seq_method === undefined || unique_code === undefined ) {
+        //if seq,method or ucode is not there, error
+        res.status(400).send('Make sure you define seq,method and unique code!');
+    } else if (seq_method === "random" && level_pool === undefined) {
+        //if method is random, we need pool as well:
+        res.status(400).send('Make sure you define pool for random sequences, separated by commas!');
+    } else if (seq_method === "random" && level_pool.split(",").length === 1) {
+        //make sure pool is appropriately formatted
+        res.status(400).send('You need to separate sequences in the pool with commas!');
+
+    } else if (seq_method !== "random" && seq_method !== "genetic" && seq_method !== "greedy"){
+        //TODO: expand this with qlearn modes
+        res.status(400).send('Sequence method not supported yet: '  + seq_method);
+    } else {
+
+        var func_add = "addTGSequence";
+        var func_check = "getTGSequencebyCode";
+        //if random, we add to genetic tree!
+        if (seq_method === "random"){
+            func_add = "addTGSPool";
+            func_check = "getTGPoolbyCode";
+        }
+
+        tileDB[func_check](unique_code).then(function(seq_data) {
+
+            //if we have one already, whoops
+            if (seq_data.length){
+                var info_message = "You already have something for " + unique_code + " with a sequence: " + seq_data[0].seq;
+                if (seq_method === "random") {
+                    info_message = "You already have something for " + unique_code + " with a pool: " + seq_data[0].pool;
+                }
+                res.send(info_message);
+            } else {
+                //proceed to add it
+                tileDB[func_add](seq,seq_method,unique_code,level_pool).then(function(seq_data) {
+                    //send game url
+                    res.send(game_url);
+                }, function(err) {
+                    console.log('err ', err);
+                    res.status(404).send('Could not add new TG sequence.');
+                });
+            }
+        }, function(err) {
+            console.log('err ', err);
+            res.status(404).send('Could not check existing sequences.');
+        });
+    }
+});
+
+
+//Batch submit matches when user comes back online
 //filters.requireLogin
 router.post('/uploadOfflineActionsAR', fupload.single('file'),
     function(req, res, next) {

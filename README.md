@@ -4,7 +4,7 @@
 1.  `git clone https://github.com/crowdgames/cartoscope-backend.git`
 
 
-2.  Install Node, MySQL and Wget:
+2.  Install Node, MySQL and Wget (note, the node version may matter. For me (Kutub), node 10.19.0 works but 15.9.0 does not. I'm unsure if that is an issue I have or if it is relevant to this whole project):
 	1. ##### Windows installation
 		1. Windows users follow the link to install Node: http://blog.teamtreehouse.com/install-node-js-npm-windows
 		2. When installing MySQL server, make sure the **lower_case_table_names is set to 2 and that passwords use Legacy Authentication Method is selected**
@@ -89,7 +89,8 @@ For more information, follow this link: https://www.digitalocean.com/community/t
 	2. For the remainder of the instructions, we will use port 8081 as the selected port:
 	3. In order to start setting up projects, you will need to register a user by going to http://localhost:8081/#/login
 	4. Make sure your registered user's name is `cartoproject` for project creation privileges to apply.
-	5. Login with the user and create a project
-	6. **Caution** The current setup does not provide a graphical interface for creating project tutorials. This can be accomplished by adding the image files to the `cartoscope_backend/public/images/Tutorials/` folder and adding the relevant information to the 
+	5. Ensure that is_creator=1 for your user in the convergeDB database, table "users". Set is_creator=1 if not so
+	6. Login with the user and create a project
+	7. **Caution** The current setup does not provide a graphical interface for creating project tutorials. This can be accomplished by adding the image files to the `cartoscope_backend/public/images/Tutorials/` folder and adding the relevant information to the 
 	
 

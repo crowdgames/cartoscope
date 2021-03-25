@@ -415,6 +415,16 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
           });
 
 
+          if ($scope.project.hasOwnProperty('scistarter_link')){
+              $scope.has_scistarter = true;
+          }
+          if ($scope.project.is_inaturalist) {
+              $scope.project.is_inaturalist = true;
+          }
+          if ($scope.project.hasOwnProperty("external_sign_up")){
+                $scope.has_external_signup = true;
+          }
+
           $scope.validate = function() {
 
 
@@ -428,7 +438,13 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
                   fd.append('short_name', $scope.project.short_name);
                   fd.append('short_name_friendly', $scope.project.short_name_friendly);
                   fd.append('short_description', $scope.project.short_description);
-                  fd.append('is_inaturalist', $scope.project.is_inaturalist);
+                  fd.append('is_inaturalist', $scope.project.is_inaturalist ? 1 : 0);
+                  if ($scope.has_scistarter){
+                  fd.append('scistarter_link', $scope.project.scistarter_link);
+                    }
+                    if ($scope.has_external_signup){
+                  fd.append('external_sign_up', $scope.project.external_sign_up);
+                    }
 
                   console.log(fd)
 
@@ -1205,17 +1221,35 @@ module.controller('stepOneController', ['$scope', '$state', '$http', 'swalServic
 
     var invalid_characters = ['\\','/',':','?','\"','<','>','|'];
 
+    $scope.has_scistarter = false;
+    $scope.has_external_signup = false;
+
+    if ($scope.project.hasOwnProperty("scistarter_link")){
+        $scope.has_scistarter = true;
+    }
+      if ($scope.project.hasOwnProperty("external_sign_up")){
+          $scope.has_external_signup = true;
+      }
+
     $scope.$on('validate', function(e) {
       $scope.validate();
     });
 
     $scope.validate = function() {
+
+
       if (!$scope.project.name || !$scope.project.description || !$scope.project.short_name || !$scope.project.short_name_friendly || !$scope.project.short_description) {
         $scope.showErr = true;
         swalService.showErrorMsg('Please enter a name, a short name and description for the project.');
       } else if (  invalid_characters.some(el => $scope.project.short_name.includes(el))) {
           $scope.showErr = true;
           swalService.showErrorMsg('Short name cannot contain the following characters: \n' + invalid_characters.join(','));
+      } else if ($scope.has_scistarter && ($scope.project.scistarter_link === "" || !$scope.project.scistarter_link)){
+          $scope.showErr = true;
+          swalService.showErrorMsg('Please enter valid URL for SciStarter form.');
+      } else if ($scope.has_external_signup && ($scope.project.external_sign_up === "" || !$scope.project.external_sign_up)){
+          $scope.showErr = true;
+          swalService.showErrorMsg('Please enter valid URL for external signup form.');
       }
 
       else {
@@ -1236,7 +1270,13 @@ module.controller('stepOneController', ['$scope', '$state', '$http', 'swalServic
           fd.append('short_name', $scope.project.short_name);
           fd.append('short_name_friendly', $scope.project.short_name_friendly);
           fd.append('short_description', $scope.project.short_description);
-          fd.append('is_inaturalist', $scope.project.is_inaturalist);
+          fd.append('is_inaturalist', $scope.project.is_inaturalist ? 1 : 0);
+          if ($scope.has_scistarter){
+              fd.append('scistarter_link', $scope.project.scistarter_link);
+          }
+          if ($scope.has_external_signup){
+              fd.append('external_sign_up', $scope.project.external_sign_up);
+          }
 
 
           $http.post('api/project/add', fd, {
@@ -2066,9 +2106,27 @@ module.controller('projectsPageController', ['$scope', 'userData', 'projects', '
             });
             //proceed to edit page
             $timeout( function(){
+
+                //duplicate tutorial here:
+                $http.get('/api/project/duplicateTutorial/' + data.data.old_code + "/" + data.data.new_code).then(function(tdt) {
+                    console.log("Tutorial duplicated successfully")
+                });
+
+
                 //get project info first and then go to edit:
                 $http.get('/api/tasks/getInfoFree/' + data.data.new_code).then(function(npdata) {
                     var new_project = npdata.data[0];
+
+                    console.log(new_project)
+
+                    //TODO: if survey is custom, we need to duplicate that as well.
+                    if ( new_project.survey_type == "CUSTOM"){
+                        //duplicate survey here:
+                        $http.get('/api/project/duplicatesurveyItems/' + data.data.old_code + "/" + data.data.new_code).then(function(tdt) {
+                            console.log("Survey duplicated successfully")
+                        });
+                    }
+
                     $scope.goToEdit(new_project)
                 });
 

@@ -26,7 +26,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
             templateUrl: 'templates/survey_tlx.html',
             controller: 'surveyTLXController',
             params: {
-                hitId:''
+                hitId:'',
+                contributions: 0
             }
   });
 
@@ -36,7 +37,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
         templateUrl: 'templates/survey_game.html',
         controller: 'surveyGAMEontroller',
         params: {
-            hitId:''
+            hitId:'',
+            contributions: 0
         }
     });
 
@@ -46,7 +48,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
         templateUrl: 'templates/survey_game.html',
         controller: 'surveyGAMEontroller',
         params: {
-            hitId:''
+            hitId:'',
+            contributions: 0
         }
     });
 
@@ -56,7 +59,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
         templateUrl: 'templates/survey_imi.html',
         controller: 'surveyIMIController',
         params: {
-            hitId:''
+            hitId:'',
+            contributions: 0
         }
     });
 
@@ -67,7 +71,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
         templateUrl: 'templates/survey_custom.html',
         controller: 'surveyCUSTOMController',
         params: {
-            hitId:''
+            hitId:'',
+            contributions: 0
         }
     });
 
@@ -130,7 +135,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
           workerId: '',
           project: '',
           hitId:null,
-          hitCode: null
+          hitCode: null,
+          contributions: 0
       },
 
       controller: function ($scope,$stateParams, $state, $window, $http, $sce, heatMapProject1, heatMapProject2) {
@@ -388,6 +394,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
                   });})
           };
 
+
+
           $http.get('/api/tasks/getInfoFree/' + $scope.project).then(function(pdata) {
 
 
@@ -399,6 +407,17 @@ module.config(function($stateProvider, $urlRouterProvider) {
                   if ($scope.image_source != null) {
                       $scope.showSource = true;
                   }
+
+
+              // scistarter data:
+              $scope.has_scistarter_link = false;
+              if ($scope.proj_data.hasOwnProperty('scistarter_link') && $scope.proj_data.scistarter_link != null ){
+                  $scope.sci_starter_link = $sce.trustAsResourceUrl($scope.proj_data.scistarter_link) ;
+                  $scope.has_scistarter_link = true;
+                  //TODO: contributions number
+                  $scope.scistarter_contributions = parseInt($state.params.contributions) - 1;
+              }
+
 
 
 
@@ -1006,7 +1025,7 @@ module.controller('surveyTLXController', ['$scope', '$http', '$state', '$locatio
                 if (data.data.hitCode) {
                     $state.go('hitCode', {hitCode: data.data.hitCode});
                 } else if (data.data.heatMap) {
-                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId});
+                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId, contributions: $scope.params.contributions});
                 }
             }, function(err) {
                 if ($scope.userType == 'mTurk') {
@@ -1120,7 +1139,7 @@ module.controller('surveyGAMEontroller', ['$scope', '$http', '$state', '$locatio
                 if (data.data.hitCode) {
                     $state.go('hitCode', {hitCode: data.data.hitCode});
                 } else if (data.data.heatMap) {
-                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId});
+                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId, contributions: $scope.params.contributions});
                 }
             }, function(err) {
                 if ($scope.userType == 'mTurk') {
@@ -1321,7 +1340,7 @@ module.controller('surveyIMIController', ['$scope', '$http', '$state', '$locatio
                 if (data.data.hitCode) {
                     $state.go('hitCode', {hitCode: data.data.hitCode});
                 } else if (data.data.heatMap) {
-                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId, hitId: $scope.trialId });
+                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId, hitId: $scope.trialId, contributions: $scope.params.contributions });
                 }
             }, function(err) {
                 if ($scope.userType == 'mTurk') {
@@ -1394,10 +1413,15 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
 
     $scope.trialId = $scope.params.hitId ||  $scope.params.trialId || "kiosk";
 
+    //if we are using survey that doesnt correspond to a project
+    $scope.external_survey =  parseInt($scope.params.external_survey) || 0;
+
     console.log($scope.trialId);
 
 
     $scope.survey_questions = [];
+    $scope.survey_questions_shuffled = [];
+
 
     $scope.alertError = function(msg) {
         swal({
@@ -1473,7 +1497,10 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
     $http.get('/api/project/surveyItems/' +   $scope.params.code).then(function(sdata) {
 
 
-        $scope.getProjectPic($scope.params.code);
+        //if we are using survey that doesnt correspond to a project
+        if (!$scope.external_survey){
+            $scope.getProjectPic($scope.params.code);
+        }
 
         var survey_items_all = JSON.parse(sdata.data.survey_form);
 
@@ -1540,12 +1567,27 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
                     push_obj.required = false
                 }
 
-                $scope.survey_questions.push(push_obj)
+                //if we want some questions shuffled, we keep them separte, shuffle then add
+                if (sv.hasOwnProperty("shuffle") && sv.shuffle == true) {
+                    $scope.survey_questions_shuffled.push(push_obj)
+                } else {
+                    $scope.survey_questions.push(push_obj)
 
-                //TODO: survey type: external!
+                }
+
+
             }
 
         })
+
+        //shuffle the shuffled questions here and add to the rest:
+        shuffleArray($scope.survey_questions_shuffled);
+        $scope.survey_questions = $scope.survey_questions.concat($scope.survey_questions_shuffled);
+        
+
+
+
+
         //console.log($scope.survey_questions)
 
     }, function(err) {
@@ -1587,15 +1629,22 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
                 data.trialId = $scope.trialId;
             }
 
+            if($scope.external_survey){
+                link = 'api/project/surveyExternal';
+            }
+
             $http.post(link, JSON.stringify(data)).then(function(data) {
                 // console.log('data',data.data);
                 //console.log(data.data.hitCode);
                 if (data.data.hitCode && $scope.userType == 'mTurk') {
                     $state.go('hitCode', {hitCode: data.data.hitCode});
                 } else if (data.data.heatMap) {
-                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId, hitId: $scope.trialId });
+                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId, hitId: $scope.trialId , contributions: $scope.params.contributions});
+                }  else if (data.data.external_survey){
+                    alert('Survey responses stored succesfully!')
+
                 } else {
-                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId, hitId: $scope.trialId });
+                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId, hitId: $scope.trialId , contributions: $scope.params.contributions});
                 }
 
 

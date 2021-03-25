@@ -3,6 +3,19 @@
     <center>
 
 
+        <!--Sci Starter -->
+        <div class="row " ng-if="has_scistarter_link && scistarter_contributions">
+                <a target="_blank" ng-href="{{sci_starter_link}}" style="text-decoration: none;" >
+                <div class="sciStarterBanner">
+                <h5>
+                    <span><img width="20px" src="https://scistarter.org/favicon.ico"></span>
+                    Good Job! You contributed {{scistarter_contributions}} images. Click here to report your contributions to SciStarter.
+                </h5>
+                </div>
+                </a>
+        </div>
+
+
     <div class="row">
         <h1 class="title">Results & Contributions</h1>
         <p> Below you can see how

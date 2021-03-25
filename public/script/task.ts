@@ -621,7 +621,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
                       var hitID = $location.search().hitID || $location.search().trialID || "kiosk";
 
-                      window.location.replace('/survey.html#/' + vm.survey_type + '?code=' + vm.code+ '&userType=kiosk&hitId=' + hitID);
+                      window.location.replace('/survey.html#/' + vm.survey_type + '?code=' + vm.code+ '&userType=kiosk&hitId=' + hitID + "&contributions=" + vm.data.progress);
 
                   }
               }
@@ -653,7 +653,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                       //if out of projects, go to survey
                       if (next_codes.length == 0) {
 
-                          window.location.replace('/survey.html#/'+ vm.survey_type + '?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
+                          window.location.replace('/survey.html#/'+ vm.survey_type + '?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last + "&contributions=" + vm.data.progress);
 
                       } else {
 
@@ -773,7 +773,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                       }
                       else {
                           //Add the chaining parameter to show relevant questions at the survey
-                          window.location.replace('/survey.html#/'+ vm.survey_type + '?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last)
+                          window.location.replace('/survey.html#/'+ vm.survey_type + '?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last + "&contributions=" + vm.data.progress)
 
                       }
                   }

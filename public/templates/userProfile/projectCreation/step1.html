@@ -51,40 +51,7 @@
                 </span>
                 <textarea ng-model="project.short_description"></textarea>
             </div>
-            <!--<div>-->
-                <!--<span>-->
-                    <!--Is this an iNaturalist project?-->
-                    <!--<i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"-->
-                       <!--data-placement="right" style="margin-left: 10px;color: #9cdc1f;"-->
-                       <!--title="Checking this box enables features like reporting identifications back to iNaturalist.-->
-                                <!--Please make sure that the images you upload come with the required .json files."></i>-->
-                <!--</span>-->
-            <!--</div>-->
-            <!--<div>-->
-                <!--<input type="checkbox" ng-model="project.is_inaturalist" style="float: left;"  checked="unchecked">-->
-            <!--</div>-->
-                <span class="txt">Image Source
-                    <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
-                       data-placement="right" style="margin-left: 10px;color: #9cdc1f;"
-                       title="Whether you require additional functionalities for iNaturalist projects."></i>
 
-                </span>
-            <div class="buttons">
-
-                <div class="inaturalist-button" style="float: left;" ng-class="{'active': project.is_inaturalist == 1}" ng-click="project.is_inaturalist = 1">
-                    <span class="title"><i class="fa fa-check-circle sel-check"></i>iNaturalist Project</span>
-                    <span class="msg">Enables features like reporting identifications back to iNaturalist. Make sure all images are
-                    accompanied by a .json file with necessary information.</span>
-                </div>
-
-                <div class="inaturalist-button" ng-class="{'active': project.is_inaturalist == 0}" ng-click="project.is_inaturalist = 0">
-                    <span class="title"><i class="fa fa-check-circle sel-check"></i>Other Source</span>
-                    <span class="msg"> Images from other sources that don't require additional information. </span>
-                </div>
-            </div>
-                <div style="clear: both;">
-
-                </div>
 
         </div>
         <div class="col-md-6">
@@ -102,6 +69,60 @@
             <div>
                 <canvas id="imageCanvas" style="max-height: 200px;width: auto;"></canvas>
             </div>
+        </div>
+
+
+    </div>
+
+    <div class="row">
+        <span class="txt"><h4>Additional Features: </h4></span>
+    </div>
+
+    <!--inaturalist-->
+    <div class="row">
+        <div class="col-md-2">
+            <span>
+            iNaturalist Project
+                <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
+                   data-placement="right" style="margin-left: 10px; color: #9cdc1f;"
+                   title="Enables features like reporting identifications back to iNaturalist. Make sure all images are
+                    accompanied by a .json file with necessary information.">
+        </i>
+             </span>
+
+        </div>
+        <div class="col-md-1"><input type="checkbox" ng-model="project.is_inaturalist"  checked="checked"></div>
+    </div>
+    <!--sci starter:-->
+    <div class="row">
+        <div class="col-md-2">
+            <span>SciStarter Project
+            <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
+               data-placement="right" style="margin-left:15px; color: #9cdc1f;"
+               title="Check if you wish users to report back to SciStarter.">
+            </i>
+            </span>
+        </div>
+
+        <div class="col-md-1"><input type="checkbox" ng-model="has_scistarter"  checked="checked"></div>
+        <div class="col-md-4" ng-show="has_scistarter">
+            <input type="url" class="invite" placeholder="SciStarter form URL here..." ng-model="project.scistarter_link">
+        </div>
+    </div>
+    <!--external sign up-->
+    <div class="row">
+        <div class="col-md-2">
+            <span>External Sign Up
+            <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
+               data-placement="right" style="margin-left: 19px; color: #9cdc1f;"
+               title="Check if you wish to embed an additional external form, for example for users to sign up.">
+            </i>
+            </span>
+        </div>
+
+        <div class="col-md-1"> <input type="checkbox" ng-model="has_external_signup"  checked="checked"></div>
+        <div class="col-md-4" ng-show="has_external_signup">
+            <input type="url" class="invite" placeholder="External form URL here..." ng-model="project.external_sign_up">
         </div>
     </div>
 </div>
