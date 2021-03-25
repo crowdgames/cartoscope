@@ -39,9 +39,6 @@ One of my concerns about tying cairns to progression or images is that we may no
 
 == CAIRNS TODO ==
 
- - soapstone messages should be in one bubble
- - soapstone generation should be a hidden div, not a modal
-
  - maybe allow emojis to change if you reselect
 
 we may need to make changes to the progress bar
