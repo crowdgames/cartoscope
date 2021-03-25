@@ -183,7 +183,7 @@ const processData = (dir, data, dataset, usedIds, summaryData, callback) => {
       url: photo.url,
       fileName,
       objID,
-      category: '_',
+      category: iconic,
       categoryHint: iconic,
       attribution: photo.attribution,
       licenseCode: photo.license_code,
@@ -194,6 +194,9 @@ const processData = (dir, data, dataset, usedIds, summaryData, callback) => {
     });
 
     if (dataset[iconic].length == 2) {
+      // in one the category is provided and one it is not.
+      dataset[iconic][1].category = '_';
+
       ++summaryData.categoriesCount;
       summaryData.categoriesLabel.push(iconic);
       summaryData.categoriesSample.push(fileName);
