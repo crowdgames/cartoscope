@@ -5,7 +5,7 @@ var module = angular.module('taskApp', ['ui.router', 'ngMap','configApp','ngJuxt
 
 //change \n to br
 module.filter("textBreaks", ['$sce', function ($sce) {
-    return function (x) {
+    return function (x: any) {
         if (x){
             // var new_text = x.replace(new RegExp('\\n', 'g'), '<br/>');
             var new_text = x.replace(/\\n/g, "<br/>");
@@ -21,18 +21,18 @@ module.filter("textBreaks", ['$sce', function ($sce) {
     }
 }]);
 
-var latCenter;
-var lngCenter;
+var latCenter: any;
+var lngCenter: any;
 var dZoom = 15;
 
-module.config(['$locationProvider', function($locationProvider) {
+module.config(['$locationProvider', function($locationProvider: any) {
   // $locationProvider.html5Mode({
   //   enabled: true,
   //   requireBase: false,
   // });
 }]);
 
-module.config(function($stateProvider, $urlRouterProvider) {
+module.config(function($stateProvider: any, $urlRouterProvider: any) {
   
   $stateProvider.state({
     name: 'tasks',
@@ -41,8 +41,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
     controller: 'taskController',
       controllerAs: 'model',
     resolve: {
-      userData: ['$http', function($http) {
-        return $http.get('/api/user').then(function(data) {
+      userData: ['$http', function($http: any) {
+        return $http.get('/api/user').then(function(data: any) {
           return data.data[0];
         }).catch(function() {
           return null;
@@ -58,8 +58,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
         controller: 'geneticTaskController',
         controllerAs: 'model',
         resolve: {
-            userData: ['$http', function($http) {
-                return $http.get('/api/user').then(function(data) {
+            userData: ['$http', function($http: any) {
+                return $http.get('/api/user').then(function(data: any) {
                     return data.data[0];
                 }).catch(function() {
                     return null;
@@ -77,66 +77,13 @@ module.controller('defaultController', ['$scope', '$location', function($scope, 
   $scope.uiMask.show = false;
 }]);
 
-
-
-
-// module.controller('MapController', ['$scope','$timeout', 'NgMap', function($scope, $timeout, NgMap) {
-//     var vm = this;
-//     vm.centerChanged = centerChanged;
-//     vm.zoomChanged = zoomChanged;
-//     vm.fetchCenter = fetchCenter;
-//     vm.map={};
-//     vm.lat="";
-//     vm.lang="";
-//
-//     //Map initialization
-//     NgMap.getMap().then(function(map) {
-//         vm.map = map;
-//         var myLatlng = new google.maps.LatLng(Number($scope.getLat()),Number($scope.getLng()));
-//         vm.map.setCenter(myLatlng);
-//         latCenter = vm.map.getCenter().lat();
-//         lngCenter = vm.map.getCenter().lng();
-//         vm.lat= latCenter;
-//         vm.lang = lngCenter;
-//         //console.log(latCenter, lngCenter);
-//     });
-//
-//     function fetchCenter(){
-//         console.log('In get Center ');
-//         var lng = $scope.getLng();
-//         var lat = $scope.getLat();
-//
-//         var myLatlng = new google.maps.LatLng(Number($scope.getLat()),Number($scope.getLng()));
-//         vm.map.setCenter(myLatlng);
-//
-//         return [lat,lng];
-//     }
-//
-//     function centerChanged() {
-//         console.log('IN center CHnaged' +vm.map.getCenter().lat(), vm.map.getCenter().lng() );
-//         $scope.centerLat = vm.map.getCenter().lat();
-//         $scope.centerLng = vm.map.getCenter().lng();
-//         latCenter = vm.map.getCenter().lat();
-//         lngCenter = vm.map.getCenter().lng();
-//     }
-//
-//     function zoomChanged() {
-//         console.log('IN ZOom CHnaged'+ vm.map.getCenter().lat(), vm.map.getCenter().lng());
-//         $scope.centerLat = vm.map.getCenter().lat();
-//         $scope.centerLng = vm.map.getCenter().lng();
-//         latCenter = vm.map.getCenter().lat();
-//         lngCenter = vm.map.getCenter().lng();
-//     }
-//
-// }]);
+// I deleted commented out map controller code here, see git if you want to look at it
 
 module.controller('taskController', ['$scope', '$location', '$http', 'userData', '$window', '$timeout', 'NgMap','$q', '$sce',  'heatMapProject1', 'heatMapProject2',
   function($scope, $location, $http, userData,  $window, $timeout, NgMap, $q,$sce,  heatMapProject1, heatMapProject2) {
       $window.document.title = "Tasks";
 
-
-
-      var vm = this;
+      var vm: any = this;
       vm.centerChanged = centerChanged;
       vm.zoomChanged = zoomChanged;
       vm.fetchCenter = fetchCenter;
@@ -222,49 +169,275 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       } else {
           $scope.cont_button = "GO TO SURVEY"
       }
-      vm.cairn_messages = [];
-      vm.showCairnMessages = false;
-      vm.submitCairn = function(msg){
-          vm.cairn_messages = [];
 
-          vm.cairnTitle = "Great! See what others have left for you!";
-          //store cairn
-          var body = {
-              projectID: vm.data.id,
-              message: msg,
-              progress: vm.data.progress
-          };
-          $http.post('/api/tasks/submitCairn', body).then(function(cairn_data){
-              //we get back messages from others, prep and show!
-              cairn_data.data.forEach(function(item){
-                  vm.cairn_messages.push(item.message)
-              });
-              vm.showCairnMessages = true;
-          })
-      };
+      /* ==============================
+       * CAIRN CODE
+       * TODO can this be abstracted to another file? I don't know how angular wooorks
+       * ============================== */ 
+      
+      vm.tasksToCompleteTillSoapstoneMsg      = 2;
+      vm.tasksToCompleteTillPhysics           = 5;
+      vm.tasksToCompleteTillSoapstoneCreation = 3;
 
-
-      vm.cairnTitle = "Pick a message for others to find!";
-      vm.fetchCairns = function() {
-
-          vm.showCairnMessages = false;
-         vm.cairn_options = [];
-          //Read them from csv:
-          d3.csv('/images/cairn_message_list.csv', function (csv_data) {
-              d3.shuffle(csv_data);
-              for(var i = 0, length = 4; i < length; i++){
-                  vm.cairn_options.push(csv_data[i].message)
-              }
-          });
-      };
-
-      vm.resetCairnModal = function(){
-          vm.fetchCairns();
-          $("#cairnModal").modal('hide');
+      vm.handleCairns = () => {
+          if (!vm.show_cairns) return;
+          // note the time the cairn was created. Divide by 1000 because mysql wants second precision, not ms precision
+          vm.timeCairnShownToPlayer = Math.floor(Date.now() / 1000);
+          // Pick one of the cairn types. else ifs because we don't want two at the same time
+          if (vm.data.progress % vm.tasksToCompleteTillSoapstoneCreation === 0) {
+              // Show the soapstone create modal
+              vm.startSoapstoneCreate();
+          }
+          else if (vm.data.progress % vm.tasksToCompleteTillSoapstoneMsg === 0) {
+              // Show a message someone else has left
+              vm.showNewSoapstoneMsg();
+          }
+          else if (vm.data.progress % vm.tasksToCompleteTillPhysics === 0) {
+              // Allow the player to play with emoji stacking
+              vm.startEmojiCreate();
+          }
       }
 
+      vm.submitCairn = (baseCairnType: string, message: string) => {
+          // if the message is empty, the cairnType should be "empty-" + cairnType
+          let cairnType = message.length === 0 ? "empty-" + baseCairnType : baseCairnType;
+          console.log("submitting cairn of type " + cairnType + " with message " + message);
+          let body = {
+              projectID:                  vm.data.id,
+              message:                    message,
+              cairnType:                  cairnType,
+              progress:                   vm.data.progress - 1,
+              timeWhenCairnShownToPlayer: vm.timeCairnShownToPlayer,
+              taskName:                   vm.previousTaskName
+          };
+          $http.post('api/tasks/submitCairn', body).then((data: object) => console.log(data));
+      }
 
+      $scope.isDebugButtonHidden = false;
+      // activated by hitting the debug button
+      vm.handleDebug = () => {
+          console.log("Debugging");
+          let physicsBody = document.getElementById("physicsBody");
+          vm.addEmojiToPhysics("thinking");
+      }
 
+      // == SOAPSTONE MSG CODE ==
+      vm.showNewSoapstoneMsg = () => {
+          let body = { projectID: vm.data.id, cairnType: "soapstone" };
+          // TODO this should be a get, but I think gets have to have body as part of the url
+          $http.post('api/tasks/getCairns', body).then((serverReturn: any) => {
+              if (serverReturn.data.length > 0) {
+                  let message: string = serverReturn.data[0].message;
+                   Toastify({
+                     text:            "Another user left you a message: <br><br>" + message,
+                     duration:        10000,
+                     close:           true,
+                     gravity:         "top", // `top` or `bottom`
+                     position:        "left",
+                     backgroundColor: "#4663ac"
+                   }).showToast();
+              }
+              else {
+                  console.error("No relevant soapstone messages found");
+              }
+          });
+      }
+      // == END SOAPSTONE MSG CODE ==
+
+      // == SOAPSTONE CREATE CODE ==
+      $scope.isSoapstoneCreateHidden  = true;
+      // (Code for creating new soapstone messages, as opposed to displaying ones that already exist)
+      vm.startSoapstoneCreate = () => {
+          let soapstoneForm = document.getElementById("soapstone-form");
+          let soapstone     = vm.randomSoapstone();
+          vm.replaceFormElemsWithSoapstone(soapstoneForm, soapstone);
+          $scope.isSoapstoneCreateHidden = false;
+          $scope.isMainTaskHidden        = true;
+      }
+
+      vm.randomSoapstone = () => {
+          // get a random soapstone template from this hardcoded list
+          let soapstones = [["Hi there", ["Bob,", "Jeff,", "Sandra,"], "it's nice to meet you! I love your", ["hat", "french toast", "incredible pecs"]]];
+          return soapstones[Math.floor(Math.random() * soapstones.length)];
+      }
+
+      vm.replaceFormElemsWithSoapstone = (form: HTMLElement, soapstone: (string | string[])[]) => {
+          /** given an HTML form and a soapstone template, we want to turn the HTML form into a soapstone form
+           *  A soapstone template is an array of (strings, or arrays of strings)
+           *  See docs/cairns.md for more information on what soapstones are
+           */
+          // clear form
+          form.innerHTML = '';
+          soapstone.forEach(elem => {
+              // If the element in the soapstone template is just a simple string, just add a textual label to the form to represent the element
+              if (typeof elem === "string") {
+                  let label = document.createElement("label");
+                  label.innerText = elem;
+                  // add spaces around the label to make it look nicer
+                  label.innerHTML = "&nbsp;&nbsp;" + label.innerHTML + "&nbsp;&nbsp;";
+                  form.appendChild(label);
+              }
+              else {
+                  // but if it's an array of strings, we want to create an options box that allows the user to choose between the various options in this array of strings
+                  let selector = document.createElement("select");
+                  selector.setAttribute("class", "custom-select mr-sm-2");
+                  elem.forEach(optionStr => {
+                      let option = document.createElement("option");
+                      option.setAttribute("value", optionStr);
+                      option.innerText = optionStr;
+                      selector.appendChild(option);
+                  });
+                  form.appendChild(selector);
+              }
+          });
+      }
+
+      vm.submitSoapstone = () => {
+          // extract the user submissions from the soapstone form on the modal
+          let soapstoneFormValues = Array.from(document.getElementById("soapstone-form")!.children)
+              .map((child) => 
+                   child.localName === "select" 
+                       ? (child as HTMLSelectElement).value
+                       : (child as HTMLFormElement).innerText.trim() // remove &nbsp from both sides
+                  )
+              .join(" ");
+          vm.submitCairn("soapstone", soapstoneFormValues);
+          $scope.isSoapstoneCreateHidden = true;
+          $scope.isMainTaskHidden        = false;
+      }
+
+      vm.submitEmptySoapstone = () => {
+          vm.submitCairn("soapstone", "");
+          $scope.isSoapstoneCreateHidden = true;
+          $scope.isMainTaskHidden        = false;
+      }
+
+      // == END SOAPSTONE CREATE CODE ==
+
+      // == EMOJI CREATE CODE ==
+      $scope.isMainTaskHidden = false;
+      $scope.isPhysicsDivHidden  = true;
+
+      vm.startEmojiCreate = () => {
+          vm.showModal(); // this isn't necessary, and honestly there might be good reasons to remove it
+          $scope.isMainTaskHidden = true; // the div with the main task
+          $scope.isPhysicsDivHidden  = false; // the div with the ballpit of emojis
+          $scope.isEmojiPickerHidden = false; // the div with the buttons to select which emoji you want
+          Render.run(vm.render);
+          vm.hideModal();
+      }
+
+      // activated by clicking the "return to tasks button"
+      vm.finishEmojiCreate = () => {
+          $scope.isMainTaskHidden = false;
+          $scope.isPhysicsDivHidden  = true;
+          Render.stop(vm.render);
+          vm.submitCairn("emoji", vm.submittedEmoji);
+          vm.submittedEmoji = "";
+      }
+
+      // assume no emoji was submitted, fill this variable if one was
+      vm.submittedEmoji = "";
+      vm.submitEmoji = (submittedEmoji: string) => {
+          vm.submittedEmoji = submittedEmoji;
+          vm.addEmojiToPhysics(submittedEmoji); // add the emoji to the ballpit
+          $scope.isEmojiPickerHidden = true;
+          // The actual sending of the emoji to the database happens in finishEmojiCreate
+      }
+
+      // add the emoji to the ballpit
+      vm.addEmojiToPhysics = (emojiToAdd: string) => {
+          // add it near the top, in a random location on the x axis
+          // window.innerWidth / 4 because the physics window size is dynamic
+          let newEmoji = Bodies.circle(Math.random() * window.innerWidth / 4 + 30, 50, 20, {
+              render :{
+                  sprite: {
+                      texture: 'images/emojis/' + emojiToAdd + '.png',
+                      xScale: 0.1,
+                      yScale: 0.1
+                  }
+              },
+              "restitution": 0.8
+          });
+          World.add(vm.engine.world, [newEmoji]);
+      }
+
+      // module aliases
+      let Engine          = Matter.Engine,
+          Render          = Matter.Render,
+          Runner          = Matter.Runner,
+          World           = Matter.World,
+          MouseConstraint = Matter.MouseConstraint,
+          Mouse           = Matter.Mouse,
+          Bodies          = Matter.Bodies;
+
+      // Activated by angular when the physics host (id physicsBody) is initialized
+      vm.initializePhysics = () => {
+          console.log("Beginning creation of physics div");
+          vm.isPhysicsModalCreated = true;
+
+          // create an engine. Apparently a lot of this code is deprecated, but it's also from the matter tutorial so...
+          vm.engine = Engine.create();
+
+          let physicsHost = document.getElementById("physicsBody")!;
+
+          let physHeight = window.innerHeight / 3;
+          let physWidth = window.innerWidth / 3;
+          // create a renderer
+          vm.render = Render.create({
+              element: physicsHost,
+              engine: vm.engine,
+              options: {
+                  width: physWidth, // dynamically size the window based on browser size
+                  height: physHeight,
+                  wireframes: false
+              }
+          });
+
+          var mouse = Mouse.create(vm.render.canvas),
+              mouseConstraint = MouseConstraint.create(vm.engine, {
+              mouse: mouse,
+              constraint: {
+                  stiffness: 0.2,
+                  render: {
+                      visible: false
+                  }
+              }
+          });
+
+          // dynamically place the walls based on browser size
+          var ground    = Bodies.rectangle(physWidth , physHeight + 45, physWidth * 4 , 100             , { isStatic: true });
+          var leftWall  = Bodies.rectangle(-45         , physHeight      , 100            , physHeight * 4 , { isStatic: true });
+          var rightWall = Bodies.rectangle(physWidth + 45 , physHeight      , 100            , physHeight * 4 , { isStatic: true });
+          var topWall   = Bodies.rectangle(300       , -45               , physWidth * 4 , 100             , { isStatic: true });
+
+          // add all of the bodies to the world
+          World.add(vm.engine.world, [ground, leftWall, rightWall, topWall]);
+          World.add(vm.engine.world, mouseConstraint);
+
+          // run the engine
+          Runner.run(vm.engine);
+
+          vm.fillPhysicsWithEmojisFromDatabase();
+      }
+
+      vm.fillPhysicsWithEmojisFromDatabase = () => {
+          let body = { projectID: vm.data.id, cairnType: "emoji", number: 30 };
+          $http.post('api/tasks/getCairns', body).then((serverReturn: object) => {
+              if (serverReturn["data"].length > 0) {
+                  serverReturn["data"].forEach((cairn: object, index: number) =>
+                      setTimeout(() => {
+                          let emojiFromDatabase = cairn["message"];
+                          vm.addEmojiToPhysics(emojiFromDatabase);
+                      }, index * 50))
+              } 
+              else console.error("No relevant emojis found");
+          });
+      }
+
+      /* ==============================
+       * END CAIRN CODE
+       * ============================== */ 
 
       //for NGS tasks
       function getFullIframe(){
@@ -429,6 +602,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               vm.hideModal();
           });
       };
+
 
       function handleEnd($window){
 
@@ -758,9 +932,10 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           $http.post('/api/tasks/submit', body)
       }
 
-
       function submit(option,option_text) {
 
+          // if a player is attempting to submit when there is no task visible, just ignore
+          if ($scope.isMainTaskHidden) return;
           vm.showModal();
           //if markers task, loop through all markers and submit the selected ones, ignore submit button option
           if (vm.showMarkerPoints) {
@@ -867,6 +1042,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
               };
 
+              vm.previousTaskName = vm.tasks[0]["name"];
+
               $http.post('/api/tasks/submit', body).then(function() {
 
                   vm.defZoom = dZoom;
@@ -929,10 +1106,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                       })
                   }
 
-                  if (vm.show_cairns > 0  && vm.data.progress %  vm.show_cairns === 0) {
-                      $("#cairnModal").modal('show')
-                  }
-
+                  vm.handleCairns();
               });
           }
 
@@ -954,7 +1128,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               vm.recenter();
           });
       };
-
 
       function fetchCenter(){
           //console.log('In get Center ');
@@ -1032,11 +1205,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           vm.req_amount = vm.data.req_count;
           vm.survey_t = vm.data.survey_type || 'IMI';
           vm.survey_type = 'survey' +  vm.survey_t;
-          vm.show_cairns = vm.data.show_cairns || 0; //if it has cairns
-
-          if(vm.show_cairns){
-              vm.fetchCairns();
-          }
+          vm.show_cairns = vm.data.show_cairns || 0;
 
           if (vm.data.template.selectedTaskType === "ngs"){
               if (vm.data.ngs_zoom){
@@ -2666,14 +2835,4 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
         };
 
     }]);
-
-
-
-
-
-
-
-
-
-
 

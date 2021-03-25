@@ -75,11 +75,14 @@ For more information, follow this link: https://www.digitalocean.com/community/t
 		npm install
 		cd ./public
 		bower install
-12. To facilitate development, also install nodemon with ```npm install -g nodemon```
+12. To facilitate development, also install nodemon and typescript with ```npm install -g nodemon typescript```
 
 14. #### Start Server
 		cd ../cartoscope-backend
 		nodemon app
+
+14. #### Start automatic typescript compilation
+		tsc --watch
 		
 15. #### Setup Users etc.
 	1. Your main page is at http://localhost:CARTO_PORT (where CARTO_PORT is the port specified in the environment variables)

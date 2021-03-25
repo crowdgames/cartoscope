@@ -632,33 +632,30 @@ router.post('/updateProgress', [filters.requireLogin, filters.requiredParamHandl
             });
     });
 
+// See git for the old cairn submission function
+router.post('/submitCairn', [filters.requireLogin, filters.requiredParamHandler(['projectID', 'message', 'progress', 'cairnType', 'timeWhenCairnShownToPlayer', 'taskName'])], (req, res) => {
+        let message                    = req.body.message;
+        let progress                   = req.body.progress;
+        let projectID                  = req.body.projectID;
+        let cairnType                  = req.body.cairnType;
+        let timeWhenCairnShownToPlayer = req.body.timeWhenCairnShownToPlayer;
+        let taskName                   = req.body.taskName;
+        let userID                     = req.session.passport.user.id;
 
-router.post('/submitCairn', [filters.requireLogin, filters.requiredParamHandler(['projectID', 'message', 'progress'])],
-    function(req, res, next) {
-        //var taskID = req.body.taskID;
-
-        var message = req.body.message;
-        var progress = req.body.progress;
-        var projectID = req.body.projectID;
-        var userID = req.session.passport.user.id;
-
-        projectDB.storeCairnMessage(userID, projectID, message, progress)
-            .then(function(data) {
-                // console.log('data inserted', data);
-
-                //TODO: Fetch messages at this point
-                projectDB.fetchCairnMessage(userID, projectID, progress)
-                    .then(function(cairn_data) {
-                        // console.log('data inserted', data);
-                        res.send(cairn_data);
-                    }).catch(function(err) {
-                    res.status(500).send({err: err.code || 'Could not fetch other cairn'});
-                });
-
-
-            }).catch(function(err) {
-            res.status(500).send({err: err.code || 'Could not submit cairn'});
-        });
-
-
+        projectDB.storeCairnMessage(userID, projectID, message, progress, cairnType, timeWhenCairnShownToPlayer, taskName)
+            .then((data) => {
+                console.log("data inserted", data);
+                res.send("success!");
+            })
+            .catch((err) => res.status(500).send({err: err.code || 'Could not submit cairn'}));
     });
+
+router.post('/getCairns', [filters.requiredParamHandler(['projectID', 'cairnType'])], (req, res) => {
+    let numberRequested = req.body.number || 1;
+    let cairnType       = req.body.cairnType;
+    let projectID       = req.body.projectID;
+    let userID          = req.session.passport.user ? req.session.passport.user.id : -1; // -1 is fine, since userID is only used to filter cairns we shouldn't return
+    projectDB.getCairnsForProject(userID, projectID, cairnType, numberRequested)
+        .then((data) => {console.log(data); res.send(data)})
+        .catch((err) => res.status(500).send({err: err.code || 'Could not get cairns'}));
+});
