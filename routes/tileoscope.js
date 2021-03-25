@@ -602,7 +602,7 @@ router.post('/submitTileoscopeARAction', function(req, res, next) {
                 var matches = item.ImageIds;
                 var category = item.MatchCategory;
 
-                if (isMatch && short_name && code && code != "_"){
+                if (isMatch && short_name && code && code != "_" && code !== 'localdata'){
                     console.log("Add vote as Cartoscope");
                     //add it as vote as well for the map!
                     tileDB.convertActionToMatch(code,user_code,matches,category).then(function(d) {
