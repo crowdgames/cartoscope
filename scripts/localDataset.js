@@ -8,7 +8,6 @@ const axios = require('axios');
 const path = require('path');
 const uuid4 = require('uuid4');
 const sharp = require('sharp');
-const { url } = require('inspector');
 
 const DATASET_SIZE = 12; // @TODO: configurable via url?
 
@@ -142,7 +141,7 @@ const validResult = (result) => {
     if (result.photos[0].url === result.taxon.default_photo.url) return false;
 
   	return true;
-	} catch {
+	} catch(e) {
 		return false;
 	}
 }
