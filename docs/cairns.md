@@ -53,6 +53,10 @@ One of my concerns about tying cairns to progression or images is that we may no
  - sidebar messages?
  - change workerID to userID
 
+## synchronous communication
+
+thumbs uping messages or getting feedback about your cairns synchronously
+
 we may need to make changes to the progress bar
 
 home page might need to be changed because get started takes you to LLL but then LLL doesn't take you home...
