@@ -1486,7 +1486,7 @@ module.controller('instructionController', ['$window','$scope', '$state','$state
         var fromChain = $location.search().fromChain || 0;
         if (fromChain) {
             $scope.params.project = $location.search().code;
-            $scope.params.workerId = $location.search().workerID;
+            $scope.params.workerId = $location.search().workerID || $location.search().participantID;
             $scope.params.hitId = $location.search().hitID;
             $scope.params.assignmentId = $location.search().assignmentID
             $scope.params.projectType = $location.search().type;

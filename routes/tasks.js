@@ -528,7 +528,7 @@ router.get('/startProject/:project', [filters.requireLogin], function(req, res, 
                       '&participantID=' + user.participantID + '&trialID=' + user.trialID + '&assignmentID='+ user.assignmentID +'&chain=' + chain;
               } else {
                   var red_link = partial_link + req.params.project+ '&type='+req.session.passport.user.type +
-                      '&workerID=' + user.workerID + '&hitID=' + user.hitID + '&assignmentID='+ user.assignmentID +'&chain=' + chain;
+                      '&participantID=' + user.workerID + '&hitID=' + user.hitID + '&assignmentID='+ user.assignmentID +'&chain=' + chain;
               }
 
               if (image_loop){
