@@ -317,7 +317,8 @@ exports.buildDataSet = (state, city, indexNotConverted, callback) => {
             short_description: 'Become a citizen scientist and help label photographs of various animals near you, courtesy of iNaturalist.',
             short_name_friendly: `${state}_${city}_v${index}`,
             has_location: 1,
-            tutorial_explanations: []
+            tutorial_explanations: [],
+            is_inaturalist: 1
           };
 
           buildDataSet(dir, latitude, longitude, {}, new Set(), summaryData, 2, (error, dataset) => {
