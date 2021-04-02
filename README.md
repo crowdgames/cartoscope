@@ -83,6 +83,8 @@ For more information, follow this link: https://www.digitalocean.com/community/t
 
 14. #### Start automatic typescript compilation
 		tsc --watch
+
+If you are on the cartoscope server, `tsc` will generate typescript files. 
 		
 15. #### Setup Users etc.
 	1. Your main page is at http://localhost:CARTO_PORT (where CARTO_PORT is the port specified in the environment variables)
