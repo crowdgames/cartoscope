@@ -234,6 +234,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                      close:           true,
                      gravity:         "top", // `top` or `bottom`
                      position:        "left",
+                     escapeMarkup:    false,
                      backgroundColor: "#4663ac"
                    }).showToast();
               }
