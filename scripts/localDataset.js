@@ -146,7 +146,10 @@ const validResult = (result) => {
 	}
 }
 
-const processData = (dir, data, dataset, usedIds, summaryData, callback) => {
+const processData = (dir, data, datasetInfo, callback) => {
+  let dataset = datasetInfo.dataset;
+  let usedIds = datasetInfo.usedIds;
+
   for(let i = 0; i < data.total_results; ++i) {
     const result = data.results[i];
     if (!validResult(result)) {
@@ -174,8 +177,6 @@ const processData = (dir, data, dataset, usedIds, summaryData, callback) => {
     
     if (!(iconic in dataset)) {
       dataset[iconic] = []
-    } else if (dataset[iconic].length >= 2) {
-      continue;
     } 
 
     dataset[iconic].push({
@@ -193,31 +194,69 @@ const processData = (dir, data, dataset, usedIds, summaryData, callback) => {
     });
 
     if (dataset[iconic].length == 2) {
-      // in one the category is provided and one it is not.
-      dataset[iconic][1].category = '_';
-
-      ++summaryData.categoriesCount;
-      summaryData.categoriesLabel.push(iconic);
-      summaryData.categoriesSample.push(fileName);
-
-      summaryData.filenames.push(dataset[iconic][0].fileName);
-      summaryData.filenames.push(fileName);
-
-      if (summaryData.tutorial.length === 0) {
-        summaryData.tutorial.push(dataset[iconic][0].fileName);
-        summaryData.tutorial.push(fileName);
-      }
+      ++datasetInfo.size;
     }
     
-    if (summaryData.filenames.length - summaryData.categoriesSample.length >= DATASET_SIZE) {
-      break;
+    if (datasetInfo.size >= DATASET_SIZE) {
+      if (datasetInfo.index == 0) {
+        break;
+      } else {
+        // for every iconic that has two or more elements, we remove the first two
+        // and then reset the count and decrement the index.
+        for(let key in dataset) {
+          if(dataset[key].length >= 2) {
+            dataset[key].shift();
+            dataset[key].shift();
+          }
+        }
+
+        datasetInfo.size = 0;
+        --datasetInfo.index;
+      }
     }
   }
 
-  if (summaryData.filenames.length - summaryData.categoriesSample.length < DATASET_SIZE) {
+  if (datasetInfo.size < DATASET_SIZE) {
     callback(true);
 		return;
   } else {
+    let summaryData = {
+      count: DATASET_SIZE,
+      code: 'localdata',
+      filenames: [],
+      categoriesCount: 0,
+      categoriesLabel: [],
+      categoriesSample: [],
+      tutorial: [],
+      description: 'Become a citizen scientist and help label photographs of various animals near you, courtesy of iNaturalist.',
+      short_description: 'Become a citizen scientist and help label photographs of various animals near you, courtesy of iNaturalist.',
+      short_name_friendly: `${datasetInfo.state}_${datasetInfo.city}_v${datasetInfo.index}`,
+      has_location: 1,
+      tutorial_explanations: [],
+      is_inaturalist: 1
+    };
+
+    for(let key in dataset) {
+      if (dataset[key].length < 2) {
+        continue;
+      }
+
+      // in one the category is provided and one it is not.
+      dataset[key][1].category = '_';
+
+      ++summaryData.categoriesCount;
+      summaryData.categoriesLabel.push(key);
+      summaryData.categoriesSample.push(dataset[key][0].fileName);
+
+      summaryData.filenames.push(dataset[key][0].fileName);
+      summaryData.filenames.push(dataset[key][1].fileName);
+
+      if (summaryData.tutorial.length === 0) {
+        summaryData.tutorial.push(dataset[key][0].fileName);
+        summaryData.tutorial.push(dataset[key][1].fileName);
+      }
+    }
+
     fs.writeFile(path.join(dir, `Dataset-Info.json`), JSON.stringify(summaryData, null, 2), (err) => {
       if (err) {
         console.log(err);
@@ -231,23 +270,24 @@ const processData = (dir, data, dataset, usedIds, summaryData, callback) => {
   }
 };
 
-const buildDataSet = (dir, latitude, longitude, dataset, usedIds, summaryData, radius, callback) => {
+//  latitude, longitude, dataset, usedIds, summaryData, radius,
+const buildDataSet = (dir, datasetInfo,  callback) => {
   const licenseURL = Object.keys(acceptedLicenses).join('&2C');
   
   const requestBase = `https://api.inaturalist.org/v1/observations?identified=true&photos=true&per_page=200&geo=true&license=${licenseURL}`;
   const requestGrade = '&quality_grade=research'
-  const requestLocation = `&lat=${latitude}&lng=${longitude}&radius=${radius}`;
+  const requestLocation = `&lat=${datasetInfo.latitude}&lng=${datasetInfo.longitude}&radius=${datasetInfo.radius}`;
   
   const url = `${requestBase}${requestLocation}${requestGrade}`;
   axios.get(url)
     .then((response) => {
-      processData(dir, response.data, dataset, usedIds, summaryData, (error) => {
+      processData(dir, response.data, datasetInfo, (error) => {
         if (error) {
-          radius *= 2;
-          console.log(`increasing radius for ${latitude}, ${longitude} to ${radius}`);
-          buildDataSet(dir, latitude, longitude, dataset, usedIds, summaryData, radius, callback);
+          datasetInfo.radius *= 2;
+          console.log(`increasing radius for ${datasetInfo.latitude}, ${datasetInfo.longitude} to ${datasetInfo.radius}`);
+          buildDataSet(dir, datasetInfo, callback);
         } else {
-          callback(false, dataset);
+          callback(false, null);
 					return;
         }
       })
@@ -277,7 +317,6 @@ const destroyFileIfExists = (file) => {
 };
 
 exports.buildDataSet = (state, city, indexNotConverted, callback) => {
-  console.warn('index not being used by create dataset');
 	const index = Number(indexNotConverted);
 	if (isNaN(index)) {
 		callback(true, 'Received index that was not a number. Contact admin.');
@@ -305,23 +344,19 @@ exports.buildDataSet = (state, city, indexNotConverted, callback) => {
           fs.closeSync(fs.openSync(lockFile, 'w'));
           fs.mkdirSync(dir);
 
-          let summaryData = {
-            count: DATASET_SIZE,
-            code: 'localdata',
-            filenames: [],
-            categoriesCount: 0,
-            categoriesLabel: [],
-            categoriesSample: [],
-            tutorial: [],
-            description: 'Become a citizen scientist and help label photographs of various animals near you, courtesy of iNaturalist.',
-            short_description: 'Become a citizen scientist and help label photographs of various animals near you, courtesy of iNaturalist.',
-            short_name_friendly: `${state}_${city}_v${index}`,
-            has_location: 1,
-            tutorial_explanations: [],
-            is_inaturalist: 1
+          let datasetInfo = {
+            latitude, 
+            longitude,
+            size: 0,
+            index,
+            state,
+            city,
+            dataset: {},
+            usedIds: new Set(),
+            radius: 2
           };
 
-          buildDataSet(dir, latitude, longitude, {}, new Set(), summaryData, 2, (error, dataset) => {
+          buildDataSet(dir, datasetInfo, (error, message) => {
             if (error) {
 							fs.rmdirSync(dir, { recursive: true });
 							destroyFileIfExists(lockFile);
@@ -334,20 +369,21 @@ exports.buildDataSet = (state, city, indexNotConverted, callback) => {
               const downloadCallback = () => {
                 ++filesDownloaded;
                 if (filesDownloaded == DATASET_SIZE*2) {
-									// if we don't wait a tick than we have a race condition where files
-									// may not be finished saving
-									process.nextTick(() => { destroyFileIfExists(lockFile); });
+									// We have to wait for files to finish else we have a race condition
+									setTimeout(() => {
+                    destroyFileIfExists(lockFile); 
+                  }, 200);
                 }
               };
 
-              for (const entry of Object.entries(dataset)) {
-                if (entry[1].length === 2) {
+              for (const entry of Object.entries(datasetInfo.dataset)) {
+                if (entry[1].length >= 2) {
                   download(dir, entry[1][0], downloadCallback);
                   download(dir, entry[1][1], downloadCallback);
                 }
               }
             }
-          });
+          })
         }
       }
     }
@@ -388,9 +424,10 @@ exports.zipAndSendDataSet = (state, city, index, res) => {
 	});
 
 	archive.on('error', (err) => {
+    console.log(`zip error: ${err}`)
+		res.status(404).send('Could not generate zip');
     fs.rmdirSync(dir, { recursive: true });
     fs.unlinkSync(zipName);
-		res.status(404).send('Could not generate zip');
 	});
 
 	archive.pipe(outputStream);
