@@ -16,6 +16,17 @@ body.mask .ui-mask-modal {
 body {
   background-color: #26272a;
 }
+h2 {
+  color: white;
+}
+.cairn-message {
+  color: #ffffff;
+  border: 1px solid;
+  border-color: #ffffff;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 18px;
+}
 .parent-view {
   display: flex;
   flex-direction: column;
