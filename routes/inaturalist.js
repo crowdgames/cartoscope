@@ -164,5 +164,5 @@ router.get('/getDataSet/:state&:city&:index', (req, res, next) => {
 	const state = req.params.state.toLowerCase();
   const city = req.params.city.toLowerCase();
 
-	localDataset.zipAndSendDataSet(state, city, req.params.index, res);
+	localDataset.zipAndSendDataSet(state, city, req.params.index, 0, res);
 });

@@ -203,14 +203,19 @@ const processData = (dir, data, datasetInfo, callback) => {
       } else {
         // for every iconic that has two or more elements, we remove the first two
         // and then reset the count and decrement the index.
-        for(let key in dataset) {
-          if(dataset[key].length >= 2) {
+        let newSize = 0;
+        for (let key in dataset) {
+          if (dataset[key].length >= 2) {
             dataset[key].shift();
             dataset[key].shift();
           }
+
+          if (dataset[key].length >= 2) {
+            ++newSize;
+          }
         }
 
-        datasetInfo.size = 0;
+        datasetInfo.size = newSize;
         --datasetInfo.index;
       }
     }
@@ -230,7 +235,7 @@ const processData = (dir, data, datasetInfo, callback) => {
       tutorial: [],
       description: 'Become a citizen scientist and help label photographs of various animals near you, courtesy of iNaturalist.',
       short_description: 'Become a citizen scientist and help label photographs of various animals near you, courtesy of iNaturalist.',
-      short_name_friendly: `${datasetInfo.state}_${datasetInfo.city}_v${datasetInfo.index}`,
+      short_name_friendly: `${datasetInfo.state}_${datasetInfo.city}_v${datasetInfo.constIndex}`,
       has_location: 1,
       tutorial_explanations: [],
       is_inaturalist: 1
@@ -349,6 +354,7 @@ exports.buildDataSet = (state, city, indexNotConverted, callback) => {
             longitude,
             size: 0,
             index,
+            constIndex: index,
             state,
             city,
             dataset: {},
@@ -390,7 +396,12 @@ exports.buildDataSet = (state, city, indexNotConverted, callback) => {
   });
 }
 
-exports.zipAndSendDataSet = (state, city, index, res) => {
+const zipAndSendDataSet = (state, city, index, attempts, res) => {
+  if (attempts >= 10) {
+		res.status(404).send('Could not generate zip');
+    fs.rmdirSync(dir, { recursive: true });
+  }
+
 	const name = `${state}_${city}_v${index}`;
 	const dir = `dataset/location_${name}`;
 	const lockFile = `${dir}.temp`;
@@ -425,12 +436,12 @@ exports.zipAndSendDataSet = (state, city, index, res) => {
 
 	archive.on('error', (err) => {
     console.log(`zip error: ${err}`)
-		res.status(404).send('Could not generate zip');
-    fs.rmdirSync(dir, { recursive: true });
-    fs.unlinkSync(zipName);
+    zipAndSendDataSet(state, city, index, attempts + 1, res);
 	});
 
 	archive.pipe(outputStream);
 	archive.directory(dir, false);
   archive.finalize();
 };
+
+exports.zipAndSendDataSet = zipAndSendDataSet;
