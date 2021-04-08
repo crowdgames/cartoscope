@@ -399,7 +399,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               options: {
                   width: physWidth, // dynamically size the window based on browser size
                   height: physHeight,
-                  wireframes: false
+                  wireframes: false,
+                  background: '#cfd8dc'
               }
           });
 
