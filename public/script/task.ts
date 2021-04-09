@@ -188,10 +188,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               // Show the soapstone create modal
               vm.startSoapstoneCreate();
           }
-          else if (vm.data.progress % vm.tasksToCompleteTillSoapstoneMsg === 0) {
-              // Show a message someone else has left
-              vm.showNewSoapstoneMsg();
-          }
           else if (vm.data.progress % vm.tasksToCompleteTillPhysics === 0) {
               // Allow the player to play with emoji stacking
               vm.startEmojiCreate();
@@ -224,7 +220,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       }
 
       // == SOAPSTONE MSG CODE ==
-      vm.showNewSoapstoneMsg = () => {
+      vm.showSoapstoneMsgToast = () => {
+          // This function is as of now unused and has been replaced with sidebar soapstone messages
           let body = { projectID: vm.data.id, cairnType: "soapstone" };
           // TODO this should be a get, but I think gets have to have body as part of the url
           $http.post('api/tasks/getCairns', body).then((serverReturn: any) => {
@@ -245,6 +242,29 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               }
           });
       }
+
+      vm.populateMsgSidebar = (numMsgs: number) => {
+          console.log("populating sidebar");
+          let body = { 
+              projectID:       vm.data.id,
+              cairnType:       "soapstone",
+              numberRequested: numMsgs,
+              random:          false,
+          };
+          $http.post('api/tasks/getCairns', body).then((serverReturn: object) => {
+              console.log(serverReturn);
+              if (serverReturn["data"].length > 0)
+                  serverReturn["data"]
+                      .reverse()
+                      .forEach((datum: object) => vm.insertSidebarMsg(datum["message"]));
+              else console.error("No relevant soapstone messages found");
+          });
+      }
+
+      vm.insertSidebarMsg = (msg: string) => {
+          let sidebar = document.getElementById("cairn-header");
+          sidebar?.insertAdjacentHTML("afterend", "<p class=\"cairn-message\">" + msg + "</p>");
+      }
       // == END SOAPSTONE MSG CODE ==
 
       // == SOAPSTONE CREATE CODE ==
@@ -256,6 +276,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           vm.replaceFormElemsWithSoapstone(soapstoneForm, soapstone);
           $scope.isSoapstoneCreateHidden = false;
           $scope.isMainTaskHidden        = true;
+          vm.populateMsgSidebar(5);
       }
 
       vm.randomSoapstone = () => {
