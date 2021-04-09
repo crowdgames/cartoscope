@@ -299,9 +299,10 @@
 
     <div class="row" style="text-align: center;" ng-if="model.data.template.selectedTaskType == 'tagging'">
         <div class="col-sm-3" id="sidebar">
-            <h2>
+            <h2 id="cairn-header">
                 Other users left you these messages:
             </h2>
+            <div id="cairn-messages">
             <p class="cairn-message">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Porta lorem mollis aliquam ut porttitor leo a. Urna nunc id cursus metus. Lorem ipsum dolor sit amet consectetur adipiscing elit ut. Vehicula ipsum a arcu cursus. Pharetra pharetra massa massa ultricies mi quis. Eget magna fermentum iaculis eu non diam phasellus vestibulum lorem. Mi tempus imperdiet nulla malesuada pellentesque elit eget gravida. Non blandit massa enim nec dui nunc mattis enim ut. 
             </p>
@@ -314,6 +315,7 @@ Est pellentesque elit ullamcorper dignissim. Mattis vulputate enim nulla aliquet
             <p class="cairn-message">
 Porttitor eget dolor morbi non arcu risus. Sagittis eu volutpat odio facilisis mauris sit amet massa vitae. Mi eget mauris pharetra et ultrices neque ornare aenean. Ac ut consequat semper viverra nam libero justo laoreet. Varius sit amet mattis vulputate enim nulla. Pulvinar elementum integer enim neque volutpat ac tincidunt vitae. Duis ultricies lacus sed turpis. Mauris pharetra et ultrices neque ornare aenean euismod elementum. Nibh sed pulvinar proin gravida hendrerit lectus a.
             </p>
+            </div>
         </div>
         <div class="col-sm-6" id="img" ng-hide="isMainTaskHidden">
             <img id="task-img" style="max-height:450px" class="img-responsive img-task" ng-src="{{model.getNextTask()}}" ng-click="model.showBiggerImg()">

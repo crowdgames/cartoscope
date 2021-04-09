@@ -213,12 +213,12 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           $http.post('api/tasks/submitCairn', body).then((data: object) => console.log(data));
       }
 
-      $scope.isDebugButtonHidden = true;
+      $scope.isDebugButtonHidden = false;
       // activated by hitting the debug button
       vm.handleDebug = () => {
           console.log("Debugging");
-          let physicsBody = document.getElementById("physicsBody");
-          vm.addEmojiToPhysics("thinking");
+          let sidebar = document.getElementById("cairn-header");
+          sidebar?.insertAdjacentHTML("afterend", "<p class=\"cairn-message\">HI THERE FREND</p>");
       }
 
       // == SOAPSTONE MSG CODE ==

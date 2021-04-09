@@ -26,6 +26,20 @@ h2 {
   border-radius: 10px;
   padding: 10px;
   font-size: 18px;
+  transition: 2s;
+  animation: slidein 0.5s forwards;
+}
+@keyframes slidein {
+  from {
+    max-height: 0px;
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    max-height: 1000px;
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 .parent-view {
   display: flex;
