@@ -1297,10 +1297,18 @@ exports.fetchCairnMessage = function(userID, projectID, progress) {
     });
 };
 
-exports.getCairnsForProject = (userID, projectID, cairnType, numberCairnsRequested) => {
+exports.getRandomCairnsForProject = (userID, projectID, cairnType, numberCairnsRequested) => {
     return new Promise((resolve, error) => 
         db.get()
           .queryAsync('select message from cartoscope_cairns where user_id !=? and project_id=? and cairn_type=? order by rand() desc limit ?', [userID, projectID, cairnType, numberCairnsRequested])
+          .then(resolve, error)
+    );
+};
+
+exports.getRecentCairnsForProject = (userID, projectID, cairnType, numberCairnsRequested) => {
+    return new Promise((resolve, error) => 
+        db.get()
+          .queryAsync('select message from cartoscope_cairns where user_id !=? and project_id=? and cairn_type=? order by id desc limit ?', [userID, projectID, cairnType, numberCairnsRequested])
           .then(resolve, error)
     );
 };
