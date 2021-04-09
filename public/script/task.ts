@@ -218,7 +218,9 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.handleDebug = () => {
           console.log("Debugging");
           let sidebar = document.getElementById("cairn-header");
-          sidebar?.insertAdjacentHTML("afterend", "<p class=\"cairn-message\">HI THERE FREND</p>");
+          let messages = ["You got this.", "Good luck today! I know you’ll do great.", "Sending major good vibes your way.", "I know this won’t be easy, but I also know you’ve got what it takes to get through it.", "Hope you’re doing awesome!", "Time to go win the fight with cancer!", "Keep on keeping on!", "Sending you good thoughts—and hoping you believe in yourself just as much as I believe in you."]
+          let message = messages[Math.floor(Math.random() * messages.length)];
+          sidebar?.insertAdjacentHTML("afterend", "<p class=\"cairn-message\">" + message + "</p>");
       }
 
       // == SOAPSTONE MSG CODE ==
