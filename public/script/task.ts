@@ -213,10 +213,10 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       // activated by hitting the debug button
       vm.handleDebug = () => {
           console.log("Debugging");
-          let sidebar = document.getElementById("cairn-header");
           let messages = ["You got this.", "Good luck today! I know you’ll do great.", "Sending major good vibes your way.", "I know this won’t be easy, but I also know you’ve got what it takes to get through it.", "Hope you’re doing awesome!", "Time to go win the fight with cancer!", "Keep on keeping on!", "Sending you good thoughts—and hoping you believe in yourself just as much as I believe in you."]
           let message = messages[Math.floor(Math.random() * messages.length)];
-          sidebar?.insertAdjacentHTML("afterend", "<p class=\"cairn-message\">" + message + "</p>");
+          // vm.insertSidebarMsg(message);
+          document.querySelectorAll('.cairn-message').forEach(e => e.remove());
       }
 
       // == SOAPSTONE MSG CODE ==
@@ -251,12 +251,14 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               numberRequested: numMsgs,
               random:          false,
           };
+          let msBetweenMessages = 2000;
           $http.post('api/tasks/getCairns', body).then((serverReturn: object) => {
               console.log(serverReturn);
               if (serverReturn["data"].length > 0)
                   serverReturn["data"]
                       .reverse()
-                      .forEach((datum: object) => vm.insertSidebarMsg(datum["message"]));
+                      .forEach((datum: object, idx: number) => 
+                          setTimeout(() => vm.insertSidebarMsg(datum["message"]), idx * msBetweenMessages));
               else console.error("No relevant soapstone messages found");
           });
       }
@@ -265,6 +267,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           let sidebar = document.getElementById("cairn-header");
           sidebar?.insertAdjacentHTML("afterend", "<p class=\"cairn-message\">" + msg + "</p>");
       }
+
+      vm.clearMsgSidebar = () => document.querySelectorAll('.cairn-message').forEach(e => e.remove());
       // == END SOAPSTONE MSG CODE ==
 
       // == SOAPSTONE CREATE CODE ==
