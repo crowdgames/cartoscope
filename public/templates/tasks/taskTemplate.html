@@ -551,48 +551,7 @@ You can add an emoji, if you want to. Pick one that describes how you're feeling
             </div>
         </div>
     </div>
-
-    <!--Cairn Modal-->
-    <div class="modal fade" id="cairnModal"  role="dialog"  data-keyboard="false" data-backdrop="static">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title"> {{model.cairnTitle}}</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    </button>
-                </div>
-                <div class="modal-body">
-
-                        <div ng-if="!model.showCairnMessages" class="row" ng-repeat="cairn in model.cairn_options | limitTo:4" >
-                            <center>
-                            <div class="cairnButton"
-                                 ng-click="model.submitCairn(cairn)">
-                                <span class="cairnButtonText">{{cairn}}</span>
-                            </div>
-                            </center>
-                        </div>
-                    <div ng-if="model.showCairnMessages" class="row" ng-repeat="cairn in model.cairn_messages track by $index | limitTo:4" >
-                        <center>
-                            <div class="cairnButton2">
-                                <h4>{{cairn}}</h4>
-
-                            </div>
-                        </center>
-                    </div>
-
-
-
-
-                </div>
-                <div class="modal-footer">
-                    <button ng-if="model.showCairnMessages" type="button" ng-click="model.resetCairnModal()" class="btn btn-primary" >Close</button>
-
-                </div>
-
-            </div>
-        </div>
-    </div>
-
+    <!-- for an example of the cairn modal, see git -->
 <script type="text/javascript">
   var obj = $("#task-img");
 
