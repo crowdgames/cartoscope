@@ -307,10 +307,6 @@
             <img ng-show="showMainTask" id="task-img" style="max-height:450px" class="img-responsive img-task" ng-src="{{model.getNextTask()}}" ng-click="model.showBiggerImg()">
             <h2 id="cairn-header" ng-show="showCairnHeader"> Would you like to leave something for another player? </h2>
             <div ng-show="showPhysics">
-                <p class="text-center" style="color:white;font-size:22px">
-                Below are emojis selected by other players.
-
-                You can add an emoji, if you want to. Pick one that describes how you're feeling!</p>
                 <div class="container-fluid">
                     <div id="physicsBody" ng-init="model.initializePhysics()">
                     </div>
@@ -327,7 +323,6 @@
                 <button class="btn btn-default btn-primary done-button" ng-click="model.finishEmojiCreate()" style="height: 45px;">Click here to return to images</button>
             </div>
             <div ng-show="showSoapstone">
-                <p class="text-center" style="color:white;font-size:24px">Would you like to leave a message for another user?</p>
                 <br>
                 <br>
                 <br>

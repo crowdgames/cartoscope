@@ -286,6 +286,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           $scope.showSidebar     = true;
           $scope.showMainTask    = false;
           $scope.showCairnHeader = true;
+          (document.getElementById("cairn-header") as HTMLElement).innerText = "Would you like to leave a message for another player?";
           vm.populateMsgSidebar(5);
       }
 
@@ -370,6 +371,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           $scope.showPhysics     = true; // the div with the ballpit of emojis
           $scope.showEmoji       = true; // the div with the buttons to select which emoji you want
           $scope.showCairnHeader = true;
+          (document.getElementById("cairn-header") as HTMLElement).innerHTML = "Below are emojis selected by other players.<br><br>You can add an emoji, if you want to. Pick one that describes how you're feeling!<br>"
           Render.run(vm.render);
           vm.hideModal();
       }
