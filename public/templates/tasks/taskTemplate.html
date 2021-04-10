@@ -305,6 +305,7 @@
         </div>
         <div class="col-sm-6" id="img">
             <img ng-show="showMainTask" id="task-img" style="max-height:450px" class="img-responsive img-task" ng-src="{{model.getNextTask()}}" ng-click="model.showBiggerImg()">
+            <h2 id="cairn-header" ng-show="showCairnHeader"> Would you like to leave something for another player? </h2>
             <div ng-show="showPhysics">
                 <p class="text-center" style="color:white;font-size:22px">
                 Below are emojis selected by other players.
