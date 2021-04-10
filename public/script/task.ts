@@ -258,7 +258,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   serverReturn["data"]
                       .reverse()
                       .forEach((datum: object, idx: number) => 
-                          setTimeout(() => vm.insertSidebarMsg(datum["message"]), idx * msBetweenMessages));
+                          setTimeout(() => vm.insertSidebarMsg(datum["message"]), 
+                                     idx < 2 ? 0 : (idx - 1) * msBetweenMessages));
               else console.error("No relevant soapstone messages found");
           });
       }
