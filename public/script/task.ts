@@ -265,7 +265,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       }
 
       vm.insertSidebarMsg = (msg: string) => {
-          let sidebar = document.getElementById("cairn-header");
+          let sidebar = document.getElementById("cairn-sidebar-header");
           sidebar?.insertAdjacentHTML("afterend", "<p class=\"cairn-message\">" + msg + "</p>");
       }
 
@@ -274,12 +274,14 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       // == SOAPSTONE CREATE CODE ==
       $scope.showSoapstone  = false;
+      $scope.showSidebar    = false;
       // (Code for creating new soapstone messages, as opposed to displaying ones that already exist)
       vm.startSoapstoneCreate = () => {
           let soapstoneForm = document.getElementById("soapstone-form");
           let soapstone     = vm.randomSoapstone();
           vm.replaceFormElemsWithSoapstone(soapstoneForm, soapstone);
           $scope.showSoapstone = true;
+          $scope.showSidebar   = true;
           $scope.showMainTask  = false;
           vm.populateMsgSidebar(5);
       }
@@ -340,11 +342,13 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               .join(" ");
           vm.submitCairn("soapstone", soapstoneFormValues);
           $scope.showSoapstone = false;
+          $scope.showSidebar   = false;
           $scope.showMainTask  = true;
       }
 
       vm.submitEmptySoapstone = () => {
           vm.submitCairn("soapstone", "");
+          $scope.showSidebar   = false;
           $scope.showSoapstone = false;
           $scope.showMainTask  = true;
       }
