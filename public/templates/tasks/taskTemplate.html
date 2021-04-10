@@ -325,19 +325,19 @@
                 </div>
                 <button class="btn btn-default btn-primary done-button" ng-click="model.finishEmojiCreate()" style="height: 45px;">Click here to return to images</button>
             </div>
-        </div>
-        <div class="col-sm-6" ng-show="showSoapstone">
-            <p class="text-center" style="color:white;font-size:24px">Would you like to leave a message for another user?</p>
-            <br>
-            <br>
-            <br>
-            <form class="form-inline" method="post" action="/forminfo" id="soapstone-form">
-                <!--- This form is filled dynamically with js -->
-            </form> 
-            <br>
-            <br>
-            <button class="btn btn-default btn-primary done-button" ng-click="model.submitSoapstone()" style="height: 45px;">Submit</button>
-            <button class="btn btn-default btn-primary done-button" ng-click="model.submitEmptySoapstone()" style="height: 45px;">Skip</button>
+            <div ng-show="showSoapstone">
+                <p class="text-center" style="color:white;font-size:24px">Would you like to leave a message for another user?</p>
+                <br>
+                <br>
+                <br>
+                <form class="form-inline" method="post" action="/forminfo" id="soapstone-form">
+                    <!--- This form is filled dynamically with js -->
+                </form> 
+                <br>
+                <br>
+                <button class="btn btn-default btn-primary done-button" ng-click="model.submitSoapstone()" style="height: 45px;">Submit</button>
+                <button class="btn btn-default btn-primary done-button" ng-click="model.submitEmptySoapstone()" style="height: 45px;">Skip</button>
+            </div>
         </div>
         <div class="col-sm-3" id="img">
         </div>
