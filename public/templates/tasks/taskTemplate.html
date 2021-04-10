@@ -305,26 +305,26 @@
         </div>
         <div class="col-sm-6" id="img">
             <img ng-show="showMainTask" id="task-img" style="max-height:450px" class="img-responsive img-task" ng-src="{{model.getNextTask()}}" ng-click="model.showBiggerImg()">
-        </div>
-        <div class="col-sm-6" ng-show="showPhysics">
-                    <p class="text-center" style="color:white;font-size:22px">
-Below are emojis selected by other players.
+            <div ng-show="showPhysics">
+                <p class="text-center" style="color:white;font-size:22px">
+                Below are emojis selected by other players.
 
-You can add an emoji, if you want to. Pick one that describes how you're feeling!</p>
-            <div class="container-fluid">
-                <div id="physicsBody" ng-init="model.initializePhysics()">
-                </div>
-                <div class="row" ng-show="showEmoji">
-                    <!-- TODO could this be an ng-repeat?-->
-                    <img src="../../images/emojis/thinking.png" width="70" height="70" ng-click="model.submitEmoji('thinking')"></img>
-                    <img src="../../images/emojis/weary.png" width="70" height="70" ng-click="model.submitEmoji('weary')"></img>
-                    <img src="../../images/emojis/grinning.png" width="70" height="70" ng-click="model.submitEmoji('grinning')"></img>
-                    <img src="../../images/emojis/angry.png" width="70" height="70" ng-click="model.submitEmoji('angry')"></img>
-                    <img src="../../images/emojis/concerned.png" width="70" height="70" ng-click="model.submitEmoji('concerned')"></img>
-                    <img src="../../images/emojis/tongue_out.png" width="70" height="70" ng-click="model.submitEmoji('tongue_out')"></img>
-                </div>
+                You can add an emoji, if you want to. Pick one that describes how you're feeling!</p>
+                <div class="container-fluid">
+                    <div id="physicsBody" ng-init="model.initializePhysics()">
+                    </div>
+                    <div class="row" ng-show="showEmoji">
+                        <!-- TODO could this be an ng-repeat?-->
+                        <img src="../../images/emojis/thinking.png" width="70" height="70" ng-click="model.submitEmoji('thinking')"></img>
+                        <img src="../../images/emojis/weary.png" width="70" height="70" ng-click="model.submitEmoji('weary')"></img>
+                        <img src="../../images/emojis/grinning.png" width="70" height="70" ng-click="model.submitEmoji('grinning')"></img>
+                        <img src="../../images/emojis/angry.png" width="70" height="70" ng-click="model.submitEmoji('angry')"></img>
+                        <img src="../../images/emojis/concerned.png" width="70" height="70" ng-click="model.submitEmoji('concerned')"></img>
+                        <img src="../../images/emojis/tongue_out.png" width="70" height="70" ng-click="model.submitEmoji('tongue_out')"></img>
+                    </div>
                 </div>
                 <button class="btn btn-default btn-primary done-button" ng-click="model.finishEmojiCreate()" style="height: 45px;">Click here to return to images</button>
+            </div>
         </div>
         <div class="col-sm-6" ng-show="showSoapstone">
             <p class="text-center" style="color:white;font-size:24px">Would you like to leave a message for another user?</p>
