@@ -179,6 +179,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.tasksToCompleteTillPhysics           = 5;
       vm.tasksToCompleteTillSoapstoneCreation = 3;
 
+      $scope.showCairnHeader = false;
+
       vm.handleCairns = () => {
           if (!vm.show_cairns) return;
           // note the time the cairn was created. Divide by 1000 because mysql wants second precision, not ms precision
@@ -280,9 +282,10 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           let soapstoneForm = document.getElementById("soapstone-form");
           let soapstone     = vm.randomSoapstone();
           vm.replaceFormElemsWithSoapstone(soapstoneForm, soapstone);
-          $scope.showSoapstone = true;
-          $scope.showSidebar   = true;
-          $scope.showMainTask  = false;
+          $scope.showSoapstone   = true;
+          $scope.showSidebar     = true;
+          $scope.showMainTask    = false;
+          $scope.showCairnHeader = true;
           vm.populateMsgSidebar(5);
       }
 
@@ -341,16 +344,18 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   )
               .join(" ");
           vm.submitCairn("soapstone", soapstoneFormValues);
-          $scope.showSoapstone = false;
-          $scope.showSidebar   = false;
-          $scope.showMainTask  = true;
+          $scope.showSoapstone   = false;
+          $scope.showSidebar     = false;
+          $scope.showCairnHeader = false;
+          $scope.showMainTask    = true;
       }
 
       vm.submitEmptySoapstone = () => {
           vm.submitCairn("soapstone", "");
-          $scope.showSidebar   = false;
-          $scope.showSoapstone = false;
-          $scope.showMainTask  = true;
+          $scope.showSidebar     = false;
+          $scope.showSoapstone   = false;
+          $scope.showCairnHeader = false;
+          $scope.showMainTask    = true;
       }
 
       // == END SOAPSTONE CREATE CODE ==
@@ -361,17 +366,19 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       vm.startEmojiCreate = () => {
           vm.showModal(); // this isn't necessary, and honestly there might be good reasons to remove it
-          $scope.showMainTask = false; // the div with the main task
-          $scope.showPhysics  = true; // the div with the ballpit of emojis
-          $scope.showEmoji = true; // the div with the buttons to select which emoji you want
+          $scope.showMainTask    = false; // the div with the main task
+          $scope.showPhysics     = true; // the div with the ballpit of emojis
+          $scope.showEmoji       = true; // the div with the buttons to select which emoji you want
+          $scope.showCairnHeader = true;
           Render.run(vm.render);
           vm.hideModal();
       }
 
       // activated by clicking the "return to tasks button"
       vm.finishEmojiCreate = () => {
-          $scope.showMainTask = true;
-          $scope.showPhysics  = false;
+          $scope.showMainTask    = true;
+          $scope.showPhysics     = false;
+          $scope.showCairnHeader = false;
           Render.stop(vm.render);
           vm.submitCairn("emoji", vm.submittedEmoji);
           vm.submittedEmoji = "";
