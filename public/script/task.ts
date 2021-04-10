@@ -209,7 +209,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           $http.post('api/tasks/submitCairn', body).then((data: object) => console.log(data));
       }
 
-      $scope.isDebugButtonHidden = false;
+      $scope.showDebug = true;
       // activated by hitting the debug button
       vm.handleDebug = () => {
           console.log("Debugging");
@@ -273,14 +273,14 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       // == END SOAPSTONE MSG CODE ==
 
       // == SOAPSTONE CREATE CODE ==
-      $scope.isSoapstoneCreateHidden  = true;
+      $scope.showSoapstone  = false;
       // (Code for creating new soapstone messages, as opposed to displaying ones that already exist)
       vm.startSoapstoneCreate = () => {
           let soapstoneForm = document.getElementById("soapstone-form");
           let soapstone     = vm.randomSoapstone();
           vm.replaceFormElemsWithSoapstone(soapstoneForm, soapstone);
-          $scope.isSoapstoneCreateHidden = false;
-          $scope.isMainTaskHidden        = true;
+          $scope.showSoapstone = true;
+          $scope.showMainTask  = false;
           vm.populateMsgSidebar(5);
       }
 
@@ -339,35 +339,35 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   )
               .join(" ");
           vm.submitCairn("soapstone", soapstoneFormValues);
-          $scope.isSoapstoneCreateHidden = true;
-          $scope.isMainTaskHidden        = false;
+          $scope.showSoapstone = false;
+          $scope.showMainTask  = true;
       }
 
       vm.submitEmptySoapstone = () => {
           vm.submitCairn("soapstone", "");
-          $scope.isSoapstoneCreateHidden = true;
-          $scope.isMainTaskHidden        = false;
+          $scope.showSoapstone = false;
+          $scope.showMainTask  = true;
       }
 
       // == END SOAPSTONE CREATE CODE ==
 
       // == EMOJI CREATE CODE ==
-      $scope.isMainTaskHidden = false;
-      $scope.isPhysicsDivHidden  = true;
+      $scope.showMainTask = true;
+      $scope.showPhysics  = false;
 
       vm.startEmojiCreate = () => {
           vm.showModal(); // this isn't necessary, and honestly there might be good reasons to remove it
-          $scope.isMainTaskHidden = true; // the div with the main task
-          $scope.isPhysicsDivHidden  = false; // the div with the ballpit of emojis
-          $scope.isEmojiPickerHidden = false; // the div with the buttons to select which emoji you want
+          $scope.showMainTask = false; // the div with the main task
+          $scope.showPhysics  = true; // the div with the ballpit of emojis
+          $scope.showEmoji = true; // the div with the buttons to select which emoji you want
           Render.run(vm.render);
           vm.hideModal();
       }
 
       // activated by clicking the "return to tasks button"
       vm.finishEmojiCreate = () => {
-          $scope.isMainTaskHidden = false;
-          $scope.isPhysicsDivHidden  = true;
+          $scope.showMainTask = true;
+          $scope.showPhysics  = false;
           Render.stop(vm.render);
           vm.submitCairn("emoji", vm.submittedEmoji);
           vm.submittedEmoji = "";
@@ -378,7 +378,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.submitEmoji = (submittedEmoji: string) => {
           vm.submittedEmoji = submittedEmoji;
           vm.addEmojiToPhysics(submittedEmoji); // add the emoji to the ballpit
-          $scope.isEmojiPickerHidden = true;
+          $scope.showEmoji = false;
           // The actual sending of the emoji to the database happens in finishEmojiCreate
       }
 
@@ -973,7 +973,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       function submit(option,option_text) {
 
           // if a player is attempting to submit when there is no task visible, just ignore
-          if ($scope.isMainTaskHidden) return;
+          if (!$scope.showMainTask) return;
           vm.showModal();
           //if markers task, loop through all markers and submit the selected ones, ignore submit button option
           if (vm.showMarkerPoints) {

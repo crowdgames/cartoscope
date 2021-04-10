@@ -8,7 +8,7 @@
                 <button ng-switch-when="kiosk" class="btn btn-default btn-primary done-button"
                         ng-click="model.handleEnd()" style="height: 45px;">I'M DONE</button>
                 <button class="btn btn-default btn-primary done-button"
-                        ng-click="model.handleDebug()" ng-hide="isDebugButtonHidden" style="height: 45px;">DEBUG</button>
+                        ng-click="model.handleDebug()" ng-show="showDebug" style="height: 45px;">DEBUG</button>
                 <button ng-switch-default class="btn btn-default btn-primary done-button"
                         ng-click="model.handleFinish()" style="height: 45px;">I'M DONE</button>
             </div>
@@ -299,16 +299,16 @@
 
     <div class="row" style="text-align: center;" ng-if="model.data.template.selectedTaskType == 'tagging'">
         <div class="col-sm-3" id="sidebar">
-            <div ng-hide="isSoapstoneCreateHidden">
+            <div ng-show="showSoapstone">
                 <h2 id="cairn-header">
                     Messages from cartoscope players like you!
                 </h2>
             </div>
         </div>
-        <div class="col-sm-6" id="img" ng-hide="isMainTaskHidden">
+        <div class="col-sm-6" id="img" ng-show="showMainTask">
             <img id="task-img" style="max-height:450px" class="img-responsive img-task" ng-src="{{model.getNextTask()}}" ng-click="model.showBiggerImg()">
         </div>
-        <div class="col-sm-6" ng-hide="isPhysicsDivHidden">
+        <div class="col-sm-6" ng-show="showPhysics">
                     <p class="text-center" style="color:white;font-size:22px">
 Below are emojis selected by other players.
 
@@ -316,7 +316,7 @@ You can add an emoji, if you want to. Pick one that describes how you're feeling
             <div class="container-fluid">
                 <div id="physicsBody" ng-init="model.initializePhysics()">
                 </div>
-                <div class="row" ng-hide="isEmojiPickerHidden">
+                <div class="row" ng-show="showEmoji">
                     <!-- TODO could this be an ng-repeat?-->
                     <img src="../../images/emojis/thinking.png" width="70" height="70" ng-click="model.submitEmoji('thinking')"></img>
                     <img src="../../images/emojis/weary.png" width="70" height="70" ng-click="model.submitEmoji('weary')"></img>
@@ -328,7 +328,7 @@ You can add an emoji, if you want to. Pick one that describes how you're feeling
                 </div>
                 <button class="btn btn-default btn-primary done-button" ng-click="model.finishEmojiCreate()" style="height: 45px;">Click here to return to images</button>
         </div>
-        <div class="col-sm-6" ng-hide="isSoapstoneCreateHidden">
+        <div class="col-sm-6" ng-show="showSoapstone">
             <p class="text-center" style="color:white;font-size:24px">Would you like to leave a message for another user?</p>
             <br>
             <br>
@@ -361,7 +361,7 @@ You can add an emoji, if you want to. Pick one that describes how you're feeling
 
 
     <nav class="navbar navbar-fixed-bottom navbar-bottom" ng-if="model.data.template.selectedTaskType == 'tagging'">
-        <div class="container text-center" style="padding: 0;width: 100%;" ng-hide="isMainTaskHidden">
+        <div class="container text-center" style="padding: 0;width: 100%;" ng-show="showMainTask">
             <div class="bottom-panel">
                 <div class="question" ng-if="model.data.template.selectedTaskType == 'tagging'" >
                     <span>{{model.data.template.question}}</span>
