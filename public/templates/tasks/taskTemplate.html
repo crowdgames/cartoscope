@@ -300,13 +300,11 @@
     <div class="row" style="text-align: center;" ng-if="model.data.template.selectedTaskType == 'tagging'">
         <div class="col-sm-3" id="sidebar">
             <div ng-show="showSidebar">
-                <h2 id="cairn-sidebar-header">
-                    Messages from cartoscope players like you!
-                </h2>
+                <h2 id="cairn-sidebar-header"> Messages from cartoscope players like you!  </h2>
             </div>
         </div>
-        <div class="col-sm-6" id="img" ng-show="showMainTask">
-            <img id="task-img" style="max-height:450px" class="img-responsive img-task" ng-src="{{model.getNextTask()}}" ng-click="model.showBiggerImg()">
+        <div class="col-sm-6" id="img">
+            <img ng-show="showMainTask" id="task-img" style="max-height:450px" class="img-responsive img-task" ng-src="{{model.getNextTask()}}" ng-click="model.showBiggerImg()">
         </div>
         <div class="col-sm-6" ng-show="showPhysics">
                     <p class="text-center" style="color:white;font-size:22px">
