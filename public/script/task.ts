@@ -268,7 +268,9 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       vm.insertSidebarMsg = (msg: string) => {
           let sidebar = document.getElementById("cairn-sidebar-header");
-          sidebar?.insertAdjacentHTML("afterend", "<p class=\"cairn-message\">" + msg + "</p>");
+          let messageElement = document.createElement("p");
+          messageElement.setAttribute("class", "cairn-message");
+          sidebar?.insertAdjacentElement("afterend", messageElement);
       }
 
       vm.clearMsgSidebar = () => document.querySelectorAll('.cairn-message').forEach(e => e.remove());
