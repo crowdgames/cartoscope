@@ -373,10 +373,10 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       vm.soapstoneFinish = () => {
           vm.cairnState = cairnState.noCairn;
-          $scope.showSoapstoneForm   = false;
-          $scope.showSidebar     = false;
+          $scope.showSoapstoneForm = false;
+          $scope.showSidebar       = false;
           $scope.showCairnElements = false;
-          $scope.showMainTask    = true;
+          $scope.showMainTask      = true;
       }
 
       vm.soapstones = {
