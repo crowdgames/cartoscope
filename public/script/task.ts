@@ -449,9 +449,9 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       vm.startEmojiCreate = () => {
           vm.showModal(); // this isn't necessary, and honestly there might be good reasons to remove it
-          $scope.showMainTask    = false; // the div with the main task
-          $scope.showPhysics     = true; // the div with the ballpit of emojis
-          $scope.showEmoji       = true; // the div with the buttons to select which emoji you want
+          $scope.showMainTask      = false; // the div with the main task
+          $scope.showPhysics       = true; // the div with the ballpit of emojis
+          $scope.showEmoji         = true; // the div with the buttons to select which emoji you want
           $scope.showCairnElements = true;
           document.getElementById("cairn-header")!.innerHTML = "Below are emojis selected by other players.<br><br>You can add an emoji, if you want to. Pick one that describes how you're feeling!<br>"
           Render.run(vm.render);
