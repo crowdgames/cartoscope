@@ -434,6 +434,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       vm.submitEmptySoapstone = () => {
           vm.submitCairn("soapstone", "");
+          vm.cairnState = cairnState.noCairn;
           $scope.showSidebar       = false;
           $scope.showSoapstoneForm = false;
           $scope.showCairnElements = false;
