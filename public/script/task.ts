@@ -193,6 +193,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.cairnState = cairnState.noCairn;
 
       vm.handleCairns = () => {
+          console.assert(vm.cairnState === cairnState.noCairn, "cairn state is not noCairn, despite the main task showing");
           if (!vm.show_cairns) return;
           // note the time the cairn was created. Divide by 1000 because mysql wants second precision, not ms precision
           vm.timeCairnShownToPlayer = Math.floor(Date.now() / 1000);
@@ -203,9 +204,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           }
           else if (vm.data.progress % vm.tasksToCompleteTillPhysics === 0) {
               // Allow the player to play with emoji stacking
-              vm.startEmojiCreate();
+              vm.startEmojiCairn();
           }
-          console.assert(vm.cairnState === cairnState.noCairn);
       }
 
       vm.submitCairn = (baseCairnType: string, message: string) => {
