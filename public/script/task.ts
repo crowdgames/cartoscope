@@ -205,6 +205,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               // Allow the player to play with emoji stacking
               vm.startEmojiCreate();
           }
+          console.assert($scope.showMainTask ? vm.cairnState === cairnState.noCairn : true);
       }
 
       vm.submitCairn = (baseCairnType: string, message: string) => {
@@ -460,8 +461,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       // activated by clicking the "return to tasks button"
       vm.finishEmojiCreate = () => {
-          $scope.showMainTask    = true;
-          $scope.showPhysics     = false;
+          $scope.showMainTask      = true;
+          $scope.showPhysics       = false;
           $scope.showCairnElements = false;
           Render.stop(vm.render);
           vm.submitCairn("emoji", vm.submittedEmoji);
