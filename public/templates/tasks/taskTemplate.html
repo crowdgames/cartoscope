@@ -308,9 +308,8 @@
             <h2 id="cairn-header" ng-show="showCairnElements"> Would you like to leave something for another player? </h2>
             <div ng-show="showPhysics">
                 <div class="container-fluid">
-                    <div id="physicsBody" ng-init="model.initializePhysics()">
-                    </div>
-                    <div class="row" ng-show="showEmoji">
+                    <br><br>
+                    <div class="row" ng-show="showEmoji" id="emoji-picker">
                         <!-- TODO could this be an ng-repeat?-->
                         <img src="../../images/emojis/thinking.png" width="70" height="70" ng-click="model.submitEmoji('thinking')"></img>
                         <img src="../../images/emojis/weary.png" width="70" height="70" ng-click="model.submitEmoji('weary')"></img>
@@ -319,6 +318,9 @@
                         <img src="../../images/emojis/concerned.png" width="70" height="70" ng-click="model.submitEmoji('concerned')"></img>
                         <img src="../../images/emojis/tongue_out.png" width="70" height="70" ng-click="model.submitEmoji('tongue_out')"></img>
                     </div>
+                    <div id="physicsBody" ng-init="model.initializePhysics()">
+                    </div>
+                    <br><br>
                 </div>
             </div>
             <div ng-show="showSoapstoneForm">
