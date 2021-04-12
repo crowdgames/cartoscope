@@ -305,7 +305,7 @@
         </div>
         <div class="col-sm-6" id="img">
             <img ng-show="showMainTask" id="task-img" style="max-height:450px" class="img-responsive img-task" ng-src="{{model.getNextTask()}}" ng-click="model.showBiggerImg()">
-            <h2 id="cairn-header" ng-show="showCairnHeader"> Would you like to leave something for another player? </h2>
+            <h2 id="cairn-header" ng-show="showCairnElements"> Would you like to leave something for another player? </h2>
             <div ng-show="showPhysics">
                 <div class="container-fluid">
                     <div id="physicsBody" ng-init="model.initializePhysics()">
@@ -322,7 +322,7 @@
                 </div>
                 <button class="btn btn-default btn-primary done-button" ng-click="model.finishEmojiCreate()" style="height: 45px;">Click here to return to images</button>
             </div>
-            <div ng-show="showSoapstone">
+            <div ng-show="showSoapstoneForm">
                 <br>
                 <br>
                 <br>
@@ -331,9 +331,10 @@
                 </form> 
                 <br>
                 <br>
-                <button class="btn btn-default btn-primary done-button" ng-click="model.submitSoapstone()" style="height: 45px;">Submit</button>
-                <button class="btn btn-default btn-primary done-button" ng-click="model.submitEmptySoapstone()" style="height: 45px;">Skip</button>
             </div>
+            <div ng-show="showCairnElements">
+            <button class="btn btn-default btn-primary done-button" ng-click="model.handleCairnContinue()" style="height: 45px;">Continue</button>
+            <button class="btn btn-default btn-primary done-button" ng-click="model.handleCairnSkip()" style="height: 45px;">Skip</button>
         </div>
         <div class="col-sm-3" id="img">
         </div>
