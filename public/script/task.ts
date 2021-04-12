@@ -175,9 +175,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
        * TODO can this be abstracted to another file? I don't know how angular wooorks
        * ============================== */ 
       
-      vm.tasksToCompleteTillSoapstoneMsg      = 2;
-      vm.tasksToCompleteTillPhysics           = 5;
-      vm.tasksToCompleteTillSoapstoneCreation = 3;
+      vm.tasksToCompleteTillPhysics   = 5;
+      vm.tasksToCompleteTillSoapstone = 3;
 
       $scope.showCairnElements = false;
       
@@ -198,7 +197,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           // note the time the cairn was created. Divide by 1000 because mysql wants second precision, not ms precision
           vm.timeCairnShownToPlayer = Math.floor(Date.now() / 1000);
           // Pick one of the cairn types. else ifs because we don't want two at the same time
-          if (vm.data.progress % vm.tasksToCompleteTillSoapstoneCreation === 0) {
+          if (vm.data.progress % vm.tasksToCompleteTillSoapstone === 0) {
               // Show the soapstone create modal
               vm.startSoapstoneCairn();
           }
