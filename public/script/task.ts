@@ -247,7 +247,16 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       }
 
       vm.handleCairnSkip = () => {
-          console.log("Cairn Skip");
+          switch(vm.cairnState) {
+              case cairnState.soapstoneGreet:
+                  vm.submitEmptySoapstone(); break;
+              case cairnState.soapstoneMsgTypePick:
+                  vm.submitEmptySoapstone(); break;
+              case cairnState.soapstoneMain:
+                  vm.submitEmptySoapstone(); break;
+              case cairnState.soapstoneThankYou:
+                  vm.soapstoneFinish(); break;
+          }
       }
 
       // == SOAPSTONE MSG CODE ==
@@ -355,10 +364,11 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       }
 
       vm.soapstoneThankYou = () => {
-          document.getElementById("soapstone-form")!.innerHTML = "";
+          $scope.showSoapstoneForm = false;
           vm.cairnState = cairnState.soapstoneThankYou;
           document.getElementById("cairn-header")!.innerText = "Thank you for your submission, we've added it to the pile :)";
           vm.submitSoapstone();
+          document.getElementById("soapstone-form")!.innerHTML = "";
       }
 
       vm.soapstoneFinish = () => {
@@ -425,10 +435,10 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       vm.submitEmptySoapstone = () => {
           vm.submitCairn("soapstone", "");
-          $scope.showSidebar     = false;
-          $scope.showSoapstoneForm   = false;
+          $scope.showSidebar       = false;
+          $scope.showSoapstoneForm = false;
           $scope.showCairnElements = false;
-          $scope.showMainTask    = true;
+          $scope.showMainTask      = true;
       }
 
       // == END SOAPSTONE CREATE CODE ==
