@@ -224,7 +224,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           $http.post('api/tasks/submitCairn', body).then((data: object) => console.log(data));
       }
 
-      $scope.showDebug = true;
+      $scope.showDebug = false;
       // activated by hitting the debug button
       vm.handleDebug = () => {
           console.log("Debugging");
