@@ -443,8 +443,11 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.soapstoneSign = () => {
           vm.cairnState = cairnState.soapstoneSign;
           vm.extractSoapstone();
-          let form = document.getElementById("soapstone-form");
-          form!.innerHTML = "<input type=\"text\"></input>"
+          let form = document.getElementById("soapstone-form") as HTMLFormElement;
+          form.innerHTML = "";
+          let input = document.createElement("input");
+          input.setAttribute("type", "text");
+          form.appendChild(input);
           document.getElementById("cairn-header")!.innerText = "Sign your message with a single initial!";
       }
 
