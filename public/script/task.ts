@@ -415,6 +415,13 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
            *  See docs/cairns.md for more information on what soapstones are
            */
           // clear form
+          let shuffle = (a: Array<any>) => {
+              for (let i = a.length - 1; i > 0; i--) {
+                  const j = Math.floor(Math.random() * (i + 1));
+                  [a[i], a[j]] = [a[j], a[i]];
+              }
+              return a;
+          }
           form.innerHTML = '';
           soapstone.forEach(elem => {
               // If the element in the soapstone template is just a simple string, just add a textual label to the form to represent the element
@@ -429,7 +436,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   // but if it's an array of strings, we want to create an options box that allows the user to choose between the various options in this array of strings
                   let selector = document.createElement("select");
                   selector.setAttribute("class", "custom-select mr-sm-2");
-                  elem.forEach(optionStr => {
+                  shuffle(elem).forEach(optionStr => {
                       let option = document.createElement("option");
                       option.setAttribute("value", optionStr);
                       option.innerText = optionStr;
