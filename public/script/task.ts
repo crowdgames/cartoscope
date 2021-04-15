@@ -300,10 +300,12 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               random:          false,
           };
           let msBetweenMessages = 1000;
+          let existingMessages = Array.from(document.getElementsByClassName("cairn-message")).map(p => (p as HTMLParagraphElement).innerText);
           $http.post('api/tasks/getCairns', body).then((serverReturn: object) => {
               console.log(serverReturn);
               if (serverReturn["data"].length > 0)
                   serverReturn["data"]
+                      .filter((datum: object) => existingMessages.filter(existingMsg => existingMsg === datum["message"]).length === 0)
                       .reverse()
                       .forEach((datum: object, idx: number) => 
                           setTimeout(() => vm.insertSidebarMsg(datum["message"]), 
