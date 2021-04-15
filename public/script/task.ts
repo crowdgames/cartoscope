@@ -178,8 +178,11 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.tasksToCompleteTillPhysics   = 5;
       vm.tasksToCompleteTillSoapstone = 3;
 
+      // show elements such as the continue / skip buttons
+      // and the cairn-header
       $scope.showCairnElements = false;
       
+      // What cairn is currently showing on screen?
       enum cairnState {
           noCairn,
           emojiGreet,
@@ -191,6 +194,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           soapstoneThankYou
       }
 
+      // if it's the main task, it should be "noCairn"
       vm.cairnState = cairnState.noCairn;
 
       vm.handleCairns = () => {
@@ -209,6 +213,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           }
       }
 
+      // Submit a cairn to the database
       vm.submitCairn = (baseCairnType: string, message: string) => {
           // if the message is empty, the cairnType should be "empty-" + cairnType
           let cairnType = message.length === 0 ? "empty-" + baseCairnType : baseCairnType;
@@ -234,6 +239,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           document.querySelectorAll('.cairn-message').forEach(e => e.remove());
       }
 
+      // depending on the state, and what button was pressed, handle it differently
       vm.handleCairnContinue = () => {
           switch(vm.cairnState) {
               case cairnState.soapstoneGreet:
@@ -280,7 +286,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.showSoapstoneMsgToast = () => {
           // This function is as of now unused and has been replaced with sidebar soapstone messages
           let body = { projectID: vm.data.id, cairnType: "soapstone" };
-          // TODO this should be a get, but I think gets have to have body as part of the url
+          // TODO this should be a get, but gets have to have body as part of the url
           $http.post('api/tasks/getCairns', body).then((serverReturn: any) => {
               if (serverReturn.data.length > 0) {
                   let message: string = serverReturn.data[0].message;
@@ -300,6 +306,10 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           });
       }
 
+      /**
+       * Populate the sidebar with messages from other players
+       * If a message is already in the sidebar, ignore it
+       */
       vm.populateMsgSidebar = (numMsgs: number) => {
           console.log("populating sidebar");
           let body = { 
@@ -308,14 +318,21 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               numberRequested: numMsgs,
               random:          false,
           };
+          // let the messages filter in, with this many ms between them showing up
           let msBetweenMessages = 1000;
+          // messages already in the sidebar
           let existingMessages = Array.from(document.getElementsByClassName("cairn-message")).map(p => (p as HTMLParagraphElement).innerText);
           $http.post('api/tasks/getCairns', body).then((serverReturn: object) => {
               console.log(serverReturn);
               if (serverReturn["data"].length > 0)
                   serverReturn["data"]
+                      // remove any messages already in the sidebar 
+                      // (yes I could use .include, but some browsers don't support it)
                       .filter((datum: object) => existingMessages.filter(existingMsg => existingMsg === datum["message"]).length === 0)
+                      // The messages come in reverse order, so reverse back
                       .reverse()
+                      // for each message, add it to the sidebar with a short delay
+                      // (that way the messages don't all pop up at once)
                       .forEach((datum: object, idx: number) => 
                           setTimeout(() => vm.insertSidebarMsg(datum["message"]), 
                                      idx * msBetweenMessages));
@@ -323,6 +340,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           });
       }
 
+      // insert a message into the sidebar
       vm.insertSidebarMsg = (msg: string) => {
           let sidebar = document.getElementById("cairn-sidebar-header");
           let messageElement = document.createElement("p");
@@ -339,6 +357,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       $scope.showSoapstoneForm = false;
       $scope.showSidebar       = false;
 
+      // display all elements that need displaying, populate the sidebar
       vm.startSoapstoneCairn = () => {
           vm.cairnState = cairnState.soapstoneGreet;
           document.getElementById("cairn-header")!.innerText = "Would you like to leave a message for other cartoscope players?";
@@ -349,6 +368,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           vm.populateMsgSidebar(5);
       }
 
+      // let the player choose what kind of message they want to send to other players
       vm.soapstoneMsgTypePick = () => {
           let shuffle = (a: Array<any>) => {
               for (let i = a.length - 1; i > 0; i--) {
@@ -363,6 +383,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           form!.innerHTML = '';
           let selector = document.createElement("select");
           selector.setAttribute("class", "custom-select mr-sm-2");
+          // for every soapstone type, make a selector option and add it to this selector
           shuffle(Object.keys(vm.soapstones))
               .forEach((key: string) => {
                   let option = document.createElement("option");
@@ -370,33 +391,18 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   option.innerText = key;
                   selector.appendChild(option);
           });
+          // and finally append the selector
           form!.appendChild(selector);
       }
 
-      // (Code for creating new soapstone messages, as opposed to displaying ones that already exist)
+      // Finally build the message for other users
       vm.soapstoneMain = () => {
           vm.cairnState = cairnState.soapstoneMain;
           let soapstoneForm = document.getElementById("soapstone-form") as HTMLFormElement;
           let selectedMsgType = (soapstoneForm.elements[0] as HTMLSelectElement).value;
+          // this does the heavy lifting of populating the form
           vm.replaceFormElemsWithSoapstone(soapstoneForm, vm.soapstones[selectedMsgType]);
           document.getElementById("cairn-header")!.innerText = "Build up your message!";
-      }
-
-      vm.soapstoneThankYou = () => {
-          $scope.showSoapstoneForm = false;
-          vm.cairnState = cairnState.soapstoneThankYou;
-          vm.attemptExtractInitial();
-          document.getElementById("cairn-header")!.innerText = "Thank you for your submission, we've added it to the pile :)";
-          vm.submitSoapstone();
-          document.getElementById("soapstone-form")!.innerHTML = "";
-      }
-
-      vm.soapstoneFinish = () => {
-          vm.cairnState = cairnState.noCairn;
-          $scope.showSoapstoneForm = false;
-          $scope.showSidebar       = false;
-          $scope.showCairnElements = false;
-          $scope.showMainTask      = true;
       }
 
       vm.soapstones = {
@@ -447,6 +453,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           });
       }
 
+      // let the user sign their soapstone with an initial
       vm.soapstoneSign = () => {
           vm.cairnState = cairnState.soapstoneSign;
           vm.extractSoapstone();
@@ -460,6 +467,10 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       }
 
       vm.soapstoneFormValues = "";
+      /**
+       * once the user has built their message, this function takes it and puts it in the variable
+       * soapstoneFormValues
+       */
       vm.extractSoapstone = () => {
           // extract the user submissions from the soapstone form on the modal
           vm.soapstoneFormValues = Array.from(document.getElementById("soapstone-form")!.children)
@@ -471,22 +482,48 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               .join(" ");
       }
 
+      // Once the user has signed, *attempt* to add that initial to soapstoneFormValues
+      // doing nothing if something fails
       vm.attemptExtractInitial = () => {
           let textField = document.getElementById("soapstone-form")!.children[0];
+          /**
+           * If the user skipped the signing process, this will return...
+           * or it should, but it actually doesn't work. The second "if" is what 
+           * actually catches and returns...
+           * Oh well, it works
+           */
           if (textField.attributes.getNamedItem("type")!.value !== "text") {
               console.log("Expecting a signature field with a text input")
               return;
           }
           let initial = (textField as HTMLInputElement)
                           .value
-                          .slice(0, 1)
+                          .slice(0, 1) // get just the first char. Might be unneccessary, but why not
                           .toUpperCase();
-          console.log(initial);
           if (initial.length === 0 || initial.match(/^[A-Z]+$/i) === null) {
               console.warn("user initial is not alpha or is empty");
               return;
           }
           vm.soapstoneFormValues += " - " + initial;
+      }
+
+      // Show a thank you note and give the user time to see their cairn join the pile
+      vm.soapstoneThankYou = () => {
+          $scope.showSoapstoneForm = false;
+          vm.cairnState = cairnState.soapstoneThankYou;
+          vm.attemptExtractInitial(); // this mutates vm.soapstoneFormValues
+          document.getElementById("cairn-header")!.innerText = "Thank you for your submission, we've added it to the pile :)";
+          vm.submitSoapstone(); // send to server and add to sidebar
+          document.getElementById("soapstone-form")!.innerHTML = "";
+      }
+
+      // hide what needs to be hidden, reset state
+      vm.soapstoneFinish = () => {
+          vm.cairnState = cairnState.noCairn;
+          $scope.showSoapstoneForm = false;
+          $scope.showSidebar       = false;
+          $scope.showCairnElements = false;
+          $scope.showMainTask      = true;
       }
 
       vm.submitSoapstone = () => {
@@ -496,11 +533,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       vm.submitEmptySoapstone = () => {
           vm.submitCairn("soapstone", "");
-          vm.cairnState = cairnState.noCairn;
-          $scope.showSidebar       = false;
-          $scope.showSoapstoneForm = false;
-          $scope.showCairnElements = false;
-          $scope.showMainTask      = true;
+          vm.soapstoneFinish();
       }
 
       // == END SOAPSTONE CREATE CODE ==
@@ -522,12 +555,13 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           $scope.showPhysics       = true; // the div with the ballpit of emojis
           $scope.showEmoji         = true; // the div with the buttons to select which emoji you want
           document.getElementById("cairn-header")!.innerHTML = "Below are emojis selected by other players.<br><br>You can add an emoji if you want to. Pick one that describes how you're feeling!<br>"
+          // style was used to hide this. Remove style to make it visible
           document.getElementById("emoji-picker")!.removeAttribute("style");
           Render.run(vm.render);
           vm.hideModal();
       }
 
-      // activated by clicking the "return to tasks button"
+      // hide everything and return to main tasks
       vm.finishEmojiCreate = () => {
           $scope.showMainTask      = true;
           $scope.showPhysics       = false;
@@ -626,6 +660,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           vm.fillPhysicsWithEmojisFromDatabase();
       }
 
+      // populate the ballpit
       vm.fillPhysicsWithEmojisFromDatabase = () => {
           let body = { projectID: vm.data.id, cairnType: "emoji", numberRequested: 30 };
           $http.post('api/tasks/getCairns', body).then((serverReturn: object) => {
