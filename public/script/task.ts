@@ -447,6 +447,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           form.innerHTML = "";
           let input = document.createElement("input");
           input.setAttribute("type", "text");
+          input.setAttribute("maxlength", "1");
           form.appendChild(input);
           document.getElementById("cairn-header")!.innerText = "Sign your message with a single initial!";
       }
