@@ -664,13 +664,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.fillPhysicsWithEmojisFromDatabase = () => {
           let body = { projectID: vm.data.id, cairnType: "emoji", numberRequested: 30 };
           $http.post('api/tasks/getCairns', body).then((serverReturn: object) => {
-              if (serverReturn["data"].length > 0) {
-                  serverReturn["data"].forEach((cairn: object, index: number) =>
-                      setTimeout(() => {
-                          let emojiFromDatabase = cairn["message"];
-                          vm.addEmojiToPhysics(emojiFromDatabase);
-                      }, index * 50))
-              } 
+              if (serverReturn["data"].length > 0)
+                  serverReturn["data"].forEach((datum: object) => vm.addEmojiToPhysics(datum["message"]))
               else console.error("No relevant emojis found");
           });
       }
