@@ -299,7 +299,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               numberRequested: numMsgs,
               random:          false,
           };
-          let msBetweenMessages = 2000;
+          let msBetweenMessages = 1000;
           $http.post('api/tasks/getCairns', body).then((serverReturn: object) => {
               console.log(serverReturn);
               if (serverReturn["data"].length > 0)
@@ -307,7 +307,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                       .reverse()
                       .forEach((datum: object, idx: number) => 
                           setTimeout(() => vm.insertSidebarMsg(datum["message"]), 
-                                     idx < 2 ? 0 : (idx - 1) * msBetweenMessages));
+                                     idx * msBetweenMessages));
               else console.error("No relevant soapstone messages found");
           });
       }
