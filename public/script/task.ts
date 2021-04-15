@@ -186,6 +186,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           soapstoneGreet,
           emojiMain,
           soapstoneMsgTypePick,
+          soapstoneSign,
           soapstoneMain,
           soapstoneThankYou
       }
@@ -240,6 +241,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               case cairnState.soapstoneMsgTypePick:
                   vm.soapstoneMain(); break;
               case cairnState.soapstoneMain:
+                  vm.soapstoneSign(); break;
+              case cairnState.soapstoneSign:
                   vm.soapstoneThankYou(); break;
               case cairnState.soapstoneThankYou:
                   vm.soapstoneFinish(); break;
@@ -247,6 +250,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   vm.startEmojiCreate(); break;
               case cairnState.emojiMain:
                   vm.finishEmojiCreate(); break;
+              default:
+                  console.error("Handling an unknown cairn state");
           }
       }
 
@@ -258,12 +263,16 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   vm.submitEmptySoapstone(); break;
               case cairnState.soapstoneMain:
                   vm.submitEmptySoapstone(); break;
+              case cairnState.soapstoneSign:
+                  vm.soapstoneThankYou(); break;
               case cairnState.soapstoneThankYou:
                   vm.soapstoneFinish(); break;
               case cairnState.emojiGreet:
                   vm.finishEmojiCreate(); break;
               case cairnState.emojiMain:
                   vm.finishEmojiCreate(); break;
+              default:
+                  console.error("Handling an unknown cairn state");
           }
       }
 
@@ -376,6 +385,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.soapstoneThankYou = () => {
           $scope.showSoapstoneForm = false;
           vm.cairnState = cairnState.soapstoneThankYou;
+          vm.attemptExtractInitial();
           document.getElementById("cairn-header")!.innerText = "Thank you for your submission, we've added it to the pile :)";
           vm.submitSoapstone();
           document.getElementById("soapstone-form")!.innerHTML = "";
@@ -430,17 +440,47 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           });
       }
 
-      vm.submitSoapstone = () => {
+      vm.soapstoneSign = () => {
+          vm.cairnState = cairnState.soapstoneSign;
+          vm.extractSoapstone();
+          let form = document.getElementById("soapstone-form");
+          form!.innerHTML = "<input type=\"text\"></input>"
+          document.getElementById("cairn-header")!.innerText = "Sign your message with a single initial!";
+      }
+
+      vm.soapstoneFormValues = "";
+      vm.extractSoapstone = () => {
           // extract the user submissions from the soapstone form on the modal
-          let soapstoneFormValues = Array.from(document.getElementById("soapstone-form")!.children)
+          vm.soapstoneFormValues = Array.from(document.getElementById("soapstone-form")!.children)
               .map((child) => 
                    child.localName === "select" 
                        ? (child as HTMLSelectElement).value
                        : (child as HTMLFormElement).innerText.trim() // remove &nbsp from both sides
                   )
               .join(" ");
-          vm.submitCairn("soapstone", soapstoneFormValues);
-          vm.insertSidebarMsg(soapstoneFormValues);
+      }
+
+      vm.attemptExtractInitial = () => {
+          let textField = document.getElementById("soapstone-form")!.children[0];
+          if (textField.attributes.getNamedItem("type")!.value !== "text") {
+              console.log("Expecting a signature field with a text input")
+              return;
+          }
+          let initial = (textField as HTMLInputElement)
+                          .value
+                          .slice(0, 1)
+                          .toUpperCase();
+          console.log(initial);
+          if (initial.length === 0 || initial.match(/^[A-Z]+$/i) === null) {
+              console.warn("user initial is not alpha or is empty");
+              return;
+          }
+          vm.soapstoneFormValues += " - " + initial;
+      }
+
+      vm.submitSoapstone = () => {
+          vm.submitCairn("soapstone", vm.soapstoneFormValues);
+          vm.insertSidebarMsg(vm.soapstoneFormValues);
       }
 
       vm.submitEmptySoapstone = () => {
@@ -462,7 +502,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           vm.cairnState = cairnState.emojiGreet;
           $scope.showCairnElements = true;
           $scope.showMainTask      = false; // the div with the main task
-          document.getElementById("cairn-header")!.innerHTML = "Would you like to take a break and play around?"
+          document.getElementById("cairn-header")!.innerText = "Would you like to take a break and play around?"
       }
 
       vm.startEmojiCreate = () => {
