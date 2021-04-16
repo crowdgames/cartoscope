@@ -651,11 +651,17 @@ router.post('/submitCairn', [filters.requireLogin, filters.requiredParamHandler(
     });
 
 router.post('/getCairns', [filters.requiredParamHandler(['projectID', 'cairnType'])], (req, res) => {
-    let numberRequested = req.body.number || 1;
+    let numberRequested = req.body.numberRequested || 1;
     let cairnType       = req.body.cairnType;
     let projectID       = req.body.projectID;
     let userID          = req.session.passport.user ? req.session.passport.user.id : -1; // -1 is fine, since userID is only used to filter cairns we shouldn't return
-    projectDB.getCairnsForProject(userID, projectID, cairnType, numberRequested)
-        .then((data) => {console.log(data); res.send(data)})
-        .catch((err) => res.status(500).send({err: err.code || 'Could not get cairns'}));
+    let random          = "random" in req.body ? req.body.random : true; // random default true
+    if (random)
+        projectDB.getRandomCairnsForProject(userID, projectID, cairnType, numberRequested)
+            .then((data) => {console.log(data); res.send(data)})
+            .catch((err) => res.status(500).send({err: err.code || 'Could not get cairns'}));
+    else
+        projectDB.getRecentCairnsForProject(userID, projectID, cairnType, numberRequested)
+            .then((data) => {console.log(data); res.send(data)})
+            .catch((err) => res.status(500).send({err: err.code || 'Could not get cairns'}));
 });

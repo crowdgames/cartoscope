@@ -8,7 +8,7 @@
                 <button ng-switch-when="kiosk" class="btn btn-default btn-primary done-button"
                         ng-click="model.handleEnd()" style="height: 45px;">I'M DONE</button>
                 <button class="btn btn-default btn-primary done-button"
-                        ng-click="model.handleDebug()" ng-hide="isDebugButtonHidden" style="height: 45px;">DEBUG</button>
+                        ng-click="model.handleDebug()" ng-show="showDebug" style="height: 45px;">DEBUG</button>
                 <button ng-switch-default class="btn btn-default btn-primary done-button"
                         ng-click="model.handleFinish()" style="height: 45px;">I'M DONE</button>
             </div>
@@ -298,43 +298,45 @@
     </div>
 
     <div class="row" style="text-align: center;" ng-if="model.data.template.selectedTaskType == 'tagging'">
-        <div class="col-sm-3" id="img">
+        <div class="col-sm-3" id="sidebar">
+            <div ng-show="showSidebar">
+                <h2 id="cairn-sidebar-header"> Messages from cartoscope players like you!  </h2>
+            </div>
         </div>
-        <div class="col-sm-6" id="img" ng-hide="isMainTaskHidden">
-            <img id="task-img" style="max-height:450px" class="img-responsive img-task" ng-src="{{model.getNextTask()}}" ng-click="model.showBiggerImg()">
-        </div>
-        <div class="col-sm-6" ng-hide="isPhysicsDivHidden">
-                    <p class="text-center" style="color:white;font-size:22px">
-Below are emojis selected by other players.
-
-You can add an emoji, if you want to. Pick one that describes how you're feeling!</p>
-            <div class="container-fluid">
-                <div id="physicsBody" ng-init="model.initializePhysics()">
+        <div class="col-sm-6" id="img">
+            <img ng-show="showMainTask" id="task-img" style="max-height:450px" class="img-responsive img-task" ng-src="{{model.getNextTask()}}" ng-click="model.showBiggerImg()">
+            <h2 id="cairn-header" ng-show="showCairnElements"> Would you like to leave something for another player? </h2>
+            <div ng-show="showPhysics">
+                <div class="container-fluid">
+                    <br><br>
+                    <div class="row" ng-show="showEmoji" id="emoji-picker">
+                        <!-- TODO could this be an ng-repeat?-->
+                        <img src="../../images/emojis/thinking.png" width="70" height="70" ng-click="model.submitEmoji('thinking')"></img>
+                        <img src="../../images/emojis/weary.png" width="70" height="70" ng-click="model.submitEmoji('weary')"></img>
+                        <img src="../../images/emojis/grinning.png" width="70" height="70" ng-click="model.submitEmoji('grinning')"></img>
+                        <img src="../../images/emojis/angry.png" width="70" height="70" ng-click="model.submitEmoji('angry')"></img>
+                        <img src="../../images/emojis/concerned.png" width="70" height="70" ng-click="model.submitEmoji('concerned')"></img>
+                        <img src="../../images/emojis/tongue_out.png" width="70" height="70" ng-click="model.submitEmoji('tongue_out')"></img>
+                    </div>
+                    <div id="physicsBody" ng-init="model.initializePhysics()">
+                    </div>
+                    <br><br>
                 </div>
-                <div class="row" ng-hide="isEmojiPickerHidden">
-                    <!-- TODO could this be an ng-repeat?-->
-                    <img src="../../images/emojis/thinking.png" width="70" height="70" ng-click="model.submitEmoji('thinking')" data-dismiss="modal"></img>
-                    <img src="../../images/emojis/weary.png" width="70" height="70" ng-click="model.submitEmoji('weary')" data-dismiss="modal"></img>
-                    <img src="../../images/emojis/grinning.png" width="70" height="70" ng-click="model.submitEmoji('grinning')" data-dismiss="modal"></img>
-                    <img src="../../images/emojis/angry.png" width="70" height="70" ng-click="model.submitEmoji('angry')" data-dismiss="modal"></img>
-                    <img src="../../images/emojis/concerned.png" width="70" height="70" ng-click="model.submitEmoji('concerned')" data-dismiss="modal"></img>
-                    <img src="../../images/emojis/tongue_out.png" width="70" height="70" ng-click="model.submitEmoji('tongue_out')" data-dismiss="modal"></img>
-                </div>
-                </div>
-                <button class="btn btn-default btn-primary done-button" ng-click="model.finishEmojiCreate()" style="height: 45px;">Click here to return to images</button>
-        </div>
-        <div class="col-sm-6" ng-hide="isSoapstoneCreateHidden">
-            <p class="text-center" style="color:white;font-size:24px">Would you like to leave a message for another user?</p>
-            <br>
-            <br>
-            <br>
-            <form class="form-inline" method="post" action="/forminfo" id="soapstone-form">
-                <!--- This form is filled dynamically with js -->
-            </form> 
-            <br>
-            <br>
-            <button class="btn btn-default btn-primary done-button" ng-click="model.submitSoapstone()" style="height: 45px;">Submit</button>
-            <button class="btn btn-default btn-primary done-button" ng-click="model.submitEmptySoapstone()" style="height: 45px;">Skip</button>
+            </div>
+            <div ng-show="showSoapstoneForm">
+                <br>
+                <br>
+                <br>
+                <form class="form-inline" method="post" action="/forminfo" id="soapstone-form">
+                    <!--- This form is filled dynamically with js -->
+                </form> 
+                <br>
+                <br>
+            </div>
+            <div ng-show="showCairnElements">
+                <button class="btn btn-default btn-primary done-button" ng-click="model.handleCairnContinue()" style="height: 45px;">Continue</button>
+                <button class="btn btn-default btn-primary done-button" ng-click="model.handleCairnSkip()" style="height: 45px;">Skip</button>
+            </div>
         </div>
         <div class="col-sm-3" id="img">
         </div>
@@ -356,7 +358,7 @@ You can add an emoji, if you want to. Pick one that describes how you're feeling
 
 
     <nav class="navbar navbar-fixed-bottom navbar-bottom" ng-if="model.data.template.selectedTaskType == 'tagging'">
-        <div class="container text-center" style="padding: 0;width: 100%;" ng-hide="isMainTaskHidden">
+        <div class="container text-center" style="padding: 0;width: 100%;" ng-show="showMainTask">
             <div class="bottom-panel">
                 <div class="question" ng-if="model.data.template.selectedTaskType == 'tagging'" >
                     <span>{{model.data.template.question}}</span>
@@ -546,48 +548,7 @@ You can add an emoji, if you want to. Pick one that describes how you're feeling
             </div>
         </div>
     </div>
-
-    <!--Cairn Modal-->
-    <div class="modal fade" id="cairnModal"  role="dialog"  data-keyboard="false" data-backdrop="static">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title"> {{model.cairnTitle}}</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    </button>
-                </div>
-                <div class="modal-body">
-
-                        <div ng-if="!model.showCairnMessages" class="row" ng-repeat="cairn in model.cairn_options | limitTo:4" >
-                            <center>
-                            <div class="cairnButton"
-                                 ng-click="model.submitCairn(cairn)">
-                                <span class="cairnButtonText">{{cairn}}</span>
-                            </div>
-                            </center>
-                        </div>
-                    <div ng-if="model.showCairnMessages" class="row" ng-repeat="cairn in model.cairn_messages track by $index | limitTo:4" >
-                        <center>
-                            <div class="cairnButton2">
-                                <h4>{{cairn}}</h4>
-
-                            </div>
-                        </center>
-                    </div>
-
-
-
-
-                </div>
-                <div class="modal-footer">
-                    <button ng-if="model.showCairnMessages" type="button" ng-click="model.resetCairnModal()" class="btn btn-primary" >Close</button>
-
-                </div>
-
-            </div>
-        </div>
-    </div>
-
+    <!-- for an example of the cairn modal, see git -->
 <script type="text/javascript">
   var obj = $("#task-img");
 

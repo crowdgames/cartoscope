@@ -175,29 +175,45 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
        * TODO can this be abstracted to another file? I don't know how angular wooorks
        * ============================== */ 
       
-      vm.tasksToCompleteTillSoapstoneMsg      = 2;
-      vm.tasksToCompleteTillPhysics           = 5;
-      vm.tasksToCompleteTillSoapstoneCreation = 3;
+      vm.tasksToCompleteTillPhysics   = 5;
+      vm.tasksToCompleteTillSoapstone = 3;
+
+      // show elements such as the continue / skip buttons
+      // and the cairn-header
+      $scope.showCairnElements = false;
+      
+      // What cairn is currently showing on screen?
+      enum cairnState {
+          noCairn,
+          emojiGreet,
+          soapstoneGreet,
+          emojiMain,
+          soapstoneMsgTypePick,
+          soapstoneSign,
+          soapstoneMain,
+          soapstoneThankYou
+      }
+
+      // if it's the main task, it should be "noCairn"
+      vm.cairnState = cairnState.noCairn;
 
       vm.handleCairns = () => {
+          console.assert(vm.cairnState === cairnState.noCairn, "cairn state is not noCairn, despite the main task showing");
           if (!vm.show_cairns) return;
           // note the time the cairn was created. Divide by 1000 because mysql wants second precision, not ms precision
           vm.timeCairnShownToPlayer = Math.floor(Date.now() / 1000);
           // Pick one of the cairn types. else ifs because we don't want two at the same time
-          if (vm.data.progress % vm.tasksToCompleteTillSoapstoneCreation === 0) {
+          if (vm.data.progress % vm.tasksToCompleteTillSoapstone === 0) {
               // Show the soapstone create modal
-              vm.startSoapstoneCreate();
-          }
-          else if (vm.data.progress % vm.tasksToCompleteTillSoapstoneMsg === 0) {
-              // Show a message someone else has left
-              vm.showNewSoapstoneMsg();
+              vm.startSoapstoneCairn();
           }
           else if (vm.data.progress % vm.tasksToCompleteTillPhysics === 0) {
               // Allow the player to play with emoji stacking
-              vm.startEmojiCreate();
+              vm.startEmojiCairn();
           }
       }
 
+      // Submit a cairn to the database
       vm.submitCairn = (baseCairnType: string, message: string) => {
           // if the message is empty, the cairnType should be "empty-" + cairnType
           let cairnType = message.length === 0 ? "empty-" + baseCairnType : baseCairnType;
@@ -213,18 +229,64 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           $http.post('api/tasks/submitCairn', body).then((data: object) => console.log(data));
       }
 
-      $scope.isDebugButtonHidden = true;
+      $scope.showDebug = false;
       // activated by hitting the debug button
       vm.handleDebug = () => {
           console.log("Debugging");
-          let physicsBody = document.getElementById("physicsBody");
-          vm.addEmojiToPhysics("thinking");
+          let messages = ["You got this.", "Good luck today! I know you’ll do great.", "Sending major good vibes your way.", "I know this won’t be easy, but I also know you’ve got what it takes to get through it.", "Hope you’re doing awesome!", "Time to go win the fight with cancer!", "Keep on keeping on!", "Sending you good thoughts—and hoping you believe in yourself just as much as I believe in you."]
+          let message = messages[Math.floor(Math.random() * messages.length)];
+          // vm.insertSidebarMsg(message);
+          document.querySelectorAll('.cairn-message').forEach(e => e.remove());
+      }
+
+      // depending on the state, and what button was pressed, handle it differently
+      vm.handleCairnContinue = () => {
+          switch(vm.cairnState) {
+              case cairnState.soapstoneGreet:
+                  vm.soapstoneMsgTypePick(); break;
+              case cairnState.soapstoneMsgTypePick:
+                  vm.soapstoneMain(); break;
+              case cairnState.soapstoneMain:
+                  vm.soapstoneSign(); break;
+              case cairnState.soapstoneSign:
+                  vm.soapstoneThankYou(); break;
+              case cairnState.soapstoneThankYou:
+                  vm.soapstoneFinish(); break;
+              case cairnState.emojiGreet:
+                  vm.startEmojiCreate(); break;
+              case cairnState.emojiMain:
+                  vm.finishEmojiCreate(); break;
+              default:
+                  console.error("Handling an unknown cairn state");
+          }
+      }
+
+      vm.handleCairnSkip = () => {
+          switch(vm.cairnState) {
+              case cairnState.soapstoneGreet:
+                  vm.submitEmptySoapstone(); break;
+              case cairnState.soapstoneMsgTypePick:
+                  vm.submitEmptySoapstone(); break;
+              case cairnState.soapstoneMain:
+                  vm.submitEmptySoapstone(); break;
+              case cairnState.soapstoneSign:
+                  vm.soapstoneThankYou(); break;
+              case cairnState.soapstoneThankYou:
+                  vm.soapstoneFinish(); break;
+              case cairnState.emojiGreet:
+                  vm.finishEmojiCreate(); break;
+              case cairnState.emojiMain:
+                  vm.finishEmojiCreate(); break;
+              default:
+                  console.error("Handling an unknown cairn state");
+          }
       }
 
       // == SOAPSTONE MSG CODE ==
-      vm.showNewSoapstoneMsg = () => {
+      vm.showSoapstoneMsgToast = () => {
+          // This function is as of now unused and has been replaced with sidebar soapstone messages
           let body = { projectID: vm.data.id, cairnType: "soapstone" };
-          // TODO this should be a get, but I think gets have to have body as part of the url
+          // TODO this should be a get, but gets have to have body as part of the url
           $http.post('api/tasks/getCairns', body).then((serverReturn: any) => {
               if (serverReturn.data.length > 0) {
                   let message: string = serverReturn.data[0].message;
@@ -234,7 +296,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                      close:           true,
                      gravity:         "top", // `top` or `bottom`
                      position:        "left",
-                     backgroundColor: "#4663ac"
+                     escapeMarkup:    false,
+                     style: {background: "#4663ac"}
                    }).showToast();
               }
               else {
@@ -242,32 +305,115 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               }
           });
       }
+
+      /**
+       * Populate the sidebar with messages from other players
+       * If a message is already in the sidebar, ignore it
+       */
+      vm.populateMsgSidebar = (numMsgs: number) => {
+          console.log("populating sidebar");
+          let body = { 
+              projectID:       vm.data.id,
+              cairnType:       "soapstone",
+              numberRequested: numMsgs,
+              random:          false,
+          };
+          // let the messages filter in, with this many ms between them showing up
+          let msBetweenMessages = 1000;
+          // messages already in the sidebar
+          let existingMessages = Array.from(document.getElementsByClassName("cairn-message")).map(p => (p as HTMLParagraphElement).innerText);
+          $http.post('api/tasks/getCairns', body).then((serverReturn: object) => {
+              console.log(serverReturn);
+              if (serverReturn["data"].length > 0)
+                  serverReturn["data"]
+                      // remove any messages already in the sidebar 
+                      // (yes I could use .include, but some browsers don't support it)
+                      .filter((datum: object) => existingMessages.filter(existingMsg => existingMsg === datum["message"]).length === 0)
+                      // The messages come in reverse order, so reverse back
+                      .reverse()
+                      // for each message, add it to the sidebar with a short delay
+                      // (that way the messages don't all pop up at once)
+                      .forEach((datum: object, idx: number) => 
+                          setTimeout(() => vm.insertSidebarMsg(datum["message"]), 
+                                     idx * msBetweenMessages));
+              else console.error("No relevant soapstone messages found");
+          });
+      }
+
+      // insert a message into the sidebar
+      vm.insertSidebarMsg = (msg: string) => {
+          let sidebar = document.getElementById("cairn-sidebar-header");
+          let messageElement = document.createElement("p");
+          messageElement.innerText = msg;
+          messageElement.setAttribute("class", "cairn-message");
+          sidebar?.insertAdjacentElement("afterend", messageElement);
+      }
+
+      vm.clearMsgSidebar = () => document.querySelectorAll('.cairn-message').forEach(e => e.remove());
       // == END SOAPSTONE MSG CODE ==
 
       // == SOAPSTONE CREATE CODE ==
-      $scope.isSoapstoneCreateHidden  = true;
-      // (Code for creating new soapstone messages, as opposed to displaying ones that already exist)
-      vm.startSoapstoneCreate = () => {
-          let soapstoneForm = document.getElementById("soapstone-form");
-          let soapstone     = vm.randomSoapstone();
-          vm.replaceFormElemsWithSoapstone(soapstoneForm, soapstone);
-          $scope.isSoapstoneCreateHidden = false;
-          $scope.isMainTaskHidden        = true;
+
+      $scope.showSoapstoneForm = false;
+      $scope.showSidebar       = false;
+
+      // display all elements that need displaying, populate the sidebar
+      vm.startSoapstoneCairn = () => {
+          vm.cairnState = cairnState.soapstoneGreet;
+          document.getElementById("cairn-header")!.innerText = "Would you like to leave a message for other cartoscope players?";
+          $scope.showSoapstoneForm = true;
+          $scope.showSidebar       = true;
+          $scope.showMainTask      = false;
+          $scope.showCairnElements = true;
+          vm.populateMsgSidebar(5);
       }
 
-      vm.randomSoapstone = () => {
-          // get a random soapstone template from this hardcoded list
-          // what a legendary datatype
-          let soapstones: (string | string[])[][] = [
-              ["Your", ["help", "participation", "effort"], "shows that you", ["really care about the gulf", "care about science", "want to help"], "! Thank you."],
-              ["Your", ["help", "participation", "effort", "time"], "is helping us", ["understand the world", "fight coastal damage", "save the planet"], "!"],
-              [["Thank you", "we appreciate you"], "for your continued", ["effort", "time", "aid"], "!"],
-              [["Together we can", "I know we can", "Thank you for helping to", "You, me, and the rest of this community can work together to"], ["save the Lousiana wetlands", "fight environmental damage", "advance science"]],
-              [["Keep up the good work", "Don't stop just yet :)", "Keep at it", "Good work", "Well done", "Nice job"], "!"],
-              ["You", ["are so helpful", "are doing great", "can do it", "are providing so much helpful data"], "!"],
-              [["Don't worry about getting it exactly right", "Do your best", "It's ok if you don't know", "It's ok if you mess up"], ["just tell us what you see", "we'll take care of the rest", "we use statistical techniques to get the most from your answers, your effort is extremely helpful"]]];
-          return soapstones[Math.floor(Math.random() * soapstones.length)];
+      // let the player choose what kind of message they want to send to other players
+      vm.soapstoneMsgTypePick = () => {
+          let shuffle = (a: Array<any>) => {
+              for (let i = a.length - 1; i > 0; i--) {
+                  const j = Math.floor(Math.random() * (i + 1));
+                  [a[i], a[j]] = [a[j], a[i]];
+              }
+              return a;
+          }
+          vm.cairnState = cairnState.soapstoneMsgTypePick;
+          document.getElementById("cairn-header")!.innerText = "What kind of message would you like to leave?";
+          let form = document.getElementById("soapstone-form");
+          form!.innerHTML = '';
+          let selector = document.createElement("select");
+          selector.setAttribute("class", "custom-select mr-sm-2");
+          // for every soapstone type, make a selector option and add it to this selector
+          shuffle(Object.keys(vm.soapstones))
+              .forEach((key: string) => {
+                  let option = document.createElement("option");
+                  option.setAttribute("value", key);
+                  option.innerText = key;
+                  selector.appendChild(option);
+          });
+          // and finally append the selector
+          form!.appendChild(selector);
       }
+
+      // Finally build the message for other users
+      vm.soapstoneMain = () => {
+          vm.cairnState = cairnState.soapstoneMain;
+          let soapstoneForm = document.getElementById("soapstone-form") as HTMLFormElement;
+          let selectedMsgType = (soapstoneForm.elements[0] as HTMLSelectElement).value;
+          // this does the heavy lifting of populating the form
+          vm.replaceFormElemsWithSoapstone(soapstoneForm, vm.soapstones[selectedMsgType]);
+          document.getElementById("cairn-header")!.innerText = "Build up your message!";
+      }
+
+      vm.soapstones = {
+              "Thanks for caring": ["Your", ["help", "participation", "effort"], "shows that you", ["really care about the gulf!", "care about science!", "want to help!"], "Thank you."],
+              "Thanks for helping": ["Your", ["help", "participation", "effort", "time"], "is helping to", ["understand the world!", "fight coastal damage!", "save the planet!"]],
+              "We appreciate you": [["Thank you", "we appreciate you"], "for your continued", ["effort!", "time!", "aid!"]],
+              "We can do this together": [["Together we can", "I know we can", "Thank you for helping to", "You, me, and the rest of this community can work together to"], ["save the Lousiana wetlands!", "fight environmental damage!", "advance science!"]],
+              "Keep it up!": [["Keep up the good work!", "Don't stop just yet :)", "Keep at it!", "Good work!", "Well done!", "Nice job!"]],
+              "You are great!": ["You", ["are so helpful!", "are doing great!", "can do it!", "are providing so much helpful data!"]],
+              "Don't worry!": [["Don't worry about getting it exactly right,", "Do your best,", "It's ok if you don't know,", "It's ok if you mess up,"], ["just say what you see", "it'll be taken care of even if you are wrong.", "statistical techniques are used to get the most from your answers."]]
+      };
 
       vm.replaceFormElemsWithSoapstone = (form: HTMLElement, soapstone: (string | string[])[]) => {
           /** given an HTML form and a soapstone template, we want to turn the HTML form into a soapstone form
@@ -275,6 +421,13 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
            *  See docs/cairns.md for more information on what soapstones are
            */
           // clear form
+          let shuffle = (a: Array<any>) => {
+              for (let i = a.length - 1; i > 0; i--) {
+                  const j = Math.floor(Math.random() * (i + 1));
+                  [a[i], a[j]] = [a[j], a[i]];
+              }
+              return a;
+          }
           form.innerHTML = '';
           soapstone.forEach(elem => {
               // If the element in the soapstone template is just a simple string, just add a textual label to the form to represent the element
@@ -289,7 +442,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   // but if it's an array of strings, we want to create an options box that allows the user to choose between the various options in this array of strings
                   let selector = document.createElement("select");
                   selector.setAttribute("class", "custom-select mr-sm-2");
-                  elem.forEach(optionStr => {
+                  shuffle(elem).forEach(optionStr => {
                       let option = document.createElement("option");
                       option.setAttribute("value", optionStr);
                       option.innerText = optionStr;
@@ -300,48 +453,124 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           });
       }
 
-      vm.submitSoapstone = () => {
+      // let the user sign their soapstone with an initial
+      vm.soapstoneSign = () => {
+          vm.cairnState = cairnState.soapstoneSign;
+          vm.extractSoapstone();
+          let form = document.getElementById("soapstone-form") as HTMLFormElement;
+          form.innerHTML = "";
+          let input = document.createElement("input");
+          input.setAttribute("type", "text");
+          input.setAttribute("maxlength", "1");
+          form.appendChild(input);
+          document.getElementById("cairn-header")!.innerText = "Sign your message with a single initial!";
+      }
+
+      vm.soapstoneFormValues = "";
+      /**
+       * once the user has built their message, this function takes it and puts it in the variable
+       * soapstoneFormValues
+       */
+      vm.extractSoapstone = () => {
           // extract the user submissions from the soapstone form on the modal
-          let soapstoneFormValues = Array.from(document.getElementById("soapstone-form")!.children)
+          vm.soapstoneFormValues = Array.from(document.getElementById("soapstone-form")!.children)
               .map((child) => 
                    child.localName === "select" 
                        ? (child as HTMLSelectElement).value
                        : (child as HTMLFormElement).innerText.trim() // remove &nbsp from both sides
                   )
               .join(" ");
-          vm.submitCairn("soapstone", soapstoneFormValues);
-          $scope.isSoapstoneCreateHidden = true;
-          $scope.isMainTaskHidden        = false;
+      }
+
+      // Once the user has signed, *attempt* to add that initial to soapstoneFormValues
+      // doing nothing if something fails
+      vm.attemptExtractInitial = () => {
+          let textField = document.getElementById("soapstone-form")!.children[0];
+          /**
+           * If the user skipped the signing process, this will return...
+           * or it should, but it actually doesn't work. The second "if" is what 
+           * actually catches and returns...
+           * Oh well, it works
+           */
+          if (textField.attributes.getNamedItem("type")!.value !== "text") {
+              console.log("Expecting a signature field with a text input")
+              return;
+          }
+          let initial = (textField as HTMLInputElement)
+                          .value
+                          .slice(0, 1) // get just the first char. Might be unneccessary, but why not
+                          .toUpperCase();
+          if (initial.length === 0 || initial.match(/^[A-Z]+$/i) === null) {
+              console.warn("user initial is not alpha or is empty");
+              return;
+          }
+          vm.soapstoneFormValues += " - " + initial;
+      }
+
+      // Show a thank you note and give the user time to see their cairn join the pile
+      vm.soapstoneThankYou = () => {
+          $scope.showSoapstoneForm = false;
+          vm.cairnState = cairnState.soapstoneThankYou;
+          vm.attemptExtractInitial(); // this mutates vm.soapstoneFormValues
+          document.getElementById("cairn-header")!.innerText = "Thank you for your submission, we've added it to the pile :)";
+          vm.submitSoapstone(); // send to server and add to sidebar
+          document.getElementById("soapstone-form")!.innerHTML = "";
+      }
+
+      // hide what needs to be hidden, reset state
+      vm.soapstoneFinish = () => {
+          vm.cairnState = cairnState.noCairn;
+          $scope.showSoapstoneForm = false;
+          $scope.showSidebar       = false;
+          $scope.showCairnElements = false;
+          $scope.showMainTask      = true;
+      }
+
+      vm.submitSoapstone = () => {
+          vm.submitCairn("soapstone", vm.soapstoneFormValues);
+          vm.insertSidebarMsg(vm.soapstoneFormValues);
       }
 
       vm.submitEmptySoapstone = () => {
           vm.submitCairn("soapstone", "");
-          $scope.isSoapstoneCreateHidden = true;
-          $scope.isMainTaskHidden        = false;
+          vm.soapstoneFinish();
       }
 
       // == END SOAPSTONE CREATE CODE ==
 
       // == EMOJI CREATE CODE ==
-      $scope.isMainTaskHidden = false;
-      $scope.isPhysicsDivHidden  = true;
+      $scope.showMainTask = true;
+      $scope.showPhysics  = false;
+
+      vm.startEmojiCairn = () => {
+          vm.cairnState = cairnState.emojiGreet;
+          $scope.showCairnElements = true;
+          $scope.showMainTask      = false; // the div with the main task
+          document.getElementById("cairn-header")!.innerText = "Would you like to take a break and play around?"
+      }
 
       vm.startEmojiCreate = () => {
+          vm.cairnState = cairnState.emojiMain;
           vm.showModal(); // this isn't necessary, and honestly there might be good reasons to remove it
-          $scope.isMainTaskHidden = true; // the div with the main task
-          $scope.isPhysicsDivHidden  = false; // the div with the ballpit of emojis
-          $scope.isEmojiPickerHidden = false; // the div with the buttons to select which emoji you want
+          $scope.showPhysics       = true; // the div with the ballpit of emojis
+          $scope.showEmoji         = true; // the div with the buttons to select which emoji you want
+          document.getElementById("cairn-header")!.innerHTML = "Below are emojis selected by other players.<br><br>You can add an emoji if you want to. Pick one that describes how you're feeling!<br>"
+          // style was used to hide this. Remove style to make it visible
+          document.getElementById("emoji-picker")!.removeAttribute("style");
           Render.run(vm.render);
           vm.hideModal();
       }
 
-      // activated by clicking the "return to tasks button"
+      // hide everything and return to main tasks
       vm.finishEmojiCreate = () => {
-          $scope.isMainTaskHidden = false;
-          $scope.isPhysicsDivHidden  = true;
+          $scope.showMainTask      = true;
+          $scope.showPhysics       = false;
+          $scope.showCairnElements = false;
+          $scope.showEmoji         = false;
           Render.stop(vm.render);
           vm.submitCairn("emoji", vm.submittedEmoji);
           vm.submittedEmoji = "";
+          vm.cairnState = cairnState.noCairn;
       }
 
       // assume no emoji was submitted, fill this variable if one was
@@ -349,7 +578,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.submitEmoji = (submittedEmoji: string) => {
           vm.submittedEmoji = submittedEmoji;
           vm.addEmojiToPhysics(submittedEmoji); // add the emoji to the ballpit
-          $scope.isEmojiPickerHidden = true;
+          document.getElementById("emoji-picker")!.setAttribute("style", "visibility:hidden");
+          // $scope.showEmoji = false;
           // The actual sending of the emoji to the database happens in finishEmojiCreate
       }
 
@@ -398,7 +628,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               options: {
                   width: physWidth, // dynamically size the window based on browser size
                   height: physHeight,
-                  wireframes: false
+                  wireframes: false,
+                  background: '#cfd8dc'
               }
           });
 
@@ -429,16 +660,12 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           vm.fillPhysicsWithEmojisFromDatabase();
       }
 
+      // populate the ballpit
       vm.fillPhysicsWithEmojisFromDatabase = () => {
-          let body = { projectID: vm.data.id, cairnType: "emoji", number: 30 };
+          let body = { projectID: vm.data.id, cairnType: "emoji", numberRequested: 30 };
           $http.post('api/tasks/getCairns', body).then((serverReturn: object) => {
-              if (serverReturn["data"].length > 0) {
-                  serverReturn["data"].forEach((cairn: object, index: number) =>
-                      setTimeout(() => {
-                          let emojiFromDatabase = cairn["message"];
-                          vm.addEmojiToPhysics(emojiFromDatabase);
-                      }, index * 50))
-              } 
+              if (serverReturn["data"].length > 0)
+                  serverReturn["data"].forEach((datum: object) => vm.addEmojiToPhysics(datum["message"]))
               else console.error("No relevant emojis found");
           });
       }
@@ -943,7 +1170,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       function submit(option,option_text) {
 
           // if a player is attempting to submit when there is no task visible, just ignore
-          if ($scope.isMainTaskHidden) return;
+          if (!$scope.showMainTask) return;
           vm.showModal();
           //if markers task, loop through all markers and submit the selected ones, ignore submit button option
           if (vm.showMarkerPoints) {

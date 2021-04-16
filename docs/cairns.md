@@ -39,19 +39,8 @@ One of my concerns about tying cairns to progression or images is that we may no
 
 == CAIRNS TODO ==
 
- - maybe allow emojis to change if you reselect
- - fix <br> <br>
  - long messages don't fit
- - make the soapstone messages more prominent (maybe make the text of the notification bigger)
  - square emoji or increase friction
- - occasionally you get messages from cartoscope, sometimes you get messages from HG, generally get rid of the "WE" because it doesn't make sense 
- - signing your messages with a single letter? With a emoji/ emoji hat
- - clacking emojis
- - flag inactive time
- - white emoji void or white background
- - category for soapstone messages, helpful, anti-anxiety etc.
- - sidebar messages?
- - change workerID to userID
 
 ## synchronous communication
 
