@@ -285,6 +285,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               default:
                   console.error("Handling an unknown cairn state");
           }
+      }
 
       vm.handleCairnBack = () => {
           vm.wasContinueHit = false;
