@@ -300,19 +300,19 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           vm.wasSkipHit     = false;
           switch(vm.cairnState) {
               case cairnState.soapstoneGreet:
-                  vm.submitEmptySoapstone(); break;
+                  vm.showToast("Can't go back here"); break;
               case cairnState.soapstoneMsgTypePick:
-                  vm.submitEmptySoapstone(); break;
+                  vm.showToast("Can't go back here"); break;
               case cairnState.soapstoneMain:
-                  vm.submitEmptySoapstone(); break;
+                  vm.soapstoneMsgTypePick(); break;
               case cairnState.soapstoneSign:
-                  vm.soapstoneThankYou(); break;
+                  vm.soapstoneMain(); break;
               case cairnState.soapstoneThankYou:
-                  vm.soapstoneFinish(); break;
+                  vm.showToast("Can't go back here"); break;
               case cairnState.emojiGreet:
-                  vm.finishEmojiCreate(); break;
+                  vm.showToast("Can't go back here"); break;
               case cairnState.emojiMain:
-                  vm.finishEmojiCreate(); break;
+                  vm.showToast("Can't go back here"); break;
               default:
                   console.error("Handling an unknown cairn state");
           }
@@ -398,23 +398,31 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       $scope.showSoapstoneForm = false;
       $scope.showSidebar       = false;
       $scope.showContinueBtn   = true;
+      $scope.showSkipBtn       = true;
+      $scope.showBackBtn       = true;
 
       // display all elements that need displaying, populate the sidebar
       vm.startSoapstoneCairn = () => {
           vm.cairnState = cairnState.soapstoneGreet;
           document.getElementById("cairn-header")!.innerText = "Would you like to leave a message for other cartoscope players?";
+          document.getElementById("soapstone-form")!.innerHTML = "";
           $scope.showSoapstoneForm = true;
           $scope.showSidebar       = true;
           $scope.showMainTask      = false;
           $scope.showCairnElements = true;
+          $scope.showBackBtn       = false;
           if (!vm.wasBackHit)
               vm.populateMsgSidebar(5);
       }
 
       // let the player choose what kind of message they want to send to other players
       vm.soapstoneMsgTypePick = () => {
+          $scope.showContinueBtn = true;
+          $scope.showSkipBtn     = true;
+          $scope.showBackBtn     = false;
           vm.cairnState = cairnState.soapstoneMsgTypePick;
           document.getElementById("cairn-header")!.innerText = "What kind of message would you like to leave?";
+          vm.selectedMsgType = "";
           let form = document.getElementById("soapstone-form");
           form!.innerHTML = '';
           let selector = document.createElement("select");
@@ -440,6 +448,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       // Finally build the message for other users
       vm.soapstoneMain = () => {
           $scope.showContinueBtn = true;
+          $scope.showBackBtn     = true;
           vm.cairnState = cairnState.soapstoneMain;
           // this does the heavy lifting of populating the form
           let soapstoneForm = document.getElementById("soapstone-form") as HTMLFormElement;
@@ -489,6 +498,10 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.chosenSignature = "";
       // let the user sign their soapstone with an initial
       vm.soapstoneSign = () => {
+          if (vm.chosenSignature !== "") {
+              vm.soapstoneThankYou();
+              return;
+          }
           $scope.showContinueBtn = false;
           vm.cairnState = cairnState.soapstoneSign;
           let form = document.getElementById("soapstone-form") as HTMLFormElement;
@@ -551,6 +564,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       // Show a thank you note and give the user time to see their cairn join the pile
       vm.soapstoneThankYou = () => {
           $scope.showContinueBtn = true;
+          $scope.showSkipBtn     = false;
+          $scope.showBackBtn     = false;
           $scope.showSoapstoneForm = false;
           vm.cairnState = cairnState.soapstoneThankYou;
           // vm.attemptExtractInitial(); // this mutates vm.soapstoneFormValues
@@ -590,12 +605,18 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.startEmojiCairn = () => {
           vm.cairnState = cairnState.emojiGreet;
           $scope.showCairnElements = true;
+          $scope.showContinueBtn   = true;
+          $scope.showBackBtn       = false;
+          $scope.showSkipBtn       = true;
           $scope.showMainTask      = false; // the div with the main task
           document.getElementById("cairn-header")!.innerText = "Would you like to take a break and play around?"
       }
 
       vm.startEmojiCreate = () => {
           vm.cairnState = cairnState.emojiMain;
+          $scope.showContinueBtn = true;
+          $scope.showBackBtn     = false;
+          $scope.showSkipBtn     = true;
           vm.showModal(); // this isn't necessary, and honestly there might be good reasons to remove it
           $scope.showPhysics       = true; // the div with the ballpit of emojis
           $scope.showEmoji         = true; // the div with the buttons to select which emoji you want
@@ -612,6 +633,9 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           $scope.showPhysics       = false;
           $scope.showCairnElements = false;
           $scope.showEmoji         = false;
+          $scope.showContinueBtn   = true;
+          $scope.showBackBtn       = true;
+          $scope.showSkipBtn       = true;
           Render.stop(vm.render);
           vm.submitCairn("emoji", vm.submittedEmoji);
           vm.submittedEmoji = "";
