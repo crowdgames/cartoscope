@@ -433,7 +433,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           let selector = document.createElement("select");
           selector.setAttribute("class", "custom-select mr-sm-2");
           // for every soapstone type, make a selector option and add it to this selector
-          shuffle(Object.keys(vm.soapstones))
+          vm.soapstoneTypes
               .forEach((key: string) => {
                   let option = document.createElement("option");
                   option.setAttribute("value", key);
@@ -461,13 +461,21 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           document.getElementById("cairn-header")!.innerText = "Build up your message!";
       }
 
-      vm.soapstones = {
+      vm.soapstones = Object.entries({
               "Thanks": ["Your", ["help", "participation", "effort", "time"], ["is helping to", "shows that you want to"], ["understand the world!", "fight coastal damage!", "save the planet!", "benefit science", "care for the gulf"]],
               "Collaboration": [["Together we can", "I know we can", "Thank you for helping to", "You, me, and the rest of this community can work together to"], ["save the Lousiana wetlands!", "fight environmental damage!", "advance science!"]],
               "Encouragement": ["You", ["are so helpful!", "are doing great!", "can do it!", "are providing so much helpful data!"]],
               "Reassurance": [["Don't worry about getting it exactly right,", "Do your best,", "It's ok if you don't know,", "It's ok if you mess up,"], ["just say what you see", "being wrong isn't the end of the world", "statistical techniques are used to get the most from your answers."]],
               "Concern": ["I", ["feel", "am having"], ["bored", "trouble", "anger"], "with", ["these images", "this task", "the state of our environment", "pollution and habitat loss"]]
-      };
+      }).reduce((acc: object, [k, v]) => {
+          acc[k] = v.map((stringOrArry: string | string[]) => 
+              typeof(stringOrArry) === "string"
+                                ? stringOrArry
+                                : shuffle(stringOrArry));
+          return acc;
+      }, {});
+
+      vm.soapstoneTypes = shuffle(Object.keys(vm.soapstones));
 
       vm.replaceFormElemsWithSoapstone = (form: HTMLElement, soapstone: (string | string[])[]) => {
           /** given an HTML form and a soapstone template, we want to turn the HTML form into a soapstone form
@@ -489,7 +497,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   // but if it's an array of strings, we want to create an options box that allows the user to choose between the various options in this array of strings
                   let selector = document.createElement("select");
                   selector.setAttribute("class", "custom-select mr-sm-2");
-                  shuffle(elem).forEach(optionStr => {
+                  elem.forEach(optionStr => {
                       let option = document.createElement("option");
                       option.setAttribute("value", optionStr);
                       option.innerText = optionStr;
