@@ -641,7 +641,6 @@ router.post('/submitCairn', [filters.requireLogin, filters.requiredParamHandler(
         let timeWhenCairnShownToPlayer = req.body.timeWhenCairnShownToPlayer;
         let taskName                   = req.body.taskName;
         let userID                     = req.session.passport.user.id;
-        console.log(message);
 
         projectDB.storeCairnMessage(userID, projectID, message, progress, cairnType, timeWhenCairnShownToPlayer, taskName)
             .then((data) => {

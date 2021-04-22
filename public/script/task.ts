@@ -393,6 +393,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       $scope.showSoapstoneForm = false;
       $scope.showSidebar       = false;
+      $scope.showContinueBtn   = true;
 
       // display all elements that need displaying, populate the sidebar
       vm.startSoapstoneCairn = () => {
@@ -434,6 +435,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       // Finally build the message for other users
       vm.soapstoneMain = () => {
+          $scope.showContinueBtn = true;
           vm.cairnState = cairnState.soapstoneMain;
           // this does the heavy lifting of populating the form
           let soapstoneForm = document.getElementById("soapstone-form") as HTMLFormElement;
@@ -483,6 +485,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.chosenSignature = "";
       // let the user sign their soapstone with an initial
       vm.soapstoneSign = () => {
+          $scope.showContinueBtn = false;
           vm.cairnState = cairnState.soapstoneSign;
           let form = document.getElementById("soapstone-form") as HTMLFormElement;
           form.innerHTML = "";
@@ -543,6 +546,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       // Show a thank you note and give the user time to see their cairn join the pile
       vm.soapstoneThankYou = () => {
+          $scope.showContinueBtn = true;
           $scope.showSoapstoneForm = false;
           vm.cairnState = cairnState.soapstoneThankYou;
           // vm.attemptExtractInitial(); // this mutates vm.soapstoneFormValues
