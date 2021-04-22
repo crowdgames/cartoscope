@@ -239,15 +239,21 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           document.querySelectorAll('.cairn-message').forEach(e => e.remove());
       }
 
+      vm.wasContinueHit = false;
+      vm.wasBackHit     = false;
+      vm.wasSkipHit     = false;
       // depending on the state, and what button was pressed, handle it differently
       vm.handleCairnContinue = () => {
+          vm.wasContinueHit = true;
+          vm.wasBackHit     = false;
+          vm.wasSkipHit     = false;
           switch(vm.cairnState) {
               case cairnState.soapstoneGreet:
                   vm.soapstoneMsgTypePick(); break;
               case cairnState.soapstoneMsgTypePick:
-                  vm.soapstoneMain(); break;
+                  vm.storeMsgTypePick(); vm.soapstoneMain(); break;
               case cairnState.soapstoneMain:
-                  vm.soapstoneSign(); break;
+                  vm.extractSoapstone(); vm.soapstoneSign(); break;
               case cairnState.soapstoneSign:
                   vm.soapstoneThankYou(); break;
               case cairnState.soapstoneThankYou:
@@ -262,6 +268,32 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       }
 
       vm.handleCairnSkip = () => {
+          vm.wasContinueHit = false;
+          vm.wasBackHit     = false;
+          vm.wasSkipHit     = true;
+          switch(vm.cairnState) {
+              case cairnState.soapstoneGreet:
+                  vm.submitEmptySoapstone(); break;
+              case cairnState.soapstoneMsgTypePick:
+                  vm.submitEmptySoapstone(); break;
+              case cairnState.soapstoneMain:
+                  vm.submitEmptySoapstone(); break;
+              case cairnState.soapstoneSign:
+                  vm.soapstoneThankYou(); break;
+              case cairnState.soapstoneThankYou:
+                  vm.soapstoneFinish(); break;
+              case cairnState.emojiGreet:
+                  vm.finishEmojiCreate(); break;
+              case cairnState.emojiMain:
+                  vm.finishEmojiCreate(); break;
+              default:
+                  console.error("Handling an unknown cairn state");
+          }
+
+      vm.handleCairnBack = () => {
+          vm.wasContinueHit = false;
+          vm.wasBackHit     = true;
+          vm.wasSkipHit     = false;
           switch(vm.cairnState) {
               case cairnState.soapstoneGreet:
                   vm.submitEmptySoapstone(); break;
@@ -365,7 +397,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           $scope.showSidebar       = true;
           $scope.showMainTask      = false;
           $scope.showCairnElements = true;
-          vm.populateMsgSidebar(5);
+          if (!vm.wasBackHit)
+              vm.populateMsgSidebar(5);
       }
 
       // let the player choose what kind of message they want to send to other players
@@ -395,24 +428,27 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           form!.appendChild(selector);
       }
 
+      vm.selectedMsgType = "";
+      vm.storeMsgTypePick = () => {
+          let soapstoneForm = document.getElementById("soapstone-form") as HTMLFormElement;
+          vm.selectedMsgType = (soapstoneForm.elements[0] as HTMLSelectElement).value;
+      }
+
       // Finally build the message for other users
       vm.soapstoneMain = () => {
           vm.cairnState = cairnState.soapstoneMain;
-          let soapstoneForm = document.getElementById("soapstone-form") as HTMLFormElement;
-          let selectedMsgType = (soapstoneForm.elements[0] as HTMLSelectElement).value;
           // this does the heavy lifting of populating the form
-          vm.replaceFormElemsWithSoapstone(soapstoneForm, vm.soapstones[selectedMsgType]);
+          let soapstoneForm = document.getElementById("soapstone-form") as HTMLFormElement;
+          vm.replaceFormElemsWithSoapstone(soapstoneForm, vm.soapstones[vm.selectedMsgType]);
           document.getElementById("cairn-header")!.innerText = "Build up your message!";
       }
 
       vm.soapstones = {
-              "Thanks for caring": ["Your", ["help", "participation", "effort"], "shows that you", ["really care about the gulf!", "care about science!", "want to help!"], "Thank you."],
-              "Thanks for helping": ["Your", ["help", "participation", "effort", "time"], "is helping to", ["understand the world!", "fight coastal damage!", "save the planet!"]],
-              "We appreciate you": [["Thank you", "we appreciate you"], "for your continued", ["effort!", "time!", "aid!"]],
-              "We can do this together": [["Together we can", "I know we can", "Thank you for helping to", "You, me, and the rest of this community can work together to"], ["save the Lousiana wetlands!", "fight environmental damage!", "advance science!"]],
-              "Keep it up!": [["Keep up the good work!", "Don't stop just yet :)", "Keep at it!", "Good work!", "Well done!", "Nice job!"]],
-              "You are great!": ["You", ["are so helpful!", "are doing great!", "can do it!", "are providing so much helpful data!"]],
-              "Don't worry!": [["Don't worry about getting it exactly right,", "Do your best,", "It's ok if you don't know,", "It's ok if you mess up,"], ["just say what you see", "it'll be taken care of even if you are wrong.", "statistical techniques are used to get the most from your answers."]]
+              "Thanks": ["Your", ["help", "participation", "effort", "time"], ["is helping to", "shows that you want to"], ["understand the world!", "fight coastal damage!", "save the planet!", "benefit science", "care for the gulf"]],
+              "Collaboration": [["Together we can", "I know we can", "Thank you for helping to", "You, me, and the rest of this community can work together to"], ["save the Lousiana wetlands!", "fight environmental damage!", "advance science!"]],
+              "Encouragement": ["You", ["are so helpful!", "are doing great!", "can do it!", "are providing so much helpful data!"]],
+              "Reassurance": [["Don't worry about getting it exactly right,", "Do your best,", "It's ok if you don't know,", "It's ok if you mess up,"], ["just say what you see", "being wrong isn't the end of the world", "statistical techniques are used to get the most from your answers."]],
+              "Concern": ["I", ["feel", "am having"], ["bored", "trouble", "anger"], "with", ["these images", "this task", "the state of our environment", "pollution and habitat loss"]]
       };
 
       vm.replaceFormElemsWithSoapstone = (form: HTMLElement, soapstone: (string | string[])[]) => {
@@ -456,7 +492,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       // let the user sign their soapstone with an initial
       vm.soapstoneSign = () => {
           vm.cairnState = cairnState.soapstoneSign;
-          vm.extractSoapstone();
           let form = document.getElementById("soapstone-form") as HTMLFormElement;
           form.innerHTML = "";
           let input = document.createElement("input");
