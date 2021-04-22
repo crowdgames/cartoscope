@@ -227,7 +227,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           console.log("submitting cairn of type " + cairnType + " with message " + message);
           let body = {
               projectID:                  vm.data.id,
-              message:                    message,
+              message:                    encodeURI(message),
               cairnType:                  cairnType,
               progress:                   vm.data.progress - 1,
               timeWhenCairnShownToPlayer: vm.timeCairnShownToPlayer,
@@ -362,15 +362,16 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               console.log(serverReturn);
               if (serverReturn["data"].length > 0)
                   serverReturn["data"]
+                      .map((datum: object) => decodeURI(datum["message"]))
                       // remove any messages already in the sidebar 
                       // (yes I could use .include, but some browsers don't support it)
-                      .filter((datum: object) => existingMessages.filter(existingMsg => existingMsg === datum["message"]).length === 0)
+                      .filter((message: string) => existingMessages.filter(existingMsg => existingMsg === message).length === 0)
                       // The messages come in reverse order, so reverse back
                       .reverse()
                       // for each message, add it to the sidebar with a short delay
                       // (that way the messages don't all pop up at once)
-                      .forEach((datum: object, idx: number) => 
-                          setTimeout(() => vm.insertSidebarMsg(datum["message"]), 
+                      .forEach((message: string, idx: number) => 
+                          setTimeout(() => vm.insertSidebarMsg(message), 
                                      idx * msBetweenMessages));
               else console.error("No relevant soapstone messages found");
           });
@@ -479,16 +480,18 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           });
       }
 
+      vm.chosenSignature = "";
       // let the user sign their soapstone with an initial
       vm.soapstoneSign = () => {
           vm.cairnState = cairnState.soapstoneSign;
           let form = document.getElementById("soapstone-form") as HTMLFormElement;
           form.innerHTML = "";
           let avatars = ["🐵","🐺","🦊","🦁","🐴","🦄","🦏","🐰","🐔","🦆","🐧","🐍","🐉","🐳","🦈","🕷","🦠"]
-          shuffle(avatars).forEach((avatar) => {
+          avatars.forEach((avatar) => {
               let label = document.createElement("label");
               label.innerHTML = "&nbsp;" + avatar + "&nbsp;";
               label.setAttribute("style", "font-size:80px");
+              label.onclick = () => vm.chosenSignature = avatar;
               form.appendChild(label);
           });
           document.getElementById("cairn-header")!.innerText = "Sign your message, choose from one of the avatars below!";
@@ -539,7 +542,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.soapstoneThankYou = () => {
           $scope.showSoapstoneForm = false;
           vm.cairnState = cairnState.soapstoneThankYou;
-          vm.attemptExtractInitial(); // this mutates vm.soapstoneFormValues
+          // vm.attemptExtractInitial(); // this mutates vm.soapstoneFormValues
           document.getElementById("cairn-header")!.innerText = "Thank you for your submission, we've added it to the pile :)";
           vm.submitSoapstone(); // send to server and add to sidebar
           document.getElementById("soapstone-form")!.innerHTML = "";
@@ -555,8 +558,11 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       }
 
       vm.submitSoapstone = () => {
-          vm.submitCairn("soapstone", vm.soapstoneFormValues);
-          vm.insertSidebarMsg(vm.soapstoneFormValues);
+          let soapstoneAndSignature = vm.chosenSignature !== ""
+                                          ? vm.soapstoneFormValues + " - " + vm.chosenSignature
+                                          : vm.soapstoneFormValues;
+          vm.submitCairn("soapstone", soapstoneAndSignature);
+          vm.insertSidebarMsg(soapstoneAndSignature);
       }
 
       vm.submitEmptySoapstone = () => {
