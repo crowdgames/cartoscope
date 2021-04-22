@@ -2,6 +2,13 @@
  * Created by kiprasad on 26/09/16.
  */
 var module = angular.module('taskApp', ['ui.router', 'ngMap','configApp','ngJuxtapose']);
+let shuffle = (a: Array<any>) => {
+  for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 
 //change \n to br
 module.filter("textBreaks", ['$sce', function ($sce) {
@@ -400,13 +407,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       // let the player choose what kind of message they want to send to other players
       vm.soapstoneMsgTypePick = () => {
-          let shuffle = (a: Array<any>) => {
-              for (let i = a.length - 1; i > 0; i--) {
-                  const j = Math.floor(Math.random() * (i + 1));
-                  [a[i], a[j]] = [a[j], a[i]];
-              }
-              return a;
-          }
           vm.cairnState = cairnState.soapstoneMsgTypePick;
           document.getElementById("cairn-header")!.innerText = "What kind of message would you like to leave?";
           let form = document.getElementById("soapstone-form");
@@ -454,13 +454,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
            *  See docs/cairns.md for more information on what soapstones are
            */
           // clear form
-          let shuffle = (a: Array<any>) => {
-              for (let i = a.length - 1; i > 0; i--) {
-                  const j = Math.floor(Math.random() * (i + 1));
-                  [a[i], a[j]] = [a[j], a[i]];
-              }
-              return a;
-          }
           form.innerHTML = '';
           soapstone.forEach(elem => {
               // If the element in the soapstone template is just a simple string, just add a textual label to the form to represent the element
