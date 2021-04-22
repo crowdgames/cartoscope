@@ -258,7 +258,9 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               case cairnState.soapstoneMain:
                   vm.extractSoapstone(); vm.soapstoneSign(); break;
               case cairnState.soapstoneSign:
-                  vm.soapstoneThankYou(); break;
+                  if (vm.chosenSignature === "") vm.showToast("No avatar chosen!");
+                  else vm.soapstoneThankYou(); 
+                  break;
               case cairnState.soapstoneThankYou:
                   vm.soapstoneFinish(); break;
               case cairnState.emojiGreet:
@@ -282,6 +284,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               case cairnState.soapstoneMain:
                   vm.submitEmptySoapstone(); break;
               case cairnState.soapstoneSign:
+                  vm.chosenSignature = "";
                   vm.soapstoneThankYou(); break;
               case cairnState.soapstoneThankYou:
                   vm.soapstoneFinish(); break;
@@ -306,6 +309,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               case cairnState.soapstoneMain:
                   vm.soapstoneMsgTypePick(); break;
               case cairnState.soapstoneSign:
+                  vm.chosenSignature = "";
                   vm.soapstoneMain(); break;
               case cairnState.soapstoneThankYou:
                   vm.showToast("Can't go back here"); break;
@@ -502,7 +506,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               vm.soapstoneThankYou();
               return;
           }
-          $scope.showContinueBtn = false;
+          $scope.showContinueBtn = true;
           vm.cairnState = cairnState.soapstoneSign;
           let form = document.getElementById("soapstone-form") as HTMLFormElement;
           form.innerHTML = "";
@@ -513,7 +517,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               label.setAttribute("style", "font-size:80px");
               label.onclick = () => {
                   vm.chosenSignature = avatar;
-                  vm.handleCairnContinue();
+                  document.getElementById("cairn-header")!.innerText = "Your chosen avatar: " + avatar;
               }
               form.appendChild(label);
           });
