@@ -491,10 +491,13 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               let label = document.createElement("label");
               label.innerHTML = "&nbsp;" + avatar + "&nbsp;";
               label.setAttribute("style", "font-size:80px");
-              label.onclick = () => vm.chosenSignature = avatar;
+              label.onclick = () => {
+                  vm.chosenSignature = avatar;
+                  vm.handleCairnContinue();
+              }
               form.appendChild(label);
           });
-          document.getElementById("cairn-header")!.innerText = "Sign your message, choose from one of the avatars below!";
+          document.getElementById("cairn-header")!.innerText = "Last step! Sign your message, choose from one of the avatars below!";
       }
 
       vm.soapstoneFormValues = "";
