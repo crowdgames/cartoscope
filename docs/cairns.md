@@ -39,8 +39,33 @@ One of my concerns about tying cairns to progression or images is that we may no
 
 == CAIRNS TODO ==
 
+cairns test url: http://cartosco.pe/kioskProject.html#/kioskStart/motBzkff3OuA
+
  - long messages don't fit
  - square emoji or increase friction
+ - if skip hit, ignore initial
+ - if the initial is invalid, pop a message
+ - change the word "continue" and skip depending on state
+ - work on wording
+ - randomization??
+ - categories
+   - encouragment
+   - collaboration
+   - thanks
+   - reassurance?
+   - concern
+ - get rid of "it'll be taken care of even if you are wrong"
+ - add a go back?
+ - add a preview of your message
+ - sign with an emoji
+ - just work on the wording of the messages themselves
+ - background last image you saw? Or something?
+ - rework "below are emojis...", rework to "these are how other players are feeling?"
+ - add a why box?
+ - player "avatars" either emojis or colors or both
+ - think about emoji colors, but maybe don't implement
+
+## Mobile??
 
 ## synchronous communication
 
