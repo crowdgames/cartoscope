@@ -484,11 +484,14 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           vm.cairnState = cairnState.soapstoneSign;
           let form = document.getElementById("soapstone-form") as HTMLFormElement;
           form.innerHTML = "";
-          let input = document.createElement("input");
-          input.setAttribute("type", "text");
-          input.setAttribute("maxlength", "1");
-          form.appendChild(input);
-          document.getElementById("cairn-header")!.innerText = "Sign your message with a single initial!";
+          let avatars = ["🐵","🐺","🦊","🦁","🐴","🦄","🦏","🐰","🐔","🦆","🐧","🐍","🐉","🐳","🦈","🕷","🦠"]
+          shuffle(avatars).forEach((avatar) => {
+              let label = document.createElement("label");
+              label.innerHTML = "&nbsp;" + avatar + "&nbsp;";
+              label.setAttribute("style", "font-size:80px");
+              form.appendChild(label);
+          });
+          document.getElementById("cairn-header")!.innerText = "Sign your message, choose from one of the avatars below!";
       }
 
       vm.soapstoneFormValues = "";
