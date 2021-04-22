@@ -325,21 +325,25 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           // TODO this should be a get, but gets have to have body as part of the url
           $http.post('api/tasks/getCairns', body).then((serverReturn: any) => {
               if (serverReturn.data.length > 0) {
-                  let message: string = serverReturn.data[0].message;
-                   Toastify({
-                     text:            "Another user left you a message: <br><br>" + message,
-                     duration:        10000,
-                     close:           true,
-                     gravity:         "top", // `top` or `bottom`
-                     position:        "left",
-                     escapeMarkup:    false,
-                     style: {background: "#4663ac"}
-                   }).showToast();
+                  let message: string = "Another user left you a message: <br><br>" + serverReturn.data[0].message;
+                  vm.showToast(message);
               }
               else {
                   console.error("No relevant soapstone messages found");
               }
           });
+      }
+
+      vm.showToast = (message: string) => {
+          Toastify({
+              text:            message,
+              duration:        10000,
+              close:           true,
+              gravity:         "top", // `top` or `bottom`
+              position:        "left",
+              escapeMarkup:    false,
+              style: {background: "#4663ac"}
+          }).showToast();
       }
 
       /**
