@@ -2,7 +2,8 @@
  * Created by kiprasad on 26/09/16.
  */
 var module = angular.module('taskApp', ['ui.router', 'ngMap','configApp','ngJuxtapose']);
-let shuffle = (a: Array<any>) => {
+let shuffle = (inA: Array<any>) => {
+  let a = inA.slice(0);
   for (let i = a.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [a[i], a[j]] = [a[j], a[i]];
