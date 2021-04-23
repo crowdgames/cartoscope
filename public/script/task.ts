@@ -541,7 +541,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.soapstoneFormValues = "";
       /**
        * once the user has built their message, this function takes it and puts it in the variable
-       * soapstoneFormValues
+       * soapstoneFormValues. This function should likely return the value instead for a more functional approach...
        */
       vm.extractSoapstone = () => {
           // extract the user submissions from the soapstone form on the modal
