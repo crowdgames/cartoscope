@@ -458,7 +458,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           // this does the heavy lifting of populating the form
           let soapstoneForm = document.getElementById("soapstone-form") as HTMLFormElement;
           vm.replaceFormElemsWithSoapstone(soapstoneForm, vm.soapstones[vm.selectedMsgType]);
-          document.getElementById("cairn-header")!.innerText = "Build up your message!";
+          vm.extractSoapstone();
+          document.getElementById("cairn-header")!.innerHTML = "Build up your message! Your message so far: <br><br>" + vm.soapstoneFormValues;
       }
 
       vm.soapstones = Object.entries({
@@ -505,7 +506,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   });
                   selector.onchange = () => {
                       vm.extractSoapstone();
-                      document.getElementById("cairn-header")!.innerHTML = "Your message so far: <br>" + vm.soapstoneFormValues;
+                      document.getElementById("cairn-header")!.innerHTML = "Build up your message! Your message so far: <br><br>" + vm.soapstoneFormValues;
                   }
                   form.appendChild(selector);
               }
