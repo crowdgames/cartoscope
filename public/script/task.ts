@@ -503,6 +503,10 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                       option.innerText = optionStr;
                       selector.appendChild(option);
                   });
+                  selector.onchange = () => {
+                      vm.extractSoapstone();
+                      document.getElementById("cairn-header")!.innerHTML = "Your message so far: <br>" + vm.soapstoneFormValues;
+                  }
                   form.appendChild(selector);
               }
           });
