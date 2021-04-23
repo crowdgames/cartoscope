@@ -467,7 +467,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               "Collaboration": [["Together we can", "I know we can", "Thank you for helping to", "You, me, and the rest of this community can work together to"], ["save the Lousiana wetlands!", "fight environmental damage!", "advance science!"]],
               "Encouragement": ["You", ["are so helpful!", "are doing great!", "can do it!", "are providing so much helpful data!"]],
               "Reassurance": [["Don't worry about getting it exactly right,", "Do your best,", "It's ok if you don't know,", "It's ok if you mess up,"], ["just say what you see", "being wrong isn't the end of the world", "statistical techniques are used to get the most from your answers."]],
-              "Concern": ["I", ["feel", "am having"], ["bored", "trouble", "anger"], "with", ["these images", "this task", "the state of our environment", "pollution and habitat loss"]]
+              "Concern": ["I", ["feel bored", "am having trouble", "feel angry"], "with", ["these images", "this task", "the state of our environment", "pollution and habitat loss"]]
       }).reduce((acc: object, [k, v]) => {
           acc[k] = v.map((stringOrArry: string | string[]) => 
               typeof(stringOrArry) === "string"
