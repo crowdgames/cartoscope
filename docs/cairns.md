@@ -45,7 +45,6 @@ cairns test url: http://cartosco.pe/kioskProject.html#/kioskStart/motBzkff3OuA
  - square emoji or increase friction
  - add a preview of your message
  - background last image you saw? Or something?
- - rework "below are emojis...", rework to "these are how other players are feeling?"
  - add a why box? but maybe not...
  - player "avatars" either emojis or colors or both
  - think about emoji colors, but maybe don't implement
