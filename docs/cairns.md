@@ -48,6 +48,7 @@ cairns test url: http://cartosco.pe/kioskProject.html#/kioskStart/motBzkff3OuA
  - add a why box? but maybe not...
  - player "avatars" either emojis or colors or both
  - think about emoji colors, but maybe don't implement
+ - screen resolution continue or skip
 
 ## Mobile??
 
