@@ -254,12 +254,10 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           }
       }
 
-      vm.resetCairnCounter = () => {
-              if (vm.show_cairns === cairnTypes.debug)
-                  vm.tasksUntilNextCairn = getRandomIntInclusive(2, 4);
-              else
-                  vm.tasksUntilNextCairn = getRandomIntInclusive(vm.minTasksTillNextCairn, vm.maxTasksTillNextCairn);
-      }
+      vm.resetCairnCounter = () => vm.tasksUntilNextCairn = 
+                                       vm.show_cairns === cairnTypes.debug             
+                                     ? getRandomIntInclusive(2, 4)
+                                     : getRandomIntInclusive(vm.minTasksTillNextCairn, vm.maxTasksTillNextCairn);
 
       // Submit a cairn to the database
       vm.submitCairn = (baseCairnType: string, message: string) => {
