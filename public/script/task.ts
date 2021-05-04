@@ -29,6 +29,12 @@ module.filter("textBreaks", ['$sce', function ($sce) {
     }
 }]);
 
+function getRandomIntInclusive(min: number, max: number) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1) + min); //The maximum is inclusive and the minimum is inclusive
+}
+
 var latCenter: any;
 var lngCenter: any;
 var dZoom = 15;
@@ -202,23 +208,57 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           soapstoneThankYou
       }
 
+      enum cairnTypes {
+          none       = 0,
+          soapstones = 1,
+          emojis     = 2,
+          both       = 3,
+          debug      = 4
+      }
+
       // if it's the main task, it should be "noCairn"
       vm.cairnState = cairnState.noCairn;
+      vm.nextCairnToShow = cairnTypes.none;
+      vm.tasksUntilNextCairn = -1;
+      vm.minTasksTillNextCairn = 20;
+      vm.maxTasksTillNextCairn = 40;
 
       vm.handleCairns = () => {
           console.assert(vm.cairnState === cairnState.noCairn, "cairn state is not noCairn, despite the main task showing");
-          if (!vm.show_cairns) return;
+          if (vm.show_cairns === cairnTypes.none) return;
           // note the time the cairn was created. Divide by 1000 because mysql wants second precision, not ms precision
           vm.timeCairnShownToPlayer = Math.floor(Date.now() / 1000);
-          // Pick one of the cairn types. else ifs because we don't want two at the same time
-          if (vm.data.progress % vm.tasksToCompleteTillSoapstone === 0) {
-              // Show the soapstone create modal
-              vm.startSoapstoneCairn();
+
+          // initialize the counter. I'd like to initialize it outside, but it needs to be different based on debug mode
+          if (vm.tasksUntilNextCairn === -1) vm.resetCairnCounter();
+          if (vm.tasksUntilNextCairn > 0) 
+              vm.tasksUntilNextCairn--;
+          else {
+              vm.resetCairnCounter();
+              // If we are showing both or are in debug mode, flip the nextCairnToShow each time
+              // This should have been a string from the db, not an int, but legacy code and laziness
+              if (vm.show_cairns === cairnTypes.both || vm.show_cairns === cairnTypes.debug) {
+                  if (vm.nextCairnToShow === cairnTypes.none)
+                      vm.nextCairnToShow = getRandomIntInclusive(0, 1) === 0 
+                                              ? cairnTypes.emojis : cairnTypes.soapstones;
+                  else if (vm.nextCairnToShow === cairnTypes.emojis)     vm.nextCairnToShow = cairnTypes.soapstones;
+                  else if (vm.nextCairnToShow === cairnTypes.soapstones) vm.nextCairnToShow = cairnTypes.emojis;
+              }
+              // If the nextCairnToShow (set by "both" condition or debug mode) is soapstones / emoji
+              // show a soapstone or emoji
+              // Or if we are in the condition of only showing soapstones / emojis, show it
+              if (vm.show_cairns === cairnTypes.soapstones || vm.nextCairnToShow === cairnTypes.soapstones)
+                  vm.startSoapstoneCairn();
+              if (vm.show_cairns === cairnTypes.emojis || vm.nextCairnToShow === cairnTypes.emojis)
+                  vm.startEmojiCairn();
           }
-          else if (vm.data.progress % vm.tasksToCompleteTillPhysics === 0) {
-              // Allow the player to play with emoji stacking
-              vm.startEmojiCairn();
-          }
+      }
+
+      vm.resetCairnCounter = () => {
+              if (vm.show_cairns === cairnTypes.debug)
+                  vm.tasksUntilNextCairn = getRandomIntInclusive(2, 4);
+              else
+                  vm.tasksUntilNextCairn = getRandomIntInclusive(vm.minTasksTillNextCairn, vm.maxTasksTillNextCairn);
       }
 
       // Submit a cairn to the database
