@@ -1297,10 +1297,16 @@ exports.fetchCairnMessage = function(userID, projectID, progress) {
     });
 };
 
+/**
+ * WARNING:
+ * projectID is ignored. This is because we were running multiple projects where we wanted cairns to be shared
+ * An elegant solution would be to reimplement projectID checking, and have something that says "get me cairns from this list of projects"
+ * A less elegant solution would be to define a new cairnType for each kind of project
+ */
 exports.getRandomCairnsForProject = (userID, projectID, cairnType, numberCairnsRequested) => {
     return new Promise((resolve, error) => 
         db.get()
-          .queryAsync('select message from cartoscope_cairns where user_id !=? and project_id=? and cairn_type=? order by rand() desc limit ?', [userID, projectID, cairnType, numberCairnsRequested])
+          .queryAsync('select message from cartoscope_cairns where user_id !=? and cairn_type=? order by rand() desc limit ?', [userID, cairnType, numberCairnsRequested])
           .then(resolve, error)
     );
 };
@@ -1308,7 +1314,7 @@ exports.getRandomCairnsForProject = (userID, projectID, cairnType, numberCairnsR
 exports.getRecentCairnsForProject = (userID, projectID, cairnType, numberCairnsRequested) => {
     return new Promise((resolve, error) => 
         db.get()
-          .queryAsync('select message from cartoscope_cairns where user_id !=? and project_id=? and cairn_type=? order by id desc limit ?', [userID, projectID, cairnType, numberCairnsRequested])
+          .queryAsync('select message from cartoscope_cairns where user_id !=? and cairn_type=? order by id desc limit ?', [userID, cairnType, numberCairnsRequested])
           .then(resolve, error)
     );
 };

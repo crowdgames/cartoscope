@@ -5,7 +5,12 @@ In this project we will allow players to take breaks by seeing messages and leav
 The primary code for this is within ../public/script/task.ts and ../public/templates/tasks/taskTemplate.html
 
 The 4 projects used to test cairns are at:
+
  - WFi1yWOGVP0D (No cairns)
  - mlnBUn26g4dg (Soapstones)
  - 8hXmtFjsAdvq (Emojis)
  - MSHa0bROLbFh (Both)
+
+url starts with http://cartosco.pe/kioskProject.html#/kioskStart/
+
+("WFi1yWOGVP0D", "mlnBUn26g4dg", "8hXmtFjsAdvq", "MSHa0bROLbFh")

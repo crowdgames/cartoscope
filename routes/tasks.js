@@ -652,9 +652,10 @@ router.post('/submitCairn', [filters.requireLogin, filters.requiredParamHandler(
     });
 
 router.post('/getCairns', [filters.requiredParamHandler(['projectID', 'cairnType'])], (req, res) => {
+    // WARNING!! projectID is ignored. See getRandomCairnsForProject and getRecentCairnsForProject for explanation
     let numberRequested = req.body.numberRequested || 1;
     let cairnType       = req.body.cairnType;
-    let projectID       = req.body.projectID;
+    let projectID       = req.body.projectID; // IGNORED
     let userID          = req.session.passport.user ? req.session.passport.user.id : -1; // -1 is fine, since userID is only used to filter cairns we shouldn't return
     let random          = "random" in req.body ? req.body.random : true; // random default true
     if (random)
