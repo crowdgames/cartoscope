@@ -1,4 +1,27 @@
 var module = angular.module('consentApp', ['ui.router', 'ngAnimate', 'ngRoute', 'ngMap', 'configApp','angular-uuid']);
+
+//change \n to br
+module.filter("textBreaks", ['$sce', function ($sce) {
+    return function (x) {
+        if (x){
+            // var new_text = x.replace(new RegExp('\\n', 'g'), '<br/>');
+            var new_text = x.replace(/\\n/g, "<br/>");
+            // new_text = x.replace(/n/g, "<br/>");
+            //trim first and last quote:
+            if (new_text.charAt(0) === "'") {
+                new_text =  new_text.slice(1,-1);
+            }
+
+
+            return $sce.trustAsHtml(new_text);
+        } else {
+            return(x)
+        }
+
+
+    }
+}]);
+
 module.config(function($stateProvider, $urlRouterProvider) {
 
     var n = new Date();

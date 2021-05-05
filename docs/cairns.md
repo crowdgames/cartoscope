@@ -15,3 +15,7 @@ The 4 projects used to test cairns are at:
 url starts with http://cartosco.pe/kioskProject.html#/kioskStart/
 
 ("WFi1yWOGVP0D", "mlnBUn26g4dg", "8hXmtFjsAdvq", "MSHa0bROLbFh", "rp66OC29SQvN")
+
+A local project:
+
+localhost:8081/api/anon/startAnon/B7LnS7Uy6kYu?hitId=bbb?trialId=aaa
