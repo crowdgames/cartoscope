@@ -209,19 +209,16 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       }
 
       enum cairnTypes {
-          none       = 0,
-          soapstones = 1,
-          emojis     = 2,
-          both       = 3,
-          debug      = 4
+          none            = 0,
+          oftenSoapstones = 1,
+          rareSoapstones  = 2,
+          oftenEmoji      = 3,
+          rareEmoji       = 4,
       }
 
       // if it's the main task, it should be "noCairn"
       vm.cairnState = cairnState.noCairn;
-      vm.nextCairnToShow = cairnTypes.none;
       vm.tasksUntilNextCairn = -1;
-      vm.minTasksTillNextCairn = 20;
-      vm.maxTasksTillNextCairn = 40;
 
       vm.handleCairns = () => {
           console.assert(vm.cairnState === cairnState.noCairn, "cairn state is not noCairn, despite the main task showing");
@@ -235,29 +232,21 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               vm.tasksUntilNextCairn--;
           else {
               vm.resetCairnCounter();
-              // If we are showing both or are in debug mode, flip the nextCairnToShow each time
               // This should have been a string from the db, not an int, but legacy code and laziness
-              if (vm.show_cairns === cairnTypes.both || vm.show_cairns === cairnTypes.debug) {
-                  if (vm.nextCairnToShow === cairnTypes.none)
-                      vm.nextCairnToShow = getRandomIntInclusive(0, 1) === 0 
-                                              ? cairnTypes.emojis : cairnTypes.soapstones;
-                  else if (vm.nextCairnToShow === cairnTypes.emojis)     vm.nextCairnToShow = cairnTypes.soapstones;
-                  else if (vm.nextCairnToShow === cairnTypes.soapstones) vm.nextCairnToShow = cairnTypes.emojis;
-              }
               // If the nextCairnToShow (set by "both" condition or debug mode) is soapstones / emoji
               // show a soapstone or emoji
               // Or if we are in the condition of only showing soapstones / emojis, show it
-              if (vm.show_cairns === cairnTypes.soapstones || vm.nextCairnToShow === cairnTypes.soapstones)
+              if (vm.show_cairns === cairnTypes.oftenSoapstones || vm.nextCairnToShow === cairnTypes.rareSoapstones)
                   vm.startSoapstoneCairn();
-              if (vm.show_cairns === cairnTypes.emojis || vm.nextCairnToShow === cairnTypes.emojis)
+              else if (vm.show_cairns === cairnTypes.oftenEmoji || vm.nextCairnToShow === cairnTypes.rareEmoji)
                   vm.startEmojiCairn();
           }
       }
 
       vm.resetCairnCounter = () => vm.tasksUntilNextCairn = 
-                                       vm.show_cairns === cairnTypes.debug             
-                                     ? getRandomIntInclusive(2, 4)
-                                     : getRandomIntInclusive(vm.minTasksTillNextCairn, vm.maxTasksTillNextCairn);
+                                       vm.show_cairns === cairnTypes.oftenEmoji || vm.show_cairns === cairnTypes.oftenSoapstones            
+                                     ? getRandomIntInclusive(5, 20)  - 1 // correct for an off by one error
+                                     : getRandomIntInclusive(20, 40) - 1;
 
       // Submit a cairn to the database
       vm.submitCairn = (baseCairnType: string, message: string) => {
