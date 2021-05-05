@@ -236,9 +236,9 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               // If the nextCairnToShow (set by "both" condition or debug mode) is soapstones / emoji
               // show a soapstone or emoji
               // Or if we are in the condition of only showing soapstones / emojis, show it
-              if (vm.show_cairns === cairnTypes.oftenSoapstones || vm.nextCairnToShow === cairnTypes.rareSoapstones)
+              if (vm.show_cairns === cairnTypes.oftenSoapstones || vm.show_cairns === cairnTypes.rareSoapstones)
                   vm.startSoapstoneCairn();
-              else if (vm.show_cairns === cairnTypes.oftenEmoji || vm.nextCairnToShow === cairnTypes.rareEmoji)
+              else if (vm.show_cairns === cairnTypes.oftenEmoji || vm.show_cairns === cairnTypes.rareEmoji)
                   vm.startEmojiCairn();
           }
       }
