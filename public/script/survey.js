@@ -150,6 +150,9 @@ module.config(function($stateProvider, $urlRouterProvider) {
           $scope.projectCodeForHeatMapHTML = heatMapProject2;
           $scope.showSource = false;
           $scope.showMarkers = false;
+          $scope.exit_text = "Home";
+
+
 
           var hg_subprojects = ["UOYIiFeapnyI","ocioawiaGcjw","KyW6Ti9QUr4I","Srz9arMDwthQ","94yoCWhFkpMk","cXz6ImkmG9k5"];
           $scope.is_landloss = false;
@@ -162,6 +165,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
               $scope.is_landloss = true
           } else {
               $scope.exit = exit;
+              if ($stateParams.hitId && $stateParams.hitId != "kiosk")
+                  $scope.exit_text = "Proceed to MTurk Code";
           }
 
           //take them back to main HG LandLoss page results
@@ -173,6 +178,7 @@ module.config(function($stateProvider, $urlRouterProvider) {
           function exitHealthyGulf(){
               $window.location.href='./landloss';
           }
+
 
           function exit(){
 

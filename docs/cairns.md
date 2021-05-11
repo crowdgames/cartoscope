@@ -19,3 +19,4 @@ url starts with http://cartosco.pe/kioskProject.html#/kioskStart/
 A local project:
 
 localhost:8081/api/anon/startAnon/B7LnS7Uy6kYu?hitId=bbb?trialId=aaa
+http://localhost:8081/kioskProject.html#/kioskStart/B7LnS7Uy6kYu?trialId=bee
