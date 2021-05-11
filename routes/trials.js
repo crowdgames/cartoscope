@@ -119,6 +119,14 @@ router.get('/hgtest/:hit_id', function(req, res,next) {
 
 });
 
+// LLL Restoration w/ frequency of cairns as experimental variable
+router.get('/cairns_frequency_test/:trialId', (req, res) => {
+    let subprojects = ["WfpKAneXebT1", "J94tYYPMngNk", "qEEKIgFoFh1m", "dDONGlkBAGUO", "Hzp4vca3LZ4a"];
+    let project_code = chance.pickone(subprojects);
+    // send to project page
+    res.redirect(`http://cartosco.pe/kioskProject.html#/kioskStart/${project_code}?trialId=${req.params.trialId}`); 
+});
+
 
 //healthy gulf: Landloss Lookout, mturk randomized, different options
 router.get('/hg_test_options/:hit_id', function(req, res,next) {
