@@ -8,8 +8,12 @@ const axios = require('axios');
 const path = require('path');
 const uuid4 = require('uuid4');
 const sharp = require('sharp');
+const { keys } = require('lodash');
 
-const DATASET_SIZE = 12; // @TODO: configurable via url?
+const MAX_CATEGORIES = 7;
+const MIN_CATEGORIES = 3;
+const DATASET_SIZE = 12;
+const MAX_PAIRS = Math.floor(DATASET_SIZE / MIN_CATEGORIES);
 
 const acceptedLicenses = {
   'cc0': 'https://creativecommons.org/publicdomain/zero/1.0/',
@@ -18,6 +22,24 @@ const acceptedLicenses = {
   'cc-by-sa': 'https://creativecommons.org/licenses/by-sa/4.0/',
   'cc-by-nc-sa': 'https://creativecommons.org/licenses/by-nc-sa/4.0/',
 }
+
+// this could be improved with binary insertion sort
+const sortDataset = (dataset) => {
+  const toBeSorted = []
+  for(let key in dataset) {
+    toBeSorted.push([key, dataset[key].length]);
+  }
+
+  toBeSorted.sort((left, right) => {
+    if (left[1] < right[1]) {
+      return 1;
+    } else {
+      return -1;
+    }
+  });
+
+  return toBeSorted;
+};
 
 /**
  * Read from csv of US cities to find latitude and longitude. 
@@ -107,7 +129,8 @@ const download = (dir, info, callback) => {
     });
   })
   .catch((err) => {
-    console.log(err);
+    console.log('download error.');
+    console.log(err.stack);
     console.log(info);
 		callback();
   });
@@ -146,9 +169,56 @@ const validResult = (result) => {
 	}
 }
 
+const getKeyToNumToDownload = (dataset, keys) => {
+  let size = 0;
+  let categories = 0;
+  let result = {};
+  let sorted = sortDataset(dataset)
+
+  for (let i = 0; i < sorted.length; ++i) {
+    const key = sorted[i][0];
+    const occurrences = sorted[i][1];
+    const categoryPairs = Math.floor(occurrences / 2.0);
+    if (categoryPairs > 0) {
+      const numPairs = Math.min(MAX_PAIRS, categoryPairs);
+      result[key] = numPairs;
+      size += numPairs;
+      ++categories;
+
+      if (size >= DATASET_SIZE) {
+        break;
+      }
+    }
+  }
+
+  if (categories >= MAX_CATEGORIES) {
+    result = null;
+  } else if (size > DATASET_SIZE) {
+    if (categories < MIN_CATEGORIES) {
+      result = null;
+    }
+  }
+
+  if (size !== DATASET_SIZE) {
+    result = null;
+  }
+
+  return result;
+};
+
+const pruneDataset = (dataset, toDownloadSet) => {
+  for(let key in toDownloadSet) {
+    for (let i = 0; i < toDownloadSet[key]; ++i) {
+      dataset[key].shift();
+    }
+  }
+};
+
 const processData = (dir, data, datasetInfo, callback) => {
   let dataset = datasetInfo.dataset;
   let usedIds = datasetInfo.usedIds;
+  let keys = datasetInfo.keys;
+  let toDownloadSet = null;
 
   for(let i = 0; i < data.total_results; ++i) {
     const result = data.results[i];
@@ -177,6 +247,7 @@ const processData = (dir, data, datasetInfo, callback) => {
     
     if (!(iconic in dataset)) {
       dataset[iconic] = []
+      keys.push(iconic);
     } 
 
     dataset[iconic].push({
@@ -193,40 +264,37 @@ const processData = (dir, data, datasetInfo, callback) => {
       longitude: result.geojson.coordinates[1]
     });
 
-    if (dataset[iconic].length == 2) {
-      ++datasetInfo.size;
-    }
-    
-    if (datasetInfo.size >= DATASET_SIZE) {
-      if (datasetInfo.index == 0) {
-        break;
-      } else {
-        // for every iconic that has two or more elements, we remove the first two
-        // and then reset the count and decrement the index.
-        let newSize = 0;
-        for (let key in dataset) {
-          if (dataset[key].length >= 2) {
-            dataset[key].shift();
-            dataset[key].shift();
-          }
+    // ordering can be very important here, and to do this correctly we would 
+    // need to search through every possible combination till a valid combination
+    // is found. Else, we'd have to get another photo and try again. There is
+    // not an efficient and easy way to go about this. So we just select a 
+    // configuration and try it, else we keep going. To do this, the array is
+    // rotated
+    //
+    // > let a = [1,2,3,4,5]
+    // > a.push(a.shift())
+    // > a
+    // [ 2, 3, 4, 5, 1 ]
+    keys.push(keys.shift());
 
-          if (dataset[key].length >= 2) {
-            ++newSize;
-          }
-        }
-
-        datasetInfo.size = newSize;
+    toDownloadSet = getKeyToNumToDownload(dataset, keys);
+    if(toDownloadSet !== null) {
+      if (datasetInfo.index > 0) {
+        pruneDataset(dataset, toDownloadSet);
         --datasetInfo.index;
+      } else {
+        // we've found a valid dataset
+        break;
       }
     }
   }
 
-  if (datasetInfo.size < DATASET_SIZE) {
+  if (toDownloadSet === null) {
     callback(true);
 		return;
   } else {
     let summaryData = {
-      count: DATASET_SIZE,
+      count: DATASET_SIZE*2,
       code: 'localdata',
       filenames: [],
       categoriesCount: 0,
@@ -241,24 +309,22 @@ const processData = (dir, data, datasetInfo, callback) => {
       is_inaturalist: 1
     };
 
-    for(let key in dataset) {
-      if (dataset[key].length < 2) {
-        continue;
-      }
-
-      // in one the category is provided and one it is not.
-      dataset[key][1].category = '_';
-
-      ++summaryData.categoriesCount;
-      summaryData.categoriesLabel.push(key);
-      summaryData.categoriesSample.push(dataset[key][0].fileName);
-
-      summaryData.filenames.push(dataset[key][0].fileName);
-      summaryData.filenames.push(dataset[key][1].fileName);
-
-      if (summaryData.tutorial.length === 0) {
+    for(let key in toDownloadSet) {
+      // handle tutorial. We're gurantted to have atleast two photos for this
+      // category
+      if (summaryData.length === 0) {
         summaryData.tutorial.push(dataset[key][0].fileName);
         summaryData.tutorial.push(dataset[key][1].fileName);
+      }
+
+      summaryData.categoriesSample.push(dataset[key][0].fileName)
+      summaryData.filenames.push(dataset[key][0].fileName)
+      summaryData.categoriesLabel.push(key)
+      ++summaryData.categoriesCount;
+
+      for(let j = 1; j < toDownloadSet[key] * 2; ++j) {
+        summaryData.filenames.push(dataset[key][j].fileName);
+        dataset[key][j].category = '_';
       }
     }
 
@@ -269,37 +335,36 @@ const processData = (dir, data, datasetInfo, callback) => {
 				return;
       }
 
-      callback(false);
+      callback(false, toDownloadSet);
 			return;
     });
   }
 };
 
-//  latitude, longitude, dataset, usedIds, summaryData, radius,
-const buildDataSet = (dir, datasetInfo,  callback) => {
+const _buildDataSet = (dir, datasetInfo,  callback) => {
   const licenseURL = Object.keys(acceptedLicenses).join('&2C');
   
   const requestBase = `https://api.inaturalist.org/v1/observations?identified=true&photos=true&per_page=200&geo=true&license=${licenseURL}`;
   const requestGrade = '&quality_grade=research'
   const requestLocation = `&lat=${datasetInfo.latitude}&lng=${datasetInfo.longitude}&radius=${datasetInfo.radius}`;
-  
+
   const url = `${requestBase}${requestLocation}${requestGrade}`;
   axios.get(url)
     .then((response) => {
-      processData(dir, response.data, datasetInfo, (error) => {
+      processData(dir, response.data, datasetInfo, (error, downloadSet) => {
         if (error) {
           datasetInfo.radius *= 2;
           console.log(`increasing radius for ${datasetInfo.latitude}, ${datasetInfo.longitude} to ${datasetInfo.radius}`);
-          buildDataSet(dir, datasetInfo, callback);
+          _buildDataSet(dir, datasetInfo, callback);
         } else {
-          callback(false, null);
+          callback(false, downloadSet);
 					return;
         }
       })
     })
     .catch((err) => {
       console.log(`\n\n${url}\n\n`);
-      console.log(`Error: ${err}`);
+      console.log(err.stack);
 			callback(true, 'Unknown error encountered. Contact admin.');
     });
 };
@@ -352,18 +417,18 @@ exports.buildDataSet = (state, city, indexNotConverted, callback) => {
           let datasetInfo = {
             latitude, 
             longitude,
-            size: 0,
             index,
             constIndex: index,
             state,
             city,
             dataset: {},
+            keys: [],
             usedIds: new Set(),
-            radius: 2
+            radius: 16
           };
 
-          buildDataSet(dir, datasetInfo, (error, message) => {
-            if (error) {
+          _buildDataSet(dir, datasetInfo, (error, downloadSet) => {
+            if (error && downloadSet !== null) {
 							fs.rmdirSync(dir, { recursive: true });
 							destroyFileIfExists(lockFile);
               callback(error, 'Error creating dataset. Contact admin.');
@@ -381,11 +446,11 @@ exports.buildDataSet = (state, city, indexNotConverted, callback) => {
                   }, 200);
                 }
               };
-
-              for (const entry of Object.entries(datasetInfo.dataset)) {
-                if (entry[1].length >= 2) {
-                  download(dir, entry[1][0], downloadCallback);
-                  download(dir, entry[1][1], downloadCallback);
+              
+              const dataset = datasetInfo.dataset;
+              for(let key in downloadSet) {
+                for(let j = 0; j < downloadSet[key] * 2; ++j) {
+                  download(dir, dataset[key][j], downloadCallback);
                 }
               }
             }
