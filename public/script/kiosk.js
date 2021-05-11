@@ -2403,8 +2403,8 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                     var it_annot = tutpath + item.image_name;
                     if (item.image_annotation){
                         it_annot = item.hasOwnProperty('in_dataset') && item.in_dataset === 0
-                            ? `../../images/Tutorials/${vm.params.project}/${item.image_annotation}`
-                            : `../../images/Tutorials/${item.image_annotation}`;
+                            ? `../../images/Tutorials/${item.image_annotation}`
+                            : `../../images/Tutorials/${vm.params.project}/${item.image_annotation}`;
                     }
 
                     var obj = {
