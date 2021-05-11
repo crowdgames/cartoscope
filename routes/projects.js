@@ -156,6 +156,9 @@ router.get('/duplicateTutorial/:projectCodeOld/:projectCodeNew', function(req, r
             tutorial_data[i].in_dataset = 0;
             tutorial_data[i].duplicated_entry = 1; //to make sure paths are correct when copying
 
+            // Image annotation should link to old project
+            tutorial_data[i].image_annotation = `${projectCodeOld}/${tutorial_data[i].image_annotation}`;
+
             //everything that was null before should be deleted!
             Object.keys(tutorial_data[i]).forEach(function(ky){
                 if (tutorial_data[i][ky] == null) {
