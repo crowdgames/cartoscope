@@ -4,21 +4,18 @@ In this project we will allow players to take breaks by seeing messages and leav
 
 The primary code for this is within ../public/script/task.ts and ../public/templates/tasks/taskTemplate.html. Ostensibly this code should be abstracted out to its own file, but I'm not sure how to do that.
 
-The 4 projects used to test cairns are at:
+The projects used to test cairns are at:
 
- - WFi1yWOGVP0D 0
- - mlnBUn26g4dg 1
- - 8hXmtFjsAdvq 2
- - MSHa0bROLbFh 3
- - rp66OC29SQvN 4
+http://cartosco.pe/kioskProject.html#/kioskStart/WfpKAneXebT1
+http://cartosco.pe/kioskProject.html#/kioskStart/J94tYYPMngNk
+http://cartosco.pe/kioskProject.html#/kioskStart/qEEKIgFoFh1m
+http://cartosco.pe/kioskProject.html#/kioskStart/dDONGlkBAGUO
+http://cartosco.pe/kioskProject.html#/kioskStart/Hzp4vca3LZ4a
+http://cartosco.pe/kioskProject.html#/kioskStart/OfohqkweDjEB
 
-url starts with http://cartosco.pe/kioskProject.html#/kioskStart/
+("WfpKAneXebT1", "J94tYYPMngNk", "qEEKIgFoFh1m", "dDONGlkBAGUO", "Hzp4vca3LZ4a", "OfohqkweDjEB")
 
-("WFi1yWOGVP0D", "mlnBUn26g4dg", "8hXmtFjsAdvq", "MSHa0bROLbFh", "rp66OC29SQvN")
-
-A local project:
+Some local projects: 
 
 localhost:8081/api/anon/startAnon/B7LnS7Uy6kYu?hitId=bbb?trialId=aaa
 http://localhost:8081/kioskProject.html#/kioskStart/B7LnS7Uy6kYu?trialId=bee
-
-http://cartosco.pe/kioskProject.html#/kioskStart/m0z1RXalPw1u
