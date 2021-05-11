@@ -9,6 +9,7 @@ const path = require('path');
 const uuid4 = require('uuid4');
 const sharp = require('sharp');
 const { keys } = require('lodash');
+const { error } = require('console');
 
 const MAX_CATEGORIES = 7;
 const MIN_CATEGORIES = 3;
@@ -115,7 +116,7 @@ const download = (dir, info, callback) => {
               observation_id: info.objID,
               photo_id: info.photoID
             }
-          };
+          }
     
           // encoding is defaulted to utf-8
           fs.writeFile(path.join(dir, `${info.fileName}.json`), JSON.stringify(meta, null, 2), (err) => {
@@ -125,6 +126,14 @@ const download = (dir, info, callback) => {
     
             callback();
           });
+        })
+        .catch((err) => {
+          console.log('-----------------------')
+          console.log('sharp error.');
+          console.log(err.stack);
+          console.log(err);
+          console.log(info);
+          console.log('-----------------------')
         });
     });
   })
@@ -174,8 +183,9 @@ const getKeyToNumToDownload = (dataset, keys) => {
   let categories = 0;
   let result = {};
   let sorted = sortDataset(dataset)
+  let i = 0;
 
-  for (let i = 0; i < sorted.length; ++i) {
+  for (; i < sorted.length; ++i) {
     const key = sorted[i][0];
     const occurrences = sorted[i][1];
     const categoryPairs = Math.floor(occurrences / 2.0);
@@ -192,14 +202,42 @@ const getKeyToNumToDownload = (dataset, keys) => {
   }
 
   if (categories >= MAX_CATEGORIES) {
-    result = null;
+    return null;
   } else if (size > DATASET_SIZE) {
     if (categories < MIN_CATEGORIES) {
-      result = null;
+      return null;
     }
   }
 
   if (size !== DATASET_SIZE) {
+    return null;
+  }
+
+  // the first element will be the most populated. Remove one pair and we use
+  // the exptra space for the other category. If we can't find one then we 
+  // return null else we're golden. We modify the dataset and then everything
+  // else just works (in theory). 
+  --sorted[0];
+  let found = false;
+  ++i;
+  for(; i < sorted.length; ++i) {
+    const key = sorted[i][0];
+    const occurrences = sorted[i][1];
+    const categoryPairs = Math.floor(occurrences / 2.0);
+    if (categoryPairs > 0) {
+      result['other'] = 1;
+      dataset['other'] = dataset[key];
+      for(let j = 0; j < dataset['other'].length; ++j) {
+        dataset['other'][j].category = 'other';
+        dataset['other'][j].categoryHint = 'other';
+      }
+
+      found = true;
+      break;
+    }
+  }
+
+  if (!found) {
     result = null;
   }
 
@@ -424,7 +462,7 @@ exports.buildDataSet = (state, city, indexNotConverted, callback) => {
             dataset: {},
             keys: [],
             usedIds: new Set(),
-            radius: 16
+            radius: 4
           };
 
           _buildDataSet(dir, datasetInfo, (error, downloadSet) => {
