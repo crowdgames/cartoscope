@@ -637,13 +637,14 @@ router.post('/submitCairn', [filters.requireLogin, filters.requiredParamHandler(
         let message                    = req.body.message;
         let progress                   = req.body.progress;
         let projectID                  = req.body.projectID;
+        let hitID                      = req.body.hitID;
         let cairnType                  = req.body.cairnType;
         let timeWhenCairnShownToPlayer = req.body.timeWhenCairnShownToPlayer;
         let taskName                   = req.body.taskName;
         let userID                     = req.session.passport.user.id;
         console.log(message);
 
-        projectDB.storeCairnMessage(userID, projectID, message, progress, cairnType, timeWhenCairnShownToPlayer, taskName)
+        projectDB.storeCairnMessage(userID, projectID, hitID, message, progress, cairnType, timeWhenCairnShownToPlayer, taskName)
             .then((data) => {
                 console.log("data inserted", data);
                 res.send("success!");
