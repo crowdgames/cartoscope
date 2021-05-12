@@ -797,11 +797,15 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       // populate the ballpit
       vm.fillPhysicsWithEmojisFromDatabase = () => {
-          let body = { projectID: vm.data.id, cairnType: "emoji", numberRequested: 30 };
+          let numEmojis = 30;
+          let body = { projectID: vm.data.id, cairnType: "emoji", numberRequested: numEmojis };
           $http.post('api/tasks/getCairns', body).then((serverReturn: object) => {
-              if (serverReturn["data"].length > 0)
-                  serverReturn["data"].forEach((datum: object) => vm.addEmojiToPhysics(datum["message"]))
-              else console.error("No relevant emojis found");
+              // Fill with emojis from the server
+              serverReturn["data"].forEach((datum: object) => vm.addEmojiToPhysics(datum["message"]))
+              // If there aren't enough emojis, fill with emojis randomly chosen
+              // it has to be this verbose because js is bad at iterators and randomness
+              Array.from(Array(numEmojis - serverReturn["data"].length).keys())
+                  .forEach(() => vm.addEmojiToPhysics(vm.emojis[getRandomIntInclusive(0, vm.emojis.length - 1)]));
           });
       }
 
