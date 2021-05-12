@@ -729,7 +729,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                       yScale: 0.1
                   }
               },
-              "restitution": 0.8,
+              "restitution": 0.1,
+              "frictionStatic": 1,
               "friction": 0.8
           });
           World.add(vm.engine.world, [newEmoji]);
@@ -750,7 +751,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           vm.isPhysicsModalCreated = true;
 
           // create an engine. Apparently a lot of this code is deprecated, but it's also from the matter tutorial so...
-          vm.engine = Engine.create();
+          vm.engine = Engine.create({enableSleeping: true});
 
           let physicsHost = document.getElementById("physicsBody")!;
 
@@ -764,7 +765,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   width: physWidth, // dynamically size the window based on browser size
                   height: physHeight,
                   wireframes: false,
-                  background: '#cfd8dc'
+                  background: '#cfd8dc',
+                  showSleeping: false
               }
           });
 
