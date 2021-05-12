@@ -729,7 +729,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                       yScale: 0.1
                   }
               },
-              "restitution": 0.8
+              "restitution": 0.8,
+              "friction": 0.8
           });
           World.add(vm.engine.world, [newEmoji]);
       }
