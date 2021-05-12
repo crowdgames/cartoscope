@@ -664,6 +664,9 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       $scope.showMainTask = true;
       $scope.showPhysics  = false;
 
+      // Is there a way to programatically list the files in a directory?
+      vm.emojis = ["angry", "concerned", "grinning", "monocle", "sadface", "thinking", "tongue-out"];
+
       vm.startEmojiCairn = () => {
           vm.cairnState = cairnState.emojiGreet;
           $scope.showCairnElements = true;
