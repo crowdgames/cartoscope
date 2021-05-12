@@ -721,7 +721,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.addEmojiToPhysics = (emojiToAdd: string) => {
           // add it near the top, in a random location on the x axis
           // window.innerWidth / 4 because the physics window size is dynamic
-          let newEmoji = Bodies.circle(Math.random() * window.innerWidth / 4 + 30, 50, 20, {
+          let newEmoji = Bodies.rectangle(Math.random() * window.innerWidth / 4 + 30, 50, 40, 40, {
               render :{
                   sprite: {
                       texture: 'images/emojis/' + emojiToAdd + '.png',
