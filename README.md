@@ -78,7 +78,7 @@ export CARTO_DEV='development'
 When deploying the server, ensure that `CARTO_DEV` is not set to 'development'. Lastly, you also need to handle [intermediate certificates](https://www.godaddy.com/help/what-is-an-intermediate-certificate-868) for ssl verification. If you do not run this step on the server, than all https requests from a non-browser based system will fail.
 
 ```
-export CARTO_CA_BUNDLE='path/to/your/cartoscope.bundle.:.crt'
+export CARTO_CA_BUNDLE='path/to/your/cartoscope.ca.:.crt'
 ```
 
 In this case, the formatting is important since there should be three values where `:` is. The code replaces `:` with numbers 1, 2, and 3. If you are coming into the project to set up a new ssl cert, GoDaddy will have one file with "bundle" in it. That file will contain three separate certificates which start with "-----BEGIN CERTIFICATE-----" and end with "-----END CERTIFICATE-----".
