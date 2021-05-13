@@ -44,8 +44,8 @@ mkdir temp
 mkdir dataset
 ```
 8. #### Setup SSL Certificates:
-	Cartoscope requires SSL certificates for running on HTTPS.
-        Run this command: 
+	
+Cartoscope requires SSL certificates for running on HTTPS. Run this command: 
 ```
 openssl req \
        -newkey rsa:2048 -nodes -keyout domain.key \
@@ -53,16 +53,35 @@ openssl req \
 ```
 For more information, follow this link: https://www.digitalocean.com/community/tutorials/openssl-essentials-working-with-ssl-certificates-private-keys-and-csrs
 
-9. #### Set environment variables in bashrc (replace with your values. For a test / personal use, consider 8081, 8082 as the PORTS)
-		export CARTO_DB_USER=converge                                                         
-		export CARTO_DB_PASSWORD=password                                                     
-		export CARTO_DB_NAME=convergeDB                                                       
-		export CARTO_MAILER='xyz@abc.com'                                         
-		export CARTO_SALT='$$$$$$$$$$$$$$$$$$$$$$'
-		export CARTO_PORT=80
-		export CARTO_PORT_SSL=443
-		export CARTO_SSL_KEY='path/to/your/certificate.key'
-		export CARTO_SSL_CRT='path/to/your/certificate.crt'
+9. #### Environment Variables 
+
+Set up environment varaibles in bashrc (replace with your values. For a test / personal use, consider 8081, 8082 as the PORTS)
+
+```
+export CARTO_DB_USER=converge                                                         
+export CARTO_DB_PASSWORD=password                                                     
+export CARTO_DB_NAME=convergeDB                                                       
+export CARTO_MAILER='xyz@abc.com'                                         
+export CARTO_SALT='$$$$$$$$$$$$$$$$$$$$$$'
+export CARTO_PORT=80
+export CARTO_PORT_SSL=443
+export CARTO_SSL_KEY='path/to/your/certificate.key'
+export CARTO_SSL_CRT='path/to/your/certificate.crt'
+```
+
+By default the server will redirect all routes to https. If you are developing on a VM, this may be inconvenient. You can remove redirect when testing locally with:
+
+```
+export CARTO_DEV='development'
+```
+
+When deploying the server, ensure that `CARTO_DEV` is not set to 'development'. Lastly, you also need to handle [intermediate certificates](https://www.godaddy.com/help/what-is-an-intermediate-certificate-868) for ssl verification. If you do not run this step on the server, than all https requests from a non-browser based system will fail.
+
+```
+export CARTO_CA_BUNDLE='path/to/your/cartoscope.ca.:.crt'
+```
+
+In this case, the formatting is important since there should be three values where `:` is. The code replaces `:` with numbers 1, 2, and 3. If you are coming into the project to set up a new ssl cert, GoDaddy will have one file with "bundle" in it. That file will contain three separate certificates which start with "-----BEGIN CERTIFICATE-----" and end with "-----END CERTIFICATE-----".
 		
 10. #### Python related installations:
 		Make sure pip is installed and then intall PIL
