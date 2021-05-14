@@ -481,7 +481,7 @@ exports.buildDataSet = (state, city, indexNotConverted, callback) => {
 									// We have to wait for files to finish else we have a race condition
 									setTimeout(() => {
                     destroyFileIfExists(lockFile); 
-                  }, 500);
+                  }, 1000);
                 }
               };
               
