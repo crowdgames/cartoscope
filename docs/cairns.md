@@ -6,11 +6,17 @@ The primary code for this is within ../public/script/task.ts and ../public/templ
 
 The projects used to test cairns are at:
 
+No cairns
 http://cartosco.pe/kioskProject.html#/kioskStart/WfpKAneXebT1
+Soapstones, often
 http://cartosco.pe/kioskProject.html#/kioskStart/J94tYYPMngNk
+Soapstones, rare
 http://cartosco.pe/kioskProject.html#/kioskStart/qEEKIgFoFh1m
+Emojis, often
 http://cartosco.pe/kioskProject.html#/kioskStart/dDONGlkBAGUO
+Emojis, rare
 http://cartosco.pe/kioskProject.html#/kioskStart/Hzp4vca3LZ4a
+Both, often (for LLL use only)
 http://cartosco.pe/kioskProject.html#/kioskStart/OfohqkweDjEB
 
 ("WfpKAneXebT1", "J94tYYPMngNk", "qEEKIgFoFh1m", "dDONGlkBAGUO", "Hzp4vca3LZ4a", "OfohqkweDjEB")
