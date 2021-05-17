@@ -460,6 +460,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           $scope.showMainTask      = false;
           $scope.showCairnElements = true;
           $scope.showBackBtn       = false;
+          $scope.showSkipBtn       = true;
           if (!vm.wasBackHit)
               vm.populateMsgSidebar(5);
       }
