@@ -78,7 +78,7 @@ const validateUserInput = (state, city, callback) => {
     });
 };
 
-const download = (dir, info, callback) => {
+const download = (dir, info) => {
   axios({
     method: 'get',
     url: info.url.replace('square', 'original'), // highest res photo
@@ -97,34 +97,31 @@ const download = (dir, info, callback) => {
         .resize({width: 512, height: 512})
         .toFile(photoSaveName)
         .then(() => {
-          fs.unlink(photoSaveNameTemp, (err) => {
-             // given no error, write JSON file
-            const upperLicense = info.licenseCode.toUpperCase();
-            const licenseURL = acceptedLicenses[info.licenseCode];
-            const atr = `Image from [iNaturalist](https://www.inaturalist.org), ${info.attribution}, under [${upperLicense}](${licenseURL}), and may have been cropped or scaled.`;
-            const meta = {
-              id: info.id,
-              category: info.category,
-              category_hint: info.categoryHint,
-              attribution: atr,
-              latitude: info.latitude,
-              longitude: info.longitude,
-              source: {
-                name: 'iNaturalist',
-                url: 'https://www.inaturalist.org/',
-                observation_id: info.objID,
-                photo_id: info.photoID
-              }
+          // given no error, write JSON file
+          const upperLicense = info.licenseCode.toUpperCase();
+          const licenseURL = acceptedLicenses[info.licenseCode];
+          const atr = `Image from [iNaturalist](https://www.inaturalist.org), ${info.attribution}, under [${upperLicense}](${licenseURL}), and may have been cropped or scaled.`;
+          const meta = {
+            id: info.id,
+            category: info.category,
+            category_hint: info.categoryHint,
+            attribution: atr,
+            latitude: info.latitude,
+            longitude: info.longitude,
+            source: {
+              name: 'iNaturalist',
+              url: 'https://www.inaturalist.org/',
+              observation_id: info.objID,
+              photo_id: info.photoID
             }
-      
-            // encoding is defaulted to utf-8
-            fs.writeFile(path.join(dir, `${info.fileName}.json`), JSON.stringify(meta, null, 2), (err) => {
-              if (err) {
-                console.log(err);
-              }
-      
-              callback();
-            });
+          }
+
+          fs.writeFile(path.join(dir, `${info.fileName}.json`), JSON.stringify(meta, null, 2), (err) => {
+            if (err) {
+              console.log(err);
+            }
+
+            fs.unlink(photoSaveNameTemp, err => {});
           });
         })
         .catch((err) => {
@@ -473,24 +470,34 @@ exports.buildDataSet = (state, city, indexNotConverted, callback) => {
             } else {
               callback(error, 'Dataset is being created.');
 							
-							// Create Dataset
-              let filesDownloaded = 0;
-              const downloadCallback = () => {
-                ++filesDownloaded;
-                if (filesDownloaded === DATASET_SIZE*2) {
-									// We have to wait for files to finish else we have a race condition
-									setTimeout(() => {
-                    destroyFileIfExists(lockFile); 
-                  }, 1000);
-                }
-              };
-              
+							// Create Dataset              
               const dataset = datasetInfo.dataset;
               for(let key in downloadSet) {
                 for(let j = 0; j < downloadSet[key] * 2; ++j) {
-                  download(dir, dataset[key][j], downloadCallback);
+                  download(dir, dataset[key][j]);
                 }
               }
+              
+              // the problem is that this is synchronous and eating up all the 
+              // other computation so I need to make this not synchronous and
+              // then I'm good to go.
+              const interval = setInterval(() => {
+                let files = fs.readdirSync(dir);
+                if (files.length >= DATASET_SIZE*2) {
+                  let tempFilesExist = false;
+                  files.forEach(file => {
+                    if (file.includes('temp')) {
+                      tempFilesExist = true;
+                    }
+                  });
+
+                  if (!tempFilesExist) {
+                    destroyFileIfExists(lockFile);
+                    clearInterval(interval);
+                  }
+                }
+              });
+
             }
           })
         }
