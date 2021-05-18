@@ -2497,7 +2497,6 @@ module.controller('kioskController', ['$window','$scope','$location','$state','$
                 $cookies.put('kiosk', lil.uuid());
             }
 
-
             //getProjects Code dynamically
             $http.get('/api/anon/startKiosk/').then(function(e, data) {
                 //console.log('e', e, data);
@@ -2602,7 +2601,10 @@ module.controller('kioskProjectController', ['$window','$scope','$location','$st
 
 
         $scope.showTerms = function(){
-            $('#termsModal2').appendTo("body").modal('show');
+            if ($scope.isMturk)
+                $scope.beginProject();
+            else
+                $('#termsModal2').appendTo("body").modal('show');
         }
 
 

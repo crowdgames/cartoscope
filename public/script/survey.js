@@ -154,6 +154,9 @@ module.config(function($stateProvider, $urlRouterProvider) {
 
 
 
+          if ($stateParams.hitId && $stateParams.hitId != "kiosk")
+              $state.go('hitCode', {hitCode: $scope.workerId});
+
           var hg_subprojects = ["UOYIiFeapnyI","ocioawiaGcjw","KyW6Ti9QUr4I","Srz9arMDwthQ","94yoCWhFkpMk","cXz6ImkmG9k5"];
           $scope.is_landloss = false;
 
@@ -163,11 +166,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
           if (hg_subprojects.indexOf($scope.project) !== -1) {
               $scope.exit = exitHealthyGulf;
               $scope.is_landloss = true
-          } else {
+          } else
               $scope.exit = exit;
-              if ($stateParams.hitId && $stateParams.hitId != "kiosk")
-                  $scope.exit_text = "Proceed to MTurk Code";
-          }
 
           //take them back to main HG LandLoss page results
           $scope.landlossResults = function (){
@@ -181,17 +181,9 @@ module.config(function($stateProvider, $urlRouterProvider) {
 
 
           function exit(){
-
-              //if we have a hit Id, then send them to hit code page!
-              if ($stateParams.hitId && $stateParams.hitId != "kiosk") {
-                  $state.go('hitCode', {hitCode: $scope.workerId});
-              } else {
-                  console.log('in exit');
-                  // $window.location.href='/algalBloom.html';
-                  $window.location.href='kioskProject.html#/kioskStart/' + $scope.project;
-              }
-
-
+              console.log('in exit');
+              // $window.location.href='/algalBloom.html';
+              $window.location.href='kioskProject.html#/kioskStart/' + $scope.project;
           }
 
           // $scope.icon_array =  ['http://maps.google.com/mapfiles/ms/icons/green-dot.png',
