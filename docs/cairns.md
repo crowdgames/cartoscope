@@ -26,6 +26,12 @@ Some local projects:
 localhost:8081/api/anon/startAnon/B7LnS7Uy6kYu?hitId=bbb?trialId=aaa
 http://localhost:8081/kioskProject.html#/kioskStart/B7LnS7Uy6kYu?trialId=bee
 
+Testing cairns frequency 
+http://cartosco.pe/api/trials/cairns_frequency_test/<hitId>
+
+Gathering data:
+cartosco.pe/api/results/votesKiosk/expertID
+
 Extension thoughts:
 
 Cairns are retrieved regardless of project name, which might lead to future generic cairns to be retrieved from other projects that don't make sense
