@@ -268,6 +268,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           // if the message is empty, the cairnType should be "empty-" + cairnType
           let cairnType = message.length === 0 ? "empty-" + baseCairnType : baseCairnType;
           let hitID = $location.search().hitID || $location.search().trialID || "kiosk";
+          let timeCairnSubmitted = Math.floor(Date.now() / 1000);
           console.log("submitting cairn of type " + cairnType + " with message " + message);
           let body = {
               projectID:                  vm.data.id,
@@ -276,6 +277,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               cairnType:                  cairnType,
               progress:                   vm.data.progress - 1,
               timeWhenCairnShownToPlayer: vm.timeCairnShownToPlayer,
+              timeCairnSubmitted:         timeCairnSubmitted,
               taskName:                   vm.previousTaskName
           };
           $http.post('api/tasks/submitCairn', body).then((data: object) => console.log(data));

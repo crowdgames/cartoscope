@@ -1267,17 +1267,12 @@ exports.setSurveyType = function(unique_code,survey_type) {
 
 
 //store cairn message from Cartoscope
-exports.storeCairnMessage = function(userID, projectID, hitID, message, progress, type, time_shown_to_player, task_name) {
+exports.storeCairnMessage = function(userID, projectID, hitID, message, progress, type, time_shown_to_player, time_player_submitted, task_name) {
     return new Promise(function(resolve, error) {
         let connection = db.get();
 
-        connection.queryAsync('insert into cartoscope_cairns (user_id,project_id,hit_id,message,level_number, cairn_type, time_shown_to_player, task_name) VALUES(?,?,?,?,?,?,FROM_UNIXTIME(?),?) on DUPLICATE KEY UPDATE message= VALUES(message)',
-            [userID, projectID, hitID, message, progress, type, time_shown_to_player, task_name]).then(
-            function(data) {
-                resolve(data);
-            }, function(err) {
-                error(err);
-            });
+        connection.queryAsync('insert into cartoscope_cairns (user_id,project_id,hit_id,message,level_number, cairn_type, time_shown_to_player, time_player_submitted, task_name) VALUES(?,?,?,?,?,?,FROM_UNIXTIME(?),FROM_UNIXTIME(?),?) on DUPLICATE KEY UPDATE message= VALUES(message)',
+            [userID, projectID, hitID, message, progress, type, time_shown_to_player, time_player_submitted, task_name]).then(resolve, error);
     });
 };
 

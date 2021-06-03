@@ -633,18 +633,19 @@ router.post('/updateProgress', [filters.requireLogin, filters.requiredParamHandl
     });
 
 // See git for the old cairn submission function
-router.post('/submitCairn', [filters.requireLogin, filters.requiredParamHandler(['projectID', 'message', 'progress', 'cairnType', 'timeWhenCairnShownToPlayer', 'taskName'])], (req, res) => {
+router.post('/submitCairn', [filters.requireLogin, filters.requiredParamHandler(['projectID', 'message', 'progress', 'cairnType', 'timeWhenCairnShownToPlayer', 'timeCairnSubmitted', 'taskName'])], (req, res) => {
         let message                    = req.body.message;
         let progress                   = req.body.progress;
         let projectID                  = req.body.projectID;
         let hitID                      = req.body.hitID;
         let cairnType                  = req.body.cairnType;
         let timeWhenCairnShownToPlayer = req.body.timeWhenCairnShownToPlayer;
+        let timeCairnSubmitted         = req.body.timeCairnSubmitted;
         let taskName                   = req.body.taskName;
         let userID                     = req.session.passport.user.id;
         console.log(message);
 
-        projectDB.storeCairnMessage(userID, projectID, hitID, message, progress, cairnType, timeWhenCairnShownToPlayer, taskName)
+        projectDB.storeCairnMessage(userID, projectID, hitID, message, progress, cairnType, timeWhenCairnShownToPlayer, timeCairnSubmitted, taskName)
             .then((data) => {
                 console.log("data inserted", data);
                 res.send("success!");
