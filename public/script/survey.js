@@ -154,7 +154,7 @@ module.config(function($stateProvider, $urlRouterProvider) {
 
 
 
-          if ($stateParams.hitId && $stateParams.hitId != "kiosk")
+          if ($stateParams.hitId && $stateParams.hitId.includes("mturk"))
               $state.go('hitCode', {hitCode: $scope.workerId});
 
           var hg_subprojects = ["UOYIiFeapnyI","ocioawiaGcjw","KyW6Ti9QUr4I","Srz9arMDwthQ","94yoCWhFkpMk","cXz6ImkmG9k5"];
