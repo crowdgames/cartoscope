@@ -2537,6 +2537,7 @@ module.controller('kioskProjectController', ['$window','$scope','$location','$st
         if ($location.search().hasOwnProperty("trialId")){
             $scope.isMturk = true
             $scope.hit_id = $location.search().trialId;
+            console.log()
         }
 
 
@@ -2570,7 +2571,7 @@ module.controller('kioskProjectController', ['$window','$scope','$location','$st
 
 
             //if mturk, first show consent!
-            if ($scope.isMturk) {
+            if ($scope.isMturk && $scope.hit_id.includes("mturk")) {
                 document.getElementById("navB").style.display = "none";
                 $scope.showConsentMturk = true;
             }
@@ -2601,7 +2602,7 @@ module.controller('kioskProjectController', ['$window','$scope','$location','$st
 
 
         $scope.showTerms = function(){
-            if ($scope.isMturk)
+            if ($scope.isMturk && $scope.hit_id.includes("mturk"))
                 $scope.beginProject();
             else
                 $('#termsModal2').appendTo("body").modal('show');
