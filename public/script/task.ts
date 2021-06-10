@@ -260,8 +260,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       vm.resetCairnCounter = () => vm.tasksUntilNextCairn = 
                                        vm.show_cairns === cairnTypes.oftenEmoji || vm.show_cairns === cairnTypes.oftenSoapstones || vm.show_cairns === cairnTypes.both
-                                     ? getRandomIntInclusive(5, 20)  - 1 // correct for an off by one error in when the cairns are displayed. The random function is fine though
-                                     : getRandomIntInclusive(20, 40) - 1;
+                                     ? getRandomIntInclusive(20, 40)  - 1 // correct for an off by one error in when the cairns are displayed. The random function is fine though
+                                     : getRandomIntInclusive(40, 60) - 1;
 
       // Submit a cairn to the database
       vm.submitCairn = (baseCairnType: string, message: string) => {
