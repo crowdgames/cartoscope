@@ -121,10 +121,11 @@ router.get('/hgtest/:hit_id', function(req, res,next) {
 
 // LLL Restoration w/ frequency of cairns as experimental variable
 router.get('/cairns_frequency_test/:trialId', (req, res) => {
-    let subprojects = ["WfpKAneXebT1", "J94tYYPMngNk", "qEEKIgFoFh1m", "dDONGlkBAGUO", "Hzp4vca3LZ4a"];
-    let project_code = chance.pickone(subprojects);
+    let project_code = "qEEKIgFoFh1m";
+    let hitIDBase = `mturk_${req.params.trialId}_cairns-`;
+    let hitIDCairnInfo = chance.pickone(["n", "b-20-40", "b-40-60"]);
     // send to project page
-    res.redirect(`http://cartosco.pe/kioskProject.html#/kioskStart/${project_code}?trialId=${req.params.trialId}`); 
+    res.redirect(`http://cartosco.pe/kioskProject.html#/kioskStart/${project_code}?trialId=${hitIDBase}${hitIDCairnInfo}`); 
 });
 
 
