@@ -208,15 +208,15 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           soapstoneThankYou
       }
 
+      vm.hitID = $location.search().hitID || $location.search().trialID || "kiosk";
+      vm.hitIDSplit = vm.hitID.split('_');
+      vm.cairnsInfoArray = vm.hitIDSplit.length > 2 && vm.hitIDSplit[2].split("-")[0] === "cairns" ? vm.hitIDSplit[2].split("-").slice(1) : null;
+
       enum cairnTypes {
-          none            = 0,
-          oftenSoapstones = 1,
-          rareSoapstones  = 2,
-          oftenEmoji      = 3,
-          rareEmoji       = 4,
-          both            = 5,
-          soapstone       = 6,
-          emoji           = 7
+          none     ,
+          both     ,
+          soapstone,
+          emoji           
       }
 
       // if it's the main task, it should be "noCairn"
@@ -226,23 +226,34 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       vm.handleCairns = () => {
           console.assert(vm.cairnState === cairnState.noCairn, "cairn state is not noCairn, despite the main task showing");
-          if (vm.show_cairns === cairnTypes.none) return;
+          let cairnMode  = cairnTypes.none;
+          if (vm.cairnsInfoArray === null) return;
+          else if (vm.cairnsInfoArray[0] === "b") cairnMode = cairnTypes.both;
+          else if (vm.cairnsInfoArray[0] === "e") cairnMode = cairnTypes.emoji;
+          else if (vm.cairnsInfoArray[0] === "s") cairnMode = cairnTypes.soapstone;
+          else if (vm.cairnsInfoArray[0] === "n") return;
+          else console.error("a cairns style hitID was passed, but the cairn type was not in [n,e,s,b]");
           // note the time the cairn was created. Divide by 1000 because mysql wants second precision, not ms precision
+          let resetCairnCounter = () => {
+              vm.tasksUntilNextCairn = getRandomIntInclusive(parseInt(vm.cairnsInfoArray[1]), parseInt(vm.cairnsInfoArray[2])) - 1;
+          }
           vm.timeCairnShownToPlayer = Math.floor(Date.now() / 1000);
 
           // initialize the counter. I'd like to initialize it outside, but it needs to be different based on debug mode
-          if (vm.tasksUntilNextCairn === -1) vm.resetCairnCounter();
+          console.log(cairnMode);
+          console.log(vm.tasksUntilNextCairn);
+          if (vm.tasksUntilNextCairn === -1) resetCairnCounter();
           if (vm.tasksUntilNextCairn > 0) 
               vm.tasksUntilNextCairn--;
           else {
-              vm.resetCairnCounter();
+              resetCairnCounter();
               // This should have been a string from the db, not an int, but legacy code and laziness
               // Show a cairn based on the db response
-              if (vm.show_cairns === cairnTypes.oftenSoapstones || vm.show_cairns === cairnTypes.rareSoapstones)
+              if (cairnMode === cairnTypes.soapstone)
                   vm.startSoapstoneCairn();
-              else if (vm.show_cairns === cairnTypes.oftenEmoji || vm.show_cairns === cairnTypes.rareEmoji)
+              else if (cairnMode === cairnTypes.emoji)
                   vm.startEmojiCairn();
-              else if (vm.show_cairns === cairnTypes.both) {
+              else if (cairnMode === cairnTypes.both) {
                   // If we are supposed to show both cairns, alternate between them, starting with a random one
                   if (vm.nextCairnToShow === cairnTypes.none) 
                       vm.nextCairnToShow = getRandomIntInclusive(0, 1) === 1 ? cairnTypes.emoji : cairnTypes.soapstone;
@@ -258,20 +269,14 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           }
       }
 
-      vm.resetCairnCounter = () => vm.tasksUntilNextCairn = 
-                                       vm.show_cairns === cairnTypes.oftenEmoji || vm.show_cairns === cairnTypes.oftenSoapstones || vm.show_cairns === cairnTypes.both
-                                     ? getRandomIntInclusive(5, 20)  - 1 // correct for an off by one error in when the cairns are displayed. The random function is fine though
-                                     : getRandomIntInclusive(20, 40) - 1;
-
       // Submit a cairn to the database
       vm.submitCairn = (baseCairnType: string, message: string) => {
           // if the message is empty, the cairnType should be "empty-" + cairnType
           let cairnType = message.length === 0 ? "empty-" + baseCairnType : baseCairnType;
-          let hitID = $location.search().hitID || $location.search().trialID || "kiosk";
           console.log("submitting cairn of type " + cairnType + " with message " + message);
           let body = {
               projectID:                  vm.data.id,
-              hitID:                      hitID,
+              hitID:                      vm.hitID,
               message:                    encodeURI(message),
               cairnType:                  cairnType,
               progress:                   vm.data.progress - 1,
