@@ -1224,17 +1224,13 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   }
               });
 
-              tutData.forEach(function(item) {
+              tutData.forEach((item: any) => {
 
-
-                  var tmpl = JSON.parse(item.template);
-                  var opt = [];
                   var sel_col = '';
                   var sel_num = -1;
 
                   //get only the images of the button that is hovering
                   if (item.answer == option) {
-
 
                       var tutpath = '../../images/Tutorials/';
 
@@ -1242,9 +1238,13 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                           //tutpath = '../../../dataset/' + data.data[0].dataset_id + '/';
                           tutpath = '/api/tasks/getImageFree/' + tdata.data[0].dataset_id + '/'
                       }
-                      var it_annot = tutpath + item.image_name;
+                      let it_annot = tutpath + item.image_name;
+                      // Some images have drawings on them, arrows and the like. Use this image if it exists
                       if (item.image_annotation){
-                          it_annot = '../../images/Tutorials/' + vm.code + '/' +  item.image_annotation;
+                          // sometimes image annotations already have the project code in them, sometimes they don't. This is a hacky way of seeing if we need to add the project code or not.
+                          it_annot = item.image_annotation.includes('/') 
+                              ? `${tutpath}${item.image_annotation}`
+                              : `${tutpath}${vm.code}/${item.image_annotation}`;
                       }
 
                       var obj = {
@@ -1257,7 +1257,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                           zoom: item.zoom || 18,
                           heading: 0,
                           tilt: 0,
-                          col_number: parseInt(sel_num),
+                          col_number: sel_num,
                           poi_name: item.poi_name || '',
                           explanation: item.explanation
                       };
