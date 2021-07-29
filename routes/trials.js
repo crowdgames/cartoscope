@@ -134,7 +134,7 @@ router.get('/cairns_2008/:trialId', (req, res) => {
 // LLL w/ frequency and type of cairns as experimental variable
 router.get('/cairns_2008_l/:trialId', (req, res) => {
     let projects    = ["mKSRWYI4E59f", "Z2cg3ppyCsZW", "vOihRaFY2lSS", "ENtBwQQtcK3L", "DQ0RAb6nVgXr", "D1Y4k21Xb9NL"];
-    let cairnTypes = ["n", "b-40-60"];
+    let cairnTypes = ["n", "e-40-60"];
 
     let hitIDBase    = `${req.params.trialId}_cairns-`;
     let project_code = chance.pickone(projects);
