@@ -21,6 +21,9 @@ cartosco.pe/api/results/votesKiosk/<hitID>
 Starting an arbitrary project:
 http://cartosco.pe/kioskProject.html#/kioskStart/<projectID>
 
+Testing cairns frequency (amongst no cairns vs emojis every 40-60 images)
+http://cartosco.pe/api/trials/cairns_2008_l/<hitId>
+
 Testing cairns frequency (amongst [no cairns, soapstone, emojis] x [every 5-20 imgs, every 20-40, 4060]):
 http://cartosco.pe/api/trials/cairns_2008/<hitId>
 
@@ -35,6 +38,9 @@ These projectIDs are 2008 Land Loss Lookout data and is what the current cairns 
 
 These ids are duplicates of the erosion project. When cairn frequency wasn't tied to hitID, these all had different cairn frequencies, but this is no longer necessary.
 ("WfpKAneXebT1", "J94tYYPMngNk", "qEEKIgFoFh1m", "dDONGlkBAGUO", "Hzp4vca3LZ4a", "OfohqkweDjEB")
+
+And these are the ids of the original Land Loss Lookout projects:
+["UOYIiFeapnyI","ocioawiaGcjw","KyW6Ti9QUr4I","Srz9arMDwthQ","94yoCWhFkpMk","cXz6ImkmG9k5"]
 
 Some local projects: 
 localhost:8081/api/anon/startAnon/B7LnS7Uy6kYu?hitId=bbb?trialId=aaa

@@ -221,7 +221,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       // if it's the main task, it should be "noCairn"
       vm.cairnState = cairnState.noCairn;
-      vm.tasksUntilNextCairn = -1;
+      vm.tasksUntilNextCairn = 5;
       vm.nextCairnToShow = cairnTypes.none;
 
       vm.handleCairns = () => {
@@ -247,8 +247,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               vm.tasksUntilNextCairn--;
           else {
               resetCairnCounter();
-              // This should have been a string from the db, not an int, but legacy code and laziness
-              // Show a cairn based on the db response
               if (cairnMode === cairnTypes.soapstone)
                   vm.startSoapstoneCairn();
               else if (cairnMode === cairnTypes.emoji)
@@ -682,7 +680,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           $scope.showBackBtn       = false;
           $scope.showSkipBtn       = true;
           $scope.showMainTask      = false; // the div with the main task
-          document.getElementById("cairn-header")!.innerText = "Would you like to take a break and play around?"
+          document.getElementById("cairn-header")!.innerText = "Would you like to play a minigame?"
       }
 
       vm.startEmojiCreate = () => {
