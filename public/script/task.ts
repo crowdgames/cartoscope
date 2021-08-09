@@ -987,6 +987,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
 
       function handleEnd($window){
+          vm.handleCairnSkip();
 
           if (!userData) {
               //window.location.replace('/consentForm.html#!/kiosk');
