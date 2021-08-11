@@ -6,6 +6,9 @@ module.exports = router;
 
 router.get('/', function(req, res, next) {
 
+    res.redirect("https://cartosco.pe/landloss");
+    /**
+     * Previously, the database 'featured_url_route' would have a list of projects of which one could be chosen randomly, however right now I've hardcoded just to send to whatever the landloss project is
     projectDB.getFeaturedProject().then(function(data) {
     var redirectUrl = '/';
     if(data.length > 0) {
@@ -24,6 +27,7 @@ router.get('/', function(req, res, next) {
     });
     res.end();
   });
+  */
 });
 
 
