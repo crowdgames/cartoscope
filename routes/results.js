@@ -135,11 +135,21 @@ router.get('/checkExpertProgress/:hit_code', function(req, res, next) {
 //Get raw HG data from all projects
 router.get('/landloss_progress_timeline', function(req, res, next) {
 
-    resultDB.getLandLossVisitorsTimeline().then(function(results) {
+    resultDB.getVisitorsTimeline(55, 60).then(function(results) {
         res.send(results);
     }, function(err) {
         console.log(err)
         res.status(400).send('Error retrieving user timeline for Land Loss projects');
+    });
+});
+
+//Get raw cairns data from all projects
+router.get('/cairns_progress_timeline', (_, res) => {
+    resultDB.getVisitorsTimeline(82, 87).then(
+        results => res.send(results), 
+        err => {
+            console.log(err);
+            res.status(400).send('Error retrieving user timeline for Land Loss projects');
     });
 });
 

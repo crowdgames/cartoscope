@@ -476,13 +476,13 @@ exports.getHGExpertProgress = function(worker_ids){
 
 }
 
-exports.getLandLossVisitorsTimeline = function(){
+exports.getVisitorsTimeline = function(minProjectID, maxProjectID){
     return new Promise(function(resolve, error) {
         var connection = db.get();
 
 
         var query = 'select DATE(r.timestamp) as date,count(DISTINCT(user_id)) as users_contributed from ' +
-            '( select user_id,project_id,timestamp from response WHERE  DATE(timestamp) >= \'2020-09-23\' and project_id >=55 and project_id <=60) as r group by date';
+            `( select user_id,project_id,timestamp from response WHERE  DATE(timestamp) >= '2020-09-23' and project_id >=${minProjectID} and project_id <=${maxProjectID}) as r group by date`;
 
         connection.queryAsync(query).then(
             function(data) {
