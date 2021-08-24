@@ -153,37 +153,67 @@ router.get('/cairns_progress_timeline', (_, res) => {
     });
 });
 
+//Get quick snapshot of contributions for today
+router.get('/landloss_snapshot_today', (_, res) => {
 
+    resultDB.getVisitorsStatsToday(55, 60).then(
+    results => res.send(results),
+    err => {
+        console.log(err)
+        res.status(400).send('Error retrieving quick snapshot of contributions for today for Land Loss Project');
+    });
+});
 
 //Get quick snapshot of contributions for today
-router.get('/landloss_snapshot_today', function(req, res, next) {
+router.get('/cairns_snapshot_today', (_, res) => {
 
-    resultDB.getLandLossVisitorsStatsToday().then(function(results) {
-        res.send(results);
-    }, function(err) {
+    resultDB.getVisitorsStatsToday(82, 87).then(
+    results => res.send(results),
+    err => {
         console.log(err)
         res.status(400).send('Error retrieving quick snapshot of contributions for today for Land Loss Project');
     });
 });
 
 //Get quick snapshot of contributions from soft launch
-router.get('/landloss_snapshot_launch', function(req, res, next) {
+router.get('/landloss_snapshot_launch', (_, res) => {
 
-    resultDB.getLandLossVisitorsStatsLaunch().then(function(results) {
-        res.send(results);
-    }, function(err) {
+    resultDB.getVisitorsStatsLaunch(55, 60).then(
+    results => res.send(results),
+    err => {
         console.log(err)
         res.status(400).send('Error retrieving quick snapshot of contributions for today for Land Loss Project');
     });
 });
 
+//Get quick snapshot of contributions from soft launch
+router.get('/cairns_snapshot_launch', (_, res) => {
 
-//Get quick snapshot of contributions for today
-router.get('/landloss_snapshot_date/:date', function(req, res, next) {
+    resultDB.getVisitorsStatsLaunch(82, 87).then(
+    results => res.send(results),
+    err => {
+        console.log(err)
+        res.status(400).send('Error retrieving quick snapshot of contributions for today for Land Loss Project');
+    });
+});
 
-    resultDB.getLandLossVisitorsStatsDate(req.params.date).then(function(results) {
-        res.send(results);
-    }, function(err) {
+//Get quick snapshot of contributions for a certain date
+router.get('/landloss_snapshot_date/:date', (_, res) => {
+
+    resultDB.getVisitorsStatsDate(req.params.date, 55, 60).then(
+    results => res.send(results),
+    err => {
+        console.log(err)
+        res.status(400).send('Error retrieving quick snapshot of contributions for today for Land Loss Project');
+    });
+});
+
+//Get quick snapshot of contributions for a certain date
+router.get('/cairns_snapshot_date/:date', (_, res) => {
+
+    resultDB.getVisitorsStatsDate(req.params.date, 82, 87).then(
+    results => res.send(results),
+    err => {
         console.log(err)
         res.status(400).send('Error retrieving quick snapshot of contributions for today for Land Loss Project');
     });

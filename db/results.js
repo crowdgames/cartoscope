@@ -487,59 +487,42 @@ exports.getVisitorsTimeline = (minProjectID, maxProjectID) => {
     });
 }
 
-exports.getLandLossVisitorsStatsToday = function(){
-    return new Promise(function(resolve, error) {
+exports.getVisitorsStatsToday = (minProjectID, maxProjectID) => {
+    return new Promise((resolve, error) => {
         var connection = db.get();
-
 
         var query = "select p.name,r.labels_today,r.users_today,r.images_today,r.positives_today,r.negatives_today from (select project_id,count(*) as labels_today,count(distinct user_id) as users_today, " +
             "count(distinct task_id) as images_today, count(case when response_text not like \"No%\" then response_text end) as positives_today, count(case when response_text like \"No%\" then response_text end) as negatives_today from response WHERE DATE(`timestamp`) = CURDATE() " +
-            "and response_text!=\"dummy\" and project_id>=55 and project_id<=60 group by project_id) as r left join projects as p on p.id=r.project_id";
+            `and response_text!="dummy" and project_id>=${minProjectID} and project_id<=${maxProjectID} group by project_id) as r left join projects as p on p.id=r.project_id`;
 
-        connection.queryAsync(query).then(
-            function(data) {
-                resolve(data);
-            }, function(err) {
-                error(err);
-            });
+        connection.queryAsync(query).then(resolve, error);
     });
 }
 
-exports.getLandLossVisitorsStatsLaunch = function(){
-    return new Promise(function(resolve, error) {
+exports.getVisitorsStatsLaunch = (minProjectID, maxProjectID) => {
+    return new Promise((resolve, error) => {
         var connection = db.get();
-
 
         var query = "select p.name,r.labels_launch,r.users_launch,r.images_launch,r.positives_launch,r.negatives_launch from (select project_id,count(*) as labels_launch,count(distinct user_id) as users_launch, " +
             "count(distinct task_id) as images_launch, count(case when response_text not like \"No%\" then response_text end) as positives_launch, count(case when response_text like \"No%\" then response_text end) as negatives_launch from response " +
-            "WHERE DATE(`timestamp`) >= \"2020-09-23\" and response_text!=\"dummy\" and project_id>=55 and project_id<=60 group by project_id) as r left join projects as p on p.id=r.project_id";
+            `WHERE DATE(\`timestamp\`) >= "2020-09-23" and response_text!="dummy" and project_id>=${minProjectID} and project_id<=${maxProjectID} group by project_id) as r left join projects as p on p.id=r.project_id`;
 
-        connection.queryAsync(query).then(
-            function(data) {
-                resolve(data);
-            }, function(err) {
-                error(err);
-            });
+        connection.queryAsync(query).then(resolve, error);
     });
 }
 
 //get snapshot for specific date
-exports.getLandLossVisitorsStatsDate = function(date_string){
-    return new Promise(function(resolve, error) {
+exports.getVisitorsStatsDate = (date_string, minProjectID, maxProjectID) => {
+    return new Promise((resolve, error) => {
         var connection = db.get();
 
         var date_parsed =  date_string.substring(0, 4) + "-" + date_string.substring(4, 6) + "-" + date_string.substring(6, 8);
 
         var query = "select p.name,r.labels_launch,r.users_launch,r.images_launch,r.positives_launch,r.negatives_launch from (select project_id,count(*) as labels_launch,count(distinct user_id) as users_launch, " +
             "count(distinct task_id) as images_launch, count(case when response_text not like \"No%\" then response_text end) as positives_launch, count(case when response_text like \"No%\" then response_text end) as negatives_launch from response " +
-            "WHERE DATE(`timestamp`) >= \" " + date_parsed + "\" and response_text!=\"dummy\" and project_id>=55 and project_id<=60 group by project_id) as r left join projects as p on p.id=r.project_id";
+            "WHERE DATE(`timestamp`) >= \" " + date_parsed + `" and response_text!="dummy" and project_id>=${minProjectID} and project_id<=${maxProjectID} group by project_id) as r left join projects as p on p.id=r.project_id`;
 
-        connection.queryAsync(query).then(
-            function(data) {
-                resolve(data);
-            }, function(err) {
-                error(err);
-            });
+        connection.queryAsync(query).then(resolve, error);
     });
 }
 
