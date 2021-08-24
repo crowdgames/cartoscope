@@ -198,7 +198,7 @@ router.get('/cairns_snapshot_launch', (_, res) => {
 });
 
 //Get quick snapshot of contributions for a certain date
-router.get('/landloss_snapshot_date/:date', (_, res) => {
+router.get('/landloss_snapshot_date/:date', (req, res) => {
 
     resultDB.getVisitorsStatsDate(req.params.date, 55, 60).then(
     results => res.send(results),
@@ -209,7 +209,7 @@ router.get('/landloss_snapshot_date/:date', (_, res) => {
 });
 
 //Get quick snapshot of contributions for a certain date
-router.get('/cairns_snapshot_date/:date', (_, res) => {
+router.get('/cairns_snapshot_date/:date', (req, res) => {
 
     resultDB.getVisitorsStatsDate(req.params.date, 82, 87).then(
     results => res.send(results),
