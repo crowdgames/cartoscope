@@ -6,4 +6,10 @@ When testing experimental conditions using the project is often a bad idea, sinc
 
 A cairns hitID looks like this: mturk_larger_cairns-s-5-20
 
-The major parts of the hitID are split by underscores. The mturk indicates that the mturk consent form should be shown etc. The cairns-s-5-20 determines that it should be soapstone cairns shown every 5-20 images.
+The major parts of the hitID are split by underscores.
+
+ - The first section (mturk) indicates that the mturk consent form should be shown. Alternatively, this section could be "kiosk" to show the kiosk consent form.
+ - The second section is a project identifier. So in this case, it is the "larger" project.
+ - The last part indicates that this is a cairns project, and that "s" (soapstone) cairns should be shown every 5-20 images.
+
+The mturk indicates that the mturk consent form should be shown etc. The cairns-s-5-20 determines that it should be soapstone cairns shown every 5-20 images.
