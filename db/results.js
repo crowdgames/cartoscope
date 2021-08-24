@@ -476,20 +476,14 @@ exports.getHGExpertProgress = function(worker_ids){
 
 }
 
-exports.getVisitorsTimeline = function(minProjectID, maxProjectID){
-    return new Promise(function(resolve, error) {
+exports.getVisitorsTimeline = (minProjectID, maxProjectID) => {
+    return new Promise((resolve, error) => {
         var connection = db.get();
-
 
         var query = 'select DATE(r.timestamp) as date,count(DISTINCT(user_id)) as users_contributed from ' +
             `( select user_id,project_id,timestamp from response WHERE  DATE(timestamp) >= '2020-09-23' and project_id >=${minProjectID} and project_id <=${maxProjectID}) as r group by date`;
 
-        connection.queryAsync(query).then(
-            function(data) {
-                resolve(data);
-            }, function(err) {
-                error(err);
-            });
+        connection.queryAsync(query).then(resolve, error);
     });
 }
 
