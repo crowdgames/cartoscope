@@ -31,7 +31,7 @@ A local project with cairns for testing:
 http://localhost:8081/kioskProject.html#/kioskStart/B7LnS7Uy6kYu?trialId=bee
 
 Original LLL project:
-cartosco.pe/kioskProject.html#/hg_landloss
+https://cartosco.pe/kioskProject.html#/hg_landloss
 
 Webinar cairns link:
 https://cartosco.pe/api/trials/cairns_webinar/kiosk_webinar
