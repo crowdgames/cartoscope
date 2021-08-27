@@ -121,6 +121,7 @@ router.get('/hgtest/:hit_id', function(req, res,next) {
 
 // LLL w/ frequency and type of cairns as experimental variable
 router.get('/cairns_2008/:trialId', (req, res) => {
+    // The trialid here should be mturk_something or kiosk_something
     let projects    = ["mKSRWYI4E59f", "Z2cg3ppyCsZW", "vOihRaFY2lSS", "ENtBwQQtcK3L", "DQ0RAb6nVgXr", "D1Y4k21Xb9NL"];
     let cairnTypes = ["n", "s-5-20", "s-20-40", "s-40-60", "e-5-20", "e-20-40", "e-40-60"];
 
@@ -133,8 +134,22 @@ router.get('/cairns_2008/:trialId', (req, res) => {
 
 // LLL w/ frequency and type of cairns as experimental variable
 router.get('/cairns_2008_l/:trialId', (req, res) => {
+    // The trialid here should be mturk_something or kiosk_something
     let projects    = ["mKSRWYI4E59f", "Z2cg3ppyCsZW", "vOihRaFY2lSS", "ENtBwQQtcK3L", "DQ0RAb6nVgXr", "D1Y4k21Xb9NL"];
     let cairnTypes = ["n", "e-40-60"];
+
+    let hitIDBase    = `${req.params.trialId}_cairns-`;
+    let project_code = chance.pickone(projects);
+    let cairnType    = chance.pickone(cairnTypes);
+    // send to project page
+    res.redirect(`http://cartosco.pe/kioskProject.html#/kioskStart/${project_code}?trialId=${hitIDBase}${cairnType}`); 
+});
+
+// LLL w/ frequency and type of cairns as experimental variable
+router.get('/cairns_webinar/:trialId', (req, res) => {
+    // The trialid here should be mturk_something or kiosk_something
+    let projects    = ["mKSRWYI4E59f", "Z2cg3ppyCsZW", "vOihRaFY2lSS", "ENtBwQQtcK3L", "DQ0RAb6nVgXr", "D1Y4k21Xb9NL"];
+    let cairnTypes = ["b-40-60"];
 
     let hitIDBase    = `${req.params.trialId}_cairns-`;
     let project_code = chance.pickone(projects);
