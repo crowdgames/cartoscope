@@ -21,7 +21,7 @@ cartosco.pe/api/results/votesKiosk/(hitID)
 Starting an arbitrary project:
 http://cartosco.pe/kioskProject.html#/kioskStart/(projectID)
 
-Testing cairns frequency (amongst no cairns vs emojis every 40-60 images)
+Testing cairns frequency (amongst no cairns vs emojis every 40-60 images **This is the current cairns project**)
 http://cartosco.pe/api/trials/cairns_2008_l/kiosk_landloss
 
 Testing cairns frequency (amongst [no cairns, soapstone, emojis] x [every 5-20 imgs, every 20-40, 4060]):
