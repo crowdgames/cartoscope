@@ -22,10 +22,10 @@ Starting an arbitrary project:
 http://cartosco.pe/kioskProject.html#/kioskStart/<projectID>
 
 Testing cairns frequency (amongst no cairns vs emojis every 40-60 images)
-http://cartosco.pe/api/trials/cairns_2008_l/<hitId>
+http://cartosco.pe/api/trials/cairns_2008_l/kiosk_landloss
 
 Testing cairns frequency (amongst [no cairns, soapstone, emojis] x [every 5-20 imgs, every 20-40, 4060]):
-http://cartosco.pe/api/trials/cairns_2008/<hitId>
+http://cartosco.pe/api/trials/cairns_2008/kiosk_landloss
 
 A local project with cairns for testing:
 http://localhost:8081/kioskProject.html#/kioskStart/B7LnS7Uy6kYu?trialId=bee
