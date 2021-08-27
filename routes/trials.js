@@ -149,7 +149,7 @@ router.get('/cairns_2008_l/:trialId', (req, res) => {
 router.get('/cairns_webinar/:trialId', (req, res) => {
     // The trialid here should be mturk_something or kiosk_something
     let projects    = ["mKSRWYI4E59f", "Z2cg3ppyCsZW", "vOihRaFY2lSS", "ENtBwQQtcK3L", "DQ0RAb6nVgXr", "D1Y4k21Xb9NL"];
-    let cairnTypes = ["b-40-60"];
+    let cairnTypes = ["b-20-40"];
 
     let hitIDBase    = `${req.params.trialId}_cairns-`;
     let project_code = chance.pickone(projects);
