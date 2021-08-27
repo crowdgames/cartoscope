@@ -30,6 +30,22 @@ http://cartosco.pe/api/trials/cairns_2008/<hitId>
 A local project with cairns for testing:
 http://localhost:8081/kioskProject.html#/kioskStart/B7LnS7Uy6kYu?trialId=bee
 
+Original LLL project:
+cartosco.pe/kioskProject.html#/hg_landloss
+
+Webinar cairns link:
+https://cartosco.pe/api/trials/cairns_webinar/kiosk_webinar
+
+----
+
+[cairns progress timeline](http://cartosco.pe/api/results/landloss_progress_timeline)
+
+[cairns snapshot from today](http://cartosco.pe/api/results/landloss_snapshot_today)
+
+[cairns labels since launch](http://cartosco.pe/api/results/landloss_snapshot_launch)
+
+cairns snapshot from a certain date (replace YYYYMMDD): http://cartosco.pe/api/results/landloss_snapshot_date/YYYYMMDD
+
 Project IDs
 -----------
 
