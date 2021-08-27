@@ -16,10 +16,10 @@ Useful links
 ------------
 
 Gathering raw response data.
-cartosco.pe/api/results/votesKiosk/<hitID>
+cartosco.pe/api/results/votesKiosk/ + <hitID>
 
 Starting an arbitrary project:
-http://cartosco.pe/kioskProject.html#/kioskStart/<projectID>
+http://cartosco.pe/kioskProject.html#/kioskStart/ + <projectID>
 
 Testing cairns frequency (amongst no cairns vs emojis every 40-60 images)
 http://cartosco.pe/api/trials/cairns_2008_l/kiosk_landloss
