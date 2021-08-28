@@ -214,13 +214,13 @@ module.config(function($stateProvider, $urlRouterProvider, $cookiesProvider) {
                 templateUrl: './navbar.html'
             },
             content: {
-                templateUrl: 'gridMapProject.html'
+                templateUrl: 'landlossResultsProject.html'
             },
             footer: {
                 templateUrl: '../footer.html'
             }
         },
-        controller: 'heatMapProjectController'
+        controller: 'landlossResultsController'
     });
 
     $stateProvider.state({
