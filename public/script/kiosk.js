@@ -1789,7 +1789,7 @@ module.controller('landlossResultsController',
 
         $scope.landlossMarkers = [];
 
-        var link = '/api/results/hg_raw_data/';
+        var link = '/api/results/cairns_raw_data/';
         $http.get(link ).then(function(pdata) {
 
             $scope.raw_data = pdata.data; //all the data

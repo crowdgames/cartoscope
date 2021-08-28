@@ -248,6 +248,20 @@ router.get('/hg_raw_data', function(req, res, next) {
     });
 });
 
+//Get raw cairns data from all projects
+router.get('/cairns_raw_data', (_, res) => {
+
+    let hg_ids     = [82,83,84,85,86,87];
+    let dataset_id = "nnTcISUhw93Y0XZ";
+
+    resultDB.getRawResultsMultiplebyTextGrouped(hg_ids, dataset_id, true).then(
+        results => res.send(results),
+        err => {
+            console.log(err)
+            res.status(400).send('raw HG results could not be retrieved');
+        });
+});
+
 //Get raw HG data from all projects
 router.get('/hg_raw_data_launch', function(req, res, next) {
 
