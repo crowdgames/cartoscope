@@ -16,22 +16,25 @@ Useful links
 ------------
 
 Gathering raw response data.
-cartosco.pe/api/results/votesKiosk/<hitID>
+cartosco.pe/api/results/votesKiosk/(hitID)
 
 Starting an arbitrary project:
-http://cartosco.pe/kioskProject.html#/kioskStart/<projectID>
+http://cartosco.pe/kioskProject.html#/kioskStart/(projectID)
 
-Testing cairns frequency (amongst no cairns vs emojis every 40-60 images)
-http://cartosco.pe/api/trials/cairns_2008_l/<hitId>
+Starting the current LLL project:
+https://cartosco.pe/landloss
+
+Testing cairns frequency (amongst no cairns vs emojis every 40-60 images **This is the current cairns/LLL project**)
+http://cartosco.pe/api/trials/cairns_2008_l/kiosk_landloss
 
 Testing cairns frequency (amongst [no cairns, soapstone, emojis] x [every 5-20 imgs, every 20-40, 4060]):
-http://cartosco.pe/api/trials/cairns_2008/<hitId>
+http://cartosco.pe/api/trials/cairns_2008/kiosk_landloss
 
 A local project with cairns for testing:
 http://localhost:8081/kioskProject.html#/kioskStart/B7LnS7Uy6kYu?trialId=bee
 
 Original LLL project:
-cartosco.pe/kioskProject.html#/hg_landloss
+https://cartosco.pe/kioskProject.html#/hg_landloss
 
 Webinar cairns link:
 https://cartosco.pe/api/trials/cairns_webinar/kiosk_webinar
