@@ -408,6 +408,65 @@ router.get('/hg_raw_data/csv', function(req, res, next) {
     });
 });
 
+//Get raw HG data from all projects
+router.get('/cairns_raw_data/csv', function(req, res, next) {
+
+    let hg_ids     = [82,83,84,85,86,87];
+    let dataset_id = "nnTcISUhw93Y0XZ";
+
+    // hg_ids =[69]
+    // dataset_id = "jtUC5ek9sbokHao"
+
+    var today = new Date();
+    var dd = today.getDate().toString()
+    var mm = (today.getMonth() + 1).toString();  //January is 0!
+    var yyyy = today.getFullYear().toString();
+
+    var current_date = mm + '/' + dd + '/' + yyyy;
+    var current_date_file = '[' +mm + '_' + dd + '_' + yyyy + ']';
+
+
+
+    resultDB.getRawResultsMultiplebyTextGrouped(hg_ids,dataset_id).then(function(results) {
+
+        var fields = ['image','lat','lon','majority_answer','majority_count','majority_percentage','project','image_url','date_pulled']
+        var csv_results = [];
+
+
+        Object.keys(results).forEach(function(image_key){
+
+            var obj = results[image_key];
+            Object.keys(obj).forEach(function(pkey){
+                var item = obj[pkey];
+
+
+                csv_results.push({
+                    image: image_key,
+                    lat: item.lat,
+                    lon:item.lon,
+                    majority_answer: item.majority,
+                    majority_count: item.majority_count,
+                    majority_percentage: item.majority_count/item.total,
+                    project: pkey,
+                    image_url: item.image_url,
+                    date_pulled:current_date
+                })
+            })
+
+        });
+
+        var csv = json2csv({ data: csv_results, fields: fields });
+        //Send back CSV file:
+        res.attachment(current_date_file +'_landloss_results.csv');
+        res.status(200).send(csv);
+
+
+    }, function(err) {
+        console.log(err)
+        res.status(400).send('raw HG results could not be retrieved');
+    });
+});
+
 
 
 

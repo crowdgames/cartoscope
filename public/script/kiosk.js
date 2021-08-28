@@ -1663,7 +1663,7 @@ module.controller('landlossResultsController',
         //CSV Download Project
         $scope.downloadCSVLandLoss = function(){
             //Download the results
-            location.href='/api/results/hg_raw_data/csv/';
+            location.href='/api/results/cairns_raw_data/csv/';
         };
 
 
