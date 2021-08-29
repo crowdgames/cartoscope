@@ -1621,6 +1621,8 @@ module.controller('landlossResultsController',
 
         //change this if we want gridMap instead of heatMap
         $scope.gridMap = false;
+        let isCairnsProject = 'pCode' in $stateParams && ["mKSRWYI4E59f", "Z2cg3ppyCsZW", "vOihRaFY2lSS", "ENtBwQQtcK3L", "DQ0RAb6nVgXr", "D1Y4k21Xb9NL"].includes($stateParams.pCode);
+        console.log(isCairnsProject);
 
         $scope.successProject = false;
         $scope.showMap = false;
@@ -1663,7 +1665,9 @@ module.controller('landlossResultsController',
         //CSV Download Project
         $scope.downloadCSVLandLoss = function(){
             //Download the results
-            location.href='/api/results/cairns_raw_data/csv/';
+            location.href = isCairnsProject 
+                            ? '/api/results/cairns_raw_data/csv/'
+                            : '/api/results/hg_raw_data/csv/';
         };
 
 
@@ -1789,7 +1793,9 @@ module.controller('landlossResultsController',
 
         $scope.landlossMarkers = [];
 
-        var link = '/api/results/cairns_raw_data/';
+        var link = isCairnsProject 
+                        ? '/api/results/cairns_raw_data/'
+                        : '/api/results/hg_raw_data/';
         $http.get(link ).then(function(pdata) {
 
             $scope.raw_data = pdata.data; //all the data
