@@ -252,7 +252,16 @@ app.get('/landloss', function(req, res) {
 
 });
 
+//healthy gulf: Ida tracker
+app.get('/ida', function(req, res) {
 
+    var subprojects = ["Ou9nXNDyuLPm","X3riraL1vXeT","1zJIIjBDaWuw"];
+    var pick_d = randomInt(0,subprojects.length - 1); //pick dataset [start,end]
+    var project_code = subprojects[pick_d];
+    var link = "kioskProject.html#/kioskStart/" + project_code;
+    res.redirect('./' + link); // send to project page
+
+});
 
 //healthy gulf event: algal Blooms
 app.get('/hg', function(req, res) {
