@@ -391,7 +391,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.showToast = (message: string) => {
           Toastify({
               text:            message,
-              duration:        10000,
+              duration:        5000,
               close:           true,
               gravity:         "top", // `top` or `bottom`
               position:        "left",
@@ -1317,10 +1317,18 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           $http.post('/api/tasks/submit', body)
       }
 
+      vm.noImageCounter = 0;
       function submit(option,option_text) {
 
           // if a player is attempting to submit when there is no task visible, just ignore
           if (!$scope.showMainTask) return;
+          if (vm.data.template.selectedTaskType === "ngs" && option_text === "No Image") {
+              vm.noImageCounter++;
+              if (vm.noImageCounter === 4) {
+                  vm.showToast("<b>Please keep going even if you aren't finding images</b>.<br> It is helpful for us to know that these facilities have not been photographed.");
+                  vm.noImageCounter = 0;
+              }
+          } else vm.noImageCounter = 0;
           vm.showModal();
           //if markers task, loop through all markers and submit the selected ones, ignore submit button option
           if (vm.showMarkerPoints) {
