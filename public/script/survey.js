@@ -1685,12 +1685,14 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
             }
 
 
+            /**
             if ((item.question_type == "radio" || item.question_type == "checkbox") && item.hasOwnProperty("answer") ) {
                 if (item.answer.toLowerCase().includes('other')){
                     item.answer = item.other_text;
                 }
 
             }
+            */
 
             var q_obj = { "answer" : item.answer || ulb , "type" : item.question_type};
 
