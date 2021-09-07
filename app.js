@@ -255,8 +255,8 @@ app.get('/landloss', function(req, res) {
 //healthy gulf: Ida tracker
 app.get('/ida', function(req, res) {
 
-    var all_subprojects = ["Ou9nXNDyuLPm","X3riraL1vXeT","1zJIIjBDaWuw"];
-    let subprojects = ["Ou9nXNDyuLPm","X3riraL1vXeT"];
+    let subprojects = ["Ou9nXNDyuLPm","X3riraL1vXeT","1zJIIjBDaWuw"];
+    // let subprojects = ["Ou9nXNDyuLPm","X3riraL1vXeT"];
     var pick_d = randomInt(0,subprojects.length - 1); //pick dataset [start,end]
     var project_code = subprojects[pick_d];
     // let cairnTypes = ["n", "e-40-60"];
