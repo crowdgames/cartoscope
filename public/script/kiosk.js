@@ -214,13 +214,13 @@ module.config(function($stateProvider, $urlRouterProvider, $cookiesProvider) {
                 templateUrl: './navbar.html'
             },
             content: {
-                templateUrl: 'landlossResultsProject.html'
+                templateUrl: 'gridMapProject.html'
             },
             footer: {
                 templateUrl: '../footer.html'
             }
         },
-        controller: 'landlossResultsController'
+        controller: 'heatMapProjectController'
     });
 
     $stateProvider.state({
@@ -1622,7 +1622,6 @@ module.controller('landlossResultsController',
         //change this if we want gridMap instead of heatMap
         $scope.gridMap = false;
         let isCairnsProject = 'pCode' in $stateParams && ["mKSRWYI4E59f", "Z2cg3ppyCsZW", "vOihRaFY2lSS", "ENtBwQQtcK3L", "DQ0RAb6nVgXr", "D1Y4k21Xb9NL"].includes($stateParams.pCode);
-        console.log(isCairnsProject);
 
         $scope.successProject = false;
         $scope.showMap = false;
@@ -2783,6 +2782,10 @@ module.controller('navController', ['$scope','$window','$location', '$stateParam
          $scope.about_link = "#/about/" + $scope.navcode;
          $scope.results_link = "#/results/" + $scope.navcode;
          $scope.toc_link = "#/termsOfUse/" +  $scope.navcode;
+         if (["mKSRWYI4E59f", "Z2cg3ppyCsZW", "vOihRaFY2lSS", "ENtBwQQtcK3L", "DQ0RAb6nVgXr", "D1Y4k21Xb9NL"].includes($stateParams.pCode)) {
+             // this means this is a cairns project, and we should use the hgResults
+             $scope.results_link = "#/resultsHG";
+         }
      }  else {
          //if we have don't have a code then replace go to cmnh view
          $scope.home_link = "#/cmnh";
