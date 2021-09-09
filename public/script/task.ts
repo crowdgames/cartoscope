@@ -240,8 +240,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           vm.timeCairnShownToPlayer = Math.floor(Date.now() / 1000);
 
           // initialize the counter. I'd like to initialize it outside, but it needs to be different based on debug mode
-          console.log(cairnMode);
-          console.log(vm.tasksUntilNextCairn);
           if (vm.tasksUntilNextCairn === -1) resetCairnCounter();
           if (vm.tasksUntilNextCairn > 0) 
               vm.tasksUntilNextCairn--;

@@ -293,6 +293,18 @@ router.get('/hg_raw_data_survey', function(req, res, next) {
     });
 });
 
+//Get raw HG survey data from all projects
+router.get('/ida_survey', (_, res) => {
+
+    let ida_ids = [88, 89, 90];
+    resultDB.getSurveyAnswersLandLoss(ida_ids).then(
+        results => res.send(results),
+        err => {
+            console.log(err);
+            res.status(400).send('raw HG results could not be retrieved');
+    });
+});
+
 
 //Get raw survey data from all LLL projects in csv format
 router.get('/hg_raw_data_survey/csv', function(req, res, next) {
