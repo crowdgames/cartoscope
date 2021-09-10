@@ -153,6 +153,16 @@ router.get('/cairns_progress_timeline', (_, res) => {
     });
 });
 
+//Get ida results
+router.get('/ida_progress_timeline', (_, res) => {
+    resultDB.getVisitorsTimeline(88, 90).then(
+        results => res.send(results), 
+        err => {
+            console.log(err);
+            res.status(400).send('Error retrieving user timeline for Ida projects');
+    });
+});
+
 //Get quick snapshot of contributions for today
 router.get('/landloss_snapshot_today', (_, res) => {
 
@@ -190,6 +200,17 @@ router.get('/landloss_snapshot_launch', (_, res) => {
 router.get('/cairns_snapshot_launch', (_, res) => {
 
     resultDB.getVisitorsStatsLaunch(82, 87).then(
+    results => res.send(results),
+    err => {
+        console.log(err)
+        res.status(400).send('Error retrieving quick snapshot of contributions for today for Land Loss Project');
+    });
+});
+
+//Get quick snapshot of contributions from soft launch
+router.get('/ida_snapshot_launch', (_, res) => {
+
+    resultDB.getVisitorsStatsLaunch(88, 90).then(
     results => res.send(results),
     err => {
         console.log(err)
