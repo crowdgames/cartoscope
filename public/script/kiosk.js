@@ -840,7 +840,7 @@ module.controller('heatMapProjectController', function($scope, $http, $window,$s
         };
 
 
-        if ($scope.projType == "tagging" ||
+        if ($scope.projType == "tagging" || $scope.projType == "ngs" ||
             ($scope.proj_data["point_selection"] ==0 && $scope.projType == "mapping") ) {
              $http.get('/api/results/all/majority/' + $stateParams.pCode).then(function(data){
 
