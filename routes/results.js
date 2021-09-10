@@ -698,6 +698,9 @@ router.get('/csv/:projectCode', function(req, res, next) {
                 }, function(err) {
                     res.status(400).send('results could not be generated!!!');
                 });
+            }, err => {
+                console.log(err);
+                res.status(400).send('Results could not be generated!!!');
             });
         }, function(err) {
             res.status(400).send('Results could not be generated!!!');
