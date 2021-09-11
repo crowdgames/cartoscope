@@ -915,7 +915,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
         var lat = vm.centerLat;
         var lon = vm.centerLng;
-        var zoom = vm.dZoom;
+        var zoom = dZoom;
         console.log(lat)
         console.log(lon)
         console.log(zoom)
