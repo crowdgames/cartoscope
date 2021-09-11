@@ -118,6 +118,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.hideBiggerImg = hideBiggerImg;
       vm.addMarker = addMarker;
       vm.getFullIframe = getFullIframe;
+      vm.ngs_before_image_link = "../../images/ngs_hint.png"
      
 
 
@@ -988,6 +989,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               if (vm.showFlightPath && $scope.geoMarkers.length !=0 ) {
                   vm.setCurrentPos()
               }
+              vm.ngs_before_image_link = vm.getBeforeImageNGS();
 
           }, function(err) {
               vm.hideModal();
@@ -1185,6 +1187,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               vm.getLng();
               vm.defZoom = dZoom;
               vm.image = vm.tasks[0].name;
+              vm.ngs_before_image_link = vm.getBeforeImageNGS();
               return '/api/tasks/getImage/' + vm.dataset + '/' + vm.tasks[0].name;
           }
       };
