@@ -615,6 +615,8 @@ router.get('/csv/:projectCode', function(req, res, next) {
         var datasetId = project.dataset_id;
         resultDB.heatMapDataAllSummary(projectCode, datasetId).then(function(results) {
 
+            console.log("Got heatMap data");
+
             //Get the distinct answers of the project and prepare the fields
             var template = JSON.parse(project.template);
             var opt = template.options;
@@ -645,8 +647,12 @@ router.get('/csv/:projectCode', function(req, res, next) {
             var renamed_csv_path = path.join(__dirname, 'public','/images/files/'+projectCode + '_renamed.csv');
             d3.csv('http://localhost:'+ CARTO_PORT+'/images/files/'+projectCode + '_renamed.csv', function(csv_data) {
 
+                console.log("After d3")
+
                 //get all the images from the dataset_id
                 projectDB.getDataSetNames2(datasetId).then(function(raw_im_list) {
+
+                    console.log("Got dataset information to match heatmap data")
                     //parse images
                     raw_im_list.forEach(function(img_obj){
 
@@ -715,6 +721,7 @@ router.get('/csv/:projectCode', function(req, res, next) {
                     var csv = json2csv({ data: csv_results, fields: fields });
                     //Send back CSV file:
                     res.attachment('results_'+projectCode +'.csv');
+                    console.log("Returning csv")
                     res.status(200).send(csv);
                 }, function(err) {
                     res.status(400).send('results could not be generated!!!');
