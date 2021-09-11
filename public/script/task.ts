@@ -916,6 +916,9 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
         var lat = vm.centerLat;
         var lon = vm.centerLng;
         var zoom = vm.dZoom;
+        console.log(lat)
+        console.log(lon)
+        console.log(zoom)
         //convert lat,lon to tile coordinates
         var x = Math.floor((lon+180)/360*Math.pow(2,zoom));
         var y = Math.floor((1-Math.log(Math.tan(lat*Math.PI/180) + 1/Math.cos(lat*Math.PI/180))/Math.PI)/2 *Math.pow(2,zoom));
