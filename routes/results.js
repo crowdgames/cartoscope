@@ -645,7 +645,12 @@ router.get('/csv/:projectCode', function(req, res, next) {
 
             //Get file with renaming convensions from backend:
             var renamed_csv_path = path.join(__dirname, 'public','/images/files/'+projectCode + '_renamed.csv');
-            d3.csv('http://localhost:'+ CARTO_PORT+'/images/files/'+projectCode + '_renamed.csv', function(csv_data) {
+
+
+
+
+            //d3.csv('http://localhost:'+ CARTO_PORT+'/images/files/'+projectCode + '_renamed.csv', function(csv_data) {
+                checkRenameFileExists(renamed_csv_path, function(csv_data) {
 
                 console.log("After d3")
 
@@ -736,6 +741,8 @@ router.get('/csv/:projectCode', function(req, res, next) {
     }, function(err) {
         res.status(400).send('project not found!!!');
     })});
+
+
 
 
 
@@ -881,4 +888,23 @@ function filterResponses(array, criteria) {
         return Object.keys(criteria).every(function (c) {
             return obj[c] == criteria[c];
         });})
+}
+
+
+
+function checkRenameFileExists(csv_path,success,error){
+    if (fs.existsSync(renamed_csv_path)) {
+        console.log("File exists");
+        //read the file and return it
+        d3.csv('http://localhost:'+ CARTO_PORT+'/images/files/'+projectCode + '_renamed.csv', function(csv_data) {
+            success(csv_data)
+
+    }, function(err){
+        error("Error reading csv file")
+
+    })
+    } else {
+        //no file, no nead to read
+        success([])
+    }
 }
