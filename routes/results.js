@@ -893,7 +893,7 @@ function filterResponses(array, criteria) {
 
 
 function checkRenameFileExists(csv_path,success,error){
-    if (fs.existsSync(renamed_csv_path)) {
+    if (fs.existsSync(csv_path)) {
         console.log("File exists");
         //read the file and return it
         d3.csv('http://localhost:'+ CARTO_PORT+'/images/files/'+projectCode + '_renamed.csv', function(csv_data) {
