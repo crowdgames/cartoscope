@@ -118,7 +118,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.hideBiggerImg = hideBiggerImg;
       vm.addMarker = addMarker;
       vm.getFullIframe = getFullIframe;
-      vm.injectMarkerInFrame = injectMarkerInFrame;
+     
 
 
       vm.map={};
@@ -909,12 +909,17 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           }
       };
 
-
-      //Todo: try to inject marker
-      function injectMarkerInFrame(){
-
-
+      //if in NGS mode, try to get the before image from Google
+      vm.getBeforeImageNGS = function (lat,lon,zoom){
+        //convert lat,lon to tile coordinates
+        var x = Math.floor((lon+180)/360*Math.pow(2,zoom));
+        var y = Math.floor((1-Math.log(Math.tan(lat*Math.PI/180) + 1/Math.cos(lat*Math.PI/180))/Math.PI)/2 *Math.pow(2,zoom));
+        //format the google maps url
+        var g_link = "http://mt1.google.com/vt/lyrs=s&x="+ x.toString() +"&y="+ y.toString() + "&z=" + zoom.toString()
+        return g_link
       }
+
+     
 
       function showModal() {
           $scope.uiMask.show = true;
@@ -1624,10 +1629,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           //record dummy vote for start of task
           submitStartTime();
 
-          //if NGS, add marker to NGS map
-          if (vm.data.template.selectedTaskType == "ngs"){
-              vm.injectMarkerInFrame()
-          }
+          
 
 
           //if slider, make the slider obj
