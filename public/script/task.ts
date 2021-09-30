@@ -118,7 +118,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.hideBiggerImg = hideBiggerImg;
       vm.addMarker = addMarker;
       vm.getFullIframe = getFullIframe;
-      vm.injectMarkerInFrame = injectMarkerInFrame;
+      vm.ngs_before_image_link = "../../images/ngs_hint.png"
+     
 
 
       vm.map={};
@@ -909,12 +910,24 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           }
       };
 
+      //if in NGS mode, try to get the before image from Google
+      vm.getBeforeImageNGS = function (){
 
-      //Todo: try to inject marker
-      function injectMarkerInFrame(){
-
-
+        var lat = parseFloat(vm.centerLat);
+        var lon = parseFloat(vm.centerLng);
+        var zoom = dZoom;
+        zoom = Math.min(dZoom,18); //Google breaks when you go > 18 zoom
+       
+        //convert lat,lon to tile coordinates
+        var x = Math.floor((lon+180)/360*Math.pow(2,zoom));
+        var y = Math.floor((1-Math.log(Math.tan(lat*Math.PI/180) + 1/Math.cos(lat*Math.PI/180))/Math.PI)/2 *Math.pow(2,zoom));
+        var y = Math.floor((1-Math.log(Math.tan(lat*Math.PI/180) + 1/Math.cos(lat*Math.PI/180))/Math.PI)/2 *Math.pow(2,zoom));
+        //format the google maps url
+        var g_link = "https://mt1.google.com/vt/lyrs=s&x="+ x.toString() +"&y="+ y.toString() + "&z=" + zoom.toString()
+        return g_link
       }
+
+     
 
       function showModal() {
           $scope.uiMask.show = true;
@@ -979,6 +992,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               if (vm.showFlightPath && $scope.geoMarkers.length !=0 ) {
                   vm.setCurrentPos()
               }
+              vm.ngs_before_image_link = vm.getBeforeImageNGS();
 
           }, function(err) {
               vm.hideModal();
@@ -1176,6 +1190,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               vm.getLng();
               vm.defZoom = dZoom;
               vm.image = vm.tasks[0].name;
+              vm.ngs_before_image_link = vm.getBeforeImageNGS();
               return '/api/tasks/getImage/' + vm.dataset + '/' + vm.tasks[0].name;
           }
       };
@@ -1624,10 +1639,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           //record dummy vote for start of task
           submitStartTime();
 
-          //if NGS, add marker to NGS map
-          if (vm.data.template.selectedTaskType == "ngs"){
-              vm.injectMarkerInFrame()
-          }
+          
 
 
           //if slider, make the slider obj
