@@ -255,7 +255,8 @@ app.get('/landloss', function(req, res) {
 //healthy gulf: Ida tracker
 app.get('/ida', function(req, res) {
 
-    let subprojects = ["Ou9nXNDyuLPm","X3riraL1vXeT","1zJIIjBDaWuw"];
+    // Ou9nXNDyuLPm is in there multiple times since it is a more important project
+    let subprojects = ["Ou9nXNDyuLPm","X3riraL1vXeT","1zJIIjBDaWuw", "Ou9nXNDyuLPm", "Ou9nXNDyuLPm"];
     // let subprojects = ["Ou9nXNDyuLPm","X3riraL1vXeT"];
     var pick_d = randomInt(0,subprojects.length - 1); //pick dataset [start,end]
     var project_code = subprojects[pick_d];
