@@ -49,6 +49,13 @@ https://cartosco.pe/api/trials/cairns_webinar/kiosk_webinar
 
 cairns snapshot from a certain date (replace YYYYMMDD): http://cartosco.pe/api/results/landloss_snapshot_date/YYYYMMDD
 
+### IDA URLS
+
+[Main Ida project](http://cartosco.pe/ida)\
+[Ida progress timeline](http://cartosco.pe/api/results/ida_progress_timelines)\
+[Ida snapshot launch](http://cartosco.pe/api/results/ida_snapshot_launch)\
+[Ida Survey results](https://cartosco.pe/api/results/ida_survey)\
+
 Project IDs
 -----------
 
