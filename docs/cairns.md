@@ -52,9 +52,9 @@ cairns snapshot from a certain date (replace YYYYMMDD): http://cartosco.pe/api/r
 ### IDA URLS
 
 [Main Ida project](http://cartosco.pe/ida)\
-[Ida progress timeline](http://cartosco.pe/api/results/ida_progress_timelines)\
+[Ida progress timeline](http://cartosco.pe/api/results/ida_progress_timeline)\
 [Ida snapshot launch](http://cartosco.pe/api/results/ida_snapshot_launch)\
-[Ida Survey results](https://cartosco.pe/api/results/ida_survey)\
+[Ida Survey results](https://cartosco.pe/api/results/ida_survey)
 
 Project IDs
 -----------
