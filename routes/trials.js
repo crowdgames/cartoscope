@@ -158,6 +158,15 @@ router.get('/cairns_webinar/:trialId', (req, res) => {
     res.redirect(`http://cartosco.pe/kioskProject.html#/kioskStart/${project_code}?trialId=${hitIDBase}${cairnType}`); 
 });
 
+// Ida link for mturkers
+router.get('/ida_mturk/:trialId', (req, res) => {
+    // The trialid here should be mturk_something
+    // Ou9nXNDyuLPm is in there multiple times since it is a more important project
+    let projects = ["Ou9nXNDyuLPm","X3riraL1vXeT","1zJIIjBDaWuw", "Ou9nXNDyuLPm", "Ou9nXNDyuLPm"];
+    let project_code = chance.pickone(projects);
+    // send to project page
+    res.redirect(`http://cartosco.pe/kioskProject.html#/kioskStart/${project_code}?trialId=${req.params.trialId}`); 
+});
 
 //healthy gulf: Landloss Lookout, mturk randomized, different options
 router.get('/hg_test_options/:hit_id', function(req, res,next) {
