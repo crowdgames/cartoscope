@@ -1874,6 +1874,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           return 'c' + color;
       };
 
+      console.log("model information:");
+      console.log(vm);
   }]);
 
 
