@@ -74,3 +74,8 @@ Hurricane Ida projects:
 Some local projects: 
 localhost:8081/api/anon/startAnon/B7LnS7Uy6kYu?hitId=bbb?trialId=aaa
 http://localhost:8081/kioskProject.html#/kioskStart/B7LnS7Uy6kYu?trialId=bee
+
+Other Notes (organize this)
+---------------------------
+
+Users take 3.88 seconds on average to complete an image
