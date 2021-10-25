@@ -7,6 +7,10 @@ let request = require('request');
 
 const zip = (a: any[], b: any[]) => a.map((k, i) => [k, b[i]]);
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 function getNGSLayers(theUrl: string, callback)
 {
     var layers: any[] = []
@@ -38,19 +42,37 @@ let lat = 29.61070;
 let lon = -89.85002;
 let zoom = 18;
 let layersUrl = `https://storms.ngs.noaa.gov/storms/${event_name}/services/WMTSCapabilities.xml`;
+let infile = './test.csv'
 
-let downloadImage = (layers: string[], zoom: number, lat: number, lon: number) => {
+let downloadImage = (name: string, layers: string[], zoom: number, lat: number, lon: number) => {
     let [x, y] = transformCoordinates(zoom, lat, lon);
     layers.forEach(layer => {
         let cdnUri = `https://stormscdn.ngs.noaa.gov/${layer}/${zoom}/${x}/${y}`;
-        let filename = `./imgs/${layer}_${zoom}_${lat}_${lon}.png`;
+        let filename = `./imgs/${name}_${layer}_${zoom}_${lat}_${lon}.png`;
         request.head(cdnUri, (_, response) => {
-            if (response.headers['content-type'] !== 'text/html')
+            if (response.headers['content-type'] !== 'text/html'){
+                console.log(`Success: ${cdnUri}`);
                 request(cdnUri).pipe(fs.createWriteStream(filename));
+            }
+            else 
+                console.log(`Failure: ${cdnUri}`);
         });
     });
+    console.log(name);
 }
 
-getNGSLayers(layersUrl, (layers: string[]) => {
-    downloadImage(layers, zoom, lat, lon);
-});
+let main = async () => {
+    getNGSLayers(layersUrl, (layers: string[]) => {
+        fs.readFile(infile, 'utf8', (_, data) => {
+            data.split("\n").forEach(async (row, idx) => {
+                let [name, latStr, lonStr] = row.split(',')
+                if (idx != 0 && latStr !== undefined) {
+                    downloadImage(name, layers, zoom, parseFloat(latStr), parseFloat(lonStr));
+                }
+            });
+        });
+    });
+
+}
+
+main();
