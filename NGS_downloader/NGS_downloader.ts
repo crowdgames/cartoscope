@@ -7,7 +7,7 @@ let request = require('request');
 
 const zip = (a: any[], b: any[]) => a.map((k, i) => [k, b[i]]);
 
-function getNGSLayers(theUrl, callback)
+function getNGSLayers(theUrl: string, callback)
 {
     var layers: any[] = []
     var xmlHttp = new XMLHttpRequest();
@@ -40,16 +40,13 @@ let zoom = 18;
 let layersUrl = `https://storms.ngs.noaa.gov/storms/${event_name}/services/WMTSCapabilities.xml`;
 
 let downloadImage = (layers: string[], zoom: number, lat: number, lon: number) => {
-    let layersUrl = `https://storms.ngs.noaa.gov/storms/${event_name}/services/WMTSCapabilities.xml`;
-    getNGSLayers(layersUrl, (layers: string[]) => {
-        let [x, y] = transformCoordinates(zoom, lat, lon);
-        layers.forEach(layer => {
-            let cdnUri = `https://stormscdn.ngs.noaa.gov/${layer}/${zoom}/${x}/${y}`;
-            let filename = `./imgs/${layer}_${zoom}_${lat}_${lon}.png`;
-            request.head(cdnUri, (_, response) => {
-                if (response.headers['content-type'] !== 'text/html')
-                    request(cdnUri).pipe(fs.createWriteStream(filename));
-            });
+    let [x, y] = transformCoordinates(zoom, lat, lon);
+    layers.forEach(layer => {
+        let cdnUri = `https://stormscdn.ngs.noaa.gov/${layer}/${zoom}/${x}/${y}`;
+        let filename = `./imgs/${layer}_${zoom}_${lat}_${lon}.png`;
+        request.head(cdnUri, (_, response) => {
+            if (response.headers['content-type'] !== 'text/html')
+                request(cdnUri).pipe(fs.createWriteStream(filename));
         });
     });
 }
