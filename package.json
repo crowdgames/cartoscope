@@ -18,6 +18,8 @@
     "@types/googlemaps": "^3.40.2",
     "@types/jquery": "^3.5.3",
     "@types/matter-js": "^0.14.6",
+    "@types/node-fetch": "^3.0.3",
+    "@xmldom/xmldom": "^0.7.5",
     "archiver": "^3.0.0",
     "async": "^2.0.1",
     "axios": "^0.21.1",
@@ -29,6 +31,7 @@
     "compression": "*",
     "cookie-parser": "~1.4.3",
     "cors": "^2.8.4",
+    "cross-fetch": "^3.1.4",
     "crypto": "0.0.3",
     "d3": "^4.13.0",
     "debug": "~2.2.0",
@@ -55,6 +58,7 @@
     "ncp": "^2.0.0",
     "ng-file-upload": "^12.2.13",
     "ng-juxtapose": "^1.0.2",
+    "node-fetch": "^3.0.0",
     "node-gyp": "^3.8.0",
     "node-minizip": "^0.3.0",
     "nodemailer": "^2.7.2",
@@ -71,9 +75,12 @@
     "underscore": "^1.9.1",
     "uuid4": "^2.0.2",
     "validator": "^5.5.0",
-    "validators": "^0.3.1"
+    "validators": "^0.3.1",
+    "xhr2": "^0.2.1",
+    "xmlhttprequest-ts": "^1.0.1"
   },
   "devDependencies": {
+    "@types/node": "^16.11.4",
     "node-minizip": "^0.3.0",
     "unzip": "^0.1.11"
   }
