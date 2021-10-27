@@ -1,7 +1,7 @@
 # Installation Instructions
 
 
-1.  `git clone https://github.com/crowdgames/cartoscope-backend.git`
+1.  `git clone https://github.com/crowdgames/cartoscope.git`
 
 
 2.  Install Node, MySQL and Wget (note, the node version may matter. For me (Kutub), node 10.19.0 works but 15.9.0 does not. I'm unsure if that is an issue I have or if it is relevant to this whole project):
