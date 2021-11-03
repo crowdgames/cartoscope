@@ -41,11 +41,11 @@ https://cartosco.pe/api/trials/cairns_webinar/kiosk_webinar
 
 ----
 
-[cairns progress timeline](http://cartosco.pe/api/results/landloss_progress_timeline)
+[cairns progress timeline](http://cartosco.pe/api/results/cairns_progress_timeline)
 
-[cairns snapshot from today](http://cartosco.pe/api/results/landloss_snapshot_today)
+[cairns snapshot from today](http://cartosco.pe/api/results/cairns_snapshot_today)
 
-[cairns labels since launch](http://cartosco.pe/api/results/landloss_snapshot_launch)
+[cairns labels since launch](http://cartosco.pe/api/results/cairns_snapshot_launch)
 
 cairns snapshot from a certain date (replace YYYYMMDD): http://cartosco.pe/api/results/landloss_snapshot_date/YYYYMMDD
 
@@ -55,25 +55,6 @@ cairns snapshot from a certain date (replace YYYYMMDD): http://cartosco.pe/api/r
 [Ida progress timeline](http://cartosco.pe/api/results/ida_progress_timeline)\
 [Ida snapshot launch](http://cartosco.pe/api/results/ida_snapshot_launch)\
 [Ida Survey results](https://cartosco.pe/api/results/ida_survey)
-
-Project IDs
------------
-
-These projectIDs are 2008 Land Loss Lookout data and is what the current cairns project uses:
-["mKSRWYI4E59f", "Z2cg3ppyCsZW", "vOihRaFY2lSS", "ENtBwQQtcK3L", "DQ0RAb6nVgXr", "D1Y4k21Xb9NL"]
-
-These ids are duplicates of the erosion project. When cairn frequency wasn't tied to hitID, these all had different cairn frequencies, but this is no longer necessary.
-("WfpKAneXebT1", "J94tYYPMngNk", "qEEKIgFoFh1m", "dDONGlkBAGUO", "Hzp4vca3LZ4a", "OfohqkweDjEB")
-
-And these are the ids of the original Land Loss Lookout projects:
-["UOYIiFeapnyI","ocioawiaGcjw","KyW6Ti9QUr4I","Srz9arMDwthQ","94yoCWhFkpMk","cXz6ImkmG9k5"]
-
-Hurricane Ida projects:
-("1zJIIjBDaWuw", "X3riraL1vXeT", "Ou9nXNDyuLPm")
-
-Some local projects: 
-localhost:8081/api/anon/startAnon/B7LnS7Uy6kYu?hitId=bbb?trialId=aaa
-http://localhost:8081/kioskProject.html#/kioskStart/B7LnS7Uy6kYu?trialId=bee
 
 Other Notes (organize this)
 ---------------------------
