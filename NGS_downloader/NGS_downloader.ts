@@ -38,25 +38,28 @@ let transformCoordinates = (zoom: number, lat: number, lon: number) => {
 }
 
 let event_name = "ida";
-let lat = 29.61070;
-let lon = -89.85002;
+// let lat = 29.61070;
+// let lon = -89.85002;
 let zoom = 18;
 let layersUrl = `https://storms.ngs.noaa.gov/storms/${event_name}/services/WMTSCapabilities.xml`;
-let infile = './test.csv'
+let infile = './2021-10-29_oil_tutorial.csv'
+let msToDownload = 60 * 1000; // spread downloading over this amount of time to avoid overwhelming NGS
 
 let downloadImage = (name: string, layers: string[], zoom: number, lat: number, lon: number) => {
     let [x, y] = transformCoordinates(zoom, lat, lon);
     layers.forEach(layer => {
         let cdnUri = `https://stormscdn.ngs.noaa.gov/${layer}/${zoom}/${x}/${y}`;
         let filename = `./imgs/${name}_${layer}_${zoom}_${lat}_${lon}.png`;
-        request.head(cdnUri, (_, response) => {
-            if (response.headers['content-type'] !== 'text/html'){
-                console.log(`Success: ${cdnUri}`);
-                request(cdnUri).pipe(fs.createWriteStream(filename));
-            }
-            else 
-                console.log(`Failure: ${cdnUri}`);
-        });
+        setTimeout(() => {
+            request.head(cdnUri, (_, response) => {
+                if (response !== undefined && response.headers['content-type'] !== 'text/html'){
+                    console.log(`Success: ${cdnUri}`);
+                    request(cdnUri).pipe(fs.createWriteStream(filename));
+                }
+                else 
+                    console.log(`Failure: ${cdnUri}`);
+            });
+        }, Math.random() * msToDownload);
     });
     console.log(name);
 }
