@@ -2575,7 +2575,8 @@ module.controller('kioskProjectController', ['$window','$scope','$location','$st
             $scope.cover_pic_path = 'api/project/getProjectPic/' + $stateParams.pCode;
 
             console.log("======");
-            console.log($scope.proj_data.scistarter_link !== null);
+            console.log($scope.proj_data);
+            console.log("======");
             $scope.is_scistarter = $scope.proj_data.scistarter_link !== null;
 
 
