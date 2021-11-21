@@ -30,7 +30,7 @@ echo "== Installing appropriate node version =="
 
 sudo npm i -g n
 
-sudo n 7.8.0
+sudo n 10.19.0
 
 PATH="$PATH"
 
