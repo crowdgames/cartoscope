@@ -65,3 +65,6 @@ cd ./public
 bower install
 
 npm i -g nodemon typescript
+
+cd /vagrant
+npm i
