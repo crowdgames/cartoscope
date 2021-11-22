@@ -26,7 +26,8 @@ sudo apt-get -y install \
   mysql-client mysql-server \
   nodejs npm \
   wget \
-  openssl
+  openssl \
+  build-essential libffi-dev python3-dev
 
 echo "== INSTALLING PYTHON PACKAGES =="
 
