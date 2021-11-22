@@ -67,4 +67,4 @@ bower install
 npm i -g nodemon typescript
 
 cd /vagrant
-npm i
+sudo npm i
