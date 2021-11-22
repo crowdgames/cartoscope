@@ -46,8 +46,15 @@ mysql convergeDB -u converge -p$MYSQL_USER_PASSWORD < /vagrant/database_migratio
 mkdir temp
 mkdir dataset
 
+echo "== Installing python3.6 =="
+
+sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt-get update
+sudo apt-get -y install python3.6
+
 echo "== Installing node modules =="
 
+npm config set python /usr/bin/python3.6
 npm i
 
 cd ./public
