@@ -23,6 +23,7 @@ sudo apt-get -y install nodejs
 sudo apt-get -y install npm
 sudo apt-get -y install python-pip
 sudo apt-get -y install wget
+sudo apt-get -y install openssl
 
 sudo pip install pillow
 
