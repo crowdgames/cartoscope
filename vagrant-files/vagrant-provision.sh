@@ -14,7 +14,7 @@ echo "== PRECONFIGURING MYSQL SERVER INSTALL =="
 echo mysql-server mysql-server/root_password password $MYSQL_ROOT_PASSWORD | sudo debconf-set-selections
 echo mysql-server mysql-server/root_password_again password $MYSQL_ROOT_PASSWORD | sudo debconf-set-selections
 
-echo "== iNSTALLING MAJOR PACKAGES =="
+echo "== INSTALLING MAJOR PACKAGES =="
 
 export DEBIAN_FRONTEND=noninteractive
 
@@ -34,7 +34,7 @@ echo "== INSTALLING PYTHON PACKAGES =="
 sudo pip install pillow
 /usr/bin/python3.6 -m pip install bcrypt
 
-echo "== iNSTALLING APPROPRIATE NODE VERSION =="
+echo "== INSTALLING APPROPRIATE NODE VERSION =="
 
 sudo npm i -g n
 
