@@ -2,11 +2,11 @@ cd /vagrant
 
 echo "== READING DB AUTH CONFIG =="
 
-if [ -e "config-auth.sh" ]; then
-    source config-auth.sh
+if [ -e "vagrant-files/config-auth.sh" ]; then
+    source vagrant-files/config-auth.sh
 else
     echo "Note: using config-auth.sh.example for provisioning. It is recommended to copy / edit this file into config-auth.sh"
-    source config-auth.sh.example
+    source vagrant-files/config-auth.sh.example
 fi
 
 echo "== PRECONFIGURING MYSQL SERVER INSTALL =="
