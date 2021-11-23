@@ -25,5 +25,8 @@
     "angular-google-maps": "^2.4.1",
     "ngmap": "1.17.0",
     "ng-juxtapose": "^1.0.2"
+  },
+  "resolutions": {
+    "angular": "1.8.2"
   }
 }
