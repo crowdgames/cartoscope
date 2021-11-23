@@ -49,10 +49,13 @@ echo "CREATE USER 'converge'@'localhost' IDENTIFIED BY '$MYSQL_USER_PASSWORD';" 
 echo "GRANT ALL PRIVILEGES ON convergeDB.* TO 'converge'@'localhost';" | mysql -u root -p$MYSQL_ROOT_PASSWORD
 mysql convergeDB -u converge -p$MYSQL_USER_PASSWORD < /vagrant/database_migrations/dump.sql
 
-echo "== CREATING FOLDERS =="
+echo "== CREATING FOLDERS AND MOVING FILES =="
 
 mkdir temp
 mkdir dataset
+
+cp vagrant-files/run.sh /home/vagrant/
+chmod +x /home/vagrant/run.sh
 
 echo "== CREATING SSL KEYS AND CERTS =="
 
