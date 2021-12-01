@@ -413,7 +413,7 @@ router.post('/add', [fupload.single('file'), filters.requireLogin, filters.requi
     var body = req.body;
     var filename = 'default';
      console.log('body ', body);
-    
+
     if (req.file) {
       filename = req.file.filename;
         // console.log('file '+ filename);
@@ -424,7 +424,7 @@ router.post('/add', [fupload.single('file'), filters.requireLogin, filters.requi
             res.status(500).send({error: 'problem with the uploaded image, please try again'});
           fs.unlink(req.file.path);
         }
-        
+
         if (isValidImage(result)) {
           fs.renameSync(req.file.path, 'profile_photos/' + filename);
           generateUniqueProjectCode().then(function(projectCode) {
@@ -438,14 +438,14 @@ router.post('/add', [fupload.single('file'), filters.requireLogin, filters.requi
                 res.status(500).send({error: err.code});
               });
           });
-          
+
         } else {
             console.log(err);
             res.status(500).send({error: 'problem with the uploaded image, please try again'});
           fs.unlink(req.file.path);
         }
       });
-      
+
     } else {
       generateUniqueProjectCode().then(function(projectCode) {
         projectDB.addProject(body.name, req.session.passport.user.id, body.description, filename, projectCode,body.short_name,body.short_name_friendly,body.short_description,
@@ -658,9 +658,9 @@ router.post('/updateARReady',
 router.get('/admins/:id', filters.requireLogin,
   function(req, res, next) {
     projectDB.getAdmins(req.params.id).then(function(data) {
-      
+
       var users = [];
-      
+
       for (var i in data) {
         users.push(userDB.getUserByID(data[i]['user_id']));
       }
@@ -772,6 +772,20 @@ router.get('/getProjectPic/:code', function(req, res, next) {
 
 });
 
+router.get('/getHubInfo/:hub_code', function(req, res, next) {
+  var getProject = projectDB.getHubFromCode(req.params.hub_code);
+  getProject.then(function(project) {
+      if (project.length > 0) {
+          res.send(project)
+      } else {
+          res.status(500).send({error: 'Hub not found'});
+      }
+  }).catch(function(error) {
+      res.status(500).send({error: error.code || 'Hub not found'});
+  });
+
+});
+
 /**
  * Thus function generates a random alphanumeric code for the project as its unique id.
  * @returns {Promise}
@@ -798,7 +812,7 @@ router.get('/upload/status/:id', function(req, res, next) {
           res.status(404).send({error: 'Not found'});
         }
       }
-      
+
     });
   } else {
     res.status(400).send({error: 'ID missing'});
@@ -1104,9 +1118,9 @@ router.post('/upload', [filters.requireLogin, filters.requiredParamHandler(['fil
         path: parsedURl.path,
         method: 'head'
       };
-      
+
       assignDownloadID(function(downloadID) {
-        
+
         var rq = http.request(options, function(rr) {
           var contentType = rr.headers['content-type'];
           if (rr.statusCode != 200) {
@@ -1121,9 +1135,9 @@ router.post('/upload', [filters.requireLogin, filters.requiredParamHandler(['fil
             // status queued
             downloadStatus.setStatus(downloadID, 0, function(err, res) {
             });
-            
+
             download(body.file, downloadID, req.body.projectID);
-            
+
           } else {
             res.status(500).send({
               error: 'Not a zip file'
@@ -1159,14 +1173,14 @@ function download(loc, downloadID, projectID) {
   // Status starting Download
   projectDB.addDataSetID(projectID, downloadID).then(function() {
     downloadStatus.setStatus(downloadID, 1, function(err, res) {
-      
+
     });
-    
+
     var downloadDir = 'temp/';
     var wget = 'wget ' + '-O ' + downloadDir + downloadID + ' ' + loc;
-    
+
     exec(wget, {maxBuffer: 1024 * 10000000}, function(err) {
-      
+
       if (err) {
         mailer.mailer(email, 'done', '<b> Error downloading file </b>');
         // status error with file
@@ -1178,28 +1192,28 @@ function download(loc, downloadID, projectID) {
         });
         var filename = url.parse(loc).pathname;
         var parsedFilename = path.parse(filename);
-        
+
         var type = parsedFilename.ext;
-        
+
         var dirName = 'dataset/' + downloadID;
         if (!fs.existsSync(dirName)) {
           fs.mkdirSync(dirName);
         }
-        
+
         if (type == '.gz' || type == '.tar') {
           console.log('TAR FILE');
-          
+
           var tarFile = 'temp/' + downloadID;
-          
+
           // status started unzipping
           downloadStatus.setStatus(downloadID, 3, function(err, res) {
           });
-          
+
           var untar = spawn('tar', ['-xvf', tarFile, '-C', dirName + '/.']);
-          
+
           untar.stdout.on('data', function(data) {
           });
-          
+
           untar.on('close', function(code) {
             if (code == 0) {
               readDataSetFiles(dirName, downloadID).then(imageCompressionLib.processData).then(function(data) {
@@ -1215,13 +1229,13 @@ function download(loc, downloadID, projectID) {
                     });
                     pArr.push(p);
                   }
-                  
+
                   Promise.all(pArr).then(function(data) {
                       mailer.mailer(email, 'done', '<b> Done downloading file ' + filename + ' </b>');
                     downloadStatus.setStatus(downloadID, 4, function(err, res) {
                     });
                   });
-                  
+
                 });
               }).catch(function(err) {
                   mailer.mailer(email, 'done', '<b> Error downloading file ' + filename + ' </b>');
@@ -1230,7 +1244,7 @@ function download(loc, downloadID, projectID) {
               });
             }
           });
-          
+
         } else if (type == '.zip') {
           console.log('ZIP FILE');
         }

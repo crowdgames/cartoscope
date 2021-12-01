@@ -501,6 +501,28 @@ router.get('/cairns_raw_data/csv', function(req, res, next) {
 });
 
 
+//Get raw data from all subprojects in a hub
+router.get('/hub_data/:hub_code', function(req, res, next) {
+
+
+    //first get the hub info
+    projectDB.getHubFromCode(req.params.hub_code).then(function(hub_results){
+        var hub_ids = hub_results[0].project_codes.split(',');
+        var hub_dataset_id = hub_results[0].hub_dataset_id;
+        //then get the data
+        resultDB.getHubRawResultsMultiplebyTextGrouped(hub_ids,hub_dataset_id,true).then(function(results) {
+            res.send(results);
+        }, function(err) {
+            console.log(err)
+            res.status(400).send('raw HG results could not be retrieved');
+        });
+
+    }, function(err){
+        console.log(err)
+        res.status(400).send('Hub info could not be retrieved');
+    })
+    
+});
 
 
 //Get results for project from mturk workers

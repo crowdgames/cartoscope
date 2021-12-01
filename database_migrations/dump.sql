@@ -283,6 +283,32 @@ CREATE TABLE `projects` (
 ) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+
+--
+-- Table structure for table `hub_projects`
+--
+
+DROP TABLE IF EXISTS `hub_projects`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `hub_projects` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(512) DEFAULT NULL,
+  `description` varchar(2048) DEFAULT NULL,
+  `url_name` varchar(512) DEFAULT NULL,
+  `hub_unique_code` varchar(255) DEFAULT NULL,
+  `hub_dataset_id` varchar(45) DEFAULT NULL,
+  `external_sign_up` text,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `last_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `project_codes` varchar(512) DEFAULT NULL,
+  `results_labels` TEXT DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `url_name_UNIQUE` (`url_name`)
+) ENGINE=InnoDB CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
 --
 -- Table structure for table `response`
 --

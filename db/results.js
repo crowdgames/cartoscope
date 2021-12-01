@@ -423,6 +423,67 @@ exports.getRawResultsMultiplebyTextGrouped = function(project_ids,dataset_id,inc
 
 }
 
+
+exports.getHubRawResultsMultiplebyTextGrouped = function(project_ids,dataset_id,include_mturk){
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+        var query = 'select r.task_id,r.project_id,r.response_text as answer,p.unique_code,p.name,d.x,d.y  ,count(*) as votes from response as r left join projects as p on p.id=r.project_id ' +
+            'left join dataset_' + dataset_id + ' as d on d.name=r.task_id where r.project_id in ('+ project_ids.toString() + ' ) and task_id!=\'dummy\'  group by task_id,x,y,project_id,response_text '
+
+        //make sure we exclude mturk workers if asked
+        if (!include_mturk){
+            query = 'select v.task_id,v.project_id,v.answer,v.unique_code,v.name,v.x,v.y,count(*) as votes from ' +
+                '(select r.task_id,r.project_id,r.response_text as answer,p.unique_code,p.name,d.x,d.y,k.hitID,r.user_id  from response as r left join projects as p on p.id=r.project_id ' +
+                'left join dataset_'+ dataset_id + '  as d on d.name=r.task_id left join kiosk_workers as k on r.user_id=k.workerID where k.hitID=\'kiosk\' and r.project_id in (' +  project_ids.toString() + ') ' +
+                'and task_id!=\'dummy\' and DATE(timestamp) >= \'2020-09-23\' ) as v group by task_id,x,y,project_id,answer '
+        }
+
+        var grouped_data = {};
+
+
+        var today = new Date();
+        var dd = today.getDate().toString();
+        var mm = (today.getMonth() + 1).toString();  //January is 0!
+        var yyyy = today.getFullYear().toString();
+
+        var current_date = mm + '/' + dd + '/' + yyyy;
+
+
+        connection.queryAsync(query).then(
+            function(data) {
+
+                data.forEach(function(item){
+                    if (!grouped_data.hasOwnProperty(item.task_id)){
+                        grouped_data[item.task_id] = {}
+                    };
+                    if (!grouped_data[item.task_id].hasOwnProperty(item.project_id)){
+                        grouped_data[item.task_id][item.project_id] = {
+                            total:0,
+                            majority: item.answer,
+                            majority_count: item.votes,
+                            unique_code: item.unique_code,
+                            dataset_id: dataset_id,
+                            lat: item.x,
+                            lon: item.y,
+                            image_url: 'cartosco.pe/api/tasks/getImageFree/' + dataset_id + '/' + item.task_id  + '.jpg',
+                            date_pulled: current_date}
+                    }
+                    grouped_data[item.task_id][item.project_id][item.answer] = item.votes;
+                    grouped_data[item.task_id][item.project_id].total += item.votes;
+                    if (item.votes > grouped_data[item.task_id][item.project_id].majority_count  ) {
+                        grouped_data[item.task_id][item.project_id].majority_count = item.votes;
+                        grouped_data[item.task_id][item.project_id].majority = item.answer
+                    }
+                });
+                resolve(grouped_data)
+            }, function(err) {
+                error(err);
+            });
+    });
+
+}
+
 exports.getRawResultsMultiplebyText = function(project_ids){
     return new Promise(function(resolve, error) {
         var connection = db.get();

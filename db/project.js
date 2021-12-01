@@ -276,6 +276,20 @@ exports.getProjectFromCode = function(uniqueCode) {
 };
 
 
+exports.getHubFromCode = function(hubUniqueCode) {
+  return new Promise(function(resolve, error) {
+    var connection = db.get();
+    connection.queryAsync('SELECT * from hub_projects WHERE hub_unique_code=?',
+      [hubUniqueCode]).then(
+      function(data) {
+        resolve(data);
+      }, function(err) {
+        error(err);
+      });
+  });
+};
+
+
 exports.getProjectFromCodeUnPub = function(uniqueCode) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
