@@ -266,6 +266,15 @@ app.get('/ida', function(req, res) {
 
 });
 
+
+//hub url shortcuts
+app.get('/hub/:hub_url', function(req, res) {
+
+    console.log(req.params.hub_url)
+    var link = "/kioskProject.html#/hubPage/" + req.params.hub_url;
+    res.redirect(link); // send to hub page
+});
+
 //healthy gulf event: algal Blooms
 app.get('/hg', function(req, res) {
     var project_code = "ChAkLfwYIBgo";

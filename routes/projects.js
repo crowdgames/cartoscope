@@ -748,6 +748,22 @@ router.get('/getProjectPic/:code', function(req, res, next) {
 
 });
 
+
+
+router.get('/getHubInfo/:hub_code', function(req, res, next) {
+  var getProject = projectDB.getHubFromCode(req.params.hub_code);
+  getProject.then(function(project) {
+      if (project.length > 0) {
+          res.send(project)
+      } else {
+          res.status(500).send({error: 'Hub not found'});
+      }
+  }).catch(function(error) {
+      res.status(500).send({error: error.code || 'Hub not found'});
+  });
+
+});
+
 function generateUniqueProjectCode() {
   return new Promise(function(resolve) {
     var projectCode = randomString.generate({
