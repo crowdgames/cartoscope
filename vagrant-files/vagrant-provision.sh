@@ -31,8 +31,9 @@ sudo apt-get -y install \
 
 echo "== INSTALLING PYTHON PACKAGES =="
 
-sudo pip install pillow
-/usr/bin/python3.6 -m pip install bcrypt
+python3.6 -m pip install --upgrade pip
+python3.6 -m pip install pillow
+python3.6 -m pip install bcrypt
 
 echo "== INSTALLING APPROPRIATE NODE VERSION =="
 
