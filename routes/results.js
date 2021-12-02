@@ -441,6 +441,71 @@ router.get('/hg_raw_data/csv', function(req, res, next) {
     });
 });
 
+
+//Get raw HUB data from all projects in the hub
+router.get('/hub_data/csv/:hub_code', function(req, res, next) {
+
+    var hg_ids = [55,56,57,58,59,60];
+    var dataset_id = "0k9ceCYzyqLt1pR";
+
+    projectDB.getHubFromCode(req.params.hub_code).then(function(hub_results){
+        var hub_ids = hub_results[0].project_codes.split(',');
+        var hub_dataset_id = hub_results[0].hub_dataset_id;
+
+        var today = new Date();
+        var dd = today.getDate().toString()
+        var mm = (today.getMonth() + 1).toString();  //January is 0!
+        var yyyy = today.getFullYear().toString();
+
+        var current_date = mm + '/' + dd + '/' + yyyy;
+        var current_date_file = '[' +mm + '_' + dd + '_' + yyyy + ']';
+
+        resultDB.getHubRawResultsMultiplebyTextGrouped(hub_ids,hub_dataset_id).then(function(results) {
+
+            var fields = ['image','lat','lon','majority_answer','majority_count','majority_percentage','project','image_url','date_pulled']
+            var csv_results = [];
+    
+    
+            Object.keys(results).forEach(function(image_key){
+    
+                var obj = results[image_key];
+                Object.keys(obj).forEach(function(pkey){
+                    var item = obj[pkey];
+                    csv_results.push({
+                        image: image_key,
+                        lat: item.lat,
+                        lon:item.lon,
+                        majority_answer: item.majority,
+                        majority_count: item.majority_count,
+                        majority_percentage: item.majority_count/item.total,
+                        project: pkey,
+                        image_url: item.image_url,
+                        date_pulled:current_date
+                    })
+                })
+    
+            });
+            var csv = json2csv({ data: csv_results, fields: fields });
+            //Send back CSV file:
+            res.attachment(current_date_file +'_landloss_results.csv');
+            res.status(200).send(csv);
+        }, function(err) {
+            console.log(err)
+            res.status(400).send('raw HG results could not be retrieved');
+        });
+
+    }, function(err){
+        console.log(err)
+        res.status(400).send('raw HUB results could not be retrieved. Hub info not found');
+    })
+
+    
+
+
+
+    
+});
+
 //Get raw HG data from all projects
 router.get('/cairns_raw_data/csv', function(req, res, next) {
 
