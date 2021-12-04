@@ -1,6 +1,8 @@
 var express = require('express');
 var userDB = require('../db/user');
 var projectDB = require('../db/project');
+var hubProjectDB = require('../db/hubProject');
+
 var mmm = require('mmmagic');
 var router = express.Router();
 var multer = require('multer');
@@ -272,6 +274,17 @@ router.get('/projects', filters.requireRegularLogin, function(req, res, next) {
   }).catch(function(err) {
     res.status(500).send({
       error: err.code || 'Couldn\'t find projects for the user'
+    });
+  });
+});
+
+router.get('/hubs', filters.requireRegularLogin, function(req, res, next) {
+  var userID = req.session.passport.user.id;
+  hubProjectDB.getAllHubProjectsForUser(userID).then(function(data) {
+    res.send(data);
+  }).catch(function(err) {
+    res.status(500).send({
+      error: err.code || 'Couldn\'t find hub projects for the user'
     });
   });
 });

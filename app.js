@@ -12,6 +12,7 @@ var os = require('os');
 var users = require('./routes/users');
 var login = require('./routes/login');
 var projectsApi = require('./routes/projects');
+var hubProjectsApi = require('./routes/hubProjects');
 var taskApi = require('./routes/tasks');
 var session = require('express-session');
 var anonApi = require('./routes/anonUser');
@@ -102,6 +103,7 @@ passport.deserializeUser(function(user, done) {
 
 app.use('/api/user', users);
 app.use('/api/project', projectsApi);
+app.use('/api/hub', hubProjectsApi);
 app.use('/api/', login);
 app.use('/api/tasks', taskApi);
 app.use('/api/anon', anonApi);

@@ -1,5 +1,6 @@
 var resultDB = require('../db/results');
 var projectDB = require('../db/project');
+var hubProjectDB = require('../db/hubProject');
 var tileDB = require('../db/tileoscope');
 var filters = require('../constants/filters');
 var express = require('express');
@@ -445,12 +446,11 @@ router.get('/hg_raw_data/csv', function(req, res, next) {
 //Get raw HUB data from all projects in the hub
 router.get('/hub_data/csv/:hub_code', function(req, res, next) {
 
-    var hg_ids = [55,56,57,58,59,60];
-    var dataset_id = "0k9ceCYzyqLt1pR";
-
-    projectDB.getHubFromCode(req.params.hub_code).then(function(hub_results){
+    
+    hubProjectDB.getHubFromCode(req.params.hub_code).then(function(hub_results){
         var hub_ids = hub_results[0].project_codes.split(',');
-        var hub_dataset_id = hub_results[0].hub_dataset_id;
+        //TODO: WE ARE DEFAULTING TO ONE DATASET ONLY. CHANGE IN FUTURE
+        var hub_dataset_id = hub_results[0].dataset_ids.split(',')[0];
 
         var today = new Date();
         var dd = today.getDate().toString()
@@ -571,9 +571,10 @@ router.get('/hub_data/:hub_code', function(req, res, next) {
 
 
     //first get the hub info
-    projectDB.getHubFromCode(req.params.hub_code).then(function(hub_results){
+    hubProjectDB.getHubFromCode(req.params.hub_code).then(function(hub_results){
         var hub_ids = hub_results[0].project_codes.split(',');
-        var hub_dataset_id = hub_results[0].hub_dataset_id;
+        //TODO: Right now we default everything to the first dataset id. We need to figure it out in the future
+        var hub_dataset_id = hub_results[0].dataset_ids.split(',')[0];
         //then get the data
         resultDB.getHubRawResultsMultiplebyTextGrouped(hub_ids,hub_dataset_id,true).then(function(results) {
             res.send(results);

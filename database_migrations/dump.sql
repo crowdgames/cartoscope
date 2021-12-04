@@ -293,15 +293,18 @@ DROP TABLE IF EXISTS `hub_projects`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `hub_projects` (
   `id` int NOT NULL AUTO_INCREMENT,
+  `creatorID` int DEFAULT NULL,
+  `cover_pic` varchar(255) DEFAULT NULL,
   `name` varchar(512) DEFAULT NULL,
   `description` varchar(2048) DEFAULT NULL,
   `url_name` varchar(512) DEFAULT NULL,
   `hub_unique_code` varchar(255) DEFAULT NULL,
-  `hub_dataset_id` varchar(45) DEFAULT NULL,
+  `published` int DEFAULT '0',
   `external_sign_up` text,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `last_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `project_codes` varchar(512) DEFAULT NULL,
+  `dataset_ids` TEXT DEFAULT NULL,
   `results_labels` TEXT DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `url_name_UNIQUE` (`url_name`)

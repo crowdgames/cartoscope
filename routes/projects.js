@@ -16,6 +16,7 @@ var spawn = require('child_process').spawn;
 var projectDB = require('../db/project');
 var anonUserDB = require('../db/anonUser');
 var userDB = require('../db/user');
+var hubProjectDB = require('../db/hubProject');
 
 var mmm = require('mmmagic');
 var Magic = mmm.Magic;

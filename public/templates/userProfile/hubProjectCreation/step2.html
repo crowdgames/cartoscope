@@ -1,0 +1,147 @@
+<div class="step-4 step-2">
+
+    <div class="holder">
+
+        <span class="txt" >Choose SubProjects</span>
+
+       
+
+        <div ng-show=" !subproject_list.length ">
+            <div class="txt">
+                Waiting for subprojects to load...
+            </div>
+
+        </div>
+
+        <!--Choose from created projects we own-->
+        <div ng-show="subproject_list.length">
+
+            <div ng-repeat="item in hub_subproject_items">
+
+                <div class="row txt" >
+
+                    <div class="col-md-1">
+                        <small>{{$index}}</small>
+                    </div>
+
+                   
+                    <div class="col-md-4" >
+                        <span>
+                        Subproject:
+                            <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
+                               data-placement="right" style="color: #9cdc1f;"
+                               title="Hub subproject, from list of projects you have selected on Cartoscope.">
+                            </i>
+                    </span>
+                    </div>
+                    <div class="col-md-2" >
+                        <span>
+                            Preview <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
+                                      data-placement="right" style="color: #9cdc1f;"
+                                      title="Click on the image to visit the project page."></i>
+                        </span>
+                    </div>
+
+                    <div class="col-md-2" >
+                        <span>
+                        Answer:
+                            <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
+                                         data-placement="right" style="margin-left: 10px;color: #9cdc1f;"
+                                         title="Pick the correct answer for this image.">
+                            </i>
+                        </span>
+                    </div>
+                    
+            
+                    
+
+                </div>
+
+            <div class="row" >
+
+                <div class="col-md-1">
+                    <small>{{$index}}</small>
+                </div>
+
+
+                <!-- Subproject picker-->
+                <div class="col-md-4"   >
+                    <select class="form-control" ng-model="item.subproject_id" >
+                        <option ng-repeat="x in subproject_list" value="{{x.id}}" > {{x.name}}
+                        </option>
+                    </select>
+                </div>
+
+
+                <!-- Visit Link -->
+                <div class="col-md-3"  >
+                    <span style="color: #9cdc1f;" style="top:0px;">
+                        <small>
+                        <a ng-click="visitSubProjectPage(item.subproject_id)"> View Project </a>
+                        </small>
+                    </span>
+                </div>  
+
+                 <!-- pick answer from template-->
+                 <div class="col-md-2" >
+                    <select class="form-control" ng-model="item.category" >
+                        <option ng-repeat="x in options_dictionary[item.subproject_id].template.options" value="{{x.text}}" > {{x.text}}  </option>
+                    </select>
+                </div>
+                
+                
+
+
+                <!--remove answer-->
+                <div class="col-md-2 pull-right">
+                <span class="" ng-click="deleteSubProjectItem($index)" style="color:#DC1F3A;cursor: pointer;">
+                <span class="fa fa-minus"></span>
+                    <span>REMOVE SUBPROJECT</span>
+            </span>
+                </div>
+
+                <br>
+                <br>
+
+            </div>
+
+            <hr>
+            </div>
+            <br>
+            <br>
+
+
+            <div class="row">
+                <div class="col-md-12">
+            <span class="option-add-btn" ng-click="addSubProjectItem()" style="top:0px;">
+                <span class="fa fa-plus"></span>
+                <span>ADD SUBPROJECT</span>
+            </span>
+                </div>
+            </div>
+
+            <br>
+
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <button style="border: none;"
+                            ng-if="hub_subproject_items.length"
+                            class="next-btn btn btn-primary btn btn-block"
+                            ng-click="setSubProjectItems()" >{{add_tutorial_text}}</button>
+                </div>
+                <div class="col-md-4"></div>
+
+            </div>
+
+
+
+
+        </div>
+
+
+
+    </div>
+
+
+</div>

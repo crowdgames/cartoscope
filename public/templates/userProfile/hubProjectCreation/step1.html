@@ -1,0 +1,74 @@
+<div class="step-1">
+    <div class="row">
+        <div class="col-md-6">
+            <div ng-switch on="::hub.editing">
+                <span>
+                    Hub Project Name*
+                    <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
+                       data-placement="right" style="margin-left: 10px;color: #9cdc1f;"
+                       title="The full title of your hub project. This will be shown in the hub project page in Cartoscope."></i>
+                </span>
+                <input ng-switch-when="true" ng-model="hub.name">
+                <input ng-switch-when="false" ng-model="hub.name">
+            </div>
+            <div ng-switch on="::hub.editing">
+                <span>
+                    URL LINK*
+                </span>
+                <!--Make sure url cannot be edited once added-->
+                <input ng-switch-when="true" ng-model="hub.url_name" readonly>
+                <input ng-switch-when="false" ng-model="hub.url_name">
+            </div>
+            <div>
+                <span>
+                    Description*
+                    <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
+                       data-placement="right" style="margin-left: 10px;color: #9cdc1f;"
+                       title="A full description of your hub project. This will appear in the hub page."></i>
+                </span>
+                <textarea ng-model="hub.description"></textarea>
+            </div>
+
+
+        </div>
+        <div class="col-md-6">
+            <span>
+                Hub Project Image
+                <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
+                   data-placement="right" style="margin-left: 10px"
+                   title="This image will be used to represent your hub project on the website."></i>
+            </span>
+            <label class="file-sel">
+                {{coverPic.name || "Select Image"}}
+                <input type="file" accept="image/*" file-model="coverPic">
+            </label>
+
+            <div>
+                <canvas id="imageCanvas" style="max-height: 200px;width: auto;"></canvas>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="row">
+        <span class="txt"><h4>Additional Features: </h4></span>
+    </div>
+
+    <!--external sign up-->
+    <div class="row">
+        <div class="col-md-2">
+            <span>External Sign Up
+            <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
+               data-placement="right" style="margin-left: 19px; color: #9cdc1f;"
+               title="Check if you wish to embed an additional external form, for example for users to sign up.">
+            </i>
+            </span>
+        </div>
+
+        <div class="col-md-1"> <input type="checkbox" ng-model="has_external_signup"  checked="checked"></div>
+        <div class="col-md-4" ng-show="has_external_signup">
+            <input type="url" class="invite" placeholder="External form URL here..." ng-model="hub.external_sign_up">
+        </div>
+    </div>
+</div>
