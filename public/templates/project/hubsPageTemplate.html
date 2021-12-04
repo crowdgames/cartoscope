@@ -1,0 +1,74 @@
+<div class="center-1 project-page-body">
+
+    <div class="content-links-wrapper">
+        <span>
+            <a ui-sref="root.getAllProjects" style="color:white">PROJECTS</a>
+        </span>
+        <span class="circ-sep"></span>
+        <span>
+               <a ui-sref="root.contact" style="color:white" ui-sref-active="active">GROUPS</a>
+            </span>
+        <span class="circ-sep"></span>
+        <span>
+               <a ui-sref="root.contact" style="color:white" ui-sref-active="active">NEWS</a>
+            </span>
+        <span class="circ-sep"></span>
+        <span>
+                <a ui-sref="root.contact" style="color:white" ui-sref-active="active">FORUM</a>
+        </span>
+    </div>
+    <div class="main-body">
+        <div class="search-panel">
+            <div>
+                <div class="search-box">
+                    <input ng-model="searchText"><i class="fa fa-search"></i>
+                </div>
+            </div>
+            <div class="take-space"></div>
+            <div class="button-panel">
+                <button ng-show="{{allowProject}}" ui-sref="root.hubProjectCreation.step1">New Hub Project</button>
+                <button ng-hide="{{allowProject}}" onclick="location.href='mailto:contact@cartosco.pe?subject=Cartoscope: Project Interest'">New Hub Project</button>
+
+            </div>
+        </div>
+
+        <div class="projects-body">
+            <div class="project-row" ng-repeat="hub in hubs| filter:searchText">
+                {{hub.name}}
+
+                <div class="pull-right buttons-box">
+                    <span ng-click="showLink(hub)">View Link</span>
+                    <span> | </span>
+                    <span ng-click="goToHubEdit(hub)">Edit</span>
+                    <!-- <span> | </span>
+                    <span ng-click="duplicateProject(project)">Duplicate</span>
+                    <span> | </span>
+                    <span ng-if='!project.archived' class="archive-btn" ng-click="toggleArchive(project)">
+                        Archive
+                    </span>
+                    <span ng-if="project.archived" class="unarchive-btn" ng-click="toggleArchive(project)">
+                        Un-Archive
+                    </span> -->
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="show-link-modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-body slmb">
+                        <div class="input-row">
+                            <input ng-model="link" readonly id="link-text-inp">
+                            <button title="Copy to Clipboard" ng-click="copyToClip()">
+                                <i class="fa fa-clipboard" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        <div ng-if="showCopiedMsg">
+                            Sucessfully copied to your clipboard
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
