@@ -26,6 +26,7 @@ sudo apt-get -y install \
   mysql-client mysql-server \
   nodejs npm \
   wget \
+  dos2unix \
   openssl \
   build-essential libffi-dev python3-dev
 
@@ -56,6 +57,7 @@ mkdir temp
 mkdir dataset
 
 cp vagrant-files/run.sh /home/vagrant/
+dos2unix /home/vagrant/run.sh
 chmod +x /home/vagrant/run.sh
 
 echo "== CREATING SSL KEYS AND CERTS =="
