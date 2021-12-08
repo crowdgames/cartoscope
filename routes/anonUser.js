@@ -14,7 +14,7 @@ var messagesDB = require('../db/messages');
 var querystring = require('querystring');
 var path = require('path');
 var randomString = require('randomstring');
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcryptjs');
 var salt = process.env.CARTO_SALT;
 var CARTO_MAILER_NOTIFY = process.env.CARTO_MAILER_NOTIFY;
 

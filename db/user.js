@@ -1,5 +1,5 @@
 var db = require('../db/db');
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcryptjs');
 var Promise = require('bluebird');
 const saltRounds = 10;
 

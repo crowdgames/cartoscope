@@ -26,7 +26,7 @@ var Promise = require('bluebird');
 var filters = require('../constants/filters');
 var imageCompressionLib = require('../scripts/imageCompression');
 var upload = multer({dest: 'uploads/'});
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcryptjs');
 var salt = process.env.CARTO_SALT;
 
 

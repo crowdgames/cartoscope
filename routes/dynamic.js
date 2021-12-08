@@ -10,7 +10,7 @@ var dynamicDB = require('../db/dynamic');
 var querystring = require('querystring');
 var path = require('path');
 var randomString = require('randomstring');
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcryptjs');
 var _ = require('underscore');
 
 var salt = process.env.CARTO_SALT;

@@ -1,7 +1,7 @@
 var db = require('../db/db');
 var anonUserDB = require('../db/anonUser');
 
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcryptjs');
 var Promise = require('bluebird');
 var salt = process.env.CARTO_SALT;
 var randomString = require('randomstring');
