@@ -9,7 +9,8 @@ Cartoscope is a platform for citizen science mapping. By sorting, labelling, and
  1. Install [Virtualbox](https://www.virtualbox.org/)
  2. Install [Vagrant](https://www.vagrantup.com/downloads)
  3. Clone this repository (`git clone https://github.com/crowdgames/cartoscope.git`)
- 4. Using the appropriate command line for your operating system, navigate to where you cloned the repository and run the command `vagrant up && vagrant ssh`. This will ssh you into the virtual machine that will host the website
+ 4. Using the appropriate command line for your operating system, navigate to where you cloned the repository and run the command `vagrant up; vagrant ssh`. This will ssh you into the virtual machine that will host the website
+     1. **If you are using windows, the command line must have administrator privileges.**
  5. Run the command `./run.sh`
  6. Open localhost:8081 on a web browser
 
