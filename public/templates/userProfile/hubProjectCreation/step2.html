@@ -67,7 +67,7 @@
                 <!-- Subproject picker-->
                 <div class="col-md-4"   >
                     <select class="form-control" ng-model="item.subproject_id" >
-                        <option ng-repeat="x in subproject_list" value="{{x.id}}" > {{x.name}}
+                        <option ng-repeat="x in subproject_list" value="{{x.id}}" [selected]="x.id == item.subproject_id" > {{x.name}}
                         </option>
                     </select>
                 </div>

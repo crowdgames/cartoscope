@@ -110,6 +110,57 @@ router.post('/add', [fupload.single('file'), filters.requireLogin, filters.requi
   });
 
 
+router.post('/edit', [fupload.single('file'), filters.requireLogin, filters.requiredParamHandler(['name', 'description','url_name', 'hub_unique_code'])],
+function(req, res, next) {
+  var body = req.body;
+  var filename = 'default';
+  console.log('body ', body);
+
+
+  var projectCode = req.body.hub_unique_code;
+  //console.log(projectCode)
+  
+  if (req.file) {
+    filename = req.file.filename;
+      // console.log('file '+ filename);
+
+    magic.detectFile(req.file.path, function(err, result) {
+      if (err) {
+          console.log('result err'+ err);
+          res.status(500).send({error: 'problem with the uploaded image, please try again'});
+        fs.unlink(req.file.path);
+      }
+      
+      if (isValidImage(result)) {
+        fs.renameSync(req.file.path, 'profile_photos/' + filename);
+          hubProjectDB.editHubProject(body.name, body.description, filename, projectCode,body.url_name,body.external_sign_up).then(
+            function(result) {
+              console.log('result '+ result);
+              res.send({id: result.insertId, hub_unique_code: projectCode});
+            }, function(err) {
+                console.log(err)
+              res.status(500).send({error: err.code});
+            });
+        
+      } else {
+          console.log(err);
+          res.status(500).send({error: 'problem with the uploaded image, please try again'});
+        fs.unlink(req.file.path);
+      }
+    });
+    
+  } else {
+      hubProjectDB.editHubProject(body.name , body.description, filename, projectCode,body.url_name,body.external_sign_up).then(
+        function(result) {
+          console.log(result)
+          res.send({id: result.insertId, hub_unique_code: projectCode});
+        }, function(err) {
+              console.log(err);
+              res.status(500).send({error: err.code});
+        });
+  }
+});
+
   router.post('/addSubprojectItems', function(req, res, next) {
 
     var hub_code = req.body.hub_unique_code;

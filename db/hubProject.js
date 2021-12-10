@@ -18,6 +18,19 @@ exports.addHubProject = function(name, userID, desc, picID, uniqueCode, url_name
     });
   };
 
+  exports.editHubProject = function(name, desc, picID, uniqueCode, url_name,external_sign_up) {
+    return new Promise(function(resolve, reject) {
+      var connection = db.get();
+      connection.queryAsync('update hub_projects set name=? , description=?, cover_pic=?, url_name=?, external_sign_up=? where hub_unique_code=?',
+        [name, desc, picID,url_name,external_sign_up,uniqueCode]).then(
+        function(result) {
+          resolve(result);
+        }).catch(function(err) {
+        reject(err);
+      });
+    });
+  };
+
   exports.publish = function(hub_unique_code) {
     return new Promise(function(resolve, error) {
       var connection = db.get();
@@ -37,6 +50,19 @@ exports.getHubFromCode = function(hubUniqueCode) {
       var connection = db.get();
       connection.queryAsync('SELECT * from hub_projects WHERE hub_unique_code=?',
         [hubUniqueCode]).then(
+        function(data) {
+          resolve(data);
+        }, function(err) {
+          error(err);
+        });
+    });
+  };
+
+  exports.getHubFromURL = function(hubURL) {
+    return new Promise(function(resolve, error) {
+      var connection = db.get();
+      connection.queryAsync('SELECT * from hub_projects WHERE url_name=?',
+        [hubURL]).then(
         function(data) {
           resolve(data);
         }, function(err) {
