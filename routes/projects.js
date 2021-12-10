@@ -774,10 +774,24 @@ router.get('/getProjectPic/:code', function(req, res, next) {
 });
 
 router.get('/getHubInfo/:hub_code', function(req, res, next) {
-  var getProject = projectDB.getHubFromCode(req.params.hub_code);
-  getProject.then(function(project) {
-      if (project.length > 0) {
-          res.send(project)
+  var getProject = hubProjectDB.getHubFromCode(req.params.hub_code);
+  getProject.then(function(hub) {
+      if (hub.length > 0) {
+          res.send(hub)
+      } else {
+          res.status(500).send({error: 'Hub not found'});
+      }
+  }).catch(function(error) {
+      res.status(500).send({error: error.code || 'Hub not found'});
+  });
+
+});
+
+router.get('/getHubInfoURL/:hub_url', function(req, res, next) {
+  var getProject = hubProjectDB.getHubFromURL(req.params.hub_url);
+  getProject.then(function(hub) {
+      if (hub.length > 0) {
+          res.send(hub)
       } else {
           res.status(500).send({error: 'Hub not found'});
       }

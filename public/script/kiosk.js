@@ -1989,7 +1989,7 @@ module.controller('resultsHubController',
         $scope.map_patterns_projects = {}
 
         //STEP 1: get hub information        
-        $http.get('/api/project/getHubInfo/' + $stateParams.hub_code).then(function(hub_data) {
+        $http.get('/api/project/getHubInfoURL/' + $stateParams.hub_code).then(function(hub_data) {
 
             $scope.hub_data = hub_data.data[0]; //all the hub data
             //get the labels we do the maps from the hub:
@@ -3088,7 +3088,7 @@ module.controller('hubProjectController', ['$window','$scope','$location','$stat
         }
 
         //start: get hub information:
-        $http.get('/api/project/getHubInfo/' + $stateParams.hub_code).then(function(hub_data) {
+        $http.get('/api/project/getHubInfoURL/' + $stateParams.hub_code).then(function(hub_data) {
 
             $scope.hub_data = hub_data.data[0];
             $scope.hub_title = $scope.hub_data.name;

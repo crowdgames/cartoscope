@@ -420,13 +420,13 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
           });
 
 
-          if ($scope.project.hasOwnProperty('scistarter_link')){
+          if ($scope.project.hasOwnProperty('scistarter_link') && $scope.project.scistarter_link ){
               $scope.has_scistarter = true;
           }
           if ($scope.project.is_inaturalist) {
               $scope.project.is_inaturalist = true;
           }
-          if ($scope.project.hasOwnProperty("external_sign_up")){
+          if ($scope.project.hasOwnProperty("external_sign_up") && $scope.project.external_sign_up){
                 $scope.has_external_signup = true;
           }
 
@@ -779,6 +779,57 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
       }
     }
   });
+
+  $stateProvider.state({
+    name: 'root.hubEdit',
+    url: '/hub/edit/:hubCode',
+    templateUrl: 'templates/userProfile/hubEditTemplate.html',
+    params: {
+      hub: null
+    },
+    controller: 'hubEditController',
+    abstract: true,
+    resolve: {
+      hub: ['$stateParams', '$q', '$http', function($stateParams, $q, $http) {
+
+        return $q(function(resolve, reject) {
+          if ($stateParams.hub && $stateParams.hub.hub_unique_code) {
+            resolve($stateParams.hub);
+          } else {
+            $http.get('/api/projects/getHubInfo/' + $stateParams.hub.hub_unique_code).then(function(data) {
+              resolve(data.data);
+            }).catch(function(error) {
+              reject('server error');
+            });
+          }
+        });
+      }]
+    }
+  });
+
+
+  $stateProvider.state({
+    name: 'root.hubEdit.step1',
+    url: '/hubStep1',
+    views: {
+      'createProjChildView': {
+        templateUrl: 'templates/userProfile/hubProjectCreation/step1.html',
+        controller: 'hubStepOneEditController'
+      }
+    }
+  });
+
+  $stateProvider.state({
+    name: 'root.hubEdit.step2',
+    url: '/hubStep2',
+    views: {
+      'createProjChildView': {
+        templateUrl: 'templates/userProfile/hubProjectCreation/step2.html',
+        controller: 'hubStepTwoEditController'
+      }
+    }
+  });
+
   
 
 
@@ -2285,7 +2336,7 @@ module.controller('hubsPageController', ['$scope', 'userData', 'hubs', '$timeout
 
     //Edit Hubs
     $scope.goToHubEdit = function(hub) {
-      $state.go('root.hubProjectEdit.step1', {hub: hub, id: hub.id});
+      $state.go('root.hubEdit.step1', {hub: hub});
     };
 
 
@@ -2354,9 +2405,6 @@ module.controller('hubProjectCreationController', ['$scope', '$http', '$state', 
       return $scope.hub.can_be_published  ;
     };
 
-    $scope.verifyCanImportData = function() {
-      return $scope.project.id && $scope.project.templateSaved;
-    };
 
     $scope.openPublishPopup = function() {
       if ($scope.verifyCanPublish()) {
@@ -2403,8 +2451,6 @@ module.controller('hubStepOneController', ['$scope', '$state', '$http', 'swalSer
     });
 
     $scope.validate = function() {
-
-
       if (!$scope.hub.name || !$scope.hub.description || !$scope.hub.url_name) {
         $scope.showErr = true;
         swalService.showErrorMsg('Please enter a name, a url name and description for the  hub project.');
@@ -2421,8 +2467,10 @@ module.controller('hubStepOneController', ['$scope', '$state', '$http', 'swalSer
       }
     };
 
+    
+
     $scope.createHubProject = function() {
-      if ($scope.hub.id) {
+      if ($scope.hub.id ) {
         $scope.$emit('moveNext');
       } else {
         var fd = new FormData();
@@ -2436,8 +2484,8 @@ module.controller('hubStepOneController', ['$scope', '$state', '$http', 'swalSer
               fd.append('external_sign_up', $scope.hub.external_sign_up);
           }
 
-
-          $http.post('/api/hub/add', fd, {
+          var link = '/api/hub/add'
+          $http.post(link, fd, {
           transformRequest: angular.identity,
           headers: {'Content-Type': undefined}
         }).then(function(response) {
@@ -2585,7 +2633,287 @@ module.controller('hubStepOneController', ['$scope', '$state', '$http', 'swalSer
   }]);
 
 
+  module.controller('hubEditController', ['$scope', '$http', '$state','$timeout', 'swalService', 'hub',
+  function($scope, $http, $state,$timeout, swalService, hub) {
+    $scope.hub = hub;
 
+    if (!$scope.hub.editing) {
+      $scope.hub.editing = true;
+    }
+
+    $scope.goTo = function(to) {
+      if ($scope.hub.id) {
+        $state.go(to);
+      }
+    };
+
+    $scope.isActive = function(stateName) {
+      return $state.current && $state.current.name == stateName;
+    };
+
+    $scope.getNextText = function() {
+      return 'Save';
+    };
+    $scope.goNext = function() {
+
+      if ($state.current && $state.current.name == 'root.hubEdit.step2') {
+        $scope.openPublishPopup();
+      } else {
+        $scope.$broadcast('validate');
+      }
+    };
+
+    $scope.$on('HubMoveNext', function(e, d) {
+      var curr = $state.current.name;
+      console.log(curr)
+      var stateMap = {
+        'root.hubEdit.step1': 'root.hubEdit.step2',
+      };
+      try {
+        $state.go(stateMap[curr], {hub: $scope.hub});
+      }
+      catch (e) {
+        console.log(e)
+
+      }
+    });
+    
+    $scope.verifyCanPublish = function() {
+      return $scope.hub.can_be_published  ;
+    };
+
+
+    $scope.openPublishPopup = function() {
+      if ($scope.verifyCanPublish()) {
+        $('#publishPopup').modal('show');
+      } else {
+        swalService.showErrorMsg('Please make sure you\'ve filled up the required details before you try to publish.');
+      }
+    };
+
+    $scope.publish = function() {
+      if ($scope.hub.hub_unique_code) {
+        $http.post('/api/hub/publish', {hub_unique_code: $scope.hub.hub_unique_code}).then(function(data) {
+          $scope.showPublish = false;
+          $('#publishPopup').modal('hide');
+            $timeout( function(){
+                $state.go('root.hubs');
+            }, 1000 );
+
+        }, function(response) {
+          var msg = response.data.error || 'Couldn\'t publish your hub, please try again';
+          swalService.showErrorMsg(msg);
+          $('#publishPopup').modal('hide');
+        });
+      }
+    };
+
+  }]);
+
+
+  module.controller('hubStepTwoEditController', ['$scope', '$state', '$http', 'swalService', 'hub', function($scope, $state, $http, swalService, hub) {
+
+
+    $scope.hub = hub;
+
+    $scope.$on('validate', function(e) {
+      $scope.validate();
+    });
+  
+    $scope.validate = function() {
+      $scope.$emit('HubMoveNext');
+    };
+
+    $scope.subproject_list = [];
+    $scope.hub_subproject_items = []
+    $scope.options_dictionary = {}
+  
+  
+      $scope.add_tutorial_text = "Update Hub Subprojects";
+
+      $scope.visitSubProjectPage = function(subproject_id){
+        var project_code = $scope.options_dictionary[parseInt(subproject_id)].unique_code
+        var link = "kioskProject.html#/kioskStart/" + project_code;
+        window.open(link); 
+      }
+        
+      //Add subproject info
+      $scope.addSubProjectItem = function(){
+          $scope.hub_subproject_items.push({
+            subproject_id: null,
+            category:null
+          });
+          console.log($scope.hub_subproject_items);
+      };
+  
+      $scope.deleteSubProjectItem = function(index) {
+          $scope.hub_subproject_items.splice(index, 1);
+      };
+  
+      //get the list of subprojects to choose from
+      $scope.fetchSubProjectList = function(){
+              $http.get('/api/user/projects' ).then(function (sdata) {
+                $scope.subproject_list  = sdata.data;
+                $scope.subproject_list.forEach(function(item){
+                  var templ  = JSON.parse(item.template);
+                  delete item.template;
+                  item.template = templ;
+                  $scope.options_dictionary[item.id] = item;
+                })
+              });
+      };
+  
+      //TODO: Store project codes
+      $scope.setSubProjectItems = function(){
+
+        if ($scope.hub_subproject_items.length < 2){
+          swalService.showErrorMsg("You will need at least two subprojects to make a hub!");
+        } else {
+          var projects_to_send = [];
+          var categories_to_send = [];
+          $scope.hub_subproject_items.forEach(function(item){
+            projects_to_send.push($scope.options_dictionary[parseInt(item.subproject_id)])
+            if (item.category){
+              categories_to_send.push(item.category)
+            }
+          })  
+          if (categories_to_send.length != $scope.hub_subproject_items.length){
+            swalService.showErrorMsg("You have to select one category for each subproject.");
+          } else {
+            $http.post('/api/hub/addSubprojectItems',
+            {
+                'hub_unique_code': $scope.hub.hub_unique_code,
+                'subproject_items': projects_to_send,
+                'categories_items': categories_to_send
+            }).then(function () {
+
+            //send message we good
+            swal({
+                title: 'Success!',
+                confirmButtonColor: '#9cdc1f',
+                allowOutsideClick: true,
+                text: 'Subprojects added!',
+                type: 'success'
+            });
+            $scope.hub.can_be_published = true;
+            
+
+        }, function (err) {
+            swalService.showErrorMsg(err);
+        })
+    }
+          }
+            
+
+      };
+      $scope.fetchSubProjectList();
+      //we are in editing, we already have info, let's populate the fields:
+      var existingCodes = $scope.hub.project_codes.split(",");
+      var existingCategories = $scope.hub.results_labels.split(",");
+      console.log(existingCodes)
+      for (var i = 0; i < existingCodes.length; i++) {
+        $scope.hub_subproject_items.push({
+          subproject_id: existingCodes[i],
+          category:existingCategories[i]
+        });
+      }
+      console.log($scope.hub_subproject_items)
+
+  
+  }]);
+
+  module.controller('hubStepOneEditController', ['$scope', '$state', '$http', 'swalService', 'hub',
+  function($scope, $state, $http, swalService, hub) {
+
+    $scope.hub = hub;
+    console.log(hub);
+    var invalid_characters = ['\\','/',':','?','\"','<','>','|'];
+    $scope.has_external_signup = false;
+
+    if ($scope.hub.hasOwnProperty("external_sign_up") && $scope.hub.external_sign_up ){
+        $scope.has_external_signup = true;
+    }
+
+    $scope.$on('validate', function(e) {
+      $scope.validate();
+    });
+
+    $scope.validate = function() {
+      if (!$scope.hub.name || !$scope.hub.description || !$scope.hub.url_name) {
+        $scope.showErr = true;
+        swalService.showErrorMsg('Please enter a name, a url name and description for the  hub project.');
+      } else if (  invalid_characters.some(el => $scope.hub.url_name.includes(el))) {
+          $scope.showErr = true;
+          swalService.showErrorMsg('URL shortcut cannot contain the following characters: \n' + invalid_characters.join(','));
+      } else if ($scope.has_external_signup && ($scope.hub.external_sign_up === "" || !$scope.hub.external_sign_up)){
+          $scope.showErr = true;
+          swalService.showErrorMsg('Please enter valid URL for external signup form.');
+      }
+
+      else {
+        $scope.createHubProject();
+      }
+    };
+
+    
+
+    $scope.createHubProject = function() {
+      
+        var fd = new FormData();
+        if ($scope.coverPic) {
+          fd.append('file', $scope.coverPic);
+        }
+        fd.append('hub_unique_code', $scope.hub.hub_unique_code);
+        fd.append('name', $scope.hub.name);
+        fd.append('description', $scope.hub.description);
+        fd.append('url_name', $scope.hub.url_name);
+          if ($scope.has_external_signup){
+              fd.append('external_sign_up', $scope.hub.external_sign_up);
+          }
+
+          var link = '/api/hub/edit' 
+          $http.post(link, fd, {
+          transformRequest: angular.identity,
+          headers: {'Content-Type': undefined}
+        }).then(function(response) {
+          //console.log($scope.hub)
+          $scope.$emit('HubMoveNext');
+        }, function(response) {
+          var msg = response.data.error || 'Couldn\'t create the hub project';
+          //if we got a duplicate entry, it's because of the short name
+          if (msg == "ER_DUP_ENTRY") {
+            msg = 'A project with the same url name already exists!'
+          }
+          console.log(response)
+          swalService.showErrorMsg(msg);
+        });
+      
+    };
+
+    var handleImage = function(f) {
+      var canvas = document.getElementById('imageCanvas');
+      var ctx = canvas.getContext('2d');
+      var reader = new FileReader();
+      reader.onload = function(event) {
+        var img = new Image();
+        img.onload = function() {
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx.drawImage(img, 0, 0);
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(f);
+    };
+
+    $scope.$watch('coverPic', function() {
+      if ($scope.coverPic) {
+        handleImage($scope.coverPic);
+      }
+    });
+
+  }]);
+  
 module.controller('userProfileController', ['$scope','$http', '$state', 'projectCreators', function($scope, $http, $state, projectCreators) {
     $scope.projects = {};
 

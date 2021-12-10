@@ -447,7 +447,7 @@ router.get('/hg_raw_data/csv', function(req, res, next) {
 router.get('/hub_data/csv/:hub_code', function(req, res, next) {
 
     
-    hubProjectDB.getHubFromCode(req.params.hub_code).then(function(hub_results){
+    hubProjectDB.getHubFromURL(req.params.hub_code).then(function(hub_results){
         var hub_ids = hub_results[0].project_codes.split(',');
         //TODO: WE ARE DEFAULTING TO ONE DATASET ONLY. CHANGE IN FUTURE
         var hub_dataset_id = hub_results[0].dataset_ids.split(',')[0];
@@ -569,9 +569,8 @@ router.get('/cairns_raw_data/csv', function(req, res, next) {
 //Get raw data from all subprojects in a hub
 router.get('/hub_data/:hub_code', function(req, res, next) {
 
-
     //first get the hub info
-    hubProjectDB.getHubFromCode(req.params.hub_code).then(function(hub_results){
+    hubProjectDB.getHubFromURL(req.params.hub_code).then(function(hub_results){
         var hub_ids = hub_results[0].project_codes.split(',');
         //TODO: Right now we default everything to the first dataset id. We need to figure it out in the future
         var hub_dataset_id = hub_results[0].dataset_ids.split(',')[0];
