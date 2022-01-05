@@ -16,6 +16,7 @@ var spawn = require('child_process').spawn;
 var projectDB = require('../db/project');
 var anonUserDB = require('../db/anonUser');
 var userDB = require('../db/user');
+var hubProjectDB = require('../db/hubProject');
 
 var mmm = require('mmmagic');
 var Magic = mmm.Magic;
@@ -745,6 +746,37 @@ router.get('/getProjectPic/:code', function(req, res, next) {
         res.status(500).send({error: error.code || 'Project pic not found'});
     });
 
+
+});
+
+
+
+
+router.get('/getHubInfo/:hub_code', function(req, res, next) {
+  var getProject = hubProjectDB.getHubFromCode(req.params.hub_code);
+  getProject.then(function(hub) {
+      if (hub.length > 0) {
+          res.send(hub)
+      } else {
+          res.status(500).send({error: 'Hub not found'});
+      }
+  }).catch(function(error) {
+      res.status(500).send({error: error.code || 'Hub not found'});
+  });
+
+});
+
+router.get('/getHubInfoURL/:hub_url', function(req, res, next) {
+  var getProject = hubProjectDB.getHubFromURL(req.params.hub_url);
+  getProject.then(function(hub) {
+      if (hub.length > 0) {
+          res.send(hub)
+      } else {
+          res.status(500).send({error: 'Hub not found'});
+      }
+  }).catch(function(error) {
+      res.status(500).send({error: error.code || 'Hub not found'});
+  });
 
 });
 

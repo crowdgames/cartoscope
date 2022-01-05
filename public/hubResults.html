@@ -1,0 +1,94 @@
+<div class="container" ng-controller="resultsHubController">
+    <center>
+
+
+        <div class="row">
+            <h1 style="color: black">Results & Contributions</h1>
+        </div>
+
+        <div class="row" ng-show="successProject">
+            <p> Below you can see how other people have contributed to the project. You can see results
+                by answer by clicking on the buttons below. Zoom in for more detailed results. You can also click on any marker to get more information on the corresponding image.
+            </p>
+        </div>
+
+        <div class="row" >
+
+            <!--</div>-->
+            <div id="map_canvas" ng-if="successProject">
+
+                <ui-gmap-google-map center="map1.center" zoom="map1.zoom" draggable="true" options="options" bounds="map1.bounds">
+                    <!--<ui-gmap-markers  ng-hide="showMarkers" models="workerResultsTransformed" coords="'self'" icon="'icon'" events="map1.markersEvents">-->
+
+                    <!--<ui-gmap-windows show="'showWindow'" closeClick="'closeClick'" templateUrl="'templateUrl'" templateParameter="'templateParameter'" ng-cloak>-->
+                    <!--</ui-gmap-windows>-->
+                    <!--</ui-gmap-markers>-->
+
+
+                    <ui-gmap-markers models="hubMarkers" coords="'self'" icon="'icon'" events="map1.markersEvents">
+
+                        <ui-gmap-windows show="'showWindow'" closeClick="'closeClick'" templateUrl="'templateUrl'" templateParameter="'templateParameter'" ng-cloak>
+                        </ui-gmap-windows>
+                    </ui-gmap-markers>
+
+                </ui-gmap-google-map>
+            </div>
+        </div>
+
+
+
+        <div ng-show="showMap" class="row">
+
+            <h3> Use the buttons below to pick a pattern and explore where it has been identified so far!  </h3>
+
+            <button class="btn-lg  " placeholder="Option" ng-repeat="option in hub_positives_buttons track by $index "
+
+                    style=" margin-right:10px;
+                    background-color: {{option.active ? option.color : 'white'}};
+                    border-color: {{hex_array[$index]}};
+                   border:2px solid {{hex_array[$index]}}; "
+                    ng-click="update_hub_Markers(option.pattern,$index)">{{option.pattern}}</button>
+        </div>
+
+        <br>
+
+
+
+
+
+        <div class="row" ng-hide="successProject">
+                <h2>Results loading...</h2>
+        </div>
+
+        <div class="row" ng-if="external_signup">
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+                <h3>Would you like to participate in other projects like this or learn more about environmental issues along the Gulf or Mexico?
+                    Fill in this information to sign up. Make sure to hit the blue Submit button to complete the sign up!</h3>
+                <iframe id="iframe_div2"
+                            ng-src="{{getExternalFrame(external_signup)}}"
+                        style="width: 100%;height:600px" >
+                </iframe>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+
+
+
+        <div class="row">
+                <h3>Click below to export results:</h3>
+                <div ng-show="successProject">
+                    <button class="submit-button" ng-click="downloadCSVHub()" style="margin-top: 20px;
+            border-radius: 8px;
+            background-color: #9cdc1f;
+            color: #000;
+            font-size: 18px;
+            text-align: center;
+            outline: none;
+            border: none;
+            padding: 10px 25px;">Download Results</button>
+                </div>
+            </div>
+    </center>
+
+</div>

@@ -243,6 +243,7 @@ module.config(function($stateProvider, $urlRouterProvider, $cookiesProvider) {
         controller: 'landlossResultsController'
     });
 
+
     $stateProvider.state({
         name: 'hgProject',
         url: '/hg_landloss',
@@ -262,6 +263,47 @@ module.config(function($stateProvider, $urlRouterProvider, $cookiesProvider) {
         },
         //templateUrl: 'templates/kiosk/appDefault.html',
         controller: 'landlossController'
+    });
+
+    $stateProvider.state({
+        name: 'hubProject',
+        url: '/hubPage/:hub_code',
+        params: {
+            hub_project: true
+        },
+        views: {
+            nav: {
+                templateUrl: './navbar.html'
+            },
+            content: {
+                templateUrl: 'templates/kiosk/appHubProject.html',
+            },
+            footer: {
+                templateUrl: '../footer.html'
+            }
+        },
+        controller: 'hubProjectController'
+    });
+
+
+    $stateProvider.state({
+        name: 'resultsHubProject',
+        url: '/resultsHub/:hub_code',
+        params: {
+            hub_project: true
+        },
+        views: {
+            nav: {
+                templateUrl: './navbar.html'
+            },
+            content: {
+                templateUrl: 'hubResults.html'
+            },
+            footer: {
+                templateUrl: '../footer.html'
+            }
+        },
+        controller: 'resultsHubController'
     });
 
 
@@ -1809,6 +1851,186 @@ module.controller('landlossResultsController',
     });
 
 
+module.controller('resultsHubController',
+    function($scope, $http, $window,$stateParams,$timeout,$location,$sce,NgMap) {
+
+
+        //change this if we want gridMap instead of heatMap
+        $scope.gridMap = false;
+
+        $scope.successProject = false;
+        $scope.showMap = false;
+
+        $window.document.title ="Results";
+
+        $scope.getExternalFrame = function(link){
+            return  $sce.trustAsResourceUrl(link)
+        };
+
+
+        $scope.point_array =  ['/images/markers/marker_green2.svg',
+            '/images/markers/marker_yellow2.svg',
+            '/images/markers/marker_orange2.svg',
+            '/images/markers/marker_red2.svg',
+            '/images/markers/marker_blue2.svg',
+            '/images/markers/marker_purple2.svg',
+            '/images/markers/marker_grey.svg'];
+
+        $scope.hex_array = ['#9cdc1f',
+            '#FFF200',
+            '#F7941D',
+            '#ff0000',
+            '#0072BC',
+            '#8a2be2'
+        ];
+
+        $scope.icon_array =  ['/images/dots/cs_green_dot.svg',
+            '/images/dots/cs_yellow_dot.svg',
+            '/images/dots/cs_orange_dot.svg',
+            '/images/dots/cs_red_dot.svg',
+            '/images/dots/cs_blue_dot.svg',
+            '/images/dots/cs_purple_dot.svg'];
+
+
+
+        //CSV Download Project
+        //TODO: CHANGE
+        $scope.downloadCSVHub = function(){
+            //Download the results
+            location.href = '/api/results/hub_data/csv/' + $stateParams.hub_code
+        };
+
+
+
+        $scope.InitMap = InitMapHub;
+        function InitMapHub (zoom){
+
+            $scope.update_hub_Markers($scope.hub_positives[0],0)
+
+            //generate map
+            //TODO: check back for this center, it might not be adjusted if we make projects in other locations
+            $scope.map1 = {
+                center: {
+                    latitude: parseFloat(29.905498110016907),
+                    longitude: parseFloat(-90.26941133000318)
+                },
+                streetViewControl: false,
+                zoom: zoom,
+                markers: $scope.hubMarkers,
+                markersEvents: {
+                    click: function (marker, eventName, model) {
+                        $scope.map1.window.model = model;
+                        $scope.map1.window.show = true;
+                    }
+                },
+                window: {
+                    marker: {},
+                    show: false,
+                    closeClick: function () {
+                        this.show = false;
+                    },
+                    options: {}
+                }
+            };
+            $scope.successProject = true;
+
+        };
+
+
+        $scope.update_hub_Markers = function (pattern,color_index){
+            $scope.hubMarkers = [];
+            //for every item in the original data, if majority matches picked pattern then add to map:
+            var pointId = 0;
+
+            //change button colors here
+            $scope.hub_positives_buttons[$scope.active_pattern].active = false;
+            $scope.active_pattern = color_index;
+            $scope.hub_positives_buttons[$scope.active_pattern].active = true;
+
+
+            var project_key = $scope.map_patterns_projects[pattern];
+                Object.keys($scope.raw_data).forEach(function (key) {
+
+                    var item = $scope.raw_data[key][project_key];
+                    if (item){
+                        var point_marker = new google.maps.Marker({
+                            latitude: parseFloat(item.lat) ,
+                            longitude: parseFloat(item.lon) ,
+                            title: item.image_url,
+                            id: pointId,
+                            icon: $scope.icon_array[color_index]
+                        });
+    
+    
+                        var image_path = 'api/tasks/getImageFree/' + item.dataset_id + '/' + key  + '.jpg';
+    
+                        point_marker.templateUrl = 'infowindow_templateLandloss.html';
+                        point_marker.templateParameter = {
+                            id:   pointId,
+                            image: image_path,
+                            image_url: item.image_url,
+                            pattern: pattern,
+                            majority_percentage: Math.round(100*item.majority_count/item.total) + "%"
+                        };
+    
+                        if (item.majority === pattern){
+                            $scope.hubMarkers.push(point_marker);
+                        }
+                        pointId = pointId + 1;
+                    }
+
+                });
+
+        };
+        //Options we want to focus on:
+        $scope.hub_positives_buttons = [];
+        $scope.button_pattern_selected = [];
+        $scope.hubMarkers = [];
+        $scope.map_patterns_projects = {}
+
+        //STEP 1: get hub information        
+        $http.get('/api/project/getHubInfoURL/' + $stateParams.hub_code).then(function(hub_data) {
+
+            $scope.hub_data = hub_data.data[0]; //all the hub data
+            //get the labels we do the maps from the hub:
+            $scope.hub_description = hub_data.description;
+            $scope.hub_title = hub_data.name;
+            $scope.hub_positives = $scope.hub_data.results_labels.split(',');
+            $scope.hub_projects = $scope.hub_data.project_codes.split(',');
+            $scope.active_pattern = 0;
+
+            //make the patterns
+            for (var i = 0; i < $scope.hub_positives.length; i++) {
+                $scope.hub_positives_buttons.push(
+                    {
+                        "pattern":$scope.hub_positives[i],
+                        "color": $scope.hex_array[i],
+                        "active": i == $scope.active_pattern ? true : false
+                }   
+                )
+                $scope.map_patterns_projects[$scope.hub_positives[i]] = parseInt($scope.hub_projects[i])
+                $scope.button_pattern_selected.push('#FFFFFF')
+            }            
+            //do we have external sign up for the hub?
+            $scope.external_signup = $scope.hub_data.external_sign_up;
+
+            //STEP 2: get data for the projects in the hub
+            $http.get('/api/results/hub_data/' + $stateParams.hub_code).then(function(pdata) {
+
+                $scope.raw_data = pdata.data; //all the data    
+                $scope.showMap = true;
+                $scope.InitMap(7);
+    
+            }, function (err) {
+                console.log("Could not fetch subprojects data")
+    
+            });
+
+        }, function (err) {
+            console.log("Could not fetch hub information.")
+
+        });
+    });
 
 module.controller('appController', ['$scope', '$location', function($scope, $location) {
     $scope.params = $location.search();
@@ -2770,15 +2992,143 @@ module.controller('landlossController', ['$window','$scope','$location','$state'
     }]);
 
 
+module.controller('hubProjectController', ['$window','$scope','$location','$state','$stateParams','$http', '$cookies', '$sce',
+    function($window,$scope,$location,$state,$stateParams,$http, $cookies, $sce ){
+        $window.document.title = "Cartoscope";
+
+        $scope.project_title = "";
+        $scope.project_desc = "";
+        $scope.showSource = false;
+        $scope.showCC = false;
+        $scope.proj_data = {};
+        $scope.showConsentMturk = false;
+        $scope.isMturk = false;
+        $scope.hit_id = "kiosk";
+
+        $scope.show_start_button = false;
+
+
+        if ($location.search().hasOwnProperty("trialId")){
+            $scope.isMturk = true
+            $scope.hit_id = $location.search().trialId;
+        }
+
+        $scope.acceptConsent = function() {
+            $scope.showConsentMturk = false;
+            //TODO: We are hiding the navbar because we only want them to do the task
+            //document.getElementById("navB").style.display = "block";
+        };
+
+        //TODO: what about video
+        $scope.showVideo = false;
+        //$scope.video_url = $sce.trustAsResourceUrl('https://www.youtube.com/embed/yCx0H7bBxPk');
+        //$scope.cover_pic_path = 'api/project/getProjectPic/UOYIiFeapnyI';
+
+        //if mturk, first show consent!
+        if ($scope.isMturk) {
+            document.getElementById("navB").style.display = "none";
+            $scope.showConsentMturk = true;
+        }
+
+
+
+        //return random integer [min,max]
+        function randomInt(min,max){
+            return (Math.floor(Math.random() * (max - min + 1) ) + min);
+        }
+
+        $scope.showTerms = function(){
+            $('#termsModal2').appendTo("body").modal('show');
+        }
+
+
+        $scope.assignProject = function() {
+            //console.log($stateParams);
+
+            $scope.params = $location.search();
+
+            var subprojects = $scope.hub_subprojects;
+            var pick_d = randomInt(0,subprojects.length - 1); //pick dataset [start,end]
+            var project_id = parseInt(subprojects[pick_d]);
+            console.log(project_id)
+
+            //check for cookie and set it if it doesnt exist
+            if(!$cookies.get('kiosk')){
+                $cookies.put('kiosk', lil.uuid());
+            }
+
+            $http.get('/api/tasks/getInfoFreeId/' + project_id).then(function(pdata) {
+
+                $scope.proj_data = pdata.data[0];
+                var project_code = $scope.proj_data.unique_code;
+                //getProjects Code dynamically
+                $http.get('/api/anon/startKioskProject/' + project_code).then(function(e, data) {
+                    //console.log('e', e, data);
+                    // $scope.params.project = e.data.projectID;
+                    $scope.workerId = e.data.workerID;
+                    $scope.project = e.data.project;
+                    var type= JSON.parse($scope.proj_data.template);
+                    $scope.projectType = type.selectedTaskType;
+
+                    $http.get('/api/anon/consentKiosk/' + project_code + '?' + 'workerId='+ $scope.workerId+'&cookie='+$cookies.get('kiosk')+'&hitID='+ $scope.hit_id)
+                        .then(function(e, data) {
+                            //console.log('data ', e.data.workerId);
+                            $state.go('examples', {pCode: project_code, workerId: e.data.workerId, projectType: $scope.projectType, kioskId:1, hitId: $scope.hit_id});
+                            //window.location.replace('/api/anon/startKiosk/' + $scope.params.project+ '?workerId='+e.data.workerId+'&kioskId=1');
+                        }, function(err) {
+                            alert('error'+ err);
+                        });
+
+                }, function(err) {
+                    console.log('error', err);
+                });
+            })
+
+
+        }
+
+        //start: get hub information:
+        $http.get('/api/project/getHubInfoURL/' + $stateParams.hub_code).then(function(hub_data) {
+
+            $scope.hub_data = hub_data.data[0];
+            $scope.hub_title = $scope.hub_data.name;
+            $scope.hub_description = $scope.hub_data.description;
+            $scope.hub_subprojects = $scope.hub_data.project_codes.split(",");
+            $scope.show_start_button = true;
+            $scope.cover_pic = 'default'; //TODO: this should come from hub
+
+            //Get the creator name from the collaborators:
+            //get collaborator info from db, using the first available subproject
+            $http.get('/api/user/getAboutInfoCreator/' + $scope.hub_subprojects[0]).then(function(cdata){
+            if (cdata.data && cdata.data.length >0){
+                $scope.creator = cdata.data[0].name;
+                $scope.showCC = true;
+            }
+        }).catch(function(error){
+            console.log("Could not get collaborator name")
+        });
+
+
+        }, function(err){
+            console.log('error', err);
+        })
+
+
+
+
+
+    }]);
 
 module.controller('navController', ['$scope','$window','$location', '$stateParams', function($scope,$window, $location,$stateParams) {
 
      $scope.setPage = setPage;
 
      $scope.navcode = $stateParams.pCode;
+     $scope.hub_code = $stateParams.hub_code;
 
 
      $scope.hg_landloss = $stateParams.landloss;
+     $scope.hub_project = $stateParams.hub_project;
 
 
      if ($scope.navcode != undefined ){
@@ -2802,6 +3152,10 @@ module.controller('navController', ['$scope','$window','$location', '$stateParam
      if ($scope.hg_landloss){
          $scope.home_link = "kioskProject.html#/hg_landloss"
          $scope.results_link = "#/resultsHG";
+     }
+     if ($scope.hub_project){
+        $scope.home_link = "kioskProject.html#/hubPage/" + $scope.hub_code;
+        $scope.results_link = "#/resultsHub/" + $scope.hub_code;
      }
 
      $scope.showTerms = function(){

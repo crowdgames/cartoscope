@@ -133,6 +133,21 @@ router.get('/getInfoFree/:code', function(req, res, next) {
 
 });
 
+
+router.get('/getInfoFreeId/:id', function(req, res, next) {
+  var getProject = projectDB.getProjectFromId(req.params.id);
+  getProject.then(function(project) {
+      if (project.length > 0) {
+          res.send(project)
+      } else {
+          res.status(500).send({error: 'Project not found'});
+      }
+  }).catch(function(error) {
+      res.status(500).send({error: error.code || 'Project not found'});
+  });
+
+});
+
 router.get('/getInfoId/:id', [filters.requireRegularLogin], function(req, res, next) {
   var getProject = projectDB.getProjectFromId(req.params.id);
   getProject.then(function(project) {
