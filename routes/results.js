@@ -732,18 +732,6 @@ router.get('/csv/:projectCode', function(req, res, next) {
             //array with results:
             var csv_results =[];
 
-
-            //Get file with renaming convensions from backend:
-            var renamed_csv_path = path.join(__dirname, 'public','/images/files/'+projectCode + '_renamed.csv');
-
-
-
-
-            //d3.csv('http://localhost:'+ CARTO_PORT+'/images/files/'+projectCode + '_renamed.csv', function(csv_data) {
-                checkRenameFileExists(renamed_csv_path, function(csv_data) {
-
-                console.log("After d3")
-
                 //get all the images from the dataset_id
                 projectDB.getDataSetNames2(datasetId).then(function(raw_im_list) {
 
@@ -759,18 +747,6 @@ router.get('/csv/:projectCode', function(req, res, next) {
                         var max_name = '';
                         var o_name = img;
 
-                        //if a renaming guide exists, rename appropriately:
-                        if (fs.existsSync(renamed_csv_path)) {
-                            console.log("File exists");
-                            //find image
-                            var rinfo = filterResponses(
-                                csv_data, {renamed_value: img + '.jpg' });
-                            var renamed = rinfo[0].image_name;
-                            //if renaming exists, rename it
-                            if (renamed) {
-                                o_name = renamed;
-                            }
-                        }
 
                         //Make object for image
                         var counters = {
@@ -821,10 +797,6 @@ router.get('/csv/:projectCode', function(req, res, next) {
                 }, function(err) {
                     res.status(400).send('results could not be generated!!!');
                 });
-            }, err => {
-                console.log(err);
-                res.status(400).send('Results could not be generated!!!');
-            });
         }, function(err) {
             res.status(400).send('Results could not be generated!!!');
         });
@@ -872,11 +844,6 @@ router.get('/csv_heatmap/:projectCode', function(req, res, next) {
             //array with results:
             var csv_results =[];
 
-
-            //Get file with renaming convensions from backend:
-            var renamed_csv_path = path.join(__dirname, 'public','/images/files/'+projectCode + '_renamed.csv');
-            d3.csv('http://localhost:'+ CARTO_PORT+'/images/files/'+projectCode + '_renamed.csv', function(csv_data) {
-
                 //get all the images from the dataset_id
                 projectDB.getDataSetNames2(datasetId).then(function(raw_im_list) {
                     //parse images
@@ -891,18 +858,6 @@ router.get('/csv_heatmap/:projectCode', function(req, res, next) {
                         var o_name = img;
                         var max_color = -1;
 
-                        //if a renaming guide exists, rename appropriately:
-                        if (fs.existsSync(renamed_csv_path)) {
-                            console.log("File exists");
-                            //find image
-                            var rinfo = filterResponses(
-                                csv_data, {renamed_value: img + '.jpg' });
-                            var renamed = rinfo[0].image_name;
-                            //if renaming exists, rename it
-                            if (renamed) {
-                                o_name = renamed;
-                            }
-                        }
 
                         //Make object for image
                         var counters = {
@@ -961,7 +916,6 @@ router.get('/csv_heatmap/:projectCode', function(req, res, next) {
                     console.log(err)
                     res.status(400).send(err);
                 });
-            });
         }, function(err) {
             console.log(err)
             res.status(400).send('Results could not be generated!!!');
