@@ -12,7 +12,8 @@ Vagrant.configure("2") do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
-  config.vm.box = "ubuntu/xenial64"
+  config.vm.box = "ubuntu/bionic64"
+  config.vm.hostname = "ubuntu"
   config.vm.provision :shell, path: "vagrant-files/vagrant-provision.sh"
 
   # Disable automatic box update checking. If you disable this, then
@@ -47,6 +48,15 @@ Vagrant.configure("2") do |config|
   # config.vm.synced_folder "../data", "/vagrant_data"
   config.vm.provider :virtualbox do |vm|
       vm.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate/vagrant", "1"]
+  end
+  # Provider for Docker
+  config.vm.provider :docker do |docker, override|
+    override.vm.box = nil
+    docker.image = "rofrano/vagrant-provider:ubuntu"
+    docker.remains_running = true
+    docker.has_ssh = true
+    docker.privileged = true
+    docker.volumes = ["/sys/fs/cgroup:/sys/fs/cgroup:ro"]
   end
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
