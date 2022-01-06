@@ -18,11 +18,15 @@ echo "== INSTALLING MAJOR PACKAGES =="
 
 export DEBIAN_FRONTEND=noninteractive
 
+sudo apt-get update
+sudo apt-get -y install software-properties-common
+sudo apt-get update
+
 sudo add-apt-repository ppa:deadsnakes/ppa
 sudo apt-get update
 
 sudo apt-get -y install \
-  python3.6 python-pip python3-pip \
+  python3.6 python3-pip \
   mysql-client mysql-server \
   nodejs npm \
   wget \

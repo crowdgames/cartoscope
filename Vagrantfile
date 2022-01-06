@@ -12,7 +12,7 @@ Vagrant.configure("2") do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
-  config.vm.box = "ubuntu/bionic64"
+  config.vm.box = "ubuntu/xenial64"
   config.vm.hostname = "ubuntu"
   config.vm.provision :shell, path: "vagrant-files/vagrant-provision.sh"
 
