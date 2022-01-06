@@ -4,7 +4,16 @@ Cartoscope is a platform for citizen science mapping. By sorting, labelling, and
 
 [Click here for the live website](https://cartosco.pe/#/home)
 
-# Installation instructions
+# Installation instructions M1 Macs
+
+ 1. Install [Docker](https://www.docker.com/)
+ 2. Install [Vagrant](https://www.vagrantup.com/downloads)
+ 3. Clone this repository (`git clone https://github.com/crowdgames/cartoscope.git`)
+ 4. Using the appropriate command line for your operating system, navigate to where you cloned the repository and run the command `sudo vagrant up --provider=docker; sudo vagrant ssh`. This will ssh you into the virtual machine that will host the website
+ 5. Run the command `./run.sh`
+ 6. Open localhost:8081 on a web browser
+
+# Installation instructions non M1 Macs
 
  1. Install [Virtualbox](https://www.virtualbox.org/)
  2. Install [Vagrant](https://www.vagrantup.com/downloads)
