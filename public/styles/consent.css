@@ -4,6 +4,7 @@ body {
 }
 .container {
   text-align: justify;
+  width: 100%;
 }
 .container .agree-btn-row {
   display: flex;
@@ -21,4 +22,10 @@ body {
   border: none;
   padding: 8px 22px;
   font-weight: bold;
+}
+
+@media (min-width: 768px) and (max-width: 979px){
+.container, .navbar-static-top .container, .navbar-fixed-top .container, .navbar-fixed-bottom .container {
+    width: 100%;
+}
 }
