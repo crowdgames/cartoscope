@@ -1,9 +1,9 @@
-<div class="container " ng-controller="kioskProjectController">
+<div class="container" ng-controller="kioskProjectController">
 
     <div ng-if="!showConsentMturk">
 
         <div class="row intro"  style="text-align: center">
-            <h1 class="col-sm-12 projectName" style="font-size: 36px;margin-top:50px;"><span style="font-size: 20px;">WELCOME TO</span></br>
+            <h1 class="col-sm-12 projectName" style="font-size: 36px;margin-top:50px;"><span style="font-size: 20px;"><b>WELCOME TO</b></span></br>
                 <b><span style="">{{project_title}}</span></b></h1>
         </div>
 
@@ -14,7 +14,7 @@
         <img ng-src="{{cover_pic_path}}" alt="project logo" style="width: 200px; height: auto"/>
     </div>
 
-        <div class="row"  style="text-align: left">
+        <div class="row"  style="text-align: center">
 
             <div class="col-sm-12 description" ng-bind-html="project_desc | textBreaks">
 
@@ -25,8 +25,8 @@
         </div>
 
         <div class="row">
-            <div class="col-sm-12" style="">
-                <center>
+            <div class="col-sm-12" style="text-align: center;">
+                <!-- <center> -->
                     <!--<p class="description " style="font-size: 22px; ">-->
                     <!--{{project_desc}}-->
                     <!--</p>-->
@@ -49,7 +49,7 @@
                     </div>
 
 
-                </center>
+                <!-- </center> -->
             </div>
         </div>
 
@@ -68,7 +68,7 @@
 
             <!--<iframe style="width:600px;height: 400px" ng-src="{{video_url  }}" ></iframe>-->
                 <div class=" video-container" >
-                    <iframe width="560" height="315" class="" ng-src="{{video_url  }}" allowfullscreen></iframe>
+                    <iframe width="800" height="400" class="" ng-src="{{video_url  }}" allowfullscreen></iframe>
                 </div>
                 <small>Watch video for more information</small>
             </div>
@@ -82,17 +82,18 @@
         </div>
 
         <div class="row" style="text-align: center;margin-bottom:20px;cursor: pointer;">
-            <a ng-click="showTerms()">
-                <img src="../../images/contribute_btn_on_started.png"
+            <p>Contributing is free and anonymous.</p>
+            <!-- <a ng-click="showTerms()"> -->
+                <button type="button" class="btn btn-lg btn-success btnGetStarted" ng-click="showTerms()">Get Started</button>
+                <!-- <img src="../../images/contribute_btn_on_started.png"
                      onmouseover="this.src='../../images/contribute_btn_hover_started.png'"
                      onmouseleave="this.src='../../images/contribute_btn_on_started.png'"
-                     class="contribute"/>
-            </a>
-            <br>
-            <small>Contributing is free and anonymous.</small>
+                     class="contribute"/> -->
+            <!-- </a> -->
+            
         </div>
         <div class="row">
-            <div style="text-align: center;margin: 1%;margin-top:2%;">
+            <div style="text-align: center;margin: 1%;margin-top:4%;">
                 <p>Cartoscope is open-source. Code available on:</p><a href="https://github.com/crowdgames/cartoscope-backend">
                     <img src="../../images/github-logo.png" alt="Github" style="width: 150px; height: 50px;"/>
                 </a>
