@@ -216,9 +216,15 @@ body {
     line-height: 2.5;
     background: #D8D3D6;
     width: 100%;
+    z-index:1000;
 }
 
 .menuItems{
     float: right;
     display: inline-flex;
+}
+
+.btnGetStarted{
+    width: 15em;
+    color: black;
 }
