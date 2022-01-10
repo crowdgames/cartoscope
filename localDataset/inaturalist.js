@@ -3,13 +3,10 @@
 const readline = require('readline');
 const fs = require('fs');
 
-const archiver = require('archiver');
 const axios = require('axios');
 const path = require('path');
 const uuid4 = require('uuid4');
 const sharp = require('sharp');
-const { keys } = require('lodash');
-const { error } = require('console');
 
 const MAX_CATEGORIES = 7;
 const MIN_CATEGORIES = 3;
@@ -42,41 +39,7 @@ const sortDataset = (dataset) => {
   return toBeSorted;
 };
 
-/**
- * Read from csv of US cities to find latitude and longitude. 
- * @param {string} state 
- * @param {string} city 
- * @param {function} callback 
- */
-const validateUserInput = (state, city, callback) => {
-  state = state.toLowerCase();
-  city = city.toLowerCase();
 
-  const readInterface = readline.createInterface({ 
-		input: fs.createReadStream('scripts/locations.csv'),
-  });
-
-  let found = false;
-  readInterface
-    .on('close', () => {
-      if (!found) {
-        callback(true, 'Unable to find city and state.', null);
-				return;
-      } 
-    })
-    .on('line', (line) => {
-      const split = line.split(',');
-      const newState = split[1].toLowerCase();
-      const newCity = split[3].replace(/['"]+/g, '').toLowerCase();
-
-      if (newState === state && newCity === city) {
-        found = true;
-        readInterface.close(); // stop extra processing and error message being sent
-				readInterface.removeAllListeners()
-        callback(false, parseFloat(split[5]), parseFloat(split[6]));
-      }
-    });
-};
 
 const download = (dir, info) => {
   axios({
@@ -506,52 +469,6 @@ exports.buildDataSet = (state, city, indexNotConverted, callback) => {
   });
 }
 
-const zipAndSendDataSet = (state, city, index, attempts, res) => {
-  if (attempts >= 10) {
-		res.status(404).send('Could not generate zip');
-    fs.rmdirSync(dir, { recursive: true });
-  }
-
-	const name = `${state}_${city}_v${index}`;
-	const dir = `dataset/location_${name}`;
-	const lockFile = `${dir}.temp`;
-	
-	if (fs.existsSync(lockFile)) {
-		console.log(`dataset |${name}| is still being made`);
-		res.status(202).send('Dataset creation still in process');
-		return;
-	}
-
-  if (!fs.existsSync(dir)) {
-		console.log(`dataset |${name}| does not exist. Error`);
-    res.status(404).send('Dataset has not been made.');
-    return;
-  }
-
-	const zipName = `ar_zip/location_${name}.zip`;
-	if (fs.existsSync(zipName)) {
-		console.log(`Dataset ${name} already exists. Sending result.`);
-		res.download(zipName, `${name}.zip`);
-		return;
-	}
-
-	console.log(`zipping data for ${name}`);
-  const outputStream = fs.createWriteStream(zipName);
-  const archive = archiver('zip');
-
-	outputStream.on('close', () => {
-		console.log(`zipping |${name}| complete, sending result.`);
-		res.download(zipName, `${name}.zip`);
-	});
-
-	archive.on('error', (err) => {
-    console.log(`zip error: ${err}`)
-    zipAndSendDataSet(state, city, index, attempts + 1, res);
-	});
-
-	archive.pipe(outputStream);
-	archive.directory(dir, false);
-  archive.finalize();
-};
-
-exports.zipAndSendDataSet = zipAndSendDataSet;
+// const name = `${state}_${city}_v${index}`;
+// 	const dir = `dataset/location_${name}`;
+// 	const lockFile = `${dir}.temp`;

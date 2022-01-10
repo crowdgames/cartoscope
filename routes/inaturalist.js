@@ -1,6 +1,6 @@
 module.exports = (() => {
   var inatDB = require('../db/inaturalist');
-  var localDataset = require('../scripts/localDataset');
+  var localDataset = require('../localDataset/inaturalist');
 
   var express = require('express');
   var router = express.Router();
