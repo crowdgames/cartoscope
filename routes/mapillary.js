@@ -2,6 +2,7 @@
 
 moduel.exports = (() => {
   const localDataset = require('../localDataset/mapillary');
+  const utility = require('../localDataset/Utility');
   const router = require('express').Router();
 
   router.post('/buildLocalDataset/:state&:city&:index', (req, res, next) => {
@@ -17,7 +18,10 @@ moduel.exports = (() => {
     const state = req.params.state.toLowerCase();
     const city = req.params.city.toLowerCase();
 
-    localDataset.zipAndSendDataSet(state, city, req.params.index, 0, res);
+    const name = `mapillary_${state}_${city}_v${req.params.index}`;
+    const dir = `dataset`;
+
+    Utility.zipAndSendDataSet(dir, name, 0, res);
   });
 
   return router;

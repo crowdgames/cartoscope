@@ -1,6 +1,7 @@
 module.exports = (() => {
   var inatDB = require('../db/inaturalist');
   var localDataset = require('../localDataset/inaturalist');
+  var Utility = require('../localDataset/Utility');
 
   var express = require('express');
   var router = express.Router();
@@ -113,7 +114,10 @@ module.exports = (() => {
     const state = req.params.state.toLowerCase();
     const city = req.params.city.toLowerCase();
 
-    localDataset.zipAndSendDataSet(state, city, req.params.index, 0, res);
+    const name = `location_${state}_${city}_v${req.params.index}`;
+    const dir = `dataset`;
+
+    Utility.zipAndSendDataSet(dir, name, res);
   });
 
   return router;

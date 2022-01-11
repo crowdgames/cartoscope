@@ -13,7 +13,7 @@ exports.validateCityAndState = (state, city, callback) => {
  city = city.toLowerCase();
 
  const readInterface = readline.createInterface({ 
-   input: fs.createReadStream('scripts/locations.csv'),
+   input: fs.createReadStream('localDataset/locations.csv'),
  });
 
  let found = false;
@@ -38,35 +38,33 @@ exports.validateCityAndState = (state, city, callback) => {
    });
 };
 
-exports.zipAndSendDataSet = (dir, res) => {
-  let attempts = 0;
-	const lockFile = `${dir}.temp`;
-
-  // I'm using location_ for inaturalist. I don't want to mess with the old code so I want
-  // to change it to use mapillary_ for the next part which means I need to make this part
-  // no longer hardcoded. Just using dir isn't good enough (as much as I wish it was :/).
-
+exports.zipAndSendDataSet = (dir, name, res) => {
+  const lockFile = `${dir}/${name}.temp`;
+  const datasetDir = `${dir}/${name}`;
+  
   if (fs.existsSync(lockFile)) {
     console.log(`dataset |${name}| is still being made`);
     res.status(202).send('Dataset creation still in process');
-    break;
+    return;
   }
-
-  if (!fs.existsSync(dir)) {
+  
+  if (!fs.existsSync(datasetDir)) {
     console.log(`dataset |${name}| does not exist. Error`);
-    res.status(404).send('Dataset has not been made.');
-    break;
+    res.status(404).send('Dataset does not exist.');
+    return;
   }
-
-  const zipName = `ar_zip/location_${name}.zip`;
+  
+  // const zipName = `ar_zip/location_${name}.zip`;
+  const zipName = `ar_zip/${name}.zip`;
   if (fs.existsSync(zipName)) {
     console.log(`Dataset ${name} already exists. Sending result.`);
     res.download(zipName, `${name}.zip`);
-    break;
+    return;
   }
-
-  for(var i = 0; i < 10; ++i) {
-    console.log(`zipping data for ${name}`);
+  
+  let attempts = 0;
+  for(; attempts < 10; ++attempts) {
+    console.log(`zipping data for ${name}, attempt=${attempts}`);
     const outputStream = fs.createWriteStream(zipName);
     const archive = archiver('zip');
   
@@ -81,12 +79,30 @@ exports.zipAndSendDataSet = (dir, res) => {
     });
   
     archive.pipe(outputStream);
-    archive.directory(dir, false);
+    archive.directory(datasetDir, false);
     archive.finalize();
   }
 
   if (attempts >= 10) {
 		res.status(404).send('Could not generate zip');
-    fs.rmdirSync(dir, { recursive: true });
+    fs.rmdirSync(datasetDir, { recursive: true });
   }
+};
+
+
+exports.destroyFileIfExists = (file) => {
+	fs.exists(file, (exists) => {
+    if (exists) {
+      fs.unlink(file, (err) => {
+        if (err) {
+          console.log(`Unable to delete: ${file}`);
+          console.log(err);
+        } else {
+          console.log(`Deleted: ${file}`);
+        }
+      });
+    } else {
+      console.log(`${file} already destroyed.`);
+    }
+  });
 };
