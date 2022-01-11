@@ -1,8 +1,8 @@
 'use strict';
 
-const readline = require('readline');
-const fs = require('fs');
+const Utility = require('./Utility');
 
+const fs = require('fs');
 const axios = require('axios');
 const path = require('path');
 const uuid4 = require('uuid4');
@@ -38,8 +38,6 @@ const sortDataset = (dataset) => {
 
   return toBeSorted;
 };
-
-
 
 const download = (dir, info) => {
   axios({
@@ -367,22 +365,6 @@ const _buildDataSet = (dir, datasetInfo,  callback) => {
     });
 };
 
-const destroyFileIfExists = (file) => {
-	fs.exists(file, (exists) => {
-    if (exists) {
-      fs.unlink(file, (err) => {
-        if (err) {
-          console.log(`Unable to delete: ${file}`);
-          console.log(err);
-        } else {
-          console.log(`Deleted: ${file}`);
-        }
-      });
-    } else {
-      console.log(`${file} already destroyed.`);
-    }
-  });
-};
 
 exports.buildDataSet = (state, city, indexNotConverted, callback) => {
 	const index = Number(indexNotConverted);
@@ -391,7 +373,7 @@ exports.buildDataSet = (state, city, indexNotConverted, callback) => {
 		return;
 	}
 
-  validateUserInput(state, city, (error, latitude, longitude) => {
+  Utility.validateUserInput(state, city, (error, latitude, longitude) => {
     if (error) {
       callback(false, 'Invalid city or state or both.');
 			return;
@@ -428,7 +410,7 @@ exports.buildDataSet = (state, city, indexNotConverted, callback) => {
           _buildDataSet(dir, datasetInfo, (error, downloadSet) => {
             if (error && downloadSet !== null) {
 							fs.rmdirSync(dir, { recursive: true });
-							destroyFileIfExists(lockFile);
+							Utility.destroyFileIfExists(lockFile);
               callback(error, 'Error creating dataset. Contact admin.');
             } else {
               callback(error, 'Dataset is being created.');
@@ -455,7 +437,7 @@ exports.buildDataSet = (state, city, indexNotConverted, callback) => {
                   });
 
                   if (!tempFilesExist) {
-                    destroyFileIfExists(lockFile);
+                    Utility.destroyFileIfExists(lockFile);
                     clearInterval(interval);
                   }
                 }
@@ -468,7 +450,3 @@ exports.buildDataSet = (state, city, indexNotConverted, callback) => {
     }
   });
 }
-
-// const name = `${state}_${city}_v${index}`;
-// 	const dir = `dataset/location_${name}`;
-// 	const lockFile = `${dir}.temp`;
