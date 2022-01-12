@@ -40,56 +40,54 @@ exports.validateCityAndState = (state, city, callback) => {
    });
 };
 
-exports.zipAndSendDataSet = (dir, name, res) => {
-  const lockFile = `${dir}/${name}.temp`;
-  const datasetDir = `${dir}/${name}`;
-  
-  if (fs.existsSync(lockFile)) {
-    console.log(`dataset |${name}| is still being made`);
-    res.status(202).send('Dataset creation still in process');
-    return;
-  }
-  
-  if (!fs.existsSync(datasetDir)) {
-    console.log(`dataset |${name}| does not exist. Error`);
-    res.status(404).send('Dataset does not exist.');
-    return;
-  }
-  
-  const zipName = `ar_zip/${name}.zip`;
-  if (fs.existsSync(zipName)) {
-    console.log(`Dataset ${name} already exists. Sending result.`);
-    res.download(zipName, `${name}.zip`);
-    return;
-  }
-  
-  let attempts = 0;
-  for(; attempts < 10; ++attempts) {
-    console.log(`zipping data for ${name}, attempt=${attempts}`);
-    const outputStream = fs.createWriteStream(zipName);
-    const archive = archiver('zip');
-  
-    outputStream.on('close', () => {
-      console.log(`zipping |${name}| complete, sending result.`);
-      res.download(zipName, `${name}.zip`);
-    });
-  
-    archive.on('error', (err) => {
-      console.log(`zip error: ${err}`)
-      zipAndSendDataSet(state, city, index, attempts + 1, res);
-    });
-  
-    archive.pipe(outputStream);
-    archive.directory(datasetDir, false);
-    archive.finalize();
-  }
-
+const zipAndSendDataSet = (dir, name, attempts, res) => {
   if (attempts >= 10) {
 		res.status(404).send('Could not generate zip');
-    fs.rmdirSync(datasetDir, { recursive: true });
+    fs.rmdirSync(dir, { recursive: true });
   }
+
+  const lockFile = `${dir}/${name}.temp`;
+  const datasetDir = `${dir}/${name}`;
+	
+	if (fs.existsSync(lockFile)) {
+		console.log(`dataset |${name}| is still being made`);
+		res.status(202).send('Dataset creation still in process');
+		return;
+	}
+
+  if (!fs.existsSync(datasetDir)) {
+		console.log(`dataset |${name}| does not exist. Error`);
+    res.status(404).send('Dataset has not been made.');
+    return;
+  }
+
+	const zipName = `ar_zip/${name}.zip`;
+	if (fs.existsSync(zipName)) {
+		console.log(`Dataset ${name} already exists. Sending result.`);
+		res.download(zipName, `${name}.zip`);
+		return;
+	}
+
+	console.log(`zipping data for ${name}`);
+  const outputStream = fs.createWriteStream(zipName);
+  const archive = archiver('zip');
+
+	outputStream.on('close', () => {
+		console.log(`zipping |${name}| complete, sending result.`);
+		res.download(zipName, `${name}.zip`);
+	});
+
+	archive.on('error', (err) => {
+    console.log(`zip error: ${err}`)
+    zipAndSendDataSet(state, city, index, attempts + 1, res);
+	});
+
+	archive.pipe(outputStream);
+	archive.directory(datasetDir, false);
+  archive.finalize();
 };
 
+exports.zipAndSendDataSet = zipAndSendDataSet;
 
 exports.destroyFileIfExists = (file) => {
 	fs.exists(file, (exists) => {
