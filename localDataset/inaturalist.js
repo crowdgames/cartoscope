@@ -366,14 +366,14 @@ const _buildDataSet = (dir, datasetInfo,  callback) => {
 };
 
 
-exports.buildDataSet = (state, city, indexNotConverted, callback) => {
+exports.buildDataSet = (dataset, state, city, indexNotConverted, callback) => {
 	const index = Number(indexNotConverted);
 	if (isNaN(index)) {
 		callback(true, 'Received index that was not a number. Contact admin.');
 		return;
 	}
 
-  Utility.validateUserInput(state, city, (error, latitude, longitude) => {
+  Utility.validateCityAndState(state, city, (error, latitude, longitude) => {
     if (error) {
       callback(false, 'Invalid city or state or both.');
 			return;
@@ -381,7 +381,7 @@ exports.buildDataSet = (state, city, indexNotConverted, callback) => {
       // If the driectory already exists than we can tell the caller that the dataset has been made
       // which we singify with no error being found. otherwise, we make a temp file to tell any
       // other calls that we are in the process of making the dataset. 
-      const dir = `dataset/location_${state}_${city}_v${index}`;
+      const dir = `dataset/${dataset}_${state}_${city}_v${index}`;
       if (fs.existsSync(dir)) {
         callback(false, 'Dataset already exists.');
 				return;
