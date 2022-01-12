@@ -1,5 +1,5 @@
 const Utility = require('./Utility');
-
+const spawn = require("child_process").spawn;
 
 exports.buildDataSet = (state, city, indexNotConverted, callback) => {
 	const index = Number(indexNotConverted);
@@ -29,9 +29,23 @@ exports.buildDataSet = (state, city, indexNotConverted, callback) => {
           fs.closeSync(fs.openSync(lockFile, 'w'));
           fs.mkdirSync(dir);
           
-          // const process = spawn('python',[path.resolve(__dirname + '/../scripts/emh-test-weighted.py'),
-          //   path.resolve(__dirname + '/../scripts/seeds/'+ main_code + '_worker_paths_random.csv')]
-          // );
+          const process = spawn('python3', ['./create_mapillary_dataset.py', dir, latitude, longitude, latitude + 2, longitude + 2]);
+
+          process.stdout.on('data', (data) => {
+            console.log(`python -> ${data}`);
+          });
+
+          process.on('close', (code) => {
+            console.log(`child process exited with code ${code}`);
+            Utility.destroyFileIfExists(lockFile);
+
+            if (code === 1) {
+							fs.rmdirSync(dir, { recursive: true });
+              callback(true, 'Dataset failed to create. Please try again and/or contact an admin.')
+            } else {
+              callback(false, 'Dataset made!')
+            }
+          });
         }
       }
     }
