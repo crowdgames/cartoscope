@@ -1,14 +1,17 @@
 const Utility = require('./Utility');
+const fs = require('fs');
 const spawn = require("child_process").spawn;
+const rimraf = require('../localDataset/rimraf');
 
-exports.buildDataSet = (state, city, indexNotConverted, callback) => {
-	const index = Number(indexNotConverted);
-	if (isNaN(index)) {
-		callback(true, 'Received index that was not a number. Contact admin.');
-		return;
-	}
-
-  Utility.validateUserInput(state, city, (error, latitude, longitude) => {
+exports.buildDataSet = (dataset, state, city, indexNotConverted, callback) => {
+	// const index = Number(indexNotConverted);
+	// if (isNaN(index)) {
+    // 	callback(true, 'Received index that was not a number. Contact admin.');
+    // 	return;
+    // }
+    
+  const index = 0;
+  Utility.validateCityAndState(state, city, (error, latitude, longitude) => {
     if (error) {
       callback(false, 'Invalid city or state or both.');
 			return;
@@ -16,7 +19,9 @@ exports.buildDataSet = (state, city, indexNotConverted, callback) => {
       // If the driectory already exists than we can tell the caller that the dataset has been made
       // which we singify with no error being found. otherwise, we make a temp file to tell any
       // other calls that we are in the process of making the dataset. 
-      const dir = `dataset/mapillary_${state}_${city}_v${index}`;
+      const dir = `dataset/location_${dataset}_${state}_${city}_v${index}`;
+      const shortName = `${state}_${city}_v${index}`;
+
       if (fs.existsSync(dir)) {
         callback(false, 'Dataset already exists.');
 				return;
@@ -29,21 +34,37 @@ exports.buildDataSet = (state, city, indexNotConverted, callback) => {
           fs.closeSync(fs.openSync(lockFile, 'w'));
           fs.mkdirSync(dir);
           
-          const process = spawn('python3', ['./create_mapillary_dataset.py', dir, latitude, longitude, latitude + 2, longitude + 2]);
+          // Python script takes in latitude and longitude in the opposite order since 
+          // Mapilly does (for some reason).
+          console.log('starting python process ::', longitude-2, latitude-2, longitude + 2, latitude + 2);
+          const process = spawn('python3', [
+            './localDataset/create_mapillary_dataset.py', 
+            dir, 
+            shortName, 
+            longitude-2, 
+            latitude-2, 
+            longitude+2, 
+            latitude+2
+          ]);
 
           process.stdout.on('data', (data) => {
             console.log(`python -> ${data}`);
+          });
+
+          process.stderr.on('data', (data) => {
+            console.error(`python err -> ${data}`);
           });
 
           process.on('close', (code) => {
             console.log(`child process exited with code ${code}`);
             Utility.destroyFileIfExists(lockFile);
 
-            if (code === 1) {
-							fs.rmdirSync(dir, { recursive: true });
-              callback(true, 'Dataset failed to create. Please try again and/or contact an admin.')
-            } else {
+            if (code === 0) {
               callback(false, 'Dataset made!')
+            } else {
+              rimraf(dir, () => {
+                callback(true, 'Dataset failed to create. Please try again and/or contact an admin.')
+              })
             }
           });
         }

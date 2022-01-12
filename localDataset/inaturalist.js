@@ -381,7 +381,7 @@ exports.buildDataSet = (dataset, state, city, indexNotConverted, callback) => {
       // If the driectory already exists than we can tell the caller that the dataset has been made
       // which we singify with no error being found. otherwise, we make a temp file to tell any
       // other calls that we are in the process of making the dataset. 
-      const dir = `dataset/${dataset}_${state}_${city}_v${index}`;
+      const dir = `dataset/location_${dataset}_${state}_${city}_v${index}`;
       if (fs.existsSync(dir)) {
         callback(false, 'Dataset already exists.');
 				return;
@@ -409,9 +409,10 @@ exports.buildDataSet = (dataset, state, city, indexNotConverted, callback) => {
 
           _buildDataSet(dir, datasetInfo, (error, downloadSet) => {
             if (error && downloadSet !== null) {
-							fs.rmdirSync(dir, { recursive: true });
-							Utility.destroyFileIfExists(lockFile);
-              callback(error, 'Error creating dataset. Contact admin.');
+              rimraf(dir, () => {
+                Utility.destroyFileIfExists(lockFile);
+                callback(error, 'Error creating dataset. Contact admin.');
+              })
             } else {
               callback(error, 'Dataset is being created.');
 							

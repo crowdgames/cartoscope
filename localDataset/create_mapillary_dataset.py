@@ -1,9 +1,12 @@
 try:
-    import base64, hashlib, json, os, ssl, sys, time, urllib.error, urllib.request, uuid
+    import base64, json, os, ssl, sys, time, urllib.error, urllib.request, uuid
     from PIL import Image
     import cairosvg
     import certifi
     import mapbox_vector_tile
+    import json
+
+    from os.path import join
 
     NUM_IMAGES = 24
     TILE_SIZE = 512
@@ -11,11 +14,10 @@ try:
     NULL = '_'
     SSL_CONTEXT = ssl.create_default_context(cafile=certifi.where())
 
-    _, DIR_NAME, *BBOX = sys.argv
+    _, DIR_NAME, SHORT_NAME, *BBOX = sys.argv
     if len(BBOX) != 4:
         print('Error: received bad latitude or longitude')
         sys.exit(1)
-
     BBOX = [float(a) for a in BBOX]
 
     def url_fetch(url):
@@ -55,14 +57,14 @@ try:
     def ob_to_tile(name, ob):
         if ob['is_doc']:
             url_to_tile_doc(name, ob['image_url'])
-            
         else:
             url_to_tile_img(name, ob['image_url'], ob['image_geom'])
 
     def url_to_tile_doc(name, url):
         img_data = url_fetch(url)
         scale = TILE_SIZE / 24 # assume svg size is 24
-        cairosvg.svg2png(bytestring=img_data, scale=scale, write_to=name + '.png')
+        image_name = name + '.png'
+        cairosvg.svg2png(bytestring=img_data, scale=scale, write_to=image_name)
 
     def url_to_tile_img(name, url, crop_geom):
         img_data = url_fetch(url)
@@ -106,16 +108,16 @@ try:
         img = img.crop((x0,y0,x0+tw,y0+th))
 
         img = img.resize((TILE_SIZE, TILE_SIZE), Image.ANTIALIAS)
-        img.save(name + '.jpg')
+        image_name = name + '.jpg'
+        img.save(image_name)
         os.unlink('tmp.jpg')
 
-
-    ## fetch list of features
+    print('Fetching list of features...')
     data = url_to_json('https://graph.mapillary.com/map_features?access_token=%s&fields=id,object_value&object_values=regulatory--*,information--*,warning--*,complementary--*&bbox=%f,%f,%f,%f' % (ACCESS_TOKEN, BBOX[0], BBOX[1], BBOX[2], BBOX[3]))
     obs = data['data']
     print('found', len(obs))
 
-    ## organize by type
+    print('Organizing by type...')
     obs_by_type = {}
     for obi, ob in enumerate(obs):
         type = ob['object_value']
@@ -130,7 +132,7 @@ try:
         obs_by_type[type].append(ob)
 
 
-    ## further process, find doc images
+    print('further process, find doc images...')
     use_obs = []
     for type, obs in obs_by_type.items():
         if len(use_obs) >= NUM_IMAGES:
@@ -156,7 +158,7 @@ try:
         print(f'Error! Only found {len(use_obs)} images.')
         sys.exit(1)
 
-    ## lookup image infor for detections
+    print('lookup image infor for detections...')
     for ob, ob_gt in use_obs:
         if ob['is_doc']:
             continue
@@ -174,7 +176,23 @@ try:
 
         ob['image_url'] = imgdata['thumb_2048_url']
 
-    # fetch the images
+    print('fetch the images...')
+    summary = {
+        "count": NUM_IMAGES,
+        "code": "localData",
+        "filenames": [],
+        "categoriesCount": 0,
+        "categoriesLabel": [],
+        "categoriesSample": [],
+        "tutorial": [],
+        "description": "Become a citizen scientist and help label photographs of various traffic signs near you, courtesy of Mapillary.",
+        "short_description": "Become a citizen scientist and help label photographs of various traffic signs near you, courtesy of Mapillary.",
+        "short_name_friendly": SHORT_NAME,
+        "has_location": 1,
+        "tutorial_explanations": [],
+        "is_inaturalist": 0
+    }
+
     for ob, ob_gt in use_obs:
         type = ob['value']
         ob_id = str(uuid.uuid4())
@@ -183,6 +201,21 @@ try:
         ob_to_tile(filename, ob)
         ob_to_meta(filename, ob_id, type if ob_gt else NULL, type, ob)
 
+        summary['filenames'].append(filename[len(DIR_NAME) + 1:])
+        summary['categoriesLabel'].append(type)    
+
+        if not ob['is_doc']:
+            summary['categoriesSample'].append(summary['filenames'][-1])
+
+    print('building summary file...')
+    summary['categoriesLabel'] = list(set(summary['categoriesLabel']))
+    summary['categoriesCount'] = len(summary['categoriesLabel'] )
+    summary['tutorial'] += [summary['filenames'][0], summary['filenames'][1]]
+
+    with open(join(DIR_NAME, 'Dataset-info.json'), 'w') as f:
+        json.dump(summary, f, indent=2)
+
+    print('Done!')
     sys.exit(0)
 
 except Exception as e:
