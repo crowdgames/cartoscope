@@ -40,7 +40,7 @@ module.exports = (() => {
     if (dataset !== Constant.iNaturalist && dataset !== Constant.mapillary) {
       res.status(404).send(invalidDatasetMessage);
     } else {
-      const name = `${dataset}_${state}_${city}_v${req.params.index}`;
+      const name = `location_${dataset}_${state}_${city}_v${req.params.index}`;
       const dir = `dataset`;
   
       Utility.zipAndSendDataSet(dir, name, 0, res);
