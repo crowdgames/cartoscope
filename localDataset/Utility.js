@@ -1,6 +1,8 @@
 'use strict';
 
 const archiver = require('archiver');
+const readline = require('readline');
+const fs = require('fs');
 
 /**
 * Read from csv of US cities to find latitude and longitude. 
@@ -54,7 +56,6 @@ exports.zipAndSendDataSet = (dir, name, res) => {
     return;
   }
   
-  // const zipName = `ar_zip/location_${name}.zip`;
   const zipName = `ar_zip/${name}.zip`;
   if (fs.existsSync(zipName)) {
     console.log(`Dataset ${name} already exists. Sending result.`);
