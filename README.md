@@ -15,7 +15,7 @@ Cartoscope is a platform for citizen science mapping. By sorting, labelling, and
 
  5. Run the command `./run.sh`
  6. Open localhost:8081 on a web browser
-
+ 
 Note: In windows installation, when error such as "not a valid identifier" is thrown, happens when changes are made in windows on root files instead of linux :
       use "dos2unix .bashrc" command for converting file .bashrc to Unix format 
 ## Setting up users
