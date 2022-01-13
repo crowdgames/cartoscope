@@ -28,7 +28,7 @@ To make projects for testing purposes, you need to create a user on the website.
 ## Information and recommendations for developers
 
  - Since this project uses vagrant, it is helpful to know the basics of vagrant, such as `vagrant up`, `vagrant ssh`, `vagrant suspend`, `vagrant halt`, and `vagrant destroy`
- - All of the code for the project will be in `/vagrant`. Going forward, it will be assumed that that is the working directory
+ - All of the code for the project will be in `/vagrant`. Going forward, it will be assumed that this is the working directory
  - This project uses typescript, and it is necessary to compile the typescript code with `tsc` every time you make code changes. You can run `tsc --watch` to run a server that will automatically recompile the ts code when you make a code change.
  - `nodemon` is a useful utility when developing.
  - While not strictly necessary, it is recommended that you copy `vagrant-files/config-auth.sh.example` to `vagrant-files/config-auth.sh` and edit the file to your liking. **DO THIS BEFORE RUNNING `vagrant up`**
