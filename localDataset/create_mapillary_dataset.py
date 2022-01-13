@@ -155,7 +155,7 @@ try:
         use_obs.append((doc_ob, True))
 
     if len(use_obs) != NUM_IMAGES:
-        print(f'Error! Only found {len(use_obs)} images.')
+        print('Error! Only found' + len(use_obs) + 'images.')
         sys.exit(1)
 
     print('lookup image infor for detections...')
@@ -196,7 +196,7 @@ try:
     for ob, ob_gt in use_obs:
         type = ob['value']
         ob_id = str(uuid.uuid4())
-        filename = f'{DIR_NAME}/mapil-{ob_id}'
+        filename = '%s/mapil-%s' % (DIR_NAME, ob_id)
 
         ob_to_tile(filename, ob)
         ob_to_meta(filename, ob_id, type if ob_gt else NULL, type, ob)
@@ -219,6 +219,6 @@ try:
     sys.exit(0)
 
 except Exception as e:
-    print(f'{e}. Contact admin.')
+    print('%s. Contact admin.' % (e,))
     import sys
     sys.exit(1)

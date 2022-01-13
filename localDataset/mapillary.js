@@ -4,13 +4,17 @@ const spawn = require("child_process").spawn;
 const rimraf = require('../localDataset/rimraf');
 
 exports.buildDataSet = (dataset, state, city, indexNotConverted, callback) => {
-	// const index = Number(indexNotConverted);
-	// if (isNaN(index)) {
-    // 	callback(true, 'Received index that was not a number. Contact admin.');
-    // 	return;
-    // }
+	const index = Number(indexNotConverted);
+	if (isNaN(index)) {
+    	callback(true, 'Received index that was not a number. Contact admin.');
+    	return;
+    }
+
+  if (index !== 0) {
+    callback(true, 'Our Mapillary implementation does not currently support multiple datasets per city.');
+    return;
+  }
     
-  const index = 0;
   Utility.validateCityAndState(state, city, (error, latitude, longitude) => {
     if (error) {
       callback(false, 'Invalid city or state or both.');
@@ -37,7 +41,7 @@ exports.buildDataSet = (dataset, state, city, indexNotConverted, callback) => {
           // Python script takes in latitude and longitude in the opposite order since 
           // Mapilly does (for some reason).
           console.log('starting python process ::', longitude-2, latitude-2, longitude + 2, latitude + 2);
-          const process = spawn('python3', [
+          const process = spawn('python3.6', [
             './localDataset/create_mapillary_dataset.py', 
             dir, 
             shortName, 
