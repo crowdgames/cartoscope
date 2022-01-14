@@ -28,13 +28,17 @@ sudo apt-get -y install \
   wget \
   dos2unix \
   openssl \
-  build-essential libffi-dev python3-dev
+  build-essential libffi-dev python3-dev \
+  python-cairosvg
 
 echo "== INSTALLING PYTHON PACKAGES =="
 
 python3.6 -m pip install --upgrade pip
 python3.6 -m pip install pillow
 python3.6 -m pip install bcrypt
+python3.6 -m pip install CairoSVG
+python3.6 -m pip install certifi
+python3.6 -m pip install mapbox-vector-tile
 
 echo "== INSTALLING APPROPRIATE NODE VERSION =="
 
