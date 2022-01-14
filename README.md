@@ -11,13 +11,13 @@ Cartoscope is a platform for citizen science mapping. By sorting, labelling, and
  3. Clone this repository (`git clone https://github.com/crowdgames/cartoscope.git`)
  4. Using the appropriate command line for your operating system, navigate to where you cloned the repository and run the command `vagrant up; vagrant ssh`. This will ssh you into the virtual machine that will host the website
      1. **If you are using windows, the command line must have administrator privileges.** (i.e. You must run the command line as administrator)
-     2. For Windows installation , if , Download and install polsedit and provide administrator priviledge to command line using polsedit.
+     2. If this does not work, use the polsedit utility to grant the SeCreateSymbolicLink privilige to your user and then restart your computer.
 
  5. Run the command `./run.sh`
  6. Open localhost:8081 on a web browser
  
-Note: In windows installation, when error such as "not a valid identifier" is thrown, happens when changes are made in windows on root files instead of linux :
-      use "dos2unix .bashrc" command for converting file .bashrc to Unix format 
+Note: In windows installation if you see "not a valid identifier" when logging in, run `dos2unix .bashrc`. Sometimes files are copied over into vagrant with Windows file endings when they are expecting unix file endings.
+      
 ## Setting up users
 
 To make projects for testing purposes, you need to create a user on the website.
