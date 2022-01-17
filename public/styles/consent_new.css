@@ -1,6 +1,7 @@
 body {
     /*background: url('../images/background_dktp.png') no-repeat center center fixed;*/
-    background-color: #D8D3D6;
+    background-color: white;
+    /* background-color: #D8D3D6; */
     /*background-color: #3C6478;*/
     font-family: 'Raleway', sans-serif;
 
@@ -208,4 +209,22 @@ body {
         /*max-width: 450px;*/
         /*width: 100%;*/
     }
+}
+
+.header{
+    position: fixed;
+    line-height: 2.5;
+    background: #D8D3D6;
+    width: 100%;
+    z-index:1000;
+}
+
+.menuItems{
+    float: right;
+    display: inline-flex;
+}
+
+.btnGetStarted{
+    width: 15em;
+    color: black;
 }

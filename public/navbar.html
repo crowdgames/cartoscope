@@ -1,20 +1,28 @@
-<div class="row" ng-controller="navController" id="navB">
+<div class="header" ng-controller="navController" id="navB">
+    <div class="col-md-4 col-lg-6"></div>
     <div class="center-element" style="font-size: 1em;text-align:center; position: relative; z-index: 100; color: black;">
-        <span ng-class="{'selected': setPage('/')}">
-        <a style="color: black;" href={{home_link}} >HOME</a>
-        </span>
+        
+        <div class="col-md-2 col-lg-2">
+            <span ng-class="{'selected': setPage('/')}">
+                <a style="color: black;" href={{home_link}} >HOME</a>
+                </span>
+        </div>
         <!--<span  class="circ-sep"></span>-->
         <!--<span ng-class="{'selected': setPage('/about')}" >-->
         <!--<a style="color: black;" href={{about_link}} >ABOUT</a>-->
         <!--</span>-->
-        <span class="circ-sep"></span>
+        <!-- <span class="circ-sep"></span> -->
+        <div class="col-md-2 col-lg-2">
         <span ng-class="{'selected': setPage('/results')}">
             <a style="color: black;" href={{results_link}} >RESULTS</a>
         </span>
-        <span class="circ-sep"></span>
+    </div>
+        <!-- <span class="circ-sep"></span> -->
+        <div class="col-md-4 col-lg-2">
         <span ng-class="{'selected':setPage('/termsOfUse')}">
-            <a style="color: black;cursor: pointer;" ng-click="showTerms()">TERMS OF USE</a>
+            <a style="color: black;cursor: pointer; text-decoration: underline;" ng-click="showTerms()">TERMS AND CONDITIONS</a>
         </span>
+    </div>
     </div>
 
 
