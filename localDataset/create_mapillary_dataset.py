@@ -14,12 +14,6 @@ try:
     NULL = '_'
     SSL_CONTEXT = ssl.create_default_context(cafile=certifi.where())
 
-    _, DIR_NAME, SHORT_NAME, *BBOX = sys.argv
-    if len(BBOX) != 4:
-        print('Error: received bad latitude or longitude')
-        sys.exit(1)
-    BBOX = [float(a) for a in BBOX]
-
     def url_fetch(url):
         print('fetching', url)
         for attempt in range(5):
@@ -112,10 +106,41 @@ try:
         img.save(image_name)
         os.unlink('tmp.jpg')
 
+    print('Getting dataset input...')
+    _, DIR_NAME, SHORT_NAME, INDEX, *BBOX = sys.argv
+
+    try:
+        BBOX = [float(num) for num in BBOX]
+    except ValueError as convert_error:
+        print('Error converting bounding box: %s. Contact admin.' % (convert_error,))
+        import sys
+        sys.exit(1)
+
+    try:
+        INDEX = int(INDEX)
+    except ValueError as convert_error:
+        print('Error converting index: %s. Contact admin.' % (convert_error,))
+        import sys
+        sys.exit(1)
+
     print('Fetching list of features...')
-    data = url_to_json('https://graph.mapillary.com/map_features?access_token=%s&fields=id,object_value&object_values=regulatory--*,information--*,warning--*,complementary--*&bbox=%f,%f,%f,%f' % (ACCESS_TOKEN, BBOX[0], BBOX[1], BBOX[2], BBOX[3]))
-    obs = data['data']
-    print('found', len(obs))
+    def get_data():
+        data = url_to_json('https://graph.mapillary.com/map_features?access_token=%s&fields=id,object_value&object_values=regulatory--*,information--*,warning--*,complementary--*&bbox=%f,%f,%f,%f' % (ACCESS_TOKEN, BBOX[0], BBOX[1], BBOX[2], BBOX[3]))
+        obs = data['data']
+        return obs
+
+    obs = get_data()
+    add = 2
+    while len(obs) < 2000:
+        print('Didn\t find enough data. Increasing size of the bounding box.')
+        BBOX[0] -= add
+        BBOX[1] -= add
+        BBOX[2] += add
+        BBOX[3] += add
+        add *= 2
+        obs = get_data()
+
+    print('Found large dataset!')
 
     print('Organizing by type...')
     obs_by_type = {}
@@ -135,9 +160,6 @@ try:
     print('further process, find doc images...')
     use_obs = []
     for type, obs in obs_by_type.items():
-        if len(use_obs) >= NUM_IMAGES:
-            break
-
         type = obs[0]['object_value']
 
         img_ob = {
@@ -154,12 +176,24 @@ try:
         }
         use_obs.append((doc_ob, True))
 
-    if len(use_obs) != NUM_IMAGES:
-        print('Error! Only found' + len(use_obs) + 'images.')
+
+    dataset = []
+    for ob in use_obs:
+        dataset.append(ob)
+
+        if len(dataset) == NUM_IMAGES:
+            if INDEX == 0:
+                break
+            else:
+                dataset.clear()
+                INDEX -= 1
+
+    if len(dataset) != NUM_IMAGES:
+        print('Error! Only found' + len(dataset) + 'images.')
         sys.exit(1)
 
     print('lookup image infor for detections...')
-    for ob, ob_gt in use_obs:
+    for ob, ob_gt in dataset:
         if ob['is_doc']:
             continue
 
@@ -193,7 +227,7 @@ try:
         "is_inaturalist": 0
     }
 
-    for ob, ob_gt in use_obs:
+    for ob, ob_gt in dataset:
         type = ob['value']
         ob_id = str(uuid.uuid4())
         filename = '%s/mapil-%s' % (DIR_NAME, ob_id)
@@ -217,7 +251,6 @@ try:
 
     print('Done!')
     sys.exit(0)
-
 except Exception as e:
     print('%s. Contact admin.' % (e,))
     import sys
