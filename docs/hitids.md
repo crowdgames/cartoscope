@@ -13,3 +13,5 @@ The major parts of the hitID are split by underscores.
  - The last part indicates that this is a cairns project, and that "s" (soapstone) cairns should be shown every 5-20 images.
 
 The mturk indicates that the mturk consent form should be shown etc. The cairns-s-5-20 determines that it should be soapstone cairns shown every 5-20 images.
+
+to add a hitID to an individual run of a project, add `?trialId=<your hitID>` to the url when accessing cartoscope.
