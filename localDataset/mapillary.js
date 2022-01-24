@@ -10,11 +10,6 @@ exports.buildDataSet = (dataset, state, city, indexNotConverted, callback) => {
     	return;
     }
 
-  if (index !== 0) {
-    callback(true, 'Our Mapillary implementation does not currently support multiple datasets per city.');
-    return;
-  }
-    
   Utility.validateCityAndState(state, city, (error, latitude, longitude) => {
     if (error) {
       callback(false, 'Invalid city or state or both.');
@@ -45,6 +40,7 @@ exports.buildDataSet = (dataset, state, city, indexNotConverted, callback) => {
             './localDataset/create_mapillary_dataset.py', 
             dir, 
             shortName, 
+            index,
             longitude-2, 
             latitude-2, 
             longitude+2, 
