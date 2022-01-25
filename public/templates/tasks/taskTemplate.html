@@ -300,6 +300,9 @@
             <div ng-show="showSidebar">
                 <h2 id="cairn-sidebar-header"> Messages from cartoscope players like you!  </h2>
             </div>
+            <div ng-show="showMessageSidebar">
+                <h2 id="cairn-sidebar-header1"> Messages from cartoscope players like you!  </h2>
+            </div>
         </div>
         <div class="col-sm-6" id="img">
             <img ng-show="showMainTask" id="task-img" style="max-height:450px" class="img-responsive img-task" ng-src="{{model.getNextTask()}}" ng-click="model.showBiggerImg()">
@@ -332,6 +335,9 @@
                 <button class="btn btn-default btn-primary done-button" ng-show="showSkipBtn" ng-click="model.handleCairnSkip()" style="height: 45px;">Skip</button>
                 <br> <br> <br> <br> <br> <br> <br>
             </div>
+        </div>
+        <div class="col-sm-3" id="message_bar" ng-show="showCairnMessage">
+            <h2 id="cairn-message-header"> Click the message to send to players.  </h2>
         </div>
         <div class="col-sm-3" id="img">
         </div>

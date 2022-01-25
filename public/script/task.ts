@@ -217,7 +217,9 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           none     ,
           both     ,
           soapstone,
-          emoji           
+          emoji,
+          selectMessage,
+          showMessage
       }
 
       // if it's the main task, it should be "noCairn"
@@ -232,6 +234,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           else if (vm.cairnsInfoArray[0] === "b") cairnMode = cairnTypes.both;
           else if (vm.cairnsInfoArray[0] === "e") cairnMode = cairnTypes.emoji;
           else if (vm.cairnsInfoArray[0] === "s") cairnMode = cairnTypes.soapstone;
+          else if (vm.cairnsInfoArray[0] === "m") cairnMode = cairnTypes.selectMessage;
           else if (vm.cairnsInfoArray[0] === "n") return;
           else console.error("a cairns style hitID was passed, but the cairn type was not in [n,e,s,b]");
           // note the time the cairn was created. Divide by 1000 because mysql wants second precision, not ms precision
@@ -242,7 +245,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
           // initialize the counter. I'd like to initialize it outside, but it needs to be different based on debug mode
           if (vm.tasksUntilNextCairn === -1) resetCairnCounter();
-          if (vm.tasksUntilNextCairn > 0) 
+          if (vm.tasksUntilNextCairn > 0)
               vm.tasksUntilNextCairn--;
           else {
               resetCairnCounter();
@@ -250,9 +253,18 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   vm.startSoapstoneCairn();
               else if (cairnMode === cairnTypes.emoji)
                   vm.startEmojiCairn();
+              else if (cairnMode === cairnTypes.selectMessage)
+                  if (vm.nextCairnToShow === cairnTypes.selectMessage) {
+                      vm.nextCairnToShow = cairnTypes.showMessage;
+                      vm.startMessageCairn();
+                  }
+                  else {
+                      vm.nextCairnToShow = cairnTypes.selectMessage;
+                      vm.startMessageDisplay();
+                  }
               else if (cairnMode === cairnTypes.both) {
                   // If we are supposed to show both cairns, alternate between them, starting with a random one
-                  if (vm.nextCairnToShow === cairnTypes.none) 
+                  if (vm.nextCairnToShow === cairnTypes.none)
                       vm.nextCairnToShow = getRandomIntInclusive(0, 1) === 1 ? cairnTypes.emoji : cairnTypes.soapstone;
                   if (vm.nextCairnToShow === cairnTypes.soapstone) {
                       vm.nextCairnToShow = cairnTypes.emoji;
@@ -445,6 +457,62 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       vm.clearMsgSidebar = () => document.querySelectorAll('.cairn-message').forEach(e => e.remove());
       // == END SOAPSTONE MSG CODE ==
+
+      // == MESSAGE CREATE CODE ==
+
+      $scope.showMessageSidebar = false;
+      $scope.showCairnMessage = false;
+
+      vm.startMessageCairn = () => {
+          $scope.showCairnMessage = true;
+          vm.populateMessageCairn();
+      }
+
+      vm.populateMessageCairn = () => {
+          var messages = ["Your help shows that you are contributing to the world!",
+              "You are doing great",
+              "It's ok if you don't know",
+              "Don't worry about getting it exactly right"
+          ]
+
+          messages.forEach((message: string, idx: number) =>
+              setTimeout(() => vm.insertMessage(message),
+                  idx * 1000));
+      }
+
+      vm.insertMessage = (message: string) => {
+          let textarea = document.getElementById("cairn-message-header");
+          let messageElement = document.createElement("button");
+          messageElement.innerText = message;
+          messageElement.style += "display: inline-block; margin: auto; width: 500px; height: 60px; padding:20px";
+          messageElement.setAttribute("class", "cairn-message1");
+          textarea?.insertAdjacentElement("afterend", messageElement);
+      }
+
+      vm.clearMessages = () => document.querySelectorAll('.cairn-message1').forEach(e => e.remove());
+
+      vm.clearMessagesDisplay = () => document.querySelectorAll('.cairn-message2').forEach(e => e.remove());
+
+      vm.startMessageDisplay = () => {
+          $scope.showMessageSidebar = true;
+          var messages = ["Your help shows that you are contributing to the world!",
+              "You are doing great",
+              "It's ok if you don't know",
+              "Don't worry about getting it exactly right"
+          ]
+
+          messages.reverse().forEach((message: string, idx: number) =>
+              setTimeout(() => {
+                      let textarea = document.getElementById("cairn-sidebar-header1");
+                      let messageElement = document.createElement("button");
+                      messageElement.innerText = message;
+                      messageElement.style += "display: inline-block; margin: auto; width: 500px; height: 60px; padding:20px";
+                      messageElement.setAttribute("class", "cairn-message2");
+                      textarea?.insertAdjacentElement("afterend", messageElement);
+                  },
+                  idx * 1000));
+      };
+
 
       // == SOAPSTONE CREATE CODE ==
 
@@ -1332,6 +1400,11 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       vm.noImageCounter = 0;
       function submit(option,option_text) {
+
+          $scope.showCairnMessage = false;
+          $scope.showMessageSidebar = false;
+          vm.clearMessages();
+          vm.clearMessagesDisplay();
 
           // if a player is attempting to submit when there is no task visible, just ignore
           if (!$scope.showMainTask) return;
