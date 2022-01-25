@@ -170,6 +170,11 @@ exports.heatMapDataAllUser = function(projectCode, datasetId,userId) {
     });
 };
 
+/**
+ * Makes a query to the response table by passing user id and fetching the projects for that specific user.
+ * @param userId user id
+ * @returns {Promise} object of project id and count of projects
+ */
 exports.getUserStats = function(userId) {
     var connection = db.get();
     return new promise(function(resolve, error) {

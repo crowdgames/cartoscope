@@ -85,6 +85,18 @@ exports.checkEmail = function(email, done) {
     });
 };
 
+/**
+ * Add the details of the user using the parameters provided into the users table, calculate a encrypted password and add it
+ * into password table.
+ * @param name name of the user
+ * @param email email of the user
+ * @param password users password
+ * @param agreeMail agree policy for email
+ * @param agreeNewProject agree policy for project
+ * @param profilePhotoId profile pic of user
+ * @param bio bio of the project
+ * @param done
+ */
 exports.addUser = function(name, email, password, agreeMail, agreeNewProject, profilePhotoId, bio, done) {
   var connection = db.get();
   connection.query('INSERT INTO users (username,email,agree_mail,agree_help,profile_photo,short_bio) ' +
@@ -108,6 +120,17 @@ exports.addUser = function(name, email, password, agreeMail, agreeNewProject, pr
     });
 };
 
+/**
+ * New attributes of the user are provided which is updated into the users table. New passwords are encrypted and updated into the
+ * password table.
+ * @param userId id of the user
+ * @param username new name of the user
+ * @param email new email of the user
+ * @param password new password of the user
+ * @param profilePhotoId new proofile pic of the user
+ * @param bio new bio of the user
+ * @param done
+ */
 exports.updateUser = function(userId, username, email, password, profilePhotoId, bio, done) {
     var connection = db.get();
     console.log(userId, username, email, password, bio, profilePhotoId);
@@ -206,6 +229,10 @@ exports.getUserWithPassword = function(username, password, done) {
     });
 };
 
+/**
+ * An update query to the users table wherein last login is set to the current time stamp for a specific user.
+ * @param id user id
+ */
 exports.setLastLogin = function(id) {
   var connection = db.get();
   connection.query('UPDATE users SET last_login=CURRENT_TIMESTAMP WHERE id=? and is_active=1', id);

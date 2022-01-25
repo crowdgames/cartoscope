@@ -64,8 +64,9 @@ router.get('/:code', [filters.requireLogin], function(req, res, next) {
   });
 });
 
-
-
+/**
+ * A get request to fetch all the projects from the project table in the database for a particular user.
+ */
 router.get('/getProjects/public', function(req, res, next) {
     projectDB.getAllPublicProjects().then(function(project) {
         res.send(project);
@@ -403,7 +404,10 @@ router.get('/duplicateProject/:pCode', [ filters.requireLogin],
     });
 });
 
-
+/**
+ * A post request which is used to create a new project for a particular user and add it into the projects table of the database. It
+ * first validates the image file for profile pic and calls the project db to add new project.
+ */
 router.post('/add', [fupload.single('file'), filters.requireLogin, filters.requiredParamHandler(['name', 'description'])],
   function(req, res, next) {
     var body = req.body;
@@ -456,6 +460,9 @@ router.post('/add', [fupload.single('file'), filters.requireLogin, filters.requi
     }
   });
 
+/**
+ * A post request which is used to update the project table by setting the privacy of the project.
+ */
 router.post('/changePrivacy',
   [filters.requireLogin, filters.requiredParamHandler(['projectID', 'privacy']), upload.any()],
   function(req, res, next) {
@@ -610,6 +617,9 @@ router.post('/updateProjectInfoMain', [fupload.single('file'), filters.requireLo
         }
     });
 
+/**
+ * A post request to update the location for a project given project id and location as arguments.
+ */
 router.post('/updateHasLocation',
     [filters.requireLogin, filters.requiredParamHandler(['projectID', 'has_location']), upload.any()],
     function(req, res, next) {
@@ -627,7 +637,9 @@ router.post('/updateHasLocation',
 
 
 
-
+/**
+ * A post request to update the AR attribute for a project given project id and ar_ready attribute as arguments.
+ */
 router.post('/updateARReady',
     [filters.requireLogin, filters.requiredParamHandler(['projectID', 'ar_ready']), upload.any()],
     function(req, res, next) {
@@ -663,6 +675,9 @@ router.get('/admins/:id', filters.requireLogin,
     });
   });
 
+/**
+ * A post request which is used to add the admin for a specific project by providing the id of the project and id of the user.
+ */
 router.post('/admin/add', [filters.requireLogin, filters.requiredParamHandler(['projectID', 'userID']), upload.any()],
   function(req, res, next) {
     projectDB.addAdmin(req.body.projectID, req.body.userID).then(function() {
@@ -672,6 +687,9 @@ router.post('/admin/add', [filters.requireLogin, filters.requiredParamHandler(['
     });
   });
 
+/**
+ * A post request which is used to delete the admin for a specific project by providing the id of the project and id of the user.
+ */
 router.post('/admin/delete', [filters.requireLogin, filters.requiredParamHandler(['projectID', 'userID']),
     upload.any()],
   function(req, res, next) {
@@ -682,6 +700,9 @@ router.post('/admin/delete', [filters.requireLogin, filters.requiredParamHandler
     });
   });
 
+/**
+ * A post request which takes in the project id parameter and updates the projects table.
+ */
 router.post('/publish', [filters.requireLogin, filters.requiredParamHandler(['projectID']), upload.any()],
   function(req, res, next) {
     projectDB.publish(req.body.projectID).then(function() {
@@ -691,6 +712,9 @@ router.post('/publish', [filters.requireLogin, filters.requiredParamHandler(['pr
     });
   });
 
+/**
+ * A post request to update the project by setting the template of the images in the project.
+ */
 router.post('/updateTemplate',
   [filters.requireLogin, filters.requiredParamHandler(['projectID', 'template']), upload.any()],
   function(req, res, next) {
@@ -748,6 +772,10 @@ router.get('/getProjectPic/:code', function(req, res, next) {
 
 });
 
+/**
+ * Thus function generates a random alphanumeric code for the project as its unique id.
+ * @returns {Promise}
+ */
 function generateUniqueProjectCode() {
   return new Promise(function(resolve) {
     var projectCode = randomString.generate({

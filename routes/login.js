@@ -23,6 +23,9 @@ passport.use('user', new LocalStrategy(function(username, password, done) {
   }
 ));
 
+/**
+ * Routes to login page where it sends the user object to the database for updating the last login information.
+ */
 router.post('/login', function(req, res, next) {
   passport.authenticate('user', function(err, user, info) {
     if (err) {
@@ -47,6 +50,9 @@ router.post('/login', function(req, res, next) {
   })(req, res, next);
 });
 
+/**
+ * Logs out the user.
+ */
 router.get('/logout', function(req, res, next) {
   req.logout();
   //res.redirect('/');

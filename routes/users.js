@@ -53,6 +53,9 @@ router.get('/getusers/:user', filters.requireLogin, function(req, res, next) {
   }
 });
 
+/**
+ * Sets the path to profile pic and checks for logged in user. Transfers the profile pic file which is either based on user id or set to default picture.
+ */
 router.get('/getProfilePic/:id', [filters.requireLogin],
   function(req, res, next) {
     res.setHeader('Content-Type', 'image/jpeg');
@@ -108,6 +111,9 @@ router.get('/', filters.requireLogin, function(req, res, next) {
   }
 });
 
+/**
+ * Route to add page, validate the user data and post the user details to the user table.
+ */
 router.post('/add', upload.any(), function(req, res, next) {
   var body = req.body;
   console.log('body info', body);
@@ -144,6 +150,12 @@ router.post('/add', upload.any(), function(req, res, next) {
   }
 });
 
+/**
+ * Add the user details to the users table in the database.
+ * @param body details of the user such as name, email, password
+ * @param filename profile photo of the user
+ * @param res response object
+ */
 var addToDB = function(body, filename, res) {
   console.log('body details ', body);
   userDB.addUser(body.username, body.email, body.password, body.agreeMail, body.agreeNewProject, filename, body.bio,
@@ -176,6 +188,9 @@ router.delete('/delete/:id', function(req, res, next) {
   }
 });
 
+/**
+ * A post request is made to update the details of the user wherein attributes are validated and user table is updated.
+ */
 router.post('/editUser', upload.any(), filters.requireLogin, function(req, res, next) {
     var body = req.body;
     console.log('body info', body);
@@ -215,6 +230,12 @@ router.post('/editUser', upload.any(), filters.requireLogin, function(req, res, 
     }
 });
 
+/**
+ * New details of the user are updated into the users table of the database.
+ * @param body details of the user such as name, email, password
+ * @param filename profile pic of the user
+ * @param res response object
+ */
 var updateToDB = function(body, filename, res) {
     console.log('body update details ', body);
     if (body.profilePic == undefined){
@@ -241,6 +262,9 @@ router.put('/resetPassword', function(req, res, next) {
   }
 });
 
+/**
+ * Route to the projects page and make a backend call to the project database for fetching the projects of a specific user.
+ */
 router.get('/projects', filters.requireRegularLogin, function(req, res, next) {
   var userID = req.session.passport.user.id;
   projectDB.getAllProjectsForUser(userID).then(function(data) {

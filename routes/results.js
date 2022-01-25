@@ -597,6 +597,9 @@ router.get('/all/:projectCode/:userId', function(req, res, next) {
     })});
 
 //Get User Stats
+/**
+ * Route to the get user stats and make a backend call to the database for fetching the number of projects for a specific user.
+ */
 router.get('/getUserStats/:userId', function(req, res, next) {
     var userId = req.params.userId;
     resultDB.getUserStats(userId).then(function(results) {

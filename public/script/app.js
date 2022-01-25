@@ -287,6 +287,10 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
     abstract: true,
     resolve: {
       userData: ['$http', function($http) {
+          /**
+           * A frontend call to get the details of the user where id is provided from the session and details are returned from the users
+           * table in database.
+           */
         return $http.get('/api/user').then(function(data) {
           return data.data[0];
         }).catch(function() {
@@ -734,11 +738,17 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
 module.controller('appController', ['$scope', '$http', 'userData', '$window', function($scope, $http, userData, $window) {
 
   $scope.user = userData;
+  /**
+   * A get request is made to get the profile pic of the user provided the id, or else set the default profile pic
+   */
   $scope.user.profilePic = '/api/user/getProfilePic/' + $scope.user['profile_photo'];
 
   $window.location.href = '/UserProfile.html#/profile'
 
   $scope.logout = function() {
+      /**
+       * A get request for logging the user out of the system and redirecting to login page.
+       */
     $http.get('/api/logout').then(function() {
       //window.location = '/';
         window.location.href='/login';
@@ -751,6 +761,10 @@ module.controller('appController', ['$scope', '$http', 'userData', '$window', fu
     //Each image counts for 1 point
     //Each new project gives a bonus of 100
     $scope.gotPoints = false;
+    /**
+     * A get request for fetching the points of the user wherein user id is passed and points are calculated based on the projects
+     * contributed by the user.
+     */
     $http.get('/api/results/getUserStats/' + $scope.user.id).then(function(pdata) {
         var point_data = pdata.data;
         $scope.userPoints = 0;
@@ -863,6 +877,9 @@ module.controller('projectEditController', ['$scope', '$http', '$state','$timeou
 
     $scope.publish = function($state) {
       if ($scope.project.id) {
+          /**
+           * A post request which is used to update the published status of the project.
+           */
         $http.post('/api/project/publish', {projectID: $scope.project.id}).then(function(data) {
           $scope.showPublish = false;
           $scope.project.published = true;
@@ -982,7 +999,10 @@ module.controller('projectsController', ['$scope', '$state', '$http', '$location
         var vm = this;
         vm.showProjectDetails = showProjectDetails;
         vm.currentProject ={};
-
+        console.log("into projects controller")
+        /**
+         * A get request to fetch all the projects for a specific user.
+         */
         $http.get('/api/project/getProjects/public').then(function(response) {
 
             //Only show projects that are public and not archived and published
@@ -1278,7 +1298,9 @@ module.controller('stepOneController', ['$scope', '$state', '$http', 'swalServic
               fd.append('external_sign_up', $scope.project.external_sign_up);
           }
 
-
+          /**
+           * A post request is made to post the new project details into the database created by the user.
+           */
           $http.post('api/project/add', fd, {
           transformRequest: angular.identity,
           headers: {'Content-Type': undefined}
@@ -1407,6 +1429,9 @@ module.controller('stepThreeController', ['$scope', '$templateCache', '$http', '
 
     $scope.deleteAdmin = function(index) {
       var admin = $scope.project.admins[index];
+        /**
+         * A post request which is used to delete the admin for a particular project.
+         */
       $http.post('/api/project/admin/delete',
         {
           userID: admin.id,
@@ -1420,6 +1445,9 @@ module.controller('stepThreeController', ['$scope', '$templateCache', '$http', '
 
     $scope.invite = function() {
       var userID = $scope.project.invite.selectedUser.originalObject.id;
+        /**
+         * A post request which is used to add users to a particular project.
+         */
       $http.post('/api/project/admin/add',
         {
           userID: userID,
@@ -1451,13 +1479,15 @@ module.controller('stepFourController', ['$scope', '$state', '$http', 'swalServi
 
   $scope.uploadMethod = 1;
 
-
   $scope.update_hasLocation = function(){
 
       var data = {
           projectID: $scope.project.id,
           has_location: $scope.hasLocation || 0
       };
+      /**
+       * A post request to update the location for a specific project.
+       */
       $http.post('/api/project/updateHasLocation', data).then(function(data) {
       }, function(response) {
           var msg = response.data.error || 'couldn\'t update location at this time';
@@ -1470,6 +1500,9 @@ module.controller('stepFourController', ['$scope', '$state', '$http', 'swalServi
               projectID: $scope.project.id,
               ar_ready: $scope.project.ar_ready
           };
+          /**
+           * A post request to update the AR attribute for a specific project.
+           */
           $http.post('/api/project/updateARReady', data).then(function(data) {
           }, function(response) {
               var msg = response.data.error || 'couldn\'t update ar ready at this time';
@@ -1502,8 +1535,6 @@ module.controller('stepFourController', ['$scope', '$state', '$http', 'swalServi
       }
     };
 
-
-
       $scope.sendDataSetLocal = function(is_slider) {
           if ($scope.file) {
 
@@ -1512,7 +1543,9 @@ module.controller('stepFourController', ['$scope', '$state', '$http', 'swalServi
             //     url_link = '/api/test/uploadLocalSlider'
             // }
 
-
+              /**
+               * Upload the dataset of the images in the database.
+               */
               Upload.upload({
                   url: url_link,
                   method: 'POST',
@@ -1617,6 +1650,9 @@ module.controller('stepFiveController', ['$scope', '$state', '$http', function($
   };
 
   $scope.validate = function() {
+      /**
+       * Update the privacy of the project by making it either public or private.
+       */
     $http.post('/api/project/changePrivacy', {
       'projectID': $scope.project.id,
       'privacy': $scope.project.privacy
@@ -1759,7 +1795,7 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
                 } else {
                     $scope.dataset_image_list.push(  item.name + '.jpg');
                 }
-
+``
             });
             //then see if we have anything already
             $scope.fetchTutorialItems();
@@ -2170,6 +2206,9 @@ module.controller('userProfileController', ['$scope','$http', '$state', 'project
     $scope.showProjectDetails = showProjectDetails;
 
     // console.log('user' , $scope.user);
+    /**
+     * A get request to fetch all the projects created by a user.
+     */
     $http.get('/api/user/projects/').then(function(data) {
         $scope.projects = data.data;
         // console.log('projects' , data.data);
@@ -2235,7 +2274,9 @@ module.controller('userProfileController', ['$scope','$http', '$state', 'project
         if ($scope.user.bio != '') {
             fd.append('bio',$scope.user.short_bio);
         }
-
+        /**
+         * A post request is made for posting the new details of the user whenever the user wants to edit the profile.
+         */
         $http.post('/api/user/editUser/', fd, {
             transformRequest: angular.identity,
             headers: {'Content-Type': undefined}
@@ -2576,7 +2617,9 @@ module.controller('loginController', ['$scope', '$http', '$state',
         // for (var pair of fd.entries()) {
         //     console.log(pair[0]+ ', ' + pair[1]);
         // }
-
+        /**
+         * A post request is made for posting the new user to the server by giving the user details.
+         */
         $http.post('/api/user/add', fd, {
             transformRequest: angular.identity,
             headers: {'Content-Type': undefined}
@@ -2627,6 +2670,9 @@ module.controller('loginController', ['$scope', '$http', '$state',
             return;
         }
 
+        /**
+         * A request which posts the username and password of the user to update the last login of the user.
+         */
         $http.post('api/login', data).then(function(response) {
             var data = response.data;
             if ('id' in data) {

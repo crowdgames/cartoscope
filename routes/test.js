@@ -147,6 +147,9 @@ router.post('/upload',  [filters.requireLogin, filters.requiredParamHandler(['fi
 
 
 //filters.requireLogin
+/**
+ * Upload the dataset of images to the the database by updating the projects table.
+ */
 router.post('/uploadLocal', fupload.single('file'),
     function(req, res, next) {
 
@@ -222,8 +225,14 @@ router.post('/uploadTutorialLocal', fupload.single('file'),
 
 
 function downloadLocal(loc,downloadID, projectID,ar_ready,remove_before) {
+    /**
+     * A project is updated by setting the dataset id to a specific project id.
+     */
     projectDB.addDataSetID(projectID, downloadID).then(function() {
         // Status starting Download
+        /**
+         * To set the download status of the dataset for the project.
+         */
         downloadStatus.setStatus(downloadID, 1, function(err, res) {
 
         });

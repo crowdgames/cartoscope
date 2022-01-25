@@ -23,6 +23,22 @@ exports.isCodeUnique = function(uniqueCode, done) {
     });
 };
 
+/**
+ * Parameters in the function are attributes of the project which are used to create a new project in the projects table in the database
+ * specific to a user.
+ * @param name project name
+ * @param userID user id creating the project
+ * @param desc decsription of project
+ * @param picID profile picture id of project
+ * @param uniqueCode project id
+ * @param short_name short name of project
+ * @param short_name_friendly
+ * @param short_description description of project
+ * @param is_inaturalist additional feature of project
+ * @param scistarter_link additional feature of project
+ * @param external_sign_up additional feature of project
+ * @returns {Promise} response object
+ */
 exports.addProject = function(name, userID, desc, picID, uniqueCode, short_name, short_name_friendly, short_description, is_inaturalist,scistarter_link,external_sign_up) {
   return new Promise(function(resolve, reject) {
 
@@ -51,6 +67,12 @@ exports.setVisibility = function(projectId, accessLvl) {
   });
 };
 
+/**
+ * An insert query is made to add the admin for a specific project into the project_admins table.
+ * @param projectId id of the project
+ * @param userID id of the user
+ * @returns {Promise} response object
+ */
 exports.addAdmin = function(projectId, userID) {
   return new Promise(function(resolve, error) {
     var connection = db.get();
@@ -78,6 +100,12 @@ exports.getAdmins = function(projectId) {
   });
 };
 
+/**
+ * A delete query is made to delete the admin for a specific project from the project_admins table.
+ * @param projectId id of the project
+ * @param userID id of the user
+ * @returns {Promise} response object
+ */
 exports.deleteAdmin = function(projectId, userID) {
   return new Promise(function(resolve, error) {
     var connection = db.get();
@@ -91,6 +119,12 @@ exports.deleteAdmin = function(projectId, userID) {
   });
 };
 
+/**
+ * An update query which is used to set the access type of a project by specifying project id and privacy as arguments.
+ * @param projectId project id
+ * @param privacy privacy i.e. private or public
+ * @returns {Promise} response object
+ */
 exports.updatePrivacy = function(projectId, privacy) {
   return new Promise(function(resolve, error) {
     var connection = db.get();
@@ -118,6 +152,12 @@ exports.updateImageSource = function(projectId, image_source) {
     });
 };
 
+/**
+ * The project template in the argument is used to update the project in the projects table.
+ * @param projectId id of the project
+ * @param template template of project
+ * @returns {Promise} response object
+ */
 exports.updateTemplate = function(projectId, template) {
   return new Promise(function(resolve, error) {
     var connection = db.get();
@@ -144,7 +184,12 @@ exports.updateDescription = function(projectId, description) {
     });
 };
 
-
+/**
+ * An update query which is used to update the the location of the project given project id and location argument.
+ * @param projectId id of the project
+ * @param has_location location
+ * @returns {Promise} response object
+ */
 exports.updateHasLocation = function(projectId, has_location) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
@@ -159,7 +204,13 @@ exports.updateHasLocation = function(projectId, has_location) {
 };
 
 
-
+/**
+ * An update query which is used to update the the ar_ready attribute of the project given project id and location argument in the projects
+ * table.
+ * @param projectId id of the project
+ * @param ar_ready location
+ * @returns {Promise} response object
+ */
 exports.updateARReady = function(projectId, ar_ready) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
@@ -193,6 +244,11 @@ exports.updateDescriptionName = function(projectId, description,name,short_name,
     });
 };
 
+/**
+ * An update query which is used to set the published status of a specific project id to 1.
+ * @param projectId id of the project
+ * @returns {Promise} response object
+ */
 exports.publish = function(projectId) {
   return new Promise(function(resolve, error) {
     var connection = db.get();
@@ -778,6 +834,11 @@ exports.increaseProgress = function(userId, projectId) {
   );
 };
 
+/**
+ * Create a new table dataset for the the dataset of the images uploaded for a project.
+ * @param datasetID id of the download
+ * @returns {Promise} response object
+ */
 exports.createDataSetTable = function(datasetID) {
   return new Promise(function(resolve, error) {
     var connection = db.get();
@@ -798,6 +859,14 @@ exports.createDataSetTable = function(datasetID) {
   });
 };
 
+/**
+ * Insert into the dataset table the images which are uploaded by the user.
+ * @param datasetID id of the dataset table
+ * @param name name of image
+ * @param x x coordinate
+ * @param y y coordinate
+ * @returns {Promise} response object
+ */
 exports.createDataSetItem = function(datasetID, name, x, y) {
   return new Promise(function(resolve, error) {
     var connection = db.get();
@@ -914,7 +983,12 @@ exports.deleteTutorialItemsFromIds = function(tutorial_item_ids) {
     });
 };
 
-
+/**
+ * An update query to update the dataset id attribute of projects table to the given id in the argument.
+ * @param projectId id of the project which needs to be updated
+ * @param dataSetID id of the dataset
+ * @returns {Promise} response object
+ */
 exports.addDataSetID = function(projectId, dataSetID) {
   return new Promise(function(resolve, error) {
     var connection = db.get();
@@ -969,6 +1043,11 @@ exports.addSurveyTileoscope = function(userID, hitID, response) {
     });
 };
 
+/**
+ * A query made to fetch all the projects of a specific user from the projects table.
+ * @param userID user id
+ * @returns {Promise} object of projects
+ */
 exports.getAllProjectsForUser = function(userID) {
   return new Promise(function(resolve, error) {
     var connection = db.get();
@@ -982,6 +1061,10 @@ exports.getAllProjectsForUser = function(userID) {
   });
 };
 
+/**
+ * Select all the projects from the projects table.
+ * @returns {Promise} object of projects
+ */
 exports.getAllPublicProjects = function() {
     return new Promise(function(resolve, error) {
         var connection = db.get();
