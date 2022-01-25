@@ -4,6 +4,12 @@
 var db = require('../db/db');
 var Promise = require('bluebird');
 
+/**
+ * An insert query which inserts the status of the downloading of a dataset for a project into download status table.
+ * @param id id of the download
+ * @param status status of download
+ * @param done
+ */
 exports.setStatus = function(id, status, done) {
   var connection = db.get();
   connection.query('INSERT INTO downloadStatus (id,status) VALUES(?, ?) ON DUPLICATE KEY UPDATE status = ?',
