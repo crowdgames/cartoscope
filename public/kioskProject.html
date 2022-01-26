@@ -75,10 +75,10 @@
     </style>
 </head>
 <body ng-app="consentApp" ng-controller="kioskProjectController ">
-    <div class="">
-        <div ui-view class="navMenu" name="nav"></div>
-        <div ui-view  name="content"></div>
-        <div ui-view  name="footer"></div>
+    <div class="mainWrapper" >
+        <header ui-view class="navMenu" name="nav"></header>
+        <main ui-view  name="content"></main>
+        <footer ui-view  class="footer" name="footer"></footer>
     </div>
 </body>
 

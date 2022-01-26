@@ -228,3 +228,46 @@ body {
     width: 15em;
     color: black;
 }
+
+.modal-footer {
+    text-align: center;
+    border-top: 1px solid #787575;
+}
+
+.btn-success {
+    color: black;
+    background-color: #9ddc1f;
+    border-color: #9ddc1f;
+    width: 12em;
+}
+
+.modal-title{
+    text-align: center;
+    font-weight: 900;
+}
+
+.modal-header .close{
+    color:black;
+    margin-top: -25px;
+    opacity: 1.2;
+    font-size: 2em;
+}
+
+.mainWrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  header, footer {
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-basis: auto;
+  }
+  
+  main {
+    flex-grow: 1;
+    flex-shrink: 0;
+    flex-basis: auto;
+    padding:2em;
+  }
