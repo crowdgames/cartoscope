@@ -1,8 +1,8 @@
 <div class="header" ng-controller="navController" id="navB">
-    <div class="col-md-4 col-lg-6"></div>
+    <div class="col col-xs-4 col-md-2 col-lg-6"></div>
     <div class="center-element" style="font-size: 1em;text-align:center; position: relative; z-index: 100; color: black;">
         
-        <div class="col-md-2 col-lg-2">
+        <div class="col col-xs-2 col-md-2 col-lg-2">
             <span ng-class="{'selected': setPage('/')}">
                 <a style="color: black;" href={{home_link}} >HOME</a>
                 </span>
@@ -12,13 +12,13 @@
         <!--<a style="color: black;" href={{about_link}} >ABOUT</a>-->
         <!--</span>-->
         <!-- <span class="circ-sep"></span> -->
-        <div class="col-md-2 col-lg-2">
+        <div class="col col-xs-2 col-md-2 col-lg-2">
         <span ng-class="{'selected': setPage('/results')}">
             <a style="color: black;" href={{results_link}} >RESULTS</a>
         </span>
     </div>
         <!-- <span class="circ-sep"></span> -->
-        <div class="col-md-4 col-lg-2">
+        <div class="col col-xs-4 col-md-4 col-lg-2">
         <span ng-class="{'selected':setPage('/termsOfUse')}">
             <a style="color: black;cursor: pointer; text-decoration: underline;" ng-click="showTerms()">TERMS AND CONDITIONS</a>
         </span>
@@ -33,7 +33,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Terms & Conditions</h5>
+                    <h4 class="modal-title">Terms & Conditions</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
