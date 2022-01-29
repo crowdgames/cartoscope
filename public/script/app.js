@@ -476,7 +476,7 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
     }
   });
 
-  $stateProvider.state({
+  /*$stateProvider.state({
     name: 'root.projectEdit.step3',
     url: '/step3',
     views: {
@@ -494,7 +494,7 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
         });
       }
     }
-  });
+  });*/
 
   $stateProvider.state({
     name: 'root.projectEdit.step4',
