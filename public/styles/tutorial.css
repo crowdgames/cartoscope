@@ -1,0 +1,44 @@
+.content-box{
+    line-height:30px;
+    text-align: center;
+}
+.content-box .content-body {
+    overflow: hidden;
+    padding: 10px;
+    font-size: 15px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border: 1px solid gray;
+}
+.content-box .content-progress-bar {
+    height:4em;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    background:black;
+    font-size:18px;
+    font-weight:bold;
+    font-family:verdana;
+    display:block;
+    color:white;
+    display:block;
+    padding:10px;
+    border: 1px solid gray;
+    border-bottom:none;
+}
+
+.progress-bar-div{
+    height: 30px;
+    margin-top: 5px;
+    border-radius: 10px;
+    width: 80%;
+    margin: 8px auto;
+    text-align: center;
+}
+
+.text-center{
+    text-align:center;
+}
+
+.progress-bar-success{
+    background-color:#9cdc1f;
+}

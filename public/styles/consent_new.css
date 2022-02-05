@@ -112,7 +112,7 @@ body {
     outline: none;
     margin: 5px 10px;
     color: black;
-    text-transform: uppercase;
+    text-transform: capitalize;
 }
 
 
@@ -236,8 +236,8 @@ body {
 
 .btn-success {
     color: black;
-    background-color: #9ddc1f;
-    border-color: #9ddc1f;
+    background-color: #9cdc1f;
+    border-color: #9cdc1f;
     width: 12em;
 }
 

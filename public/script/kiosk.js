@@ -2139,7 +2139,7 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
 
         var button_cols = {
             '4': '#ff0000',    //red
-            '1': '#00ff00',   //green
+            '1': '#9cdc1f',   //green
             '5': '#0000ff',     //blue
             '3': '#ffa500',   //orange
             '2': '#ffff00',   //yellow
@@ -2147,7 +2147,7 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
 
         };
 
-        $scope.button_cols = ['#00ff00','#ffff00','#ffa500','#ff0000','#0000ff','#8a2be2',"gray"];
+        $scope.button_cols = ['#9cdc1f','#ffff00','#ffa500','#ff0000','#0000ff','#8a2be2',"gray"];
 
 
         //for NGS tasks
