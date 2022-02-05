@@ -42,7 +42,7 @@ button {
   padding: 0;
 }
 .center-1 {
-  background-color: #9cdc1f;
+  background-color: #9ACA3C;
   background-image: url('../images/Layer13.png');
   background-size: 100% 100%;
   height: 100%;
@@ -58,7 +58,7 @@ button {
   text-align: right;
 }
 .center-1 .content-links-wrapper .circ-sep {
-  background-color: #9cdc1f;
+  background-color: #9ACA3C;
   border-radius: 5px;
   display: inline-block;
   height: 5px;
@@ -80,7 +80,7 @@ button {
   font-size: 16px;
 }
 .center-1 .center-content .contrib-btn {
-  background-color: #9cdc1f;
+  background-color: #9ACA3C;
   border-radius: 8px;
   border: none;
   color: #000000;
@@ -123,7 +123,7 @@ button {
   color: #26272a;
 }
 .side-contrib-btn {
-  background-color: #9cdc1f;
+  background-color: #9ACA3C;
   padding-bottom: 10px;
   padding-top: 10px;
   text-align: center;
@@ -158,7 +158,7 @@ button {
   width: 100%;
 }
 .profile-stats .stats .score {
-  color: #9cdc1f;
+  color: #9ACA3C;
   display: block;
   font-size: 20px;
   line-height: 1;
@@ -179,7 +179,7 @@ button {
   min-width: 120px;
 }
 .hanging-pic {
-  background-color: #9cdc1f;
+  background-color: #9ACA3C;
   border-bottom-left-radius: 60px;
   border-bottom-right-radius: 60px;
   width: 140px;
@@ -193,7 +193,7 @@ button {
 .new-proj-btn {
   background: transparent;
   border-radius: 5px;
-  border: 3px solid #9cdc1f;
+  border: 3px solid #9ACA3C;
   color: white;
   font-weight: 400;
   margin-top: 20px;
@@ -209,7 +209,7 @@ button {
   width: 100%;
 }
 .progress-1 .prog {
-  background: #9cdc1f;
+  background: #9ACA3C;
   height: 100%;
   width: 70%;
 }
@@ -224,7 +224,7 @@ button {
   width: 100%;
 }
 .up-stats .points {
-  color: #9cdc1f;
+  color: #9ACA3C;
   display: block;
   font-size: 16px;
   font-weight: bold;
@@ -236,17 +236,17 @@ button {
   padding-right: 30px;
 }
 .profile-main .name .txt {
-  color: #9cdc1f;
+  color: #9ACA3C;
   font-size: 30px;
   margin-top: 100px;
   display: inline-block;
 }
 .profile-main .name .txt .edit-btn {
   font-size: 8px;
-  border: 2px solid #9cdc1f;
+  border: 2px solid #9ACA3C;
   padding: 4px 15px;
   border-radius: 10px;
-  color: #9cdc1f;
+  color: #9ACA3C;
   vertical-align: middle;
   margin-left: 20px;
   cursor: pointer;
@@ -286,10 +286,10 @@ button {
 }
 .project-box .foot .name {
   font-size: 8px;
-  border: 2px solid #9cdc1f;
+  border: 2px solid #9ACA3C;
   padding: 4px 10px;
   border-radius: 10px;
-  color: #9cdc1f;
+  color: #9ACA3C;
 }
 .group-box {
   background: white;
@@ -315,10 +315,10 @@ button {
 }
 .group-box .foot .name {
   font-size: 8px;
-  border: 2px solid #9cdc1f;
+  border: 2px solid #9ACA3C;
   padding: 4px;
   border-radius: 10px;
-  color: #9cdc1f;
+  color: #9ACA3C;
 }
 .project-creation-parent {
   display: flex;
@@ -357,7 +357,7 @@ button {
 }
 .project-creation-parent .tab-body .tabs span.right {
   float: right;
-  background: #9cdc1f;
+  background: #9ACA3C;
   color: #26272a;
   font-weight: bold;
 }
@@ -376,7 +376,7 @@ button {
 }
 .project-creation-parent .tab-body .steps-view .step-1 textarea {
   width: 100%;
-  border: 2px solid #9cdc1f;
+  border: 2px solid #9ACA3C;
   outline: none;
   padding-left: 5px;
   resize: vertical;
@@ -384,13 +384,13 @@ button {
 }
 .project-creation-parent .tab-body .steps-view .step-1 input {
   width: 100%;
-  border: 2px solid #9cdc1f;
+  border: 2px solid #9ACA3C;
   outline: none;
   padding-left: 5px;
 }
 .project-creation-parent .tab-body .steps-view .step-1 .file-sel {
   display: block;
-  border: 2px solid #9cdc1f;
+  border: 2px solid #9ACA3C;
   outline: none;
   padding-left: 5px;
   width: 250px;
@@ -414,11 +414,11 @@ button {
 
 .project-creation-parent .tab-body .steps-view .step-1 .buttons .inaturalist-button {
   height: 135px;
-  /*background: #9cdc1f;*/
+  /*background: #9ACA3C;*/
   background: #26272a;
   border-radius: 10px;
-  border: 3px solid #9cdc1f;
-  color: #9cdc1f;
+  border: 3px solid #9ACA3C;
+  color: #9ACA3C;
   margin-right: 20px;
   float: left;
   width: 300px;
@@ -438,7 +438,7 @@ button {
 }
 .project-creation-parent .tab-body .steps-view .step-1 .buttons .inaturalist-button.active {
   /*background: #26272a;*/
-  background: #9cdc1f;
+  background: #9ACA3C;
   color: #26272a;
 }
 .project-creation-parent .tab-body .steps-view .step-1 .buttons .inaturalist-button.active .sel-check {
@@ -468,7 +468,7 @@ button {
 .project-creation-parent .tab-body .steps-view .step-2 .sel-task select {
   display: block;
   width: 50%;
-  border: 2px solid #9cdc1f;
+  border: 2px solid #9ACA3C;
   outline: none;
   padding-left: 5px;
 }
@@ -478,7 +478,7 @@ button {
 }
 .project-creation-parent .tab-body .steps-view .step-2 .question-box input {
   width: 100%;
-  border: 2px solid #9cdc1f;
+  border: 2px solid #9ACA3C;
   outline: none;
   padding-left: 5px;
   min-height: 10px;
@@ -502,7 +502,7 @@ button {
   vertical-align: top;
   cursor: pointer;
   outline: none;
-  color: #9cdc1f;
+  color: #9ACA3C;
   font-size: 12px;
   position: absolute;
   right: 0;
@@ -533,7 +533,7 @@ button {
 }
 .project-creation-parent .tab-body .steps-view .step-2 .custom-answers .options .left input {
   width: 100%;
-  border: 2px solid #9cdc1f;
+  border: 2px solid #9ACA3C;
   outline: none;
   padding-left: 5px;
   border-radius: 20px;
@@ -555,8 +555,8 @@ button {
   border: 2px solid;
 }
 .project-creation-parent .tab-body .steps-view .step-2 .custom-answers .options .left .c1 {
-  background-color: #9cdc1f;
-  border-color: #9cdc1f;
+  background-color: #9ACA3C;
+  border-color: #9ACA3C;
 }
 .project-creation-parent .tab-body .steps-view .step-2 .custom-answers .options .left .c2 {
   background-color: #FFF200;
@@ -592,7 +592,7 @@ button {
 }
 .project-creation-parent .tab-body .steps-view .step-3 .holder .angucomplete-holder .invite {
   width: 300px;
-  border: 2px solid #9cdc1f;
+  border: 2px solid #9ACA3C;
   outline: none;
   padding-left: 5px;
 }
@@ -623,7 +623,7 @@ button {
   clear: both;
 }
 .project-creation-parent .tab-body .steps-view .step-3 .holder .angucomplete-holder .angucomplete-selected-row {
-  background-color: #9cdc1f;
+  background-color: #9ACA3C;
   color: #26272a;
 }
 .project-creation-parent .tab-body .steps-view .step-3 .holder .msg {
@@ -668,7 +668,7 @@ button {
 }
 .project-creation-parent .tab-body .steps-view .step-4 .holder .invite {
   width: 300px;
-  border: 2px solid #9cdc1f;
+  border: 2px solid #9ACA3C;
   outline: none;
   padding-left: 5px;
 }
@@ -684,7 +684,7 @@ button {
 }
 .project-creation-parent .tab-body .steps-view .step-4 .holder .invite-btn {
   margin-top: 10px;
-  background: #9cdc1f;
+  background: #9ACA3C;
   color: #26272a;
   border: none;
   border-radius: 20px;
@@ -701,11 +701,11 @@ button {
 }
 .project-creation-parent .tab-body .steps-view .step-4 .holder .buttons .upload-button {
   height: 135px;
-  /*background: #9cdc1f;*/
+  /*background: #9ACA3C;*/
   background: #26272a;
   border-radius: 10px;
-  border: 3px solid #9cdc1f;
-  color: #9cdc1f;
+  border: 3px solid #9ACA3C;
+  color: #9ACA3C;
   margin-right: 20px;
   float: left;
   width: 300px;
@@ -726,7 +726,7 @@ button {
 }
 .project-creation-parent .tab-body .steps-view .step-4 .holder .buttons .upload-button.active {
   /*background: #26272a;*/
-  background: #9cdc1f;
+  background: #9ACA3C;
   color: #26272a;
 }
 .project-creation-parent .tab-body .steps-view .step-4 .holder .buttons .upload-button.active .sel-check {
@@ -749,11 +749,11 @@ button {
 }
 .project-creation-parent .tab-body .steps-view .step-5 .buttons .privacy-button {
   height: 135px;
-  /*background: #9cdc1f;*/
+  /*background: #9ACA3C;*/
   background: #26272a;
   border-radius: 10px;
-  border: 3px solid #9cdc1f;
-  color: #9cdc1f;
+  border: 3px solid #9ACA3C;
+  color: #9ACA3C;
   margin-right: 20px;
   float: left;
   width: 300px;
@@ -773,7 +773,7 @@ button {
 }
 .project-creation-parent .tab-body .steps-view .step-5 .buttons .privacy-button.active {
   /*background: #26272a;*/
-  background: #9cdc1f;
+  background: #9ACA3C;
   color: #26272a;
 }
 .project-creation-parent .tab-body .steps-view .step-5 .buttons .privacy-button.active .sel-check {
@@ -785,7 +785,7 @@ button {
 }
 .project-creation-parent .tab-body .steps-view .step-5 .link .invite {
   width: 620px;
-  border: 2px solid #9cdc1f;
+  border: 2px solid #9ACA3C;
   outline: none;
   padding-left: 5px;
   margin-top: 10px;
@@ -800,12 +800,12 @@ button {
   outline: none;
 }
 .project-creation-parent .save-btn {
-  background: #9cdc1f;
+  background: #9ACA3C;
   color: #26272a;
   float: left;
 }
 .project-creation-parent .next-btn {
-  background: #9cdc1f;
+  background: #9ACA3C;
   color: #26272a;
   float: right;
 }
@@ -859,7 +859,7 @@ button {
   align-items: center;
 }
 .project-page-body .main-body .search-panel .search-box {
-  border: 1px solid #9cdc1f;
+  border: 1px solid #9ACA3C;
   padding: 1px;
   background: #F6F6F6;
   align-items: center;
@@ -879,7 +879,7 @@ button {
   margin-right: 50px;
 }
 .project-page-body .main-body .search-panel .button-panel button {
-  background: #9cdc1f;
+  background: #9ACA3C;
   font-weight: 800;
   color: #26272a;
   padding: 5px 10px;
@@ -913,7 +913,7 @@ button {
 .project-page-body .main-body .slmb .input-row {
   padding-right: 31px;
   position: inherit;
-  border: 1px solid #9cdc1f;
+  border: 1px solid #9ACA3C;
   height: 30px;
 }
 .project-page-body .main-body .slmb .input-row input {
@@ -933,5 +933,5 @@ button {
   padding-right: 10px;
   outline: none;
   color: #26272a;
-  background: #9cdc1f;
+  background: #9ACA3C;
 }

@@ -79,8 +79,8 @@ img{
     text-align: center;
 }
 .parent-view .task-body .answers .c1 {
-    background-color: #9cdc1f;
-    border-color: #9cdc1f;
+    background-color: #9ACA3C;
+    border-color: #9ACA3C;
 }
 
 
@@ -154,7 +154,7 @@ button:hover{
 
 .options:hover {
     background-color: #7F7F7F;
-    /*border: 5px #9cdc1f solid;*/
+    /*border: 5px #9ACA3C solid;*/
 }
 
 .imgDiv{
@@ -300,7 +300,7 @@ div.jx-slider {
 
 @media (max-width: 768px) {
     .done-button{
-        background-color:#9cdc1f;
+        background-color:#9ACA3C;
         text-transform: uppercase;
         margin-top:0;
         top:0;

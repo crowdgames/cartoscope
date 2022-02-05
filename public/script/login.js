@@ -25,7 +25,7 @@ app.controller('loginController', ['$scope', '$http', '$location', function($sco
       
       swal({
         title: 'Error!',
-        confirmButtonColor: '#9cdc1f',
+        confirmButtonColor: '#9ACA3C',
         allowOutsideClick: true,
         text: 'Please enter a username',
         type: 'error',
@@ -39,7 +39,7 @@ app.controller('loginController', ['$scope', '$http', '$location', function($sco
     if (!$scope.userRegData.password) {
       swal({
         title: 'Error!',
-        confirmButtonColor: '#9cdc1f',
+        confirmButtonColor: '#9ACA3C',
         allowOutsideClick: true,
         text: 'Please enter a password',
         type: 'error',
@@ -49,7 +49,7 @@ app.controller('loginController', ['$scope', '$http', '$location', function($sco
     } else if ($scope.userRegData.password != $scope.userRegData.repPassword) {
       swal({
         title: 'Error!',
-        confirmButtonColor: '#9cdc1f',
+        confirmButtonColor: '#9ACA3C',
         allowOutsideClick: true,
         text: 'Passwords do not match',
         type: 'error',
@@ -63,7 +63,7 @@ app.controller('loginController', ['$scope', '$http', '$location', function($sco
     if (!validateEmail($scope.userRegData.email)) {
       swal({
         title: 'Error!',
-        confirmButtonColor: '#9cdc1f',
+        confirmButtonColor: '#9ACA3C',
         allowOutsideClick: true,
         text: 'Invalid/Missing Email',
         type: 'error',
@@ -80,7 +80,7 @@ app.controller('loginController', ['$scope', '$http', '$location', function($sco
     if (!$scope.userRegData.agreePrivacyPolicy) {
       swal({
         title: 'Error!',
-        confirmButtonColor: '#9cdc1f',
+        confirmButtonColor: '#9ACA3C',
         allowOutsideClick: true,
         text: 'Please agree to our privacy policy',
         type: 'error',
@@ -104,7 +104,7 @@ app.controller('loginController', ['$scope', '$http', '$location', function($sco
       var msg = response.data.error || 'error';
       swal({
         title: 'Error!',
-        confirmButtonColor: '#9cdc1f',
+        confirmButtonColor: '#9ACA3C',
         allowOutsideClick: true,
         text: msg,
         type: 'error',
@@ -120,7 +120,7 @@ app.controller('loginController', ['$scope', '$http', '$location', function($sco
     if (!data.username) {
       swal({
         title: 'Error!',
-        confirmButtonColor: '#9cdc1f',
+        confirmButtonColor: '#9ACA3C',
         allowOutsideClick: true,
         text: 'Invalid Username',
         type: 'error',
@@ -133,7 +133,7 @@ app.controller('loginController', ['$scope', '$http', '$location', function($sco
     if (!data.password) {
       swal({
         title: 'Error!',
-        confirmButtonColor: '#9cdc1f',
+        confirmButtonColor: '#9ACA3C',
         allowOutsideClick: true,
         text: 'Please enter a password',
         type: 'error',
@@ -151,7 +151,7 @@ app.controller('loginController', ['$scope', '$http', '$location', function($sco
       var msg = response.data.error || 'error';
       swal({
         title: 'Error!',
-        confirmButtonColor: '#9cdc1f',
+        confirmButtonColor: '#9ACA3C',
         allowOutsideClick: true,
         text: msg,
         type: 'error',
