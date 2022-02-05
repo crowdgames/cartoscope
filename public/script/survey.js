@@ -202,7 +202,7 @@ module.config(function($stateProvider, $urlRouterProvider) {
 
 
           $scope.hex_array = ['#9ACA3C',
-              '#FFF200',
+              '#F5EA69',
               '#F7941D',
               '#ff0000',
               '#0072BC',

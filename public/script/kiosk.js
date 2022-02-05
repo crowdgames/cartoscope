@@ -596,7 +596,7 @@ module.controller('heatMapController', function($scope, $http, $window,heatMapPr
             //Buttons for project 2:
             $scope.options2 = [{'name':'Yes','color': '#9ACA3C','ncolor': 1},
                 {'name':'No','color': '#DC1F3A','ncolor': 4},
-                {'name':'Maybe','color': '#FFF200','ncolor': 2}];
+                {'name':'Maybe','color': '#F5EA69','ncolor': 2}];
 
             //generate first map
             $scope.map2 = {
@@ -655,7 +655,7 @@ module.controller('heatMapProjectController', function($scope, $http, $window,$s
     };
 
     $scope.hex_array = ['#9ACA3C',
-        '#FFF200',
+        '#F5EA69',
         '#F7941D',
         '#ff0000',
         '#0072BC',
@@ -1121,7 +1121,7 @@ module.controller('gridMapProjectController',
     };
 
     $scope.hex_array = ['#9ACA3C',
-        '#FFF200',
+        '#F5EA69',
         '#F7941D',
         '#ff0000',
         '#0072BC',
@@ -1687,7 +1687,7 @@ module.controller('landlossResultsController',
             '/images/markers/marker_grey.svg'];
 
         $scope.hex_array = ['#9ACA3C',
-            '#FFF200',
+            '#F5EA69',
             '#F7941D',
             '#ff0000',
             '#0072BC',
@@ -1877,7 +1877,7 @@ module.controller('resultsHubController',
             '/images/markers/marker_grey.svg'];
 
         $scope.hex_array = ['#9ACA3C',
-            '#FFF200',
+            '#F5EA69',
             '#F7941D',
             '#ff0000',
             '#0072BC',

@@ -593,7 +593,7 @@ exports.generateTileoscopeARDatasetInfoJSON = function(unique_code) {
 
         var cat_colors_scheme = {
             1: '#9ACA3C',
-            2: '#FFF200',
+            2: '#F5EA69',
             3: '#F7941D',
             4: '#DC1F3A',
             5: '#0072BC',

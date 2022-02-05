@@ -1193,7 +1193,7 @@ module.controller('projectController', ['$scope', '$state', '$http', '$statePara
             '1': '#9ACA3C',
             '2': '#DC1F3A',
             '3': '#f7941d',
-            '4': '#FFF200',
+            '4': '#F5EA69',
             '5': '#0072BC',
             '6': '#8A2BE2'
         };
