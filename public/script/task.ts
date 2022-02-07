@@ -839,7 +839,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
               swal({
                   title: "Explanation",
-                  confirmButtonColor: '#9cdc1f',
+                  confirmButtonColor: '#9ACA3C',
                   allowOutsideClick: true,
                   html: true,
                   text: text,
@@ -848,7 +848,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           } else {
               swal({
                   title: "Explanation",
-                  confirmButtonColor: '#9cdc1f',
+                  confirmButtonColor: '#9ACA3C',
                   allowOutsideClick: true,
                   text: "No additional information available for this example.",
                   confirmButtonText: 'Back'
@@ -863,7 +863,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               text: "Good job! Click continue to keep labeling images, or Survey to quit and go to the survey.",
               type: 'info',
               showCancelButton: true,
-              confirmButtonColor: '#9cdc1f',
+              confirmButtonColor: '#9ACA3C',
               cancelButtonColor: '#d33',
               confirmButtonText: 'Proceed to Survey',
               cancelButtonText: 'Continue Labeling',

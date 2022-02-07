@@ -39,7 +39,7 @@ body {
 .consent-button {
     margin-top: 20px;
     border-radius: 10px;
-    background-color: #9cdc1f;
+    background-color: #9ACA3C;
     color: #000;
     font-size: 16px;
     outline: none;
@@ -112,7 +112,7 @@ body {
     outline: none;
     margin: 5px 10px;
     color: black;
-    text-transform: uppercase;
+    text-transform: capitalize;
 }
 
 
@@ -236,8 +236,8 @@ body {
 
 .btn-success {
     color: black;
-    background-color: #9ddc1f;
-    border-color: #9ddc1f;
+    background-color: #9ACA3C;
+    border-color: #9ACA3C;
     width: 12em;
 }
 
