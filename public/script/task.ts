@@ -285,10 +285,48 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           $http.post('api/tasks/submitCairn', body).then((data: object) => console.log(data));
       }
 
-      $scope.showDebug = false;
+      $scope.showDebug = true;
+      vm.elementy = undefined;
+      vm.deboog = 0;
       // activated by hitting the debug button
       vm.handleDebug = () => {
-          console.log("Debugging");
+          let black_square = "⬛";
+          let green_square = "🟩";
+          let red_square   = "🟥";
+          let blue_square  = "🟦";
+          let white_square = "⬜";
+
+          if (vm.deboog == 0) {
+              $scope.showSidebar = true;
+              let sidebar = document.getElementById("cairn-sidebar-header");
+              vm.elementy = document.createElement("p");
+              vm.elementy.setAttribute("class", "cairn-message");
+              sidebar?.insertAdjacentElement("afterend", vm.elementy);
+              vm.deboog = 1;
+          } else if (vm.deboog == 0) {
+              vm.elementy.innerText = "";
+              for (let i = 0; i < 11; i++) {
+                  vm.elementy.innerText += black_square + black_square + black_square + '\n';
+              }
+              vm.deboog = 2;
+          } else if (vm.deboog == 1) {
+              vm.elementy.innerText = "";
+              let ratio = Math.round(Math.random() * 10);
+              let vote  = Math.random() < 0.5 ? 1 : 0;
+              for (let i = 0; i < 11; i++) {
+                  let z = 11 - i;
+                  if (z - ratio == 1 && vote == 0) vm.elementy.innerText += white_square;
+                  else vm.elementy.innerText += z > ratio ? black_square : green_square;
+                  vm.elementy.innerText += black_square;
+                  if (z + ratio == 11 && vote == 1) vm.elementy.innerText += white_square;
+                  else vm.elementy.innerText += z > (10 - ratio) ? black_square : red_square;
+                  vm.elementy.innerText += "\n";
+              }
+              console.log("-----");
+              console.log(ratio);
+              console.log(vote);
+              vm.deboog = 1;
+          }
       }
 
       vm.wasContinueHit = false;
