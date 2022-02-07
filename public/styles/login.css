@@ -672,8 +672,9 @@ html .modal-kill-btn button {
   font-family: 'Paytone One', sans-serif;
 }
 .consent-button:hover {
-  background-color: #7F7F7F;
-  border: 5px #9ACA3C solid;
+  background-color: #779c2d;
+  border: 5px #779c2d solid;
+  color:black;
 }
 .top {
   top: 0;

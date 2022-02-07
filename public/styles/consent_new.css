@@ -241,6 +241,12 @@ body {
     width: 12em;
 }
 
+.btn-success:hover {
+    background-color: #779c2d;
+    border: 5px #779c2d solid;
+    color:black;
+  }
+
 .modal-title{
     text-align: center;
     font-weight: 900;
