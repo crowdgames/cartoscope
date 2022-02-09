@@ -464,29 +464,43 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       $scope.showCairnMessage = false;
 
       vm.startMessageCairn = () => {
-          $scope.showCairnMessage = true;
+          $scope.showMessageSidebar = true;
           vm.populateMessageCairn();
       }
 
       vm.populateMessageCairn = () => {
-          var messages = ["Your help shows that you are contributing to the world!",
-              "You are doing great",
-              "It's ok if you don't know",
-              "Don't worry about getting it exactly right"
-          ]
-
-          messages.forEach((message: string, idx: number) =>
-              setTimeout(() => vm.insertMessage(message),
-                  idx * 1000));
-      }
-
-      vm.insertMessage = (message: string) => {
-          let textarea = document.getElementById("cairn-message-header");
-          let messageElement = document.createElement("button");
-          messageElement.innerText = message;
-          messageElement.style += "display: inline-block; margin: auto; width: 500px; height: 60px; padding:20px";
-          messageElement.setAttribute("class", "cairn-message1");
-          textarea?.insertAdjacentElement("afterend", messageElement);
+          let body = {
+              projectID: vm.data.id,
+              cairnType: "message",
+              numberRequested: 1,
+              random: true,
+          };
+          // let the messages filter in, with this many ms between them showing up
+          let msBetweenMessages = 1000;
+          // messages already in the sidebar
+          let existingMessages = Array.from(document.getElementById("cairn-sidebar-header1")).map(p => (p as HTMLParagraphElement).innerText);
+          /**
+           * A post request is made to fetch the cairns for a particular user by giving the project id, cairn type and number of messages which is 1
+           * because we are randomly displaying a single message to the user.
+           */
+          $http.post('api/tasks/getCairns', body).then((serverReturn: object) => {
+              console.log(serverReturn);
+              if (serverReturn["data"].length > 0)
+                  serverReturn["data"]
+                      .map((datum: object) => decodeURI(datum["message"]))
+                      .filter((message: string) => existingMessages.filter(existingMsg => existingMsg === message).length === 0)
+                      .reverse()
+                      .forEach((message: string, idx: number) =>
+                        setTimeout(() => {
+                          let textarea = document.getElementById("cairn-sidebar-header1");
+                          let messageElement = document.createElement("p");
+                          messageElement.innerText = message;
+                          messageElement.setAttribute("class", "cairn-message2");
+                          textarea?.insertAdjacentElement("afterend", messageElement);
+                      },
+                      idx * 1000));
+              else console.error("No relevant soapstone messages found");
+          });
       }
 
       vm.clearMessages = () => document.querySelectorAll('.cairn-message1').forEach(e => e.remove());
@@ -494,7 +508,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.clearMessagesDisplay = () => document.querySelectorAll('.cairn-message2').forEach(e => e.remove());
 
       vm.startMessageDisplay = () => {
-          $scope.showMessageSidebar = true;
+          $scope.showCairnMessage = true;
           var messages = ["Your help shows that you are contributing to the world!",
               "You are doing great",
               "It's ok if you don't know",
@@ -502,16 +516,32 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           ]
 
           messages.reverse().forEach((message: string, idx: number) =>
-              setTimeout(() => {
-                      let textarea = document.getElementById("cairn-sidebar-header1");
-                      let messageElement = document.createElement("button");
-                      messageElement.innerText = message;
-                      messageElement.style += "display: inline-block; margin: auto; width: 500px; height: 60px; padding:20px";
-                      messageElement.setAttribute("class", "cairn-message2");
-                      textarea?.insertAdjacentElement("afterend", messageElement);
-                  },
+              setTimeout(() => vm.insertMessage(message, idx),
                   idx * 1000));
       };
+
+      vm.insertMessage = (message: string, idx: number) => {
+          let textarea = document.getElementById("cairn-message-header");
+
+          let messageElement = document.createElement("p");
+          messageElement.innerText = message;
+          // messageElement.style += "display: inline-block; margin: auto; width: 500px; height: 60px; padding:20px";
+          messageElement.addEventListener('click', (e) => {
+              let message = messageElement.innerText;
+              vm.submitCairn("message", message);
+          });
+          messageElement.setAttribute("class", "cairn-message2");
+          messageElement.setAttribute("id", "message" + (idx+1));
+          textarea?.insertAdjacentElement("afterend", messageElement);
+
+          // let messageElement = document.createElement("button");
+          // messageElement.innerHTML = message;
+
+          // messageElement.style += "display: inline-block; margin: auto; width: 500px; height: 60px; padding:20px";
+
+          // messageElement.setAttribute("class", "cairn-message1");
+          // textarea?.insertAdjacentElement("afterend", messageElement);
+      }
 
 
       // == SOAPSTONE CREATE CODE ==

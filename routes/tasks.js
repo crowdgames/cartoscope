@@ -648,6 +648,10 @@ router.post('/updateProgress', [filters.requireLogin, filters.requiredParamHandl
     });
 
 // See git for the old cairn submission function
+/**
+ * A post request is made to the project database in which message, cairn type, project id, user id and some other parameters are given. It calls the
+ * store cairn message which inserts the values into the database so that we can fetch the cairn from it later.
+ */
 router.post('/submitCairn', [filters.requireLogin, filters.requiredParamHandler(['projectID', 'message', 'progress', 'cairnType', 'timeWhenCairnShownToPlayer', 'timeCairnSubmitted', 'taskName'])], (req, res) => {
         let message                    = req.body.message;
         let progress                   = req.body.progress;
@@ -668,6 +672,11 @@ router.post('/submitCairn', [filters.requireLogin, filters.requiredParamHandler(
             .catch((err) => res.status(500).send({err: err.code || 'Could not submit cairn'}));
     });
 
+/**
+ * A post request is made to get the cairns for a specific cairn type as requested according to the number. Here there are two options provided
+ * which is generating messages randomly or generating messages which are most recent. Both of these are fetching messages from cartoscope_cairns table
+ * in the project database.
+ */
 router.post('/getCairns', [filters.requiredParamHandler(['projectID', 'cairnType'])], (req, res) => {
     // WARNING!! projectID is ignored. See getRandomCairnsForProject and getRecentCairnsForProject for explanation
     let numberRequested = req.body.numberRequested || 1;
@@ -675,6 +684,7 @@ router.post('/getCairns', [filters.requiredParamHandler(['projectID', 'cairnType
     let projectID       = req.body.projectID; // IGNORED
     let userID          = req.session.passport.user ? req.session.passport.user.id : -1; // -1 is fine, since userID is only used to filter cairns we shouldn't return
     let random          = "random" in req.body ? req.body.random : true; // random default true
+    console.log("number requested" + numberRequested);
     if (random)
         projectDB.getRandomCairnsForProject(userID, projectID, cairnType, numberRequested)
             .then((data) => {console.log(data); res.send(data)})

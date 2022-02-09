@@ -1383,6 +1383,15 @@ exports.fetchCairnMessage = function(userID, projectID, progress) {
  * An elegant solution would be to reimplement projectID checking, and have something that says "get me cairns from this list of projects"
  * A less elegant solution would be to define a new cairnType for each kind of project
  */
+/**
+ * This method makes a query in which random messages are selected from all other users from the cartoscope_cairns table using the parameters user id, cairn type
+ * and number of cairns requested.
+ * @param userID id of the user
+ * @param projectID id of the project
+ * @param cairnType cairn type
+ * @param numberCairnsRequested number of cairns requested
+ * @returns {Promise}
+ */
 exports.getRandomCairnsForProject = (userID, projectID, cairnType, numberCairnsRequested) => {
     return new Promise((resolve, error) => 
         db.get()
@@ -1391,6 +1400,15 @@ exports.getRandomCairnsForProject = (userID, projectID, cairnType, numberCairnsR
     );
 };
 
+/**
+ * This method makes a query in which recent messages are selected from all other users from the cartoscope_cairns table using the parameters user id, cairn type
+ * and number of cairns requested.
+ * @param userID id of the user
+ * @param projectID id of the project
+ * @param cairnType cairn type
+ * @param numberCairnsRequested number of cairns requested
+ * @returns {Promise}
+ */
 exports.getRecentCairnsForProject = (userID, projectID, cairnType, numberCairnsRequested) => {
     return new Promise((resolve, error) => 
         db.get()
