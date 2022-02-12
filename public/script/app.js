@@ -476,8 +476,6 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
     }
   });
 
-//Commented the code for admin step (step 3 in project creation) since it is no longer used.
-
   /*$stateProvider.state({
     name: 'root.projectEdit.step3',
     url: '/step3',
