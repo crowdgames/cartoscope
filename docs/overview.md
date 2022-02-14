@@ -14,3 +14,6 @@ Tutorial/Gaming Code
     - Styles in `public/styles/consent_new.css`, `public/styles/consent.css`
 - Code of tutorial pages are in `public/templates/kiosk/example.html`
 
+Error Modal Popup
+- Swalservice, sweet alert http://oitozero.github.io/ngSweetAlert/#/home check survey.js for reference.
+
