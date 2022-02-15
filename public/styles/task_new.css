@@ -397,12 +397,15 @@ div.jx-slider {
 }
 
 .progress-bar-div{
-    height: 30px;
+    /* height: 30px;
+    width: 100%; */
     margin-top: 5px;
     border-radius: 10px;
-    width: 80%;
-    margin: 8px auto;
+    margin: 18px auto;
     text-align: center;
+    width :100%;
+    height: 23px;
+    background-color: white;
 }
 
 .text-center{
@@ -411,4 +414,26 @@ div.jx-slider {
 
 .progress-bar-success{
     background-color:#9ACA3C;
+}
+
+.image-number{
+    background: #FEFEFE;
+    border: 1px solid #221D1B;
+    box-sizing: border-box;
+    border-radius: 5px;
+    width: 72px;
+    height: 70px;
+    color: #221D1B;
+    font-size: 14px;
+}
+
+.image-number h5{
+    font-family: Raleway;
+font-style: normal;
+font-weight: bold;
+font-size: 28px;
+line-height: 20px;
+align-items: center;
+text-align: center;
+color: #221D1B;
 }
