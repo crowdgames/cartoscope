@@ -87,8 +87,10 @@ span.required_answer {
 }
 
 .submit-button:hover{
-    background-color: #7F7F7F;
-    border: 5px #9ACA3C solid;
+    background-color: #779c2d;
+    border: 5px #779c2d solid;
+    color:black;
+    opacity: 1.5;
 }
 
 

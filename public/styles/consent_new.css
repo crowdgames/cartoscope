@@ -245,6 +245,7 @@ body {
     background-color: #779c2d;
     border: 5px #779c2d solid;
     color:black;
+    opacity: 1.5;
   }
 
 .modal-title{
@@ -276,4 +277,12 @@ body {
     flex-shrink: 0;
     flex-basis: auto;
     padding:2em;
+  }
+
+  .navMenu a{
+    cursor: pointer;
+  }
+
+  .navMenu a:hover{
+    text-decoration: underline;
   }

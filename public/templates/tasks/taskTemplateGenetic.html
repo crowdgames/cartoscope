@@ -1,10 +1,12 @@
-<div class="task-body container">
-    <nav class="navbar navbar-top navbar-fixed-top">
+<div class="task-body">
+
+    <!-- <nav class="navbar navbar-top navbar-fixed-top"> -->
+        <div class="maingame-progress-bar">
         <div class="container text-center">
 
             <p ng-if="model.viewProgress && model.progress_type =='total' " class="navbar-text">Image {{model.data.progress <= model.data.size ? model.data.progress:model.data.size }} out of {{model.data.size}}</p>
             <h5 ng-if="model.viewProgress && model.progress_type =='block' " class="navbar-text">Image {{model.current_block_progress +1 }} out of {{model.current_block_size}} until the next task type</h5>
-                <h5 ng-if="model.viewProgress && model.progress_type =='current' " class="navbar-text">Image {{model.overall_progress_view +1 }} </h5>
+            <h5 ng-if="model.viewProgress && model.progress_type =='current' " class="navbar-text">Image {{model.overall_progress_view +1 }} </h5>
 
 
             <div ng-switch="model.userType" class="pull-right">
@@ -27,10 +29,11 @@
             <div ng-switch-when="mTurk"></div>
 
         </div>
-    </nav>
+        </div>
 
+    <!-- </nav> -->
 
-
+    <div class="maingame-body">
     <div class="row" ng-switch="model.userType" style="text-align: center;margin-bottom:5px; margin-top: 60px">
 
         <div class="col-sm-12" ng-switch-when="mTurk" >
@@ -324,6 +327,7 @@
         </div>
     </nav>
 
+</div>
 
 
     <!--Image Magnification Modal-->
