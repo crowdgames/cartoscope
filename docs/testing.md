@@ -13,6 +13,12 @@ Flows are the steps taken by cartoscope users as they use the site.
    - mailto link to the cartoscope team pops up.
  - Creating a project as an admin
    - Test each tab of the creation process...
+ - Main project flow
+   - Tutorial
+   - Main Game
+   - Survey
+   - Results page
+ - Cairns
 
 #### Uncommon Flows
 
