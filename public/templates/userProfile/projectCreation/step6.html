@@ -129,7 +129,7 @@ File for uploading Tutorial of the projects.
                     <div class="col-md-1">
                         Order
                         <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
-                           data-placement="right" style="color: #9cdc1f;"
+                           data-placement="right" style="color: #9ACA3C;"
                            title="You can move items up and down to adjust the order with which you want people to encounter tutorial items.">
                         </i>
                     </div>
@@ -138,7 +138,7 @@ File for uploading Tutorial of the projects.
                         <span>
                         Image Name
                             <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
-                               data-placement="right" style="color: #9cdc1f;"
+                               data-placement="right" style="color: #9ACA3C;"
                                title="The name of the image file. Warning icons indicate the image you have uploaded is not in the original dataset uploaded.">
                             </i>
                     </span>
@@ -146,7 +146,7 @@ File for uploading Tutorial of the projects.
                     <div class="col-md-2" >
                         <span>
                             Preview <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
-                                      data-placement="right" style="color: #9cdc1f;"
+                                      data-placement="right" style="color: #9ACA3C;"
                                       title="Click on the image to see it bigger."></i>
                         </span>
                     </div>
@@ -154,14 +154,14 @@ File for uploading Tutorial of the projects.
                         <span>
                         Answer:
                             <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
-                                         data-placement="right" style="margin-left: 10px;color: #9cdc1f;"
+                                         data-placement="right" style="margin-left: 10px;color: #9ACA3C;"
                                          title="Pick the correct answer for this image.">
                             </i>
                         </span>
                     </div>
                     <div class="col-md-2" > Ask User?
                         <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
-                                                data-placement="right" style="color: #9cdc1f;"
+                                                data-placement="right" style="color: #9ACA3C;"
                                                 title="If you wish to test users by letting them choose the correct answer, check the box.
                                                 If you want to use this slot as an information slide, keep this box unchecked.
                                                 Only the image and explanation will be shown in this case. ">
@@ -174,13 +174,13 @@ File for uploading Tutorial of the projects.
 
 
                 <div class="col-md-1"   >
-                <span class="" ng-if="$index > 0" ng-click="moveUp($index)" style="color:#9cdc1f;cursor: pointer;">
+                <span class="" ng-if="$index > 0" ng-click="moveUp($index)" style="color:#9ACA3C;cursor: pointer;">
                     <span class="fa fa-arrow-circle-up"></span>
                  </span>
                     <span class="disabled" ng-if="$index == 0"  >
                         <span class="fa fa-arrow-circle-up"></span>
                  </span>
-                    <span class="" ng-if="$index < tutorial_items.length - 1" ng-click="moveDown($index)" style="color:#9cdc1f;cursor: pointer;">
+                    <span class="" ng-if="$index < tutorial_items.length - 1" ng-click="moveDown($index)" style="color:#9ACA3C;cursor: pointer;">
                         <span class="fa fa-arrow-circle-down"></span>
                     </span>
                     <span class="disabled" ng-if="$index == tutorial_items.length - 1"  >
@@ -200,7 +200,7 @@ File for uploading Tutorial of the projects.
 
 
                 <div class="col-md-3" ng-if="!item.in_dataset" >
-                    <span style="color: #9cdc1f;" style="top:0px;">
+                    <span style="color: #9ACA3C;" style="top:0px;">
                         <small>
                     <span class="fa fa-warning "></span>
                         {{item.image_name.replace(project.unique_code + "/","")}}
@@ -258,9 +258,9 @@ File for uploading Tutorial of the projects.
                     <div class="col-md-12">
                         <p class="txt">
                             Explanation:
-                            <span class="" ng-click="previewExplanation(item.explanation)" style="color:#9cdc1f;cursor: pointer;">
+                            <span class="" ng-click="previewExplanation(item.explanation)" style="color:#9ACA3C;cursor: pointer;">
                             <i cs-tooltip class="fa fa-eye" data-toggle="tooltip"
-                               data-placement="right" style="color: #9cdc1f;"
+                               data-placement="right" style="color: #9ACA3C;"
                                title="See a preview of what the explanation looks like. Useful when inputting html code. ">
                     </i>
                         </p>
