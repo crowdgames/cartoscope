@@ -288,45 +288,92 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       $scope.showDebug = true;
       vm.elementy = undefined;
       vm.deboog = 0;
-      // activated by hitting the debug button
+      $scope.showPlayerSidebar = false;
+
       vm.handleDebug = () => {
           let black_square = "⬛";
           let green_square = "🟩";
           let red_square   = "🟥";
           let blue_square  = "🟦";
           let white_square = "⬜";
-
+          console.log("deboog "+ vm.deboog);
+          console.log("show sidebar "+ $scope.showPlayerSidebar);
           if (vm.deboog == 0) {
-              $scope.showSidebar = true;
               let sidebar = document.getElementById("cairn-sidebar-header");
               vm.elementy = document.createElement("p");
               vm.elementy.setAttribute("class", "cairn-message");
               sidebar?.insertAdjacentElement("afterend", vm.elementy);
               vm.deboog = 1;
-          } else if (vm.deboog == 0) {
-              vm.elementy.innerText = "";
-              for (let i = 0; i < 11; i++) {
-                  vm.elementy.innerText += black_square + black_square + black_square + '\n';
-              }
-              vm.deboog = 2;
-          } else if (vm.deboog == 1) {
+          }
+          if(vm.deboog == 1) {
               vm.elementy.innerText = "";
               let ratio = Math.round(Math.random() * 10);
+              console.log("ratio " + ratio);
               let vote  = Math.random() < 0.5 ? 1 : 0;
-              for (let i = 0; i < 11; i++) {
-                  let z = 11 - i;
-                  if (z - ratio == 1 && vote == 0) vm.elementy.innerText += white_square;
-                  else vm.elementy.innerText += z > ratio ? black_square : green_square;
-                  vm.elementy.innerText += black_square;
-                  if (z + ratio == 11 && vote == 1) vm.elementy.innerText += white_square;
-                  else vm.elementy.innerText += z > (10 - ratio) ? black_square : red_square;
-                  vm.elementy.innerText += "\n";
+              for(let i = 0; i < 11; i++) {
+                  if (i - ratio == 1 && vote == 0) vm.elementy.innerText += white_square;
+                  else vm.elementy.innerText += i > ratio ? black_square : green_square;
               }
-              console.log("-----");
-              console.log(ratio);
-              console.log(vote);
-              vm.deboog = 1;
+              vm.elementy.innerText += "\n";
+              for(let i = 0; i < 11; i++) {
+                  vm.elementy.innerText +=  black_square;
+              }
+              vm.elementy.innerText += "\n";
+              for(let i = 0; i < 11; i++) {
+                  if (i + ratio == 11 && vote == 1) vm.elementy.innerText += white_square;
+                  else vm.elementy.innerText += i > (10 - ratio) ? black_square : red_square;
+              }
           }
+
+          // else if (vm.deboog == 0) {
+          //     vm.elementy.innerText = "";
+          //     for (let i = 0; i < 11; i++) {
+          //         vm.elementy.innerText += black_square + black_square + black_square + '\n';
+          //     }
+          //     vm.deboog = 2;
+          // } else if (vm.deboog == 1) {
+          //     vm.elementy.innerText = "";
+          //     let ratio = Math.round(Math.random() * 10);
+          //     let vote  = Math.random() < 0.5 ? 1 : 0;
+          //     // for(let j = 0; j < 3; j++) {
+          //     //     for (let i = 0; i < 11; i++) {
+          //     //         let z = 11 - i;
+          //     //         // if (z - ratio == 1 && vote == 0) vm.elementy.innerText += white_square;
+          //     //         // else vm.elementy.innerText += z > ratio ? black_square : green_square;
+          //     //         // vm.elementy.innerText += black_square;
+          //     //         // if (z + ratio == 11 && vote == 1) vm.elementy.innerText += white_square;
+          //     //         // else vm.elementy.innerText += z > (10 - ratio) ? black_square : red_square;
+          //     //         if(j == 2) {
+          //     //             vm.elementy.innerText += black_square;
+          //     //         } else {
+          //     //             if(i - ratio != 1) {
+          //     //                 vm.elementy.innerText += i > ratio ? black_square : green_square;
+          //     //             }
+          //     //             else if (i + ratio != 11) {
+          //     //                 vm.elementy.innerText += i > (10 - ratio) ? black_square : red_square;
+          //     //             }
+          //     //         }
+          //     //     }
+          //     //     vm.elementy.innerText += "\n";
+          //     // }
+          //     for(let i = 0; i < 11; i++) {
+          //         if (i - ratio == 1 && vote == 0) vm.elementy.innerText += white_square;
+          //         else vm.elementy.innerText += i > ratio ? black_square : green_square;
+          //     }
+          //     vm.elementy.innerText += "\n";
+          //     for(let i = 0; i < 11; i++) {
+          //         vm.elementy.innerText +=  black_square;
+          //     }
+          //     vm.elementy.innerText += "\n";
+          //     for(let i = 0; i < 11; i++) {
+          //         if (i + ratio == 11 && vote == 1) vm.elementy.innerText += white_square;
+          //         else vm.elementy.innerText += i > (10 - ratio) ? black_square : red_square;
+          //     }
+          //     console.log("-----");
+          //     console.log(ratio);
+          //     console.log(vote);
+          //     vm.deboog = 1;
+          // }
       }
 
       vm.wasContinueHit = false;
@@ -1369,191 +1416,195 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       }
 
       vm.noImageCounter = 0;
-      function submit(option,option_text) {
-
-          // if a player is attempting to submit when there is no task visible, just ignore
-          if (!$scope.showMainTask) return;
-          if (vm.data.template.selectedTaskType === "ngs" && option_text === "No Image") {
-              vm.noImageCounter++;
-              if (vm.noImageCounter === 4) {
-                  vm.showToast("<b>Please keep going even if you aren't finding images</b>.<br> It is helpful for us to know that these facilities have not been photographed.");
-                  vm.noImageCounter = 0;
-              }
-          } else vm.noImageCounter = 0;
-          vm.showModal();
-          //if markers task, loop through all markers and submit the selected ones, ignore submit button option
-          if (vm.showMarkerPoints) {
-
-
-              var promiseArray = [];
-
-              $scope.pointMarkers.forEach(function (item) {
-
-
-                  //if marker has changed color, submit the answer with the color selected and the location of the marker
-                  if (item.icon != $scope.point_array_filtered[$scope.point_array_filtered.length -1]) {
-
-                      var item_lat = item.getPosition().lat();
-                      var item_lng = item.getPosition().lng();
-                      var submit_indx = $scope.point_array_filtered.indexOf(item.icon);
-                      //prepare the item
-                      var body = {
-                          projectID: vm.data.id,
-                          option: submit_indx +1,
-                          taskID: vm.tasks[0],
-                          mapCenterLat:  item_lat,
-                          mapCenterLon:  item_lng,
-                          multiple: vm.showMarkerPoints,
-                          option_text: option_text
-                      };
-
-                      //regray the marker!
-                      item.icon = $scope.point_array_filtered[$scope.point_array_filtered.length -1];
-                      item.setIcon($scope.point_array_filtered[$scope.point_array_filtered.length -1]);
-                      item.setMap(vm.map);
-
-                      promiseArray.push($http.post('/api/tasks/submit', body));
+      async function submit(option,option_text) {
+          $scope.showPlayerSidebar = true;
+          await setTimeout(function () {
+              vm.handleDebug();
+          },10);
+          await setTimeout(function() {
+              console.log("last");
+              // if a player is attempting to submit when there is no task visible, just ignore
+              if (!$scope.showMainTask) return;
+              if (vm.data.template.selectedTaskType === "ngs" && option_text === "No Image") {
+                  vm.noImageCounter++;
+                  if (vm.noImageCounter === 4) {
+                      vm.showToast("<b>Please keep going even if you aren't finding images</b>.<br> It is helpful for us to know that these facilities have not been photographed.");
+                      vm.noImageCounter = 0;
                   }
-
-              });
-
-              //after all votes in, add dummy vote to increase the progress
-              var body = {
-                  projectID: vm.data.id,
-                  option: -1,
-                  taskID: vm.tasks[0],
-                  mapCenterLat:  latCenter,
-                  mapCenterLon:  lngCenter,
-                  multiple: 0
-              };
-              promiseArray.push($http.post('/api/tasks/submit', body));
-
-              //wait until all posts are completed then continue to next image
-              $q.all(promiseArray).then(function(dataArray) {
-                  latCenter = vm.tasks[0].x;
-                  lngCenter = vm.tasks[0].y;
-                  vm.defZoom = dZoom;
-                  vm.tasks.shift();
-                  vm.hideModal();
-                  vm.data.progress = parseInt(vm.data.progress) + 1;
-                  //update progress bar:
+              } else vm.noImageCounter = 0;
+              vm.showModal();
+              //if markers task, loop through all markers and submit the selected ones, ignore submit button option
+              if (vm.showMarkerPoints) {
 
 
+                  var promiseArray = [];
 
-                  $scope.next_per = (vm.data.progress / vm.data.size).toFixed(2) *100;
-                  $scope.mturkbarStyle = {"width" : $scope.next_per.toString() + "%"};
-
-                  if (vm.data.progress ==1) {
-                      $scope.next_per2 = 0;
-                  } else {
-                      $scope.next_per2 = Math.floor($scope.next_per);
-                  }
+                  $scope.pointMarkers.forEach(function (item) {
 
 
-                  if (vm.tasks.length == 0) {
-                      vm.getTasks()
-                  }
-                  //if flight path, change color of marker for the image that was just voted
-                  if (vm.showFlightPath) {
-                      $scope.geoMarkers.some(function (item) {
-                          found = false;
-                          if (item.title === vm.image) {
-                              var col = vm.data.template.options[option].color;
-                              item.icon = $scope.icon_array[parseInt(col)-1];
-                              // item.setZIndex(google.maps.Marker.MAX_ZINDEX + 1);
-                              item.setMap(vm.flight_map);
-                              vm.setCurrentPos();
-                              found = true
-                          }
-                          return found;
-                      })
-                  }
+                      //if marker has changed color, submit the answer with the color selected and the location of the marker
+                      if (item.icon != $scope.point_array_filtered[$scope.point_array_filtered.length -1]) {
 
-              });
+                          var item_lat = item.getPosition().lat();
+                          var item_lng = item.getPosition().lng();
+                          var submit_indx = $scope.point_array_filtered.indexOf(item.icon);
+                          //prepare the item
+                          var body = {
+                              projectID: vm.data.id,
+                              option: submit_indx +1,
+                              taskID: vm.tasks[0],
+                              mapCenterLat:  item_lat,
+                              mapCenterLon:  item_lng,
+                              multiple: vm.showMarkerPoints,
+                              option_text: option_text
+                          };
 
+                          //regray the marker!
+                          item.icon = $scope.point_array_filtered[$scope.point_array_filtered.length -1];
+                          item.setIcon($scope.point_array_filtered[$scope.point_array_filtered.length -1]);
+                          item.setMap(vm.map);
 
-          } else {
-              //all other types of tasks that submit only one response per image
+                          promiseArray.push($http.post('/api/tasks/submit', body));
+                      }
 
+                  });
 
-              var body = {
-                  projectID: vm.data.id,
-                  option: option,
-                  taskID: vm.tasks[0],
-                  mapCenterLat:   $scope.votedLat,
-                  mapCenterLon:   $scope.votedLng,
-                  option_text: option_text
+                  //after all votes in, add dummy vote to increase the progress
+                  var body = {
+                      projectID: vm.data.id,
+                      option: -1,
+                      taskID: vm.tasks[0],
+                      mapCenterLat:  latCenter,
+                      mapCenterLon:  lngCenter,
+                      multiple: 0
+                  };
+                  promiseArray.push($http.post('/api/tasks/submit', body));
 
-              };
-
-              vm.previousTaskName = vm.tasks[0]["name"];
-
-              $http.post('/api/tasks/submit', body).then(function() {
-
-                  vm.defZoom = dZoom;
-                  vm.tasks.shift();
-
-
-                  //if out of tasks, fetch next group, else reset latCenter
-                  if (vm.tasks.length == 0) {
-                      vm.getTasks();
-                  } else {
+                  //wait until all posts are completed then continue to next image
+                  $q.all(promiseArray).then(function(dataArray) {
                       latCenter = vm.tasks[0].x;
                       lngCenter = vm.tasks[0].y;
-                      if (vm.viewMarkerPoints){
-                          vm.addMarker(vm.tasks[0].x,vm.tasks[0].y)
+                      vm.defZoom = dZoom;
+                      vm.tasks.shift();
+                      vm.hideModal();
+                      vm.data.progress = parseInt(vm.data.progress) + 1;
+                      //update progress bar:
+
+
+
+                      $scope.next_per = (vm.data.progress / vm.data.size).toFixed(2) *100;
+                      $scope.mturkbarStyle = {"width" : $scope.next_per.toString() + "%"};
+
+                      if (vm.data.progress ==1) {
+                          $scope.next_per2 = 0;
+                      } else {
+                          $scope.next_per2 = Math.floor($scope.next_per);
                       }
-                  }
-
-                  //reset vote location
-                  $scope.votedLat = latCenter;
-                  $scope.votedLng = lngCenter;
 
 
-                  vm.hideModal();
+                      if (vm.tasks.length == 0) {
+                          vm.getTasks()
+                      }
+                      //if flight path, change color of marker for the image that was just voted
+                      if (vm.showFlightPath) {
+                          $scope.geoMarkers.some(function (item) {
+                              found = false;
+                              if (item.title === vm.image) {
+                                  var col = vm.data.template.options[option].color;
+                                  item.icon = $scope.icon_array[parseInt(col)-1];
+                                  // item.setZIndex(google.maps.Marker.MAX_ZINDEX + 1);
+                                  item.setMap(vm.flight_map);
+                                  vm.setCurrentPos();
+                                  found = true
+                              }
+                              return found;
+                          })
+                      }
+
+                  });
 
 
+              } else {
+                  //all other types of tasks that submit only one response per image
 
-                  //percentage complete
-                  $scope.next_per2 = Math.floor($scope.next_per);
+
+                  var body = {
+                      projectID: vm.data.id,
+                      option: option,
+                      taskID: vm.tasks[0],
+                      mapCenterLat: $scope.votedLat,
+                      mapCenterLon: $scope.votedLng,
+                      option_text: option_text
+
+                  };
+
+                  vm.previousTaskName = vm.tasks[0]["name"];
+
+                  $http.post('/api/tasks/submit', body).then(function () {
+                        $scope.showPlayerSidebar = false;
+                      vm.defZoom = dZoom;
+                      vm.tasks.shift();
 
 
-                  vm.data.progress = parseInt(vm.data.progress) + 1;
-                  //update progress bar:
-                  $scope.next_per = (vm.data.progress / vm.data.size).toFixed(2) *100;
-                  $scope.mturkbarStyle = {"width" : $scope.next_per.toString() + "%"};
-
-                  //if we are past the required amount for the project, show exit button
-                  if (vm.data.progress > vm.req_amount ) {
-                      $scope.showSurvButton = true;
-                  }
-
-                  if ((vm.data.progress == vm.data.size + 1) && vm.image_loop) {
-                      console.log("Reached end")
-                      vm.alertLoop();
-                  }
-
-                  //if flight path, change color of marker for the image that was just voted
-                  if (vm.showFlightPath) {
-                      $scope.geoMarkers.some(function (item) {
-                          found = false;
-                          if (item.title === vm.image) {
-                              var col = vm.data.template.options[option].color;
-                              item.icon = $scope.icon_array[parseInt(col)-1];
-                              // item.setZIndex(google.maps.Marker.MAX_ZINDEX + 1);
-                              item.setIcon($scope.icon_array[parseInt(col)-1])
-                              item.setMap(vm.flight_map);
-                              vm.setCurrentPos();
-                              found = true
+                      //if out of tasks, fetch next group, else reset latCenter
+                      if (vm.tasks.length == 0) {
+                          vm.getTasks();
+                      } else {
+                          latCenter = vm.tasks[0].x;
+                          lngCenter = vm.tasks[0].y;
+                          if (vm.viewMarkerPoints) {
+                              vm.addMarker(vm.tasks[0].x, vm.tasks[0].y)
                           }
-                          return found;
-                      })
-                  }
+                      }
 
-                  vm.handleCairns();
-              });
-          }
+                      //reset vote location
+                      $scope.votedLat = latCenter;
+                      $scope.votedLng = lngCenter;
 
+
+                      vm.hideModal();
+
+
+                      //percentage complete
+                      $scope.next_per2 = Math.floor($scope.next_per);
+
+
+                      vm.data.progress = parseInt(vm.data.progress) + 1;
+                      //update progress bar:
+                      $scope.next_per = (vm.data.progress / vm.data.size).toFixed(2) * 100;
+                      $scope.mturkbarStyle = {"width": $scope.next_per.toString() + "%"};
+
+                      //if we are past the required amount for the project, show exit button
+                      if (vm.data.progress > vm.req_amount) {
+                          $scope.showSurvButton = true;
+                      }
+
+                      if ((vm.data.progress == vm.data.size + 1) && vm.image_loop) {
+                          console.log("Reached end")
+                          vm.alertLoop();
+                      }
+
+                      //if flight path, change color of marker for the image that was just voted
+                      if (vm.showFlightPath) {
+                          $scope.geoMarkers.some(function (item) {
+                              found = false;
+                              if (item.title === vm.image) {
+                                  var col = vm.data.template.options[option].color;
+                                  item.icon = $scope.icon_array[parseInt(col) - 1];
+                                  // item.setZIndex(google.maps.Marker.MAX_ZINDEX + 1);
+                                  item.setIcon($scope.icon_array[parseInt(col) - 1])
+                                  item.setMap(vm.flight_map);
+                                  vm.setCurrentPos();
+                                  found = true
+                              }
+                              return found;
+                          })
+                      }
+
+                      vm.handleCairns();
+                  });
+              }
+          }, 2000);
 
       };
 
