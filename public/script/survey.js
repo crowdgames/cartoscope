@@ -1238,6 +1238,7 @@ module.controller('surveyIMIController', ['$scope', '$http', '$state', '$locatio
         swal({
             title: 'Whoops!',
             confirmButtonColor: '#9ACA3C',
+            confirmTextColor:'black',
             allowOutsideClick: true,
             text: msg,
             type: 'error',
@@ -1425,6 +1426,7 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
         swal({
             title: 'Whoops!',
             confirmButtonColor: '#9ACA3C',
+            confirmTextColor:'black',
             allowOutsideClick: true,
             text: msg,
             type: 'error',

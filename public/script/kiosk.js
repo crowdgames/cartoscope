@@ -2101,6 +2101,7 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
         swal({
             title: 'Whoops!',
             confirmButtonColor: '#9ACA3C',
+            confirmTextColor:'black',
             allowOutsideClick: true,
             text: msg,
             type: 'error',

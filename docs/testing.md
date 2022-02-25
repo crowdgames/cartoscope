@@ -8,6 +8,10 @@ Flows are the steps taken by cartoscope users as they use the site.
 #### Common Flows
 
  - Login / User 
+      - Enter the registerd username and password(creator role) 
+      - Cick on login
+      - If user exists 
+        - takes you to http://localhost:8081/UserProfile.html#/profile
    - Registering a user with the appropriate modal.
  - Creating a project as a non-admin
    - mailto link to the cartoscope team pops up.

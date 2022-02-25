@@ -15,6 +15,11 @@ Tutorial/Gaming Code
     - Styles in `public/styles/consent_new.css`, `public/styles/consent.css`
 - Code of tutorial pages are in `public/templates/kiosk/example.html`
 
+
+Error Modal Popup
+- Swalservice, sweet alert http://oitozero.github.io/ngSweetAlert/#/home check survey.js for reference.
+
+
 Consent form locations (The consent form is hardcoded in a variety of locations. These are the files which should be changed if the consent form is ever updated. Going forward, this should be centralized.)
 
  - public/templates/consent/consent.html

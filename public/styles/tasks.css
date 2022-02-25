@@ -13,9 +13,6 @@ body.mask .ui-mask-modal {
   width: 100%;
   z-index: 2147483647;
 }
-body {
-  background-color: #26272a;
-}
 h1, h2, h3, h4, h5 {
   color: white;
 }
