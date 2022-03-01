@@ -285,6 +285,79 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           $http.post('api/tasks/submitCairn', body).then((data: object) => console.log(data));
       }
 
+      vm.flagImage = () => {
+          window.alert("Thank you for flagging this image");
+          var body = {
+              projectID: vm.data.id,
+              taskID: vm.tasks[0]
+          };
+
+          // vm.previousTaskName = vm.tasks[0]["name"];
+
+          $http.post('/api/tasks/flagimage', body).then(function () {
+                console.log("posted successfully");
+              vm.tasks.shift();
+
+
+              //if out of tasks, fetch next group, else reset latCenter
+              if (vm.tasks.length == 0) {
+                  vm.getTasks();
+              } else {
+                  latCenter = vm.tasks[0].x;
+                  lngCenter = vm.tasks[0].y;
+                  if (vm.viewMarkerPoints) {
+                      vm.addMarker(vm.tasks[0].x, vm.tasks[0].y)
+                  }
+              }
+
+              //reset vote location
+              $scope.votedLat = latCenter;
+              $scope.votedLng = lngCenter;
+
+
+              vm.hideModal();
+
+
+              //percentage complete
+              $scope.next_per2 = Math.floor($scope.next_per);
+
+
+              vm.data.progress = parseInt(vm.data.progress) + 1;
+              //update progress bar:
+              $scope.next_per = (vm.data.progress / vm.data.size).toFixed(2) * 100;
+              $scope.mturkbarStyle = {"width": $scope.next_per.toString() + "%"};
+
+              //if we are past the required amount for the project, show exit button
+              if (vm.data.progress > vm.req_amount) {
+                  $scope.showSurvButton = true;
+              }
+
+              if ((vm.data.progress == vm.data.size + 1) && vm.image_loop) {
+                  console.log("Reached end")
+                  vm.alertLoop();
+              }
+
+              //if flight path, change color of marker for the image that was just voted
+              if (vm.showFlightPath) {
+                  $scope.geoMarkers.some(function (item) {
+                      found = false;
+                      if (item.title === vm.image) {
+                          var col = vm.data.template.options[option].color;
+                          item.icon = $scope.icon_array[parseInt(col) - 1];
+                          // item.setZIndex(google.maps.Marker.MAX_ZINDEX + 1);
+                          item.setIcon($scope.icon_array[parseInt(col) - 1])
+                          item.setMap(vm.flight_map);
+                          vm.setCurrentPos();
+                          found = true
+                      }
+                      return found;
+                  })
+              }
+
+              vm.handleCairns();
+          });
+      }
+
       $scope.showDebug = true;
       vm.elementy = undefined;
       vm.deboog = 0;
@@ -1541,7 +1614,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   vm.previousTaskName = vm.tasks[0]["name"];
 
                   $http.post('/api/tasks/submit', body).then(function () {
-                        $scope.showPlayerSidebar = false;
+                      $scope.showPlayerSidebar = false;
                       vm.defZoom = dZoom;
                       vm.tasks.shift();
 
