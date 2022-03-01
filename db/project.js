@@ -748,6 +748,23 @@ exports.startNewProgress = function(userId, projectId, userType) {
   });
 };
 
+exports.addFlaggedImage = function(userId, projectId, taskID) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('INSERT INTO flag_image (user_id, project_id,task_id,timestamp) VALUES (?,?,?,CURRENT_TIMESTAMP)',
+                              [userId + '', projectId, taskID]).then(
+            function(data) {
+                if (data.insertId) {
+                    resolve(data.insertId);
+                } else {
+                    error({code: 'Problem with insert'});
+                }
+            }, function(err) {
+                error(err);
+            });
+    });
+}
+
 exports.addResponse = function(userId, projectId, taskID, response, centerLat, centerLon,response_text) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
