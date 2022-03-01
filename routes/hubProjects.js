@@ -18,9 +18,12 @@ var anonUserDB = require('../db/anonUser');
 var userDB = require('../db/user');
 var hubProjectDB = require('../db/hubProject');
 
-var mmm = require('mmmagic');
+//Commenting out code related to mmmagic module.
+
+/*var mmm = require('mmmagic');
 var Magic = mmm.Magic;
 var magic = new Magic(mmm.MAGIC_MIME_TYPE);
+*/
 
 var isValidImage = require('../constants/imageMimeTypes').validMimeTypes;
 var Promise = require('bluebird');
@@ -67,15 +70,19 @@ router.post('/add', [fupload.single('file'), filters.requireLogin, filters.requi
     if (req.file) {
       filename = req.file.filename;
         // console.log('file '+ filename);
+       const result = fileTypeFromStream(req.file.path);
 
-      magic.detectFile(req.file.path, function(err, result) {
+     //Commenting out code related to mmmagic module.
+
+     /* magic.detectFile(req.file.path, function(err, result) {
         if (err) {
             console.log('result err'+ err);
             res.status(500).send({error: 'problem with the uploaded image, please try again'});
           fs.unlink(req.file.path);
         }
-        
-        if (isValidImage(result)) {
+      */
+        if (isValidImage(result.mime)) {
+
           fs.renameSync(req.file.path, 'profile_photos/' + filename);
           generateUniqueProjectCode().then(function(projectCode) {
             hubProjectDB.addHubProject(body.name, req.session.passport.user.id, body.description, filename, projectCode,body.url_name,body.external_sign_up).then(
@@ -89,11 +96,11 @@ router.post('/add', [fupload.single('file'), filters.requireLogin, filters.requi
           });
           
         } else {
-            console.log(err);
+           // console.log(err);
             res.status(500).send({error: 'problem with the uploaded image, please try again'});
           fs.unlink(req.file.path);
         }
-      });
+     // });
       
     } else {
       generateUniqueProjectCode().then(function(projectCode) {
@@ -124,14 +131,21 @@ function(req, res, next) {
     filename = req.file.filename;
       // console.log('file '+ filename);
 
+
+    const result = fileTypeFromStream(req.file.path);
+
+//Commenting out code related to mmmagic module.
+
+   /* const result = fileTypeFromStream(req.file.path);
     magic.detectFile(req.file.path, function(err, result) {
       if (err) {
           console.log('result err'+ err);
           res.status(500).send({error: 'problem with the uploaded image, please try again'});
         fs.unlink(req.file.path);
       }
+      */
       
-      if (isValidImage(result)) {
+      if (isValidImage(result.mime)) {
         fs.renameSync(req.file.path, 'profile_photos/' + filename);
           hubProjectDB.editHubProject(body.name, body.description, filename, projectCode,body.url_name,body.external_sign_up).then(
             function(result) {
@@ -143,11 +157,11 @@ function(req, res, next) {
             });
         
       } else {
-          console.log(err);
+         // console.log(err);
           res.status(500).send({error: 'problem with the uploaded image, please try again'});
         fs.unlink(req.file.path);
       }
-    });
+   // });
     
   } else {
       hubProjectDB.editHubProject(body.name , body.description, filename, projectCode,body.url_name,body.external_sign_up).then(
