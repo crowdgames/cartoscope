@@ -2,6 +2,9 @@
  * Created by kiprasad on 31/07/16.
  */
 
+/**
+converge database details.
+*/
 var mysql = require('mysql');
 var Promise = require('bluebird');
 
