@@ -56,7 +56,7 @@
          ng-if="model.data.template.selectedTaskType == 'mapping'">
         <div id="mapQuestion">
             <h3 class="mapQuestion text-center" style="color:white">{{model.data.template.question}}
-                <span ng-show="model.userType === 'mTurk'" style="color: #9cdc1f;cursor: pointer;" data-target="#helpModal" data-toggle="modal"><i class="fa fa-question-circle-o" aria-hidden="true"></i></span>
+                <span ng-show="model.userType === 'mTurk'" style="color: #9ACA3C;cursor: pointer;" data-target="#helpModal" data-toggle="modal"><i class="fa fa-question-circle-o" aria-hidden="true"></i></span>
             </h3>
 
         </div>
@@ -114,8 +114,8 @@
                                       ng-click="model.submit($index,option.text)" ng-disabled="finished" class="options btn">
                                 {{option.text}}
                             </button>
-                            <!--<span ng-show="model.userType === 'mTurk'"  style="color: #9cdc1f;cursor: pointer;display:inline;margin-left:-5px" ng-click="showTutorial(option.text)"><i class="fa fa-lightbulb-o" aria-hidden="true"></i></span>-->
-                            <span   style="color: #9cdc1f;cursor: pointer;display:inline;margin-left:-5px" ng-click="showTutorial(option.text)">Hint <i class="fa fa-lightbulb-o" aria-hidden="true"></i></span>
+                            <!--<span ng-show="model.userType === 'mTurk'"  style="color: #9ACA3C;cursor: pointer;display:inline;margin-left:-5px" ng-click="showTutorial(option.text)"><i class="fa fa-lightbulb-o" aria-hidden="true"></i></span>-->
+                            <span   style="color: #9ACA3C;cursor: pointer;display:inline;margin-left:-5px" ng-click="showTutorial(option.text)">Hint <i class="fa fa-lightbulb-o" aria-hidden="true"></i></span>
 
                         </div>
                         <button ng-show="model.data.point_selection"  class="btn btn-default btn-primary "
@@ -142,7 +142,7 @@
          ng-if="model.data.template.selectedTaskType == 'ngs'">
         <div id="ngsQuestion">
             <h3 class="mapQuestion text-center" style="color:white">{{model.data.template.question}}
-                <span ng-show="model.userType === 'mTurk'" style="color: #9cdc1f;cursor: pointer;" data-target="#helpModal" data-toggle="modal"><i class="fa fa-question-circle-o" aria-hidden="true"></i></span>
+                <span ng-show="model.userType === 'mTurk'" style="color: #9ACA3C;cursor: pointer;" data-target="#helpModal" data-toggle="modal"><i class="fa fa-question-circle-o" aria-hidden="true"></i></span>
             </h3>
 
         </div>
@@ -191,7 +191,7 @@
                                           ng-click="model.submit($index,option.text)" ng-disabled="finished" class="options btn">
                                     {{option.text}}
                                 </button>
-                                <span ng-if="model.data.template.selectedTaskType != 'ngs'">   style="color: #9cdc1f;cursor: pointer;display:inline;margin-left:-5px" ng-click="showTutorial(option.text)">Hint <i class="fa fa-lightbulb-o" aria-hidden="true"></i></span>
+                                <span ng-if="model.data.template.selectedTaskType != 'ngs'">   style="color: #9ACA3C;cursor: pointer;display:inline;margin-left:-5px" ng-click="showTutorial(option.text)">Hint <i class="fa fa-lightbulb-o" aria-hidden="true"></i></span>
 
                             </div>
                             <!--<button ng-show="model.data.point_selection"  class="btn btn-default btn-primary "-->
@@ -214,7 +214,7 @@
          ng-if="model.data.template.selectedTaskType == 'slider'">
         <div id="sliderQuestion">
             <h3 class="mapQuestion text-center" style="color:white">{{model.data.template.question}}
-                <span ng-show="model.userType === 'mTurk'" style="color: #9cdc1f;cursor: pointer;" data-target="#helpModal" data-toggle="modal"><i class="fa fa-question-circle-o" aria-hidden="true"></i></span>
+                <span ng-show="model.userType === 'mTurk'" style="color: #9ACA3C;cursor: pointer;" data-target="#helpModal" data-toggle="modal"><i class="fa fa-question-circle-o" aria-hidden="true"></i></span>
             </h3>
         </div>
 
@@ -261,7 +261,7 @@
                                           ng-click="model.submit($index,option.text)" ng-disabled="finished" class="options btn">
                                     {{option.text}}
                                 </button>
-                                <span style="color: #9cdc1f;cursor: pointer;display:inline;margin-left:-5px" ng-click="showTutorial(option.text)">Hint <i class="fa fa-lightbulb-o" aria-hidden="true"></i></span>
+                                <span style="color: #9ACA3C;cursor: pointer;display:inline;margin-left:-5px" ng-click="showTutorial(option.text)">Hint <i class="fa fa-lightbulb-o" aria-hidden="true"></i></span>
 
                             </div>
                             <!--<button ng-show="model.data.point_selection"  class="btn btn-default btn-primary "-->
@@ -345,7 +345,7 @@
 
         <p style="color: white;">Image Attribution:
             <span><a target="_blank" ng-href="{{model.data.image_source}}">{{model.data.image_source}}</a></span>
-            <span  ng-show="model.data.image_source != undefined" style="color: #9cdc1f;cursor: pointer;" data-target="#attrModal" data-toggle="modal">View More Info</span>
+            <span  ng-show="model.data.image_source != undefined" style="color: #9ACA3C;cursor: pointer;" data-target="#attrModal" data-toggle="modal">View More Info</span>
 
         </p>
     </div>
@@ -357,7 +357,7 @@
             <div class="bottom-panel">
                 <div class="question" ng-if="model.data.template.selectedTaskType == 'tagging'" >
                     <span>{{model.data.template.question}}</span>
-                    <!--<span  ng-show="model.userType === 'mTurk'" style="color: #9cdc1f;cursor: pointer;" data-target="#helpModal" data-toggle="modal"><i class="fa fa-question-circle-o" aria-hidden="true"></i></span>-->
+                    <!--<span  ng-show="model.userType === 'mTurk'" style="color: #9ACA3C;cursor: pointer;" data-target="#helpModal" data-toggle="modal"><i class="fa fa-question-circle-o" aria-hidden="true"></i></span>-->
 
 
                 </div>
@@ -371,7 +371,7 @@
                                   ng-click="model.submit($index,option.text)" ng-disabled="finished" class="options btn">
                             {{option.text}}
                         </button>
-                        <span   style="color: #9cdc1f;cursor: pointer;display:inline;margin-left:-5px" ng-click="showTutorial(option.text)">Hint <i class="fa fa-lightbulb-o" aria-hidden="true"></i></span>
+                        <span   style="color: #9ACA3C;cursor: pointer;display:inline;margin-left:-5px" ng-click="showTutorial(option.text)">Hint <i class="fa fa-lightbulb-o" aria-hidden="true"></i></span>
 
                     </div>
 

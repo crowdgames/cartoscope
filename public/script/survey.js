@@ -201,8 +201,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
               '/images/dots/cs_purple_dot.svg'];
 
 
-          $scope.hex_array = ['#9cdc1f',
-              '#FFF200',
+          $scope.hex_array = ['#9ACA3C',
+              '#F5EA69',
               '#F7941D',
               '#ff0000',
               '#0072BC',
@@ -1237,7 +1237,7 @@ module.controller('surveyIMIController', ['$scope', '$http', '$state', '$locatio
     $scope.alertError = function(msg) {
         swal({
             title: 'Whoops!',
-            confirmButtonColor: '#9cdc1f',
+            confirmButtonColor: '#9ACA3C',
             allowOutsideClick: true,
             text: msg,
             type: 'error',
@@ -1424,7 +1424,7 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
     $scope.alertError = function(msg) {
         swal({
             title: 'Whoops!',
-            confirmButtonColor: '#9cdc1f',
+            confirmButtonColor: '#9ACA3C',
             allowOutsideClick: true,
             text: msg,
             type: 'error',
