@@ -782,6 +782,20 @@ exports.addResponse = function(userId, projectId, taskID, response, centerLat, c
     });
 };
 
+exports.getResponseCount = function(projectId, taskID, option) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        connection.queryAsync('SELECT COUNT(response) as count, task_id FROM response WHERE project_id=? AND task_id=? AND response=?', [projectId, taskID, option]).then(
+            function(data) {
+                console.log("get response count " + data[0].count);
+                resolve(data);
+            }, function (err) {
+                error(err);
+            }
+        );
+    });
+};
+
 exports.increaseProgress = function(userId, projectId) {
   return new Promise(function(resolve, error) {
       var connection = db.get();
