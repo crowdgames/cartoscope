@@ -1,7 +1,7 @@
 /**
  * Created by kiprasad on 26/09/16.
  */
-var module = angular.module('taskApp', ['ui.router', 'ngMap','configApp','ngJuxtapose']);
+var module = angular.module('taskApp', ['ui.router', 'ngMap','configApp','ngJuxtapose', 'ngSanitize']);
 let shuffle = (inA: Array<any>) => {
   let a = inA.slice(0);
   for (let i = a.length - 1; i > 0; i--) {
@@ -1470,11 +1470,20 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   }
               });
 
+              $scope.helpHintModalActiveTab = option;
               //activate modal
-              $scope.triggerClick('#showTutModalButton');
+              //moved to showhelpModal
+              //$scope.triggerClick('#showTutModalButton');
 
           });
       };
+
+      $scope.showHelpHintModal = function (){
+            //activate modal
+            $scope.triggerClick('#showTutModalButton');
+            const option = $scope.model.data.template.options.length > 0 && $scope.model.data.template.options[0].text;
+            $scope.showTutorial(option);
+      }
 
 
       $scope.triggerClick = function (id) {
