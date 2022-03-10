@@ -37,13 +37,13 @@
                     ng-click="model.skipToSurvey()" style="height: 45px;"
                     ng-show="showSurvButton">{{cont_button}}</button>
                 <button ng-switch-when="kiosk" class="btn btn-default btn-primary done-button"
-                        ng-click="model.handleEnd()" style="height: 45px;">I'M DONE</button>
-                <button class="btn btn-default btn-primary done-button"
-                        ng-click="model.handleDebug()" ng-show="showDebug" style="height: 45px;">DEBUG</button>
-                <button class="btn btn-default btn-primary done-button"
-                        ng-click="model.flagImage()" style="height: 45px;">Flag image as inappropriate</button>
+                    ng-click="model.handleEnd()" style="height: 45px;">I'M DONE</button>
+                <button class="btn btn-default btn-primary done-button" ng-click="model.handleDebug()"
+                    ng-show="showDebug" style="height: 45px;">DEBUG</button>
+                <button class="btn btn-default btn-primary done-button" ng-click="model.flagImage()"
+                    style="height: 45px;">Flag image as inappropriate</button>
                 <button ng-switch-default class="btn btn-default btn-primary done-button"
-                        ng-click="model.handleFinish()" style="height: 45px;">I'm Done</button>
+                    ng-click="model.handleFinish()" style="height: 45px;">I'm Done</button>
             </div>
         </div>
     </div>
@@ -158,12 +158,6 @@
 
 
         </div>
-
-        <button id="showImModalButton" style="display: none;" data-toggle="modal" data-target="#imModal">Open
-            Modal</button>
-        <button id="showTutModalButton" style="display: none;" data-toggle="modal" data-target="#tutModal">Open
-            Modal</button>
-
 
         <!-- NGS TASK MAP VIEW-->
         <div class="row" ng-if="model.data.template.selectedTaskType == 'ngs'">
@@ -316,10 +310,7 @@
 
         </div>
 
-
-
         <!-- TAGGING VIEW-->
-
         <div class="row" ng-if="model.data.template.selectedTaskType == 'tagging'">
 
             <div class="col-sm-12  contribution-details" ng-if="model.showFlightPath" style="margin-top: 10px">
@@ -333,23 +324,27 @@
 
         </div>
 
-    <div class="row" style="text-align: center;" ng-if="model.data.template.selectedTaskType == 'tagging'">
-        <div class="col-sm-4" id="sidebar">
-            <div ng-show="showPlayerSidebar">
-                <h2 id="cairn-sidebar-header">How other players voted for the previous image!</h2>
+        <div class="row" style="text-align: center;" ng-if="model.data.template.selectedTaskType == 'tagging'">
+            <div class="col-sm-4" id="sidebar">
+                <div ng-show="showPlayerSidebar">
+                    <h2 id="cairn-sidebar-header">How other players voted for the previous image!</h2>
+                </div>
             </div>
-        </div>
-        <div class="col-sm-5" id="img">
-            <img ng-show="showMainTask" id="task-img" style="max-height:450px" class="img-responsive img-task" ng-src="{{model.getNextTask()}}" ng-click="model.showBiggerImg()">
-            <h2 id="cairn-header" ng-show="showCairnElements"> Would you like to leave something for another player? </h2>
-            <div ng-show="showPhysics">
-                <div class="container-fluid">
-                    <br><br>
-                    <div class="row" ng-show="showEmoji" id="emoji-picker">
-                        <!-- TODO could this be an ng-repeat?-->
-                        <img ng-repeat="emoji in model.emojis" ng-src="../../images/emojis/{{emoji}}.png" width="70" height="70" ng-click="model.submitEmoji(emoji)"></img>
-                    </div>
-                    <div id="physicsBody" ng-init="model.initializePhysics()">
+            <div class="col-sm-5" id="img">
+                <img ng-show="showMainTask" id="task-img" style="max-height:450px" class="img-responsive img-task"
+                    ng-src="{{model.getNextTask()}}" ng-click="model.showBiggerImg()">
+                <h2 id="cairn-header" ng-show="showCairnElements"> Would you like to leave something for another player?
+                </h2>
+                <div ng-show="showPhysics">
+                    <div class="container-fluid">
+                        <br><br>
+                        <div class="row" ng-show="showEmoji" id="emoji-picker">
+                            <!-- TODO could this be an ng-repeat?-->
+                            <img ng-repeat="emoji in model.emojis" ng-src="../../images/emojis/{{emoji}}.png" width="70"
+                                height="70" ng-click="model.submitEmoji(emoji)"></img>
+                        </div>
+                        <div id="physicsBody" ng-init="model.initializePhysics()">
+                        </div>
 
                     </div>
                 </div>
@@ -384,16 +379,17 @@
                 <br>
             </div>
             <div ng-show="showCairnElements">
-                <button class="btn btn-default btn-primary done-button" ng-show="showContinueBtn" ng-click="model.handleCairnContinue()" style="height: 45px;">Continue</button>
-                <button class="btn btn-default btn-primary done-button" ng-show="showBackBtn" ng-click="model.handleCairnBack()" style="height: 45px;">Back</button>
-                <button class="btn btn-default btn-primary done-button" ng-show="showSkipBtn" ng-click="model.handleCairnSkip()" style="height: 45px;">Skip</button>
+                <button class="btn btn-default btn-primary done-button" ng-show="showContinueBtn"
+                    ng-click="model.handleCairnContinue()" style="height: 45px;">Continue</button>
+                <button class="btn btn-default btn-primary done-button" ng-show="showBackBtn"
+                    ng-click="model.handleCairnBack()" style="height: 45px;">Back</button>
+                <button class="btn btn-default btn-primary done-button" ng-show="showSkipBtn"
+                    ng-click="model.handleCairnSkip()" style="height: 45px;">Skip</button>
                 <br> <br> <br> <br> <br> <br> <br>
 
             </div>
         </div>
-        <div>
 
-        </div>
         <div class="row" style="text-align: center;" ng-if="model.data.template.selectedTaskType == 'tagging'">
 
             <div class="col-sm-12"
@@ -471,6 +467,10 @@
         <!--<img class="im-modal-content" id="ModImg" ng-src="{{model.getNextTask()}}" ng-click="model.hideBiggerImg()" >-->
         <!--</div>-->
 
+        <button id="showImModalButton" style="display: none;" data-toggle="modal" data-target="#imModal">Open
+            Modal</button>
+        <button id="showTutModalButton" style="display: none;" data-toggle="modal" data-target="#tutModal">Open
+            Modal</button>
 
         <div class="modal fade" id="ngshelpModal" role="dialog">
             <div class="modal-dialog" role="document">
@@ -587,14 +587,17 @@
                     <div class="modal-header">
                         <!-- <h4 class="modal-title"> {{model.tutorial_button.text ||  "Identifying Shoreline Erosion"  }}</h4> -->
                         <h4 class="modal-title help-modal-title"> Identifying Shoreline Erosion</h4>
-                        <button type="button" class="close" style="margin-top: -25px;" data-dismiss="modal" aria-label="Close">
+                        <button type="button" class="close" style="margin-top: -25px;" data-dismiss="modal"
+                            aria-label="Close">
                             &times;
                         </button>
                     </div>
                     <div class="modal-body" style="padding: 2em 7em;">
                         <center>
                             <div class="help-modal" style="width: 100%;align-self: flex-start;">
-                                <div class="{{helpHintModalActiveTab === option.text  ? 'modal-help-tabs help-tab-active' : 'modal-help-tabs help-tabs'}}" ng-repeat="option in model.data.template.options" ng-click="showTutorial(option.text)">
+                                <div class="{{helpHintModalActiveTab === option.text  ? 'modal-help-tabs help-tab-active' : 'modal-help-tabs help-tabs'}}"
+                                    ng-repeat="option in model.data.template.options"
+                                    ng-click="showTutorial(option.text)">
 
                                     <span> {{option.text}} </span>
 
@@ -626,7 +629,8 @@
                         </center>
                     </div>
                     <div class="modal-footer help-modal-footer">
-                        <button type="button" class="btn btn-success btnTextBlack mr-auto" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-success btnTextBlack mr-auto"
+                            data-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
