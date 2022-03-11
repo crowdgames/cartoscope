@@ -69,12 +69,13 @@ span.required_answer {
 
 
 .sciStarterBanner{
-    background-color: #9ACA3C;
+    background-color: #BADB7A;
     padding: 5px;
     border-radius: 5px;
-    color: white;
+    color: black;
     cursor: pointer;
     text-decoration: none;
+    text-align: center;
 }
 
 .sciStarterBanner:hover {
@@ -165,27 +166,6 @@ td.def
     padding: 0px 0px 0px 20px;
     font: 12px Arial, Helvetica, sans-serif;
 }
-
-
-#marker_legend {
-    font-family: Arial, sans-serif;
-    background: #fff;
-    padding: 10px;
-    margin: 2px;
-    border: 3px solid #000;
-    float: left;
-    color: black
-
-}
-#marker_legend h6 {
-    margin-top: 0;
-    font-weight:bold;
-}
-#marker_legend img {
-    max-width:10%;
-    max-height:10%;
-}
-
 input[type=radio]{
     transform:scale(1.5);
 }
@@ -217,4 +197,67 @@ textarea.form-control{
 .marginBottom{
     margin-bottom: 2em;
     margin-top: 1em;
+}
+
+.legend_contributions_dataset{
+    display: flex;
+    margin-top: 2em;
+    gap: 1%;
+    min-height: 14em;
+    margin-bottom: 2em;
+}
+
+.legend_contributions {
+    font-family: 'Raleway';
+    background: #fff;
+    color: black;
+    width:55%;
+    min-height: 10em;
+}
+.change_dataset{
+    font-family: 'Raleway';
+    background: #fff;
+    color: black;
+    width: 40%;
+    text-align: center;
+    min-height: 10em;
+}
+
+.contributions_options{
+    display: inline-flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 1em;
+}
+
+.legend_contributions h6 {
+    margin-top: 0;
+    font-weight:bold;
+}
+.legend_contributions img {
+    max-width:10%;
+    max-height:10%;
+}
+.options_contributions{
+    width: 225px;
+    height: 30px;
+    margin-left: 4em;
+    line-height: 2.5;
+    background: #9ACA3C;
+    border-radius: 30px;
+}
+
+.exitButtoms{
+    border-radius: 8px;
+    background-color: #9ACA3C;
+    color: #000;
+    text-align: center;
+    outline: none;
+    border: none;
+    padding: 10px 25px;
+    margin-top: 20px;
+}
+
+.btn-primary:target {
+    background-color: white  !important;
 }
