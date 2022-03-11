@@ -517,3 +517,9 @@ margin-bottom:1em;
     border: 3px solid #9ACA3C;
     border-bottom: none;
 }
+
+.cairn-container{
+    margin-top:10px;
+    border:5px dotted #EDE9E8;
+    padding:10px;
+}
