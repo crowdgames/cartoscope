@@ -3,14 +3,14 @@
     <!-- <nav class="navbar navbar-top navbar-fixed-top"> -->
     <div class="maingame-progress-bar">
         <div class="row text-center">
-            <div class="col col-lg-1"></div>
-            <div class="col col-lg-2">
+            <!-- <div class="col col-lg-1"></div> -->
+            <div class="col col-xs-2 col-md-2 col-lg-2">
                 <div class="image-number">
                     <p>Image</p>
                     <h5> {{model.data.progress <= model.data.size ? model.data.progress : model.data.size }}</h5>
                 </div>
             </div>
-            <div class="col col-lg-6">
+            <div class="col col-xs-4 col-md-6 col-lg-6">
                 <!-- Progress bar-->
                 <div ng-switch="model.userType" ng-if="!model.showFlightPath">
 
@@ -29,20 +29,18 @@
                 </div>
             </div>
 
-            <div ng-switch="model.userType" class="col col-lg-3 pull-right">
-                <button ng-switch-when="kiosk" class="btn btn-default btn-primary done-button"
+            <div ng-switch="model.userType" class="col col-xs-4 col-md-4 col-lg-4 pull-right">
+                <button ng-switch-when="kiosk" class="btn btn-default btn-secondary done-button"
                     ng-click="showHelpHintModal()" style="height: 45px;">Help</button>
 
-                <button ng-switch-when="mTurk" class="btn btn-default btn-primary done-button"
+                <button ng-switch-when="mTurk" class="btn btn-default btn-secondary done-button"
                     ng-click="model.skipToSurvey()" style="height: 45px;"
                     ng-show="showSurvButton">{{cont_button}}</button>
-                <button ng-switch-when="kiosk" class="btn btn-default btn-primary done-button"
-                    ng-click="model.handleEnd()" style="height: 45px;">I'M DONE</button>
-                <button class="btn btn-default btn-primary done-button" ng-click="model.handleDebug()"
-                    ng-show="showDebug" style="height: 45px;">DEBUG</button>
-                <button class="btn btn-default btn-primary done-button" ng-click="model.flagImage()"
-                    style="height: 45px;">Flag image as inappropriate</button>
-                <button ng-switch-default class="btn btn-default btn-primary done-button"
+                <button ng-switch-when="kiosk" class="btn btn-default btn-secondary done-button"
+                    ng-click="model.handleEnd()" style="height: 45px;">I'm Done</button>
+                <button class="btn btn-default btn-secondary  done-button" ng-click="model.handleDebug()"
+                    ng-show="showDebug" style="height: 45px;">Debug</button>
+                <button ng-switch-default class="btn btn-default btn-secondary done-button"
                     ng-click="model.handleFinish()" style="height: 45px;">I'm Done</button>
             </div>
         </div>
@@ -73,7 +71,6 @@
 
         </div>
 
-
         <!--MAPPING TASK MAP VIEW-->
         <div class="row" ng-if="model.data.template.selectedTaskType == 'mapping'">
             <div id="mapQuestion">
@@ -98,8 +95,9 @@
                             <custom-control id="legend" position="TOP_RIGHT" index="1">
                                 <div ng-show="model.showMarkerPoints" id="marker_legend">
                                     <h6>Options</h6>
-                                    <div style="text-align: left" ng-repeat="leg_item in model.legendObject"><img
-                                            src="{{leg_item.image}}"> {{leg_item.key}}</div>
+                                    <div style="text-align: left" ng-repeat="leg_item in model.legendObject">
+                                        <img src="{{leg_item.image}}"> {{leg_item.key}}
+                                    </div>
                                 </div>
                     </ng-map>
                 </div>
@@ -325,12 +323,12 @@
         </div>
 
         <div class="row" style="text-align: center;" ng-if="model.data.template.selectedTaskType == 'tagging'">
-            <div class="col-sm-4" id="sidebar">
-                <div ng-show="showPlayerSidebar">
+            <!-- <div class="col-sm-4" id="sidebar">
+                <div ng-show="true">
                     <h2 id="cairn-sidebar-header">How other players voted for the previous image!</h2>
                 </div>
-            </div>
-            <div class="col-sm-5" id="img">
+            </div> -->
+            <div class="col-sm-12" id="img">
                 <img ng-show="showMainTask" id="task-img" style="max-height:450px" class="img-responsive img-task"
                     ng-src="{{model.getNextTask()}}" ng-click="model.showBiggerImg()">
                 <h2 id="cairn-header" ng-show="showCairnElements"> Would you like to leave something for another player?
@@ -405,41 +403,53 @@
             </div>
         </div>
 
+        <div class="container text-center" id="sidebar" ng-if="model.data.template.selectedTaskType">
+            <div ng-show="showPlayerSidebar">
+                <h4 id="cairn-sidebar-header">How other players voted for the previous image!</h4>
+            </div>
+        </div>
 
-        <div class="actions-div" ng-if="model.data.template.selectedTaskType == 'tagging'">
-            <div class="container text-center" style="padding: 0;width: 100%;" ng-show="showMainTask">
-                <div class="bottom-panel">
-                    <div class="question" ng-if="model.data.template.selectedTaskType == 'tagging'">
-                        <span>{{model.data.template.question}}</span>
-                        <!--<span  ng-show="model.userType === 'mTurk'" style="color: #9ACA3C;cursor: pointer;" data-target="#helpModal" data-toggle="modal"><i class="fa fa-question-circle-o" aria-hidden="true"></i></span>-->
+        <button class="btn btn-secondary" ng-click="model.flagImage()"
+            style="height: 45px; position: absolute;right: 11em;top: 43em;"> Report Image
+            <i class="fa fa-flag" style="color:#A92323;" aria-hidden="true"></i></button>
 
+        <div ng-show="!showPlayerSidebar" class="actions-div">
 
-                    </div>
-                </div>
+            <div ng-if="model.data.template.selectedTaskType == 'tagging'">
+                <div class="container text-center" style="padding: 0;width: 100%;" ng-show="showMainTask">
+                    <div class="bottom-panel">
+                        <div class="question" ng-if="model.data.template.selectedTaskType == 'tagging'">
+                            <span>{{model.data.template.question}}</span>
+                            <!--<span  ng-show="model.userType === 'mTurk'" style="color: #9ACA3C;cursor: pointer;" data-target="#helpModal" data-toggle="modal"><i class="fa fa-question-circle-o" aria-hidden="true"></i></span>-->
 
-                <div class="row" ng-if="model.data.template.selectedTaskType == 'tagging'">
-                    <!--<div class="col-md-3"></div>-->
-                    <div class="col-lg-12 col-md-12 col-sm-12 answers">
-                        <div ng-repeat="option in model.data.template.options" style="display: inline">
-                            <button ng-class="model.getColourClass(option.color)"
-                                ng-click="model.submit($index,option.text)" ng-disabled="finished" class="options btn">
-                                {{option.text}}
-                            </button>
-                            <!-- <span style="color: #9ACA3C;cursor: pointer;display:inline;margin-left:-5px"
-                                ng-click="showTutorial(option.text)">Hint <i class="fa fa-lightbulb-o"
-                                    aria-hidden="true"></i></span> -->
 
                         </div>
-
                     </div>
-                    <!--<div class="col-md-3"></div>-->
+
+                    <div class="row" ng-if="model.data.template.selectedTaskType == 'tagging'">
+                        <!--<div class="col-md-3"></div>-->
+                        <div class="col-lg-12 col-md-12 col-sm-12 answers">
+                            <div ng-repeat="option in model.data.template.options" style="display: inline">
+                                <button ng-class="model.getColourClass(option.color)"
+                                    ng-click="model.submit($index,option.text)" ng-disabled="finished"
+                                    class="options btn">
+                                    {{option.text}}
+                                </button>
+                            </div>
+
+                        </div>
+                        <!--<div class="col-md-3"></div>-->
+                    </div>
+
+                    <!--<button id="showImModalButton" style="display: none;" data-toggle="modal" data-target="#imModal">Open Modal</button>-->
+
                 </div>
 
-                <!--<button id="showImModalButton" style="display: none;" data-toggle="modal" data-target="#imModal">Open Modal</button>-->
+            </div>
+            <div ng-if="model.data.template.selectedTaskType != 'tagging'">
+
 
             </div>
-            </nav>
-
         </div>
 
 

@@ -425,6 +425,7 @@ div.jx-slider {
     height: 70px;
     color: #221D1B;
     font-size: 14px;
+    display: inline-block;
 }
 
 .image-number h5{
