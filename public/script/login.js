@@ -3,16 +3,16 @@
  */
 var app = angular.module('app', []);
 
-app.controller('loginController', ['$scope', '$http', '$location', function($scope, $http, $location) {
+app.controller('loginController', ['$scope', '$http', '$window', function($scope, $http, $window) {
   $scope.userRegData = {};
   $scope.loginData = {};
   
   $scope.checkLogin = function() {
     $http.get('/api/user/').then(function(response) {
-      window.location.replace('/UserProfile.html');
+      $window.location.href = '#/UserProfile.html';
     }, function(response) {
         console.log('Not Authenticated');
-        window.location.replace('/logon.html');
+        $window.location.href = '#/login';
     });
   };
   $scope.checkLogin();
