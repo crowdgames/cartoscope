@@ -412,11 +412,11 @@
             </div>
             <div class="col col-xs-2 col-md-3 col-lg-3"></div>
         </div>
-
-        <button class="btn btn-secondary" ng-click="model.flagImage()"
-            style="height: 45px; position: absolute;right: 11em;top: 43em;"> Report Image
+        <a ng-click="model.flagImage()">  <button class="btn btn-secondary" ng-click="model.flagImage()"
+            style="height: 45px; position: absolute;right: 11em;top: 43em; z-index: 100;"> Report Image
             <i class="fa fa-flag" style="color:#A92323;" aria-hidden="true"></i></button>
-
+</a>
+        
         <div ng-show="!showPlayerSidebar" class="actions-div">
 
             <div ng-if="model.data.template.selectedTaskType == 'tagging'">
