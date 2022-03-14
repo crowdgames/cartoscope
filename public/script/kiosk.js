@@ -1908,11 +1908,11 @@ module.controller('resultsHubController',
             $scope.update_hub_Markers($scope.hub_positives[0],0)
 
             //generate map
-            //TODO: check back for this center, it might not be adjusted if we make projects in other locations
+            //check back for this center, it might not be adjusted if we make projects in other locations
             $scope.map1 = {
                 center: {
-                    latitude: parseFloat(29.905498110016907),
-                    longitude: parseFloat(-90.26941133000318)
+                    latitude: $scope.hub_center_lat,
+                    longitude: $scope.hub_center_lon
                 },
                 streetViewControl: false,
                 zoom: zoom,
@@ -1960,6 +1960,11 @@ module.controller('resultsHubController',
                             id: pointId,
                             icon: $scope.icon_array[color_index]
                         });
+
+                        if ($scope.hub_center_lat == undefined && $scope.hub_center_lon == undefined){
+                            $scope.hub_center_lat = parseFloat(item.lat)
+                            $scope.hub_center_lon = parseFloat(item.lon)
+                        }
     
     
                         var image_path = 'api/tasks/getImageFree/' + item.dataset_id + '/' + key  + '.jpg';
@@ -2017,7 +2022,7 @@ module.controller('resultsHubController',
             //STEP 2: get data for the projects in the hub
             $http.get('/api/results/hub_data/' + $stateParams.hub_code).then(function(pdata) {
 
-                $scope.raw_data = pdata.data; //all the data    
+                $scope.raw_data = pdata.data; //all the data  
                 $scope.showMap = true;
                 $scope.InitMap(7);
     
