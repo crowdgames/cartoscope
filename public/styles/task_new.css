@@ -425,6 +425,7 @@ div.jx-slider {
     height: 70px;
     color: #221D1B;
     font-size: 14px;
+    display: inline-block;
 }
 
 .image-number h5{
@@ -515,4 +516,10 @@ margin-bottom:1em;
     background-color: white;
     border: 3px solid #9ACA3C;
     border-bottom: none;
+}
+
+.cairn-container{
+    margin-top:10px;
+    border:5px dotted #EDE9E8;
+    padding:10px;
 }
