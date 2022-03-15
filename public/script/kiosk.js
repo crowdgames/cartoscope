@@ -553,7 +553,7 @@ module.controller('heatMapController', function($scope, $http, $window,heatMapPr
         //Unquote
         $scope.question1 = $scope.q1.replace(/\"/g, "");
         //Buttons for the heatmap
-        $scope.options1 = [{'name':'Green','color': '#9cdc1f','ncolor': 1},
+        $scope.options1 = [{'name':'Green','color': '#9ACA3C','ncolor': 1},
             {'name':'Blue','color': '#0072BC','ncolor': 5},
             {'name':'Brown','color': '#f7941d','ncolor': 3}];
 
@@ -594,9 +594,9 @@ module.controller('heatMapController', function($scope, $http, $window,heatMapPr
             $scope.question2 = $scope.q2.replace(/\"/g, "");
 
             //Buttons for project 2:
-            $scope.options2 = [{'name':'Yes','color': '#9cdc1f','ncolor': 1},
+            $scope.options2 = [{'name':'Yes','color': '#9ACA3C','ncolor': 1},
                 {'name':'No','color': '#DC1F3A','ncolor': 4},
-                {'name':'Maybe','color': '#FFF200','ncolor': 2}];
+                {'name':'Maybe','color': '#F5EA69','ncolor': 2}];
 
             //generate first map
             $scope.map2 = {
@@ -654,8 +654,8 @@ module.controller('heatMapProjectController', function($scope, $http, $window,$s
 
     };
 
-    $scope.hex_array = ['#9cdc1f',
-        '#FFF200',
+    $scope.hex_array = ['#9ACA3C',
+        '#F5EA69',
         '#F7941D',
         '#ff0000',
         '#0072BC',
@@ -1120,8 +1120,8 @@ module.controller('gridMapProjectController',
 
     };
 
-    $scope.hex_array = ['#9cdc1f',
-        '#FFF200',
+    $scope.hex_array = ['#9ACA3C',
+        '#F5EA69',
         '#F7941D',
         '#ff0000',
         '#0072BC',
@@ -1686,8 +1686,8 @@ module.controller('landlossResultsController',
             '/images/markers/marker_purple2.svg',
             '/images/markers/marker_grey.svg'];
 
-        $scope.hex_array = ['#9cdc1f',
-            '#FFF200',
+        $scope.hex_array = ['#9ACA3C',
+            '#F5EA69',
             '#F7941D',
             '#ff0000',
             '#0072BC',
@@ -1876,8 +1876,8 @@ module.controller('resultsHubController',
             '/images/markers/marker_purple2.svg',
             '/images/markers/marker_grey.svg'];
 
-        $scope.hex_array = ['#9cdc1f',
-            '#FFF200',
+        $scope.hex_array = ['#9ACA3C',
+            '#F5EA69',
             '#F7941D',
             '#ff0000',
             '#0072BC',
@@ -2100,7 +2100,8 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
     vm.alertError = function(msg) {
         swal({
             title: 'Whoops!',
-            confirmButtonColor: '#9cdc1f',
+            confirmButtonColor: '#9ACA3C',
+            confirmTextColor:'black',
             allowOutsideClick: true,
             text: msg,
             type: 'error',
@@ -2139,7 +2140,7 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
 
         var button_cols = {
             '4': '#ff0000',    //red
-            '1': '#00ff00',   //green
+            '1': '#9ACA3C',   //green
             '5': '#0000ff',     //blue
             '3': '#ffa500',   //orange
             '2': '#ffff00',   //yellow
@@ -2147,7 +2148,7 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
 
         };
 
-        $scope.button_cols = ['#00ff00','#ffff00','#ffa500','#ff0000','#0000ff','#8a2be2',"gray"];
+        $scope.button_cols = ['#9ACA3C','#ffff00','#ffa500','#ff0000','#0000ff','#8a2be2',"gray"];
 
 
         //for NGS tasks

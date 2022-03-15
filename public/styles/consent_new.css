@@ -39,7 +39,7 @@ body {
 .consent-button {
     margin-top: 20px;
     border-radius: 10px;
-    background-color: #9cdc1f;
+    background-color: #9ACA3C;
     color: #000;
     font-size: 16px;
     outline: none;
@@ -112,7 +112,7 @@ body {
     outline: none;
     margin: 5px 10px;
     color: black;
-    text-transform: uppercase;
+    text-transform: capitalize;
 }
 
 
@@ -228,3 +228,61 @@ body {
     width: 15em;
     color: black;
 }
+
+.modal-footer {
+    text-align: center;
+    border-top: 1px solid #787575;
+}
+
+.btn-success {
+    color: black;
+    background-color: #9ACA3C;
+    border-color: #9ACA3C;
+    width: 12em;
+}
+
+.btn-success:hover {
+    background-color: #779c2d;
+    border: 5px #779c2d solid;
+    color:black;
+    opacity: 1.5;
+  }
+
+.modal-title{
+    text-align: center;
+    font-weight: 900;
+}
+
+.modal-header .close{
+    color:black;
+    margin-top: -25px;
+    opacity: 1.2;
+    font-size: 2em;
+}
+
+.mainWrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  header, footer {
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-basis: auto;
+  }
+  
+  main {
+    flex-grow: 1;
+    flex-shrink: 0;
+    flex-basis: auto;
+    padding:2em;
+  }
+
+  .navMenu a{
+    cursor: pointer;
+  }
+
+  .navMenu a:hover{
+    text-decoration: underline;
+  }

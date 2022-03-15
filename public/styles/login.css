@@ -27,7 +27,7 @@ html .circ-sep {
   height: 5px;
   width: 5px;
   border-radius: 5px;
-  background-color: #9cdc1f;
+  background-color: #9ACA3C;
   display: inline-block;
   margin-left: 5px;
   margin-right: 5px;
@@ -66,7 +66,7 @@ html .side-1 .login-content .login-buttons-wrapper {
   align-self: flex-start;
 }
 html .side-1 .login-content .login-buttons-wrapper .login-top-panel {
-  background-color: #9cdc1f;
+  background-color: #9ACA3C;
   color: #2e2e2e;
   padding: 20px;
 }
@@ -100,7 +100,7 @@ html .side-1 .login-content .login-buttons-wrapper .login-top-panel .login-btn {
   margin-top: 20px;
   border-radius: 10px;
   background-color: #000;
-  color: #9cdc1f;
+  color: #9ACA3C;
   font-size: 12px;
   outline: none;
   border: none;
@@ -115,7 +115,7 @@ html .side-1 .reg-msg {
 }
 html .side-1 .register-btn {
   border-radius: 8px;
-  background-color: #9cdc1f;
+  background-color: #9ACA3C;
   color: #000;
   font-size: 18px;
   outline: none;
@@ -139,7 +139,7 @@ html .side-1 .links-wrapper .link-ul {
 }
 html .center-1 {
   height: 100%;
-  /*background-color: #9cdc1f;*/
+  /*background-color: #9ACA3C;*/
   /*background-image: url('../images/Layer13.png');*/
   /*background-image: url('../images/background_dktp.png');*/
   background-size: 100% 100%;
@@ -160,7 +160,7 @@ html .center-1 .center-content .welcometext {
 html .center-1 .center-content .contrib-btn {
   margin-top: 20px;
   border-radius: 8px;
-  background-color: #9cdc1f;
+  background-color: #9ACA3C;
   color: #000;
   font-size: 18px;
   text-align: center;
@@ -169,7 +169,7 @@ html .center-1 .center-content .contrib-btn {
   padding: 10px 25px;
 }
 html .register-modal-body {
-  background-color: #9cdc1f;
+  background-color: #9ACA3C;
   padding: 15px;
 }
 html .reg-lbl {
@@ -227,7 +227,7 @@ html .modal-kill-btn button {
   opacity: 1 !important;
 }
 .new-home .start-contrib-button {
-  background-color: #9cdc1f;
+  background-color: #9ACA3C;
   border: none;
   border-radius: 0;
   height: 100%;
@@ -258,7 +258,7 @@ html .modal-kill-btn button {
 
 
 .new_home .navbar .sup {
-  color: #9cdc1f
+  color: #9ACA3C
 }
 
 .new-home .navbar .container-fluid {
@@ -276,13 +276,13 @@ html .modal-kill-btn button {
 
 
 .new-home .navbar .container-fluid .no-style-ul sup {
-  color: #9cdc1f
+  color: #9ACA3C
 }
 
 
 
 .new-home .navbar .container-fluid .no-style-ul .new-project-link-btn .new-project-link {
-  border: 2px solid #9cdc1f;
+  border: 2px solid #9ACA3C;
   padding: 4px 4px;
   color: white;
   font-weight: 300;
@@ -300,7 +300,7 @@ html .modal-kill-btn button {
   cursor: pointer;
 }
 .new-home .navbar .container-fluid .right .active {
-  border-color: #9cdc1f;
+  border-color: #9ACA3C;
 }
 .new-home .top-panel {
   padding-top: 65px;
@@ -340,7 +340,7 @@ html .modal-kill-btn button {
   margin-top: 20px;
   border-radius: 4px;
   color: #000;
-  background-color: #9cdc1f;
+  background-color: #9ACA3C;
   font-size: 24px;
   font-weight: 600;
   outline: none;
@@ -383,7 +383,7 @@ html .modal-kill-btn button {
 }
 .new-home .projects-panel .project-box {
   color: white;
-  border: 2px solid #9cdc1f;
+  border: 2px solid #9ACA3C;
   border-bottom: 8px solid;
   height: 270px;
   width: 240px;
@@ -395,7 +395,7 @@ html .modal-kill-btn button {
 .new-home .projects-panel .project-box .title {
   font-size: 18px;
   font-weight: 400;
-  color: #9cdc1f;
+  color: #9ACA3C;
   text-align: center;
   display: block;
   margin: 15px 5px 5px 5px;
@@ -409,7 +409,7 @@ html .modal-kill-btn button {
   font-size: 11px;
 }
 .new-home .projects-panel .project-box:hover {
-  border-bottom-color: #9cdc1f;
+  border-bottom-color: #9ACA3C;
 }
 .new-home .projects-panel .project-box-bkg1 {
   background: url("../images/project-1.jpg");
@@ -585,7 +585,7 @@ html .modal-kill-btn button {
 .new-home .orgs-panel .body .box .hover-panel-text .green-line {
   width: 75px;
   height: 2px;
-  background-color: #9cdc1f;
+  background-color: #9ACA3C;
   margin-top: 20px;
   margin-bottom: 20px;
 }
@@ -625,12 +625,12 @@ html .modal-kill-btn button {
   padding-top: 8px;
 }
 .new-home .footer .black-bottom a {
-  color: #9cdc1f;
+  color: #9ACA3C;
 }
 .new-home .footer .green-box {
   padding-top: 20px;
   width: 100%;
-  background-color: #9cdc1f;
+  background-color: #9ACA3C;
 }
 .new-home .footer .green-box .icon-box a {
   text-decoration: none;
@@ -665,9 +665,6 @@ html .modal-kill-btn button {
   align-items: center;
   justify-content: center;
 }
-.projectName {
-  margin-top: 100px;
-}
 .description {
   margin-top: 20px;
 }
@@ -675,8 +672,10 @@ html .modal-kill-btn button {
   font-family: 'Paytone One', sans-serif;
 }
 .consent-button:hover {
-  background-color: #7F7F7F;
-  border: 5px #9cdc1f solid;
+  background-color: #779c2d;
+  border: 5px #779c2d solid;
+  color:black;
+  opacity: 1.5;
 }
 .top {
   top: 0;
@@ -689,9 +688,9 @@ html .modal-kill-btn button {
   height: 74px;
   color: black;
   font-size: 28px;
-  background-color: #9cdc1f !important;
-  border-color: #9cdc1f;
-  border: 4px solid #9cdc1f;
+  background-color: #9ACA3C !important;
+  border-color: #9ACA3C;
+  border: 4px solid #9ACA3C;
   border-radius: 10px;
   padding: 2px;
 }
@@ -701,8 +700,8 @@ html .modal-kill-btn button {
   color: white;
   font-size: 28px;
   background-color: #292929 !important;
-  border-color: #9cdc1f !important;
-  border: 4px solid #9cdc1f !important;
+  border-color: #9ACA3C !important;
+  border: 4px solid #9ACA3C !important;
   border-radius: 10px;
   padding: 2px;
   opacity: 1.0 !important;

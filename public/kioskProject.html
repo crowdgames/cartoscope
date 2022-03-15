@@ -30,6 +30,7 @@
     <link href="styles/heapmap.css" rel="stylesheet" type="text/css"/>
     <link href="styles/login.css" rel="stylesheet" type="text/css"/>
     <link href="styles/consent_new.css" rel="stylesheet">
+    <link href="styles/tutorial.css" rel="stylesheet">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-google-maps/2.4.1/angular-google-maps.min.js"></script>
@@ -75,10 +76,10 @@
     </style>
 </head>
 <body ng-app="consentApp" ng-controller="kioskProjectController ">
-    <div class="">
-        <div ui-view class="navMenu" name="nav"></div>
-        <div ui-view  name="content"></div>
-        <div ui-view  name="footer"></div>
+    <div class="mainWrapper" >
+        <header ui-view class="navMenu" name="nav"></header>
+        <main ui-view  name="content"></main>
+        <footer ui-view  class="footer" name="footer"></footer>
     </div>
 </body>
 

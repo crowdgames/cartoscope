@@ -1,7 +1,7 @@
 /**
  * Created by kiprasad on 26/09/16.
  */
-var module = angular.module('taskApp', ['ui.router', 'ngMap','configApp','ngJuxtapose']);
+var module = angular.module('taskApp', ['ui.router', 'ngMap','configApp','ngJuxtapose', 'ngSanitize']);
 let shuffle = (inA: Array<any>) => {
   let a = inA.slice(0);
   for (let i = a.length - 1; i > 0; i--) {
@@ -839,7 +839,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
               swal({
                   title: "Explanation",
-                  confirmButtonColor: '#9cdc1f',
+                  confirmButtonColor: '#9ACA3C',
                   allowOutsideClick: true,
                   html: true,
                   text: text,
@@ -848,7 +848,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           } else {
               swal({
                   title: "Explanation",
-                  confirmButtonColor: '#9cdc1f',
+                  confirmButtonColor: '#9ACA3C',
                   allowOutsideClick: true,
                   text: "No additional information available for this example.",
                   confirmButtonText: 'Back'
@@ -863,7 +863,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               text: "Good job! Click continue to keep labeling images, or Survey to quit and go to the survey.",
               type: 'info',
               showCancelButton: true,
-              confirmButtonColor: '#9cdc1f',
+              confirmButtonColor: '#9ACA3C',
               cancelButtonColor: '#d33',
               confirmButtonText: 'Proceed to Survey',
               cancelButtonText: 'Continue Labeling',
@@ -1290,11 +1290,20 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   }
               });
 
+              $scope.helpHintModalActiveTab = option;
               //activate modal
-              $scope.triggerClick('#showTutModalButton');
+              //moved to showhelpModal
+              //$scope.triggerClick('#showTutModalButton');
 
           });
       };
+
+      $scope.showHelpHintModal = function (){
+            //activate modal
+            $scope.triggerClick('#showTutModalButton');
+            const option = $scope.model.data.template.options.length > 0 && $scope.model.data.template.options[0].text;
+            $scope.showTutorial(option);
+      }
 
 
       $scope.triggerClick = function (id) {

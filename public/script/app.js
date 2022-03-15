@@ -1193,10 +1193,10 @@ module.controller('projectController', ['$scope', '$state', '$http', '$statePara
         };
 
         vm.button_colors = {
-            '1': '#9cdc1f',
+            '1': '#9ACA3C',
             '2': '#DC1F3A',
             '3': '#f7941d',
-            '4': '#FFF200',
+            '4': '#F5EA69',
             '5': '#0072BC',
             '6': '#8A2BE2'
         };
@@ -1839,7 +1839,7 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
     $scope.previewExplanation = function(explanation){
         swal({
             title: "Explanation Preview",
-            confirmButtonColor: '#9cdc1f',
+            confirmButtonColor: '#9ACA3C',
             allowOutsideClick: true,
             html: true,
             text: '<div>' + explanation + '</div>',
@@ -1919,7 +1919,7 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
             //send message we good
             swal({
                 title: 'Success!',
-                confirmButtonColor: '#9cdc1f',
+                confirmButtonColor: '#9ACA3C',
                 allowOutsideClick: true,
                 text: 'Tutorial added!',
                 type: 'success'
@@ -2063,7 +2063,7 @@ module.controller('stepSevenController', ['$scope', '$state', '$http', 'Upload',
 
         swal({
             title: type,
-            confirmButtonColor: '#9cdc1f',
+            confirmButtonColor: '#9ACA3C',
             allowOutsideClick: true,
             html: true,
             text: html_text,
@@ -2113,7 +2113,7 @@ module.controller('stepSevenController', ['$scope', '$state', '$http', 'Upload',
             //send message we good
             swal({
                 title: 'Success!',
-                confirmButtonColor: '#9cdc1f',
+                confirmButtonColor: '#9ACA3C',
                 allowOutsideClick: true,
                 text: 'Survey added!',
                 type: 'success'
@@ -2203,7 +2203,7 @@ module.controller('projectsPageController', ['$scope', 'userData', 'projects', '
         $http.get('/api/project/duplicateProject/' + project.unique_code).then(function(data) {
             swal({
                 title: 'Success!',
-                confirmButtonColor: '#9cdc1f',
+                confirmButtonColor: '#9ACA3C',
                 allowOutsideClick: true,
                 text: 'Project duplicated successfully',
                 type: 'success',
@@ -2245,7 +2245,7 @@ module.controller('projectsPageController', ['$scope', 'userData', 'projects', '
         }, function(error){
             swal({
                 title: 'Error!',
-                confirmButtonColor: '#9cdc1f',
+                confirmButtonColor: '#9ACA3C',
                 allowOutsideClick: true,
                 text: 'Error duplicating project',
                 type: 'error',
@@ -2575,7 +2575,7 @@ module.controller('hubStepOneController', ['$scope', '$state', '$http', 'swalSer
             //send message we good
             swal({
                 title: 'Success!',
-                confirmButtonColor: '#9cdc1f',
+                confirmButtonColor: '#9ACA3C',
                 allowOutsideClick: true,
                 text: 'Subprojects added!',
                 type: 'success'
@@ -2757,7 +2757,7 @@ module.controller('hubStepOneController', ['$scope', '$state', '$http', 'swalSer
             //send message we good
             swal({
                 title: 'Success!',
-                confirmButtonColor: '#9cdc1f',
+                confirmButtonColor: '#9ACA3C',
                 allowOutsideClick: true,
                 text: 'Subprojects added!',
                 type: 'success'
@@ -2922,7 +2922,7 @@ module.controller('userProfileController', ['$scope','$http', '$state', 'project
         if ($scope.user.password!== '' &&  $scope.user.password !== $scope.user.repPassword) {
             swal({
                 title: 'Error!',
-                confirmButtonColor: '#9cdc1f',
+                confirmButtonColor: '#9ACA3C',
                 allowOutsideClick: true,
                 text: 'Passwords do not match',
                 type: 'error',
@@ -2936,7 +2936,7 @@ module.controller('userProfileController', ['$scope','$http', '$state', 'project
         if ($scope.user.email!= '' && !validateEmail($scope.user.email)) {
             swal({
                 title: 'Error!',
-                confirmButtonColor: '#9cdc1f',
+                confirmButtonColor: '#9ACA3C',
                 allowOutsideClick: true,
                 text: 'Invalid/Missing Email',
                 type: 'error',
@@ -2965,7 +2965,7 @@ module.controller('userProfileController', ['$scope','$http', '$state', 'project
             var msg = response.data.error || 'error';
             swal({
                 title: 'Error!',
-                confirmButtonColor: '#9cdc1f',
+                confirmButtonColor: '#9ACA3C',
                 allowOutsideClick: true,
                 text: msg,
                 type: 'error',
@@ -3185,7 +3185,7 @@ module.factory('swalService', function() {
   service.showErrorMsg = function(errorMsg) {
     swal({
       title: 'Error!',
-      confirmButtonColor: '#9cdc1f',
+      confirmButtonColor: '#9ACA3C',
       allowOutsideClick: true,
       text: errorMsg,
       type: 'error',
@@ -3220,7 +3220,7 @@ module.controller('loginController', ['$scope', '$http', '$state',
 
             swal({
                 title: 'Error!',
-                confirmButtonColor: '#9cdc1f',
+                confirmButtonColor: '#9ACA3C',
                 allowOutsideClick: true,
                 text: 'Please enter a username',
                 type: 'error',
@@ -3234,7 +3234,7 @@ module.controller('loginController', ['$scope', '$http', '$state',
         if (!$scope.userRegData.password) {
             swal({
                 title: 'Error!',
-                confirmButtonColor: '#9cdc1f',
+                confirmButtonColor: '#9ACA3C',
                 allowOutsideClick: true,
                 text: 'Please enter a password',
                 type: 'error',
@@ -3244,7 +3244,7 @@ module.controller('loginController', ['$scope', '$http', '$state',
         } else if ($scope.userRegData.password != $scope.userRegData.repPassword) {
             swal({
                 title: 'Error!',
-                confirmButtonColor: '#9cdc1f',
+                confirmButtonColor: '#9ACA3C',
                 allowOutsideClick: true,
                 text: 'Passwords do not match',
                 type: 'error',
@@ -3258,7 +3258,7 @@ module.controller('loginController', ['$scope', '$http', '$state',
         if (!validateEmail($scope.userRegData.email)) {
             swal({
                 title: 'Error!',
-                confirmButtonColor: '#9cdc1f',
+                confirmButtonColor: '#9ACA3C',
                 allowOutsideClick: true,
                 text: 'Invalid/Missing Email',
                 type: 'error',
@@ -3278,7 +3278,7 @@ module.controller('loginController', ['$scope', '$http', '$state',
         if (!$scope.userRegData.agreePrivacyPolicy) {
             swal({
                 title: 'Error!',
-                confirmButtonColor: '#9cdc1f',
+                confirmButtonColor: '#9ACA3C',
                 allowOutsideClick: true,
                 text: 'Please agree to our privacy policy',
                 type: 'error',
@@ -3306,7 +3306,7 @@ module.controller('loginController', ['$scope', '$http', '$state',
             var msg = response.data.error || 'error';
             swal({
                 title: 'Error!',
-                confirmButtonColor: '#9cdc1f',
+                confirmButtonColor: '#9ACA3C',
                 allowOutsideClick: true,
                 text: msg,
                 type: 'error',
@@ -3322,7 +3322,7 @@ module.controller('loginController', ['$scope', '$http', '$state',
         if (!data.username) {
             swal({
                 title: 'Error!',
-                confirmButtonColor: '#9cdc1f',
+                confirmButtonColor: '#9ACA3C',
                 allowOutsideClick: true,
                 text: 'Invalid Username',
                 type: 'error',
@@ -3335,7 +3335,7 @@ module.controller('loginController', ['$scope', '$http', '$state',
         if (!data.password) {
             swal({
                 title: 'Error!',
-                confirmButtonColor: '#9cdc1f',
+                confirmButtonColor: '#9ACA3C',
                 allowOutsideClick: true,
                 text: 'Please enter a password',
                 type: 'error',
@@ -3356,7 +3356,7 @@ module.controller('loginController', ['$scope', '$http', '$state',
             var msg = response.data.error || 'error';
             swal({
                 title: 'Error!',
-                confirmButtonColor: '#9cdc1f',
+                confirmButtonColor: '#9ACA3C',
                 allowOutsideClick: true,
                 text: msg,
                 type: 'error',
