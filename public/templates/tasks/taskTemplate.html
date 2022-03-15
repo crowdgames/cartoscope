@@ -3,14 +3,14 @@
     <!-- <nav class="navbar navbar-top navbar-fixed-top"> -->
     <div class="maingame-progress-bar">
         <div class="row text-center">
-            <div class="col col-lg-1"></div>
-            <div class="col col-lg-2">
+            <!-- <div class="col col-lg-1"></div> -->
+            <div class="col col-xs-2 col-md-2 col-lg-2">
                 <div class="image-number">
                     <p>Image</p>
                     <h5> {{model.data.progress <= model.data.size ? model.data.progress : model.data.size }}</h5>
                 </div>
             </div>
-            <div class="col col-lg-6">
+            <div class="col col-xs-4 col-md-6 col-lg-6">
                 <!-- Progress bar-->
                 <div ng-switch="model.userType" ng-if="!model.showFlightPath">
 
@@ -19,9 +19,9 @@
                         <!-- Deleted the progress bar, see git for an example of how to put it back -->
                         <!-- Placing the progress bar back as mentioned in the new ui templates-->
                         <div ng-hide="model.showProgressBar"
-                            class="progress-bar progress-bar-striped progress-bar-success" role="progressbar"
-                            aria-valuenow="{{next_per2}}" aria-valuemin="0" aria-valuemax="100"
-                            ng-style="mturkbarStyle">
+                             class="progress-bar progress-bar-striped progress-bar-success" role="progressbar"
+                             aria-valuenow="{{next_per2}}" aria-valuemin="0" aria-valuemax="100"
+                             ng-style="mturkbarStyle">
                         </div>
                     </div>
                     <div ng-switch-when="mTurk"></div>
@@ -29,20 +29,18 @@
                 </div>
             </div>
 
-            <div ng-switch="model.userType" class="col col-lg-3 pull-right">
-                <button ng-switch-when="kiosk" class="btn btn-default btn-primary done-button"
-                    ng-click="showHelpHintModal()" style="height: 45px;">Help</button>
+            <div ng-switch="model.userType" class="col col-xs-4 col-md-4 col-lg-4 pull-right">
+                <button ng-switch-when="kiosk" class="btn btn-default btn-secondary done-button"
+                        ng-click="showHelpHintModal()" style="height: 45px;">Help</button>
 
-                <button ng-switch-when="mTurk" class="btn btn-default btn-primary done-button"
-                    ng-click="model.skipToSurvey()" style="height: 45px;"
-                    ng-show="showSurvButton">{{cont_button}}</button>
-                <button ng-switch-when="kiosk" class="btn btn-default btn-primary done-button"
-                        ng-click="model.handleEnd()" style="height: 45px;">I'M DONE</button>
-                <button class="btn btn-default btn-primary done-button"
-                        ng-click="model.handleDebug()" ng-show="showDebug" style="height: 45px;">DEBUG</button>
-                <button class="btn btn-default btn-primary done-button"
-                        ng-click="model.flagImage()" style="height: 45px;">Flag image as inappropriate</button>
-                <button ng-switch-default class="btn btn-default btn-primary done-button"
+                <button ng-switch-when="mTurk" class="btn btn-default btn-secondary done-button"
+                        ng-click="model.skipToSurvey()" style="height: 45px;"
+                        ng-show="showSurvButton">{{cont_button}}</button>
+                <button ng-switch-when="kiosk" class="btn btn-default btn-secondary done-button"
+                        ng-click="model.handleEnd()" style="height: 45px;">I'm Done</button>
+                <button class="btn btn-default btn-secondary  done-button" ng-click="model.handleDebug()"
+                        ng-show="showDebug" style="height: 45px;">Debug</button>
+                <button ng-switch-default class="btn btn-default btn-secondary done-button"
                         ng-click="model.handleFinish()" style="height: 45px;">I'm Done</button>
             </div>
         </div>
@@ -59,11 +57,11 @@
                     <center>
                         <div class="col-sm-12">
                             <ng-map id="flight_path" center="[{{model.flight_map_lat}},{{model.flight_map_lng}} ]"
-                                map-type-id="ROADMAP" zoom="{{model.fetchZoom()}}"
-                                on-center-changed="model.flight_centerChanged();" zoomControl="true"
-                                fullscreenControl="false"
-                                zoom-control-options="{ style:'small',position:'RIGHT_BOTTOM'}"
-                                style="height:100px;width:500px;" class="mapDiv">
+                                    map-type-id="ROADMAP" zoom="{{model.fetchZoom()}}"
+                                    on-center-changed="model.flight_centerChanged();" zoomControl="true"
+                                    fullscreenControl="false"
+                                    zoom-control-options="{ style:'small',position:'RIGHT_BOTTOM'}"
+                                    style="height:100px;width:500px;" class="mapDiv">
                             </ng-map>
                         </div>
                     </center>
@@ -73,14 +71,13 @@
 
         </div>
 
-
         <!--MAPPING TASK MAP VIEW-->
         <div class="row" ng-if="model.data.template.selectedTaskType == 'mapping'">
             <div id="mapQuestion">
                 <h3 class="mapQuestion text-center" style="color:white">{{model.data.template.question}}
                     <span ng-show="model.userType === 'mTurk'" style="color: #9ACA3C;cursor: pointer;"
-                        data-target="#helpModal" data-toggle="modal"><i class="fa fa-question-circle-o"
-                            aria-hidden="true"></i></span>
+                          data-target="#helpModal" data-toggle="modal"><i class="fa fa-question-circle-o"
+                                                                          aria-hidden="true"></i></span>
                 </h3>
 
             </div>
@@ -88,18 +85,19 @@
             <div id="maps" class="col-md-12 text-center">
                 <div class="col-md-6 col-xs-12 col-sm-12">
                     <ng-map id="main_map" center="{{model.fetchCenter()}}" map-type-id="SATELLITE"
-                        zoom="{{model.defZoom}}" zoom-control-options="{ style:'SMALL',position:'RIGHT_BOTTOM'}"
-                        on-zoom_changed="model.zoomChanged();" on-center-changed="model.centerChanged();"
-                        map-type-control-options="{style:'DROPDOWN_MENU'}" street-view-control="false"
-                        fullscreen-control="false" class="mapDiv">
+                            zoom="{{model.defZoom}}" zoom-control-options="{ style:'SMALL',position:'RIGHT_BOTTOM'}"
+                            on-zoom_changed="model.zoomChanged();" on-center-changed="model.centerChanged();"
+                            map-type-control-options="{style:'DROPDOWN_MENU'}" street-view-control="false"
+                            fullscreen-control="false" class="mapDiv">
                         <custom-control id="recenter" position="TOP_CENTER" index="1" on-click="model.recenter()">
                             <button type="button" class="btn btn-default btn-sm"
-                                style="cursor:pointer;margin: 8px;">Recenter</button>
+                                    style="cursor:pointer;margin: 8px;">Recenter</button>
                             <custom-control id="legend" position="TOP_RIGHT" index="1">
                                 <div ng-show="model.showMarkerPoints" id="marker_legend">
                                     <h6>Options</h6>
-                                    <div style="text-align: left" ng-repeat="leg_item in model.legendObject"><img
-                                            src="{{leg_item.image}}"> {{leg_item.key}}</div>
+                                    <div style="text-align: left" ng-repeat="leg_item in model.legendObject">
+                                        <img src="{{leg_item.image}}"> {{leg_item.key}}
+                                    </div>
                                 </div>
                     </ng-map>
                 </div>
@@ -123,7 +121,7 @@
 
 
             <nav class="navbar navbar-fixed-bottom navbar-bottom"
-                ng-if="model.data.template.selectedTaskType == 'mapping'">
+                 ng-if="model.data.template.selectedTaskType == 'mapping'">
                 <div class="container text-center" style="padding: 0;width: 100%;">
 
                     <div class="bottom-panel">
@@ -131,21 +129,21 @@
                             <!--<div class="col-md-3"></div>-->
                             <div class="col-lg-12 col-md-12 col-sm-12 answers">
                                 <div ng-hide="model.data.point_selection"
-                                    ng-repeat="option in model.data.template.options" style="display: inline">
+                                     ng-repeat="option in model.data.template.options" style="display: inline">
                                     <button ng-class="model.getColourClass(option.color)"
-                                        ng-click="model.submit($index,option.text)" ng-disabled="finished"
-                                        class="options btn">
+                                            ng-click="model.submit($index,option.text)" ng-disabled="finished"
+                                            class="options btn">
                                         {{option.text}}
                                     </button>
                                     <!--<span ng-show="model.userType === 'mTurk'"  style="color: #9ACA3C;cursor: pointer;display:inline;margin-left:-5px" ng-click="showTutorial(option.text)"><i class="fa fa-lightbulb-o" aria-hidden="true"></i></span>-->
                                     <span style="color: #9ACA3C;cursor: pointer;display:inline;margin-left:-5px"
-                                        ng-click="showTutorial(option.text)">Hint <i class="fa fa-lightbulb-o"
-                                            aria-hidden="true"></i></span>
+                                          ng-click="showTutorial(option.text)">Hint <i class="fa fa-lightbulb-o"
+                                                                                       aria-hidden="true"></i></span>
 
                                 </div>
                                 <button ng-show="model.data.point_selection" class="btn btn-default btn-primary "
-                                    ng-click="model.submit(0);model.fetchCenter();model.resetZoom();"
-                                    ng-disabled="finished" class="options text-center">
+                                        ng-click="model.submit(0);model.fetchCenter();model.resetZoom();"
+                                        ng-disabled="finished" class="options text-center">
                                     Next
                                 </button>
                             </div>
@@ -159,19 +157,13 @@
 
         </div>
 
-        <button id="showImModalButton" style="display: none;" data-toggle="modal" data-target="#imModal">Open
-            Modal</button>
-        <button id="showTutModalButton" style="display: none;" data-toggle="modal" data-target="#tutModal">Open
-            Modal</button>
-
-
         <!-- NGS TASK MAP VIEW-->
         <div class="row" ng-if="model.data.template.selectedTaskType == 'ngs'">
             <div id="ngsQuestion">
                 <h3 class="mapQuestion text-center" style="color:white">{{model.data.template.question}}
                     <span ng-show="model.userType === 'mTurk'" style="color: #9ACA3C;cursor: pointer;"
-                        data-target="#helpModal" data-toggle="modal"><i class="fa fa-question-circle-o"
-                            aria-hidden="true"></i></span>
+                          data-target="#helpModal" data-toggle="modal"><i class="fa fa-question-circle-o"
+                                                                          aria-hidden="true"></i></span>
                 </h3>
 
             </div>
@@ -187,7 +179,7 @@
             <small>
                 <center>
                     <span class="badge badge-pill badge-success" style="cursor: pointer;" data-target="#ngshelpModal"
-                        data-toggle="modal">
+                          data-toggle="modal">
                         Looking for before images to compare?</span>
                 </center>
             </small>
@@ -216,16 +208,16 @@
                             <!--<div class="col-md-3"></div>-->
                             <div class="col-lg-12 col-md-12 col-sm-12 answers">
                                 <div ng-hide="model.data.point_selection"
-                                    ng-repeat="option in model.data.template.options" style="display: inline">
+                                     ng-repeat="option in model.data.template.options" style="display: inline">
                                     <button ng-class="model.getColourClass(option.color)"
-                                        ng-click="model.submit($index,option.text)" ng-disabled="finished"
-                                        class="options btn">
+                                            ng-click="model.submit($index,option.text)" ng-disabled="finished"
+                                            class="options btn">
                                         {{option.text}}
                                     </button>
                                     <span ng-if="model.data.template.selectedTaskType != 'ngs'"
-                                        style="color: #9ACA3C;cursor: pointer;display:inline;margin-left:-5px"
-                                        ng-click="showTutorial(option.text)">Hint <i class="fa fa-lightbulb-o"
-                                            aria-hidden="true"></i></span>
+                                          style="color: #9ACA3C;cursor: pointer;display:inline;margin-left:-5px"
+                                          ng-click="showTutorial(option.text)">Hint <i class="fa fa-lightbulb-o"
+                                                                                       aria-hidden="true"></i></span>
 
                                 </div>
                                 <!--<button ng-show="model.data.point_selection"  class="btn btn-default btn-primary "-->
@@ -248,8 +240,8 @@
             <div id="sliderQuestion">
                 <h3 class="mapQuestion text-center" style="color:white">{{model.data.template.question}}
                     <span ng-show="model.userType === 'mTurk'" style="color: #9ACA3C;cursor: pointer;"
-                        data-target="#helpModal" data-toggle="modal"><i class="fa fa-question-circle-o"
-                            aria-hidden="true"></i></span>
+                          data-target="#helpModal" data-toggle="modal"><i class="fa fa-question-circle-o"
+                                                                          aria-hidden="true"></i></span>
                 </h3>
             </div>
 
@@ -257,10 +249,10 @@
                 <div class="col-md-4"></div>
                 <div class="col-md-4">
                     <juxtapose before-image-url="model.getBeforeImage()"
-                        before-image-label="model.slider_obj.beforeImageLabel"
-                        before-image-alt="model.slider_obj.beforeImageAlt" after-image-url="model.getNextTask()"
-                        after-image-label="model.slider_obj.afterImageLabel"
-                        after-image-alt="model.slider_obj.afterImageAlt">
+                               before-image-label="model.slider_obj.beforeImageLabel"
+                               before-image-alt="model.slider_obj.beforeImageAlt" after-image-url="model.getNextTask()"
+                               after-image-label="model.slider_obj.afterImageLabel"
+                               after-image-alt="model.slider_obj.afterImageAlt">
                     </juxtapose>
                 </div>
                 <div class="col-md-4"></div>
@@ -282,7 +274,7 @@
 
 
             <nav class="navbar navbar-fixed-bottom navbar-bottom"
-                ng-if="model.data.template.selectedTaskType == 'slider'">
+                 ng-if="model.data.template.selectedTaskType == 'slider'">
                 <div class="container text-center" style="padding: 0;width: 100%;">
 
                     <div class="bottom-panel">
@@ -290,15 +282,15 @@
                             <!--<div class="col-md-3"></div>-->
                             <div class="col-lg-12 col-md-12 col-sm-12 answers">
                                 <div ng-hide="model.data.point_selection"
-                                    ng-repeat="option in model.data.template.options" style="display: inline">
+                                     ng-repeat="option in model.data.template.options" style="display: inline">
                                     <button ng-class="model.getColourClass(option.color)"
-                                        ng-click="model.submit($index,option.text)" ng-disabled="finished"
-                                        class="options btn">
+                                            ng-click="model.submit($index,option.text)" ng-disabled="finished"
+                                            class="options btn">
                                         {{option.text}}
                                     </button>
                                     <span style="color: #9ACA3C;cursor: pointer;display:inline;margin-left:-5px"
-                                        ng-click="showTutorial(option.text)">Hint <i class="fa fa-lightbulb-o"
-                                            aria-hidden="true"></i></span>
+                                          ng-click="showTutorial(option.text)">Hint <i class="fa fa-lightbulb-o"
+                                                                                       aria-hidden="true"></i></span>
 
                                 </div>
                                 <!--<button ng-show="model.data.point_selection"  class="btn btn-default btn-primary "-->
@@ -316,16 +308,13 @@
 
         </div>
 
-
-
         <!-- TAGGING VIEW-->
-
         <div class="row" ng-if="model.data.template.selectedTaskType == 'tagging'">
 
             <div class="col-sm-12  contribution-details" ng-if="model.showFlightPath" style="margin-top: 10px">
 
                 <h6 class="img-title">IMAGE {{model.data.progress <= model.data.size ?
-                        model.data.progress:model.data.size }} OUT OF {{model.data.size}}</h6>
+                                              model.data.progress:model.data.size }} OUT OF {{model.data.size}}</h6>
             </div>
             <!--<center>-->
             <!--<h8 style="color: white;" ng-show="model.userType === 'mTurk'">You can go to the survey at any time without having to complete all  the images.</h8>-->
@@ -333,23 +322,27 @@
 
         </div>
 
-    <div class="row" style="text-align: center;" ng-if="model.data.template.selectedTaskType == 'tagging'">
-        <div class="col-sm-4" id="sidebar">
-            <div ng-show="showPlayerSidebar">
-                <h2 id="cairn-sidebar-header">How other players voted for the previous image!</h2>
-            </div>
-        </div>
-        <div class="col-sm-5" id="img">
-            <img ng-show="showMainTask" id="task-img" style="max-height:450px" class="img-responsive img-task" ng-src="{{model.getNextTask()}}" ng-click="model.showBiggerImg()">
-            <h2 id="cairn-header" ng-show="showCairnElements"> Would you like to leave something for another player? </h2>
-            <div ng-show="showPhysics">
-                <div class="container-fluid">
-                    <br><br>
-                    <div class="row" ng-show="showEmoji" id="emoji-picker">
-                        <!-- TODO could this be an ng-repeat?-->
-                        <img ng-repeat="emoji in model.emojis" ng-src="../../images/emojis/{{emoji}}.png" width="70" height="70" ng-click="model.submitEmoji(emoji)"></img>
-                    </div>
-                    <div id="physicsBody" ng-init="model.initializePhysics()">
+        <div class="row" style="text-align: center;" ng-if="model.data.template.selectedTaskType == 'tagging'">
+            <!-- <div class="col-sm-4" id="sidebar">
+                <div ng-show="true">
+                    <h2 id="cairn-sidebar-header">How other players voted for the previous image!</h2>
+                </div>
+            </div> -->
+            <div class="col-sm-12" id="img">
+                <img ng-show="showMainTask" id="task-img" style="max-height:450px" class="img-responsive img-task"
+                     ng-src="{{model.getNextTask()}}" ng-click="model.showBiggerImg()">
+                <h2 id="cairn-header" ng-show="showCairnElements"> Would you like to leave something for another player?
+                </h2>
+                <div ng-show="showPhysics">
+                    <div class="container-fluid">
+                        <br><br>
+                        <div class="row" ng-show="showEmoji" id="emoji-picker">
+                            <!-- TODO could this be an ng-repeat?-->
+                            <img ng-repeat="emoji in model.emojis" ng-src="../../images/emojis/{{emoji}}.png" width="70"
+                                 height="70" ng-click="model.submitEmoji(emoji)"></img>
+                        </div>
+                        <div id="physicsBody" ng-init="model.initializePhysics()">
+                        </div>
 
                     </div>
                 </div>
@@ -365,11 +358,11 @@
                 </div>
                 <div ng-show="showCairnElements">
                     <button class="btn btn-default btn-primary done-button" ng-show="showContinueBtn"
-                        ng-click="model.handleCairnContinue()" style="height: 45px;">Continue</button>
+                            ng-click="model.handleCairnContinue()" style="height: 45px;">Continue</button>
                     <button class="btn btn-default btn-primary done-button" ng-show="showBackBtn"
-                        ng-click="model.handleCairnBack()" style="height: 45px;">Back</button>
+                            ng-click="model.handleCairnBack()" style="height: 45px;">Back</button>
                     <button class="btn btn-default btn-primary done-button" ng-show="showSkipBtn"
-                        ng-click="model.handleCairnSkip()" style="height: 45px;">Skip</button>
+                            ng-click="model.handleCairnSkip()" style="height: 45px;">Skip</button>
                     <br> <br> <br> <br> <br> <br> <br>
                 </div>
             </div>
@@ -384,66 +377,85 @@
                 <br>
             </div>
             <div ng-show="showCairnElements">
-                <button class="btn btn-default btn-primary done-button" ng-show="showContinueBtn" ng-click="model.handleCairnContinue()" style="height: 45px;">Continue</button>
-                <button class="btn btn-default btn-primary done-button" ng-show="showBackBtn" ng-click="model.handleCairnBack()" style="height: 45px;">Back</button>
-                <button class="btn btn-default btn-primary done-button" ng-show="showSkipBtn" ng-click="model.handleCairnSkip()" style="height: 45px;">Skip</button>
+                <button class="btn btn-default btn-primary done-button" ng-show="showContinueBtn"
+                        ng-click="model.handleCairnContinue()" style="height: 45px;">Continue</button>
+                <button class="btn btn-default btn-primary done-button" ng-show="showBackBtn"
+                        ng-click="model.handleCairnBack()" style="height: 45px;">Back</button>
+                <button class="btn btn-default btn-primary done-button" ng-show="showSkipBtn"
+                        ng-click="model.handleCairnSkip()" style="height: 45px;">Skip</button>
                 <br> <br> <br> <br> <br> <br> <br>
 
             </div>
         </div>
-        <div>
 
-        </div>
         <div class="row" style="text-align: center;" ng-if="model.data.template.selectedTaskType == 'tagging'">
 
             <div class="col-sm-12"
-                ng-show="model.data.image_source != undefined && model.data.image_attribution != undefined">
+                 ng-show="model.data.image_source != undefined && model.data.image_attribution != undefined">
 
                 <p style="color: white;">Image Attribution:
                     <span><a target="_blank"
-                            ng-href="{{model.data.image_source}}">{{model.data.image_source}}</a></span>
+                             ng-href="{{model.data.image_source}}">{{model.data.image_source}}</a></span>
                     <span ng-show="model.data.image_source != undefined" style="color: #9ACA3C;cursor: pointer;"
-                        data-target="#attrModal" data-toggle="modal">View More Info</span>
+                          data-target="#attrModal" data-toggle="modal">View More Info</span>
 
                 </p>
             </div>
         </div>
 
-
-        <div class="actions-div" ng-if="model.data.template.selectedTaskType == 'tagging'">
-            <div class="container text-center" style="padding: 0;width: 100%;" ng-show="showMainTask">
-                <div class="bottom-panel">
-                    <div class="question" ng-if="model.data.template.selectedTaskType == 'tagging'">
-                        <span>{{model.data.template.question}}</span>
-                        <!--<span  ng-show="model.userType === 'mTurk'" style="color: #9ACA3C;cursor: pointer;" data-target="#helpModal" data-toggle="modal"><i class="fa fa-question-circle-o" aria-hidden="true"></i></span>-->
-
-
-                    </div>
+        <div class="container text-center" id="sidebar" ng-if="model.data.template.selectedTaskType">
+            <div class="col col-xs-2 col-md-3 col-lg-3"></div>
+            <div class="col col-xs-8 col-md-7 col-lg-6">
+                <div class="cairn-container" ng-show="showPlayerSidebar">
+                    <h4 id="cairn-sidebar-header">How other players voted for the previous image!</h4>
                 </div>
+            </div>
+            <div class="col col-xs-2 col-md-3 col-lg-3"></div>
+        </div>
 
-                <div class="row" ng-if="model.data.template.selectedTaskType == 'tagging'">
-                    <!--<div class="col-md-3"></div>-->
-                    <div class="col-lg-12 col-md-12 col-sm-12 answers">
-                        <div ng-repeat="option in model.data.template.options" style="display: inline">
-                            <button ng-class="model.getColourClass(option.color)"
-                                ng-click="model.submit($index,option.text)" ng-disabled="finished" class="options btn">
-                                {{option.text}}
-                            </button>
-                            <!-- <span style="color: #9ACA3C;cursor: pointer;display:inline;margin-left:-5px"
-                                ng-click="showTutorial(option.text)">Hint <i class="fa fa-lightbulb-o"
-                                    aria-hidden="true"></i></span> -->
+        <a ng-click="model.flagImage()">
+            <button class="btn btn-secondary"
+                    style="height: 45px; position: absolute;right: 11em;top: 43em; z-index: 100;"> Report Image
+            <i class="fa fa-flag" style="color:#A92323;" aria-hidden="true"></i></button>
+        </a>
+
+        <div ng-show="!showPlayerSidebar" class="actions-div">
+
+            <div ng-if="model.data.template.selectedTaskType == 'tagging'">
+                <div class="container text-center" style="padding: 0;width: 100%;" ng-show="showMainTask">
+                    <div class="bottom-panel">
+                        <div class="question" ng-if="model.data.template.selectedTaskType == 'tagging'">
+                            <span>{{model.data.template.question}}</span>
+                            <!--<span  ng-show="model.userType === 'mTurk'" style="color: #9ACA3C;cursor: pointer;" data-target="#helpModal" data-toggle="modal"><i class="fa fa-question-circle-o" aria-hidden="true"></i></span>-->
+
 
                         </div>
-
                     </div>
-                    <!--<div class="col-md-3"></div>-->
+
+                    <div class="row" ng-if="model.data.template.selectedTaskType == 'tagging'">
+                        <!--<div class="col-md-3"></div>-->
+                        <div class="col-lg-12 col-md-12 col-sm-12 answers">
+                            <div ng-repeat="option in model.data.template.options" style="display: inline">
+                                <button ng-class="model.getColourClass(option.color)"
+                                        ng-click="model.submit($index,option.text)" ng-disabled="finished"
+                                        class="options btn">
+                                    {{option.text}}
+                                </button>
+                            </div>
+
+                        </div>
+                        <!--<div class="col-md-3"></div>-->
+                    </div>
+
+                    <!--<button id="showImModalButton" style="display: none;" data-toggle="modal" data-target="#imModal">Open Modal</button>-->
+
                 </div>
 
-                <!--<button id="showImModalButton" style="display: none;" data-toggle="modal" data-target="#imModal">Open Modal</button>-->
+            </div>
+            <div ng-if="model.data.template.selectedTaskType != 'tagging'">
+
 
             </div>
-            </nav>
-
         </div>
 
 
@@ -458,7 +470,7 @@
                     </div>
                     <div class="modal-body">
                         <img class="im-modal-content" id="ModImg" ng-src="{{model.getNextTask()}}"
-                            ng-click="model.showBiggerImg()">
+                             ng-click="model.showBiggerImg()">
 
                     </div>
                 </div>
@@ -471,6 +483,10 @@
         <!--<img class="im-modal-content" id="ModImg" ng-src="{{model.getNextTask()}}" ng-click="model.hideBiggerImg()" >-->
         <!--</div>-->
 
+        <button id="showImModalButton" style="display: none;" data-toggle="modal" data-target="#imModal">Open
+            Modal</button>
+        <button id="showTutModalButton" style="display: none;" data-toggle="modal" data-target="#tutModal">Open
+            Modal</button>
 
         <div class="modal fade" id="ngshelpModal" role="dialog">
             <div class="modal-dialog" role="document">
@@ -587,14 +603,17 @@
                     <div class="modal-header">
                         <!-- <h4 class="modal-title"> {{model.tutorial_button.text ||  "Identifying Shoreline Erosion"  }}</h4> -->
                         <h4 class="modal-title help-modal-title"> Identifying Shoreline Erosion</h4>
-                        <button type="button" class="close" style="margin-top: -25px;" data-dismiss="modal" aria-label="Close">
+                        <button type="button" class="close" style="margin-top: -25px;" data-dismiss="modal"
+                                aria-label="Close">
                             &times;
                         </button>
                     </div>
                     <div class="modal-body" style="padding: 2em 7em;">
                         <center>
                             <div class="help-modal" style="width: 100%;align-self: flex-start;">
-                                <div class="{{helpHintModalActiveTab === option.text  ? 'modal-help-tabs help-tab-active' : 'modal-help-tabs help-tabs'}}" ng-repeat="option in model.data.template.options" ng-click="showTutorial(option.text)">
+                                <div class="{{helpHintModalActiveTab === option.text  ? 'modal-help-tabs help-tab-active' : 'modal-help-tabs help-tabs'}}"
+                                     ng-repeat="option in model.data.template.options"
+                                     ng-click="showTutorial(option.text)">
 
                                     <span> {{option.text}} </span>
 
@@ -609,11 +628,11 @@
 
                             <div class="row help-modal-body" style="color: black">
                                 <div class="col-md-12 col-sm-12" ng-repeat="item in model.tutorial"
-                                    style="display: inline;">
+                                     style="display: inline;">
                                     <div>
                                         <!-- <img ng-src ="{{item.image}}" ng-click="model.alertText(item.explanation)" style="max-height: 150px; max-width: 150px;margin: 5px;"> -->
                                         <img ng-src="{{item.image}}"
-                                            style="max-height: 300px; max-width: 300px;margin: 5px;">
+                                             style="max-height: 300px; max-width: 300px;margin: 5px;">
                                         <div class="modal-image-explanation">
                                             <p ng-bind-html="item.explanation"></p>
                                         </div>
@@ -626,7 +645,8 @@
                         </center>
                     </div>
                     <div class="modal-footer help-modal-footer">
-                        <button type="button" class="btn btn-success btnTextBlack mr-auto" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-success btnTextBlack mr-auto"
+                                data-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>

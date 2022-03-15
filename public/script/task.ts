@@ -241,34 +241,36 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               vm.tasksUntilNextCairn = getRandomIntInclusive(parseInt(vm.cairnsInfoArray[1]), parseInt(vm.cairnsInfoArray[2])) - 1;
           }
           vm.timeCairnShownToPlayer = Math.floor(Date.now() / 1000);
-          if (cairnMode === cairnTypes.graph) {
-              vm.showGraph = true;
-          } else {
-              // initialize the counter. I'd like to initialize it outside, but it needs to be different based on debug mode
-              if (vm.tasksUntilNextCairn === -1) resetCairnCounter();
-              if (vm.tasksUntilNextCairn > 0)
-                  vm.tasksUntilNextCairn--;
-              else {
-                  resetCairnCounter();
-                  if (cairnMode === cairnTypes.soapstone)
+
+          // initialize the counter. I'd like to initialize it outside, but it needs to be different based on debug mode
+          if (vm.tasksUntilNextCairn === -1) resetCairnCounter();
+          if (vm.tasksUntilNextCairn > 0) {
+              vm.tasksUntilNextCairn--;
+              vm.showGraph = false;
+          }
+          else {
+              resetCairnCounter();
+              if (cairnMode === cairnTypes.soapstone)
+                  vm.startSoapstoneCairn();
+              else if (cairnMode === cairnTypes.emoji)
+                  vm.startEmojiCairn();
+              else if (cairnMode === cairnTypes.graph)
+                  vm.showGraph = true;
+              else if (cairnMode === cairnTypes.both) {
+                  // If we are supposed to show both cairns, alternate between them, starting with a random one
+                  if (vm.nextCairnToShow === cairnTypes.none)
+                      vm.nextCairnToShow = getRandomIntInclusive(0, 1) === 1 ? cairnTypes.emoji : cairnTypes.soapstone;
+                  if (vm.nextCairnToShow === cairnTypes.soapstone) {
+                      vm.nextCairnToShow = cairnTypes.emoji;
                       vm.startSoapstoneCairn();
-                  else if (cairnMode === cairnTypes.emoji)
+                  }
+                  else {
+                      vm.nextCairnToShow = cairnTypes.soapstone;
                       vm.startEmojiCairn();
-                  else if (cairnMode === cairnTypes.both) {
-                      // If we are supposed to show both cairns, alternate between them, starting with a random one
-                      if (vm.nextCairnToShow === cairnTypes.none)
-                          vm.nextCairnToShow = getRandomIntInclusive(0, 1) === 1 ? cairnTypes.emoji : cairnTypes.soapstone;
-                      if (vm.nextCairnToShow === cairnTypes.soapstone) {
-                          vm.nextCairnToShow = cairnTypes.emoji;
-                          vm.startSoapstoneCairn();
-                      }
-                      else {
-                          vm.nextCairnToShow = cairnTypes.soapstone;
-                          vm.startEmojiCairn();
-                      }
                   }
               }
           }
+
       }
 
       // Submit a cairn to the database
@@ -368,122 +370,66 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           });
       }
 
-      $scope.showDebug = true;
-      vm.elementy = undefined;
-      vm.deboog = 0;
+      $scope.showDebug = false;
+      vm.graphcairnbar = undefined;
+      vm.startgraph = 0;
       $scope.showPlayerSidebar = false;
 
-      vm.handleDebug = (option) => {
-          vm.finished = true;
-          console.log("inside debug " + vm.finished);
-          let black_square = "⬛";
-          let green_square = "🟩";
-          let red_square   = "🟥";
-          let blue_square  = "🟦";
-          let white_square = "⬜";
-
-          // var body = {
-          //     projectID: vm.data.id,
-          //     taskID: vm.tasks[0]
-          // };
-          console.log("inside debug "+vm.tasks[0].name);
-          let sidebar = document.getElementById("cairn-sidebar-header");
-          if (vm.deboog == 0) {
-              vm.elementy = document.createElement("p");
-              vm.elementy.setAttribute("class", "cairn-message");
-              sidebar?.insertAdjacentElement("afterend", vm.elementy);
-              vm.deboog = 1;
+      vm.handleGraphCairn = (option) => {
+          let graphcairn = document.getElementById("cairn-sidebar-header");
+          
+          if (vm.startgraph == 0) {
+              vm.graphcairnbar = document.createElement("p");
+              vm.graphcairnbar.setAttribute("class", "cairn-message");
+              graphcairn?.insertAdjacentElement("afterend", vm.graphcairnbar);
+              vm.startgraph = 1;
           }
-          // console.log("inside debug "+JSON.stringify(vm.tasks[0]['name']));
+          
           var countyes = 0;
           var countno = 0;
           var ratio = 0;
+          
           $http.get('/api/tasks/getreponsecount?projectID='+vm.data.id+'&taskID='+vm.tasks[0].name+'&option=0').then(function(data) {
               console.log('got count yes'+data.data[0]['count']);
               countyes = data.data[0]['count'];
               $http.get('/api/tasks/getreponsecount?projectID='+vm.data.id+'&taskID='+vm.tasks[0].name+'&option=1').then(function(data) {
                   console.log('got count no'+data.data[0]['count']);
                   countno = data.data[0]['count'];
-                  if(countyes+countno <= 5) {
-                      // let element = document.getElementById("cairn-sidebar-header");
-                      sidebar!.innerText = "You were one of the first ones to vote this image.";
-                      vm.elementy.innerText = "";
-                  }
-                   else {
-                      sidebar!.innerText = "How others voted for this image!";
-                      ratio = Math.round(countyes/(countyes+countno)*10);
-                      if(vm.deboog == 1) {
-                          vm.elementy.innerText = "";
-                          console.log("ratio " + ratio);
-                          let vote  = option;
-                          console.log("vote " + vote);
-                          for(let i = 0; i < 11; i++) {
-                              if (i - ratio == 1 && vote == 0) vm.elementy.innerText += white_square;
-                              else vm.elementy.innerText += i > ratio ? black_square : green_square;
-                          }
-                          vm.elementy.innerText += "\n";
-                          // for(let i = 0; i < 11; i++) {
-                          //     vm.elementy.innerText +=  black_square;
-                          // }
-                          // vm.elementy.innerText += "\n";
-                          for(let i = 0; i < 11; i++) {
-                              if (i + ratio == 11 && vote == 1) vm.elementy.innerText += white_square;
-                              else vm.elementy.innerText += i > (10 - ratio) ? black_square : red_square;
-                          }
-                      }
-                  }
+                  vm.getResponseCount(countyes, countno, option, graphcairn);
               });
           });
+      }
 
-          // else if (vm.deboog == 0) {
-          //     vm.elementy.innerText = "";
-          //     for (let i = 0; i < 11; i++) {
-          //         vm.elementy.innerText += black_square + black_square + black_square + '\n';
-          //     }
-          //     vm.deboog = 2;
-          // } else if (vm.deboog == 1) {
-          //     vm.elementy.innerText = "";
-          //     let ratio = Math.round(Math.random() * 10);
-          //     let vote  = Math.random() < 0.5 ? 1 : 0;
-          //     // for(let j = 0; j < 3; j++) {
-          //     //     for (let i = 0; i < 11; i++) {
-          //     //         let z = 11 - i;
-          //     //         // if (z - ratio == 1 && vote == 0) vm.elementy.innerText += white_square;
-          //     //         // else vm.elementy.innerText += z > ratio ? black_square : green_square;
-          //     //         // vm.elementy.innerText += black_square;
-          //     //         // if (z + ratio == 11 && vote == 1) vm.elementy.innerText += white_square;
-          //     //         // else vm.elementy.innerText += z > (10 - ratio) ? black_square : red_square;
-          //     //         if(j == 2) {
-          //     //             vm.elementy.innerText += black_square;
-          //     //         } else {
-          //     //             if(i - ratio != 1) {
-          //     //                 vm.elementy.innerText += i > ratio ? black_square : green_square;
-          //     //             }
-          //     //             else if (i + ratio != 11) {
-          //     //                 vm.elementy.innerText += i > (10 - ratio) ? black_square : red_square;
-          //     //             }
-          //     //         }
-          //     //     }
-          //     //     vm.elementy.innerText += "\n";
-          //     // }
-          //     for(let i = 0; i < 11; i++) {
-          //         if (i - ratio == 1 && vote == 0) vm.elementy.innerText += white_square;
-          //         else vm.elementy.innerText += i > ratio ? black_square : green_square;
-          //     }
-          //     vm.elementy.innerText += "\n";
-          //     for(let i = 0; i < 11; i++) {
-          //         vm.elementy.innerText +=  black_square;
-          //     }
-          //     vm.elementy.innerText += "\n";
-          //     for(let i = 0; i < 11; i++) {
-          //         if (i + ratio == 11 && vote == 1) vm.elementy.innerText += white_square;
-          //         else vm.elementy.innerText += i > (10 - ratio) ? black_square : red_square;
-          //     }
-          //     console.log("-----");
-          //     console.log(ratio);
-          //     console.log(vote);
-          //     vm.deboog = 1;
-          // }
+      vm.getResponseCount = (countyes, countno, option, graphcairn) => {
+          vm.finished = true;
+          let black_square = "⬛";
+          let green_square = "🟩";
+          let red_square   = "🟥";
+          // let blue_square  = "🟦";
+          let white_square = "⬜";
+          if(countyes+countno <= 5) {
+              graphcairn!.innerText = "You were one of the first ones to vote on this image!";
+              vm.graphcairnbar.innerText = "";
+          }
+          else {
+              graphcairn!.innerText = "How others voted for this image!";
+              let ratio = Math.round(countyes/(countyes+countno)*10);
+              if(vm.startgraph == 1) {
+                  vm.graphcairnbar.innerText = "";
+                  console.log("ratio " + ratio);
+                  let vote  = option;
+                  console.log("vote " + vote);
+                  for(let i = 0; i < 12; i++) {
+                      if (i - ratio == 1 && vote == 0) vm.graphcairnbar.innerText += white_square;
+                      else vm.graphcairnbar.innerText += i > ratio ? black_square : green_square;
+                  }
+                  vm.graphcairnbar.innerText += "\n";
+                  for(let i = 0; i < 12; i++) {
+                      if (i + ratio == 11 && vote == 1) vm.graphcairnbar.innerText += white_square;
+                      else vm.graphcairnbar.innerText += i > (10 - ratio) ? black_square : red_square;
+                  }
+              }
+          }
       }
 
       vm.wasContinueHit = false;
@@ -1669,7 +1615,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           }
           if(vm.showGraph) {
               await setTimeout(function () {
-                  vm.handleDebug(option);
+                  vm.handleGraphCairn(option);
               },10);
               await setTimeout(function() {
                   vm.submitAnswer(option,option_text);
