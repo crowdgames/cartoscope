@@ -933,7 +933,10 @@ module.controller('projectEditController', ['$scope', '$http', '$state','$timeou
       var curr = $state.current.name;
       var stateMap = {
         'root.projectEdit.step1': '^.step2',
-        'root.projectEdit.step2': '^.step3',
+
+       //commented out the linking part in admin step removal
+       // 'root.projectEdit.step2': '^.step3',
+
         'root.projectEdit.step3': '^.step4',
         'root.projectEdit.step4': '^.step5',
         'root.projectEdit.step5': '^.step6',
