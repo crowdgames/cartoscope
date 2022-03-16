@@ -217,14 +217,15 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           none     ,
           both     ,
           soapstone,
-          emoji           
+          emoji,
+          graph
       }
 
       // if it's the main task, it should be "noCairn"
       vm.cairnState = cairnState.noCairn;
       vm.tasksUntilNextCairn = 5;
       vm.nextCairnToShow = cairnTypes.none;
-
+      vm.showGraph = false;
       vm.handleCairns = () => {
           console.assert(vm.cairnState === cairnState.noCairn, "cairn state is not noCairn, despite the main task showing");
           let cairnMode  = cairnTypes.none;
@@ -232,6 +233,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           else if (vm.cairnsInfoArray[0] === "b") cairnMode = cairnTypes.both;
           else if (vm.cairnsInfoArray[0] === "e") cairnMode = cairnTypes.emoji;
           else if (vm.cairnsInfoArray[0] === "s") cairnMode = cairnTypes.soapstone;
+          else if (vm.cairnsInfoArray[0] === "g") cairnMode = cairnTypes.graph;
           else if (vm.cairnsInfoArray[0] === "n") return;
           else console.error("a cairns style hitID was passed, but the cairn type was not in [n,e,s,b]");
           // note the time the cairn was created. Divide by 1000 because mysql wants second precision, not ms precision
@@ -242,17 +244,21 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
           // initialize the counter. I'd like to initialize it outside, but it needs to be different based on debug mode
           if (vm.tasksUntilNextCairn === -1) resetCairnCounter();
-          if (vm.tasksUntilNextCairn > 0) 
+          if (vm.tasksUntilNextCairn > 0) {
               vm.tasksUntilNextCairn--;
+              vm.showGraph = false;
+          }
           else {
               resetCairnCounter();
               if (cairnMode === cairnTypes.soapstone)
                   vm.startSoapstoneCairn();
               else if (cairnMode === cairnTypes.emoji)
                   vm.startEmojiCairn();
+              else if (cairnMode === cairnTypes.graph)
+                  vm.showGraph = true;
               else if (cairnMode === cairnTypes.both) {
                   // If we are supposed to show both cairns, alternate between them, starting with a random one
-                  if (vm.nextCairnToShow === cairnTypes.none) 
+                  if (vm.nextCairnToShow === cairnTypes.none)
                       vm.nextCairnToShow = getRandomIntInclusive(0, 1) === 1 ? cairnTypes.emoji : cairnTypes.soapstone;
                   if (vm.nextCairnToShow === cairnTypes.soapstone) {
                       vm.nextCairnToShow = cairnTypes.emoji;
@@ -264,6 +270,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   }
               }
           }
+
       }
 
       // Submit a cairn to the database
@@ -285,10 +292,144 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           $http.post('api/tasks/submitCairn', body).then((data: object) => console.log(data));
       }
 
+      vm.submitResponse = () => {
+              $scope.showPlayerSidebar = false;
+              vm.defZoom = dZoom;
+              vm.tasks.shift();
+
+
+              //if out of tasks, fetch next group, else reset latCenter
+              if (vm.tasks.length == 0) {
+                  vm.getTasks();
+              } else {
+                  latCenter = vm.tasks[0].x;
+                  lngCenter = vm.tasks[0].y;
+                  if (vm.viewMarkerPoints) {
+                      vm.addMarker(vm.tasks[0].x, vm.tasks[0].y)
+                  }
+              }
+
+              //reset vote location
+              $scope.votedLat = latCenter;
+              $scope.votedLng = lngCenter;
+
+
+              vm.hideModal();
+
+
+              //percentage complete
+              $scope.next_per2 = Math.floor($scope.next_per);
+
+
+              vm.data.progress = parseInt(vm.data.progress) + 1;
+              //update progress bar:
+              $scope.next_per = (vm.data.progress / vm.data.size).toFixed(2) * 100;
+              $scope.mturkbarStyle = {"width": $scope.next_per.toString() + "%"};
+
+              //if we are past the required amount for the project, show exit button
+              if (vm.data.progress > vm.req_amount) {
+                  $scope.showSurvButton = true;
+              }
+
+              if ((vm.data.progress == vm.data.size + 1) && vm.image_loop) {
+                  console.log("Reached end")
+                  vm.alertLoop();
+              }
+
+              //if flight path, change color of marker for the image that was just voted
+              if (vm.showFlightPath) {
+                  $scope.geoMarkers.some(function (item) {
+                      found = false;
+                      if (item.title === vm.image) {
+                          var col = vm.data.template.options[option].color;
+                          item.icon = $scope.icon_array[parseInt(col) - 1];
+                          // item.setZIndex(google.maps.Marker.MAX_ZINDEX + 1);
+                          item.setIcon($scope.icon_array[parseInt(col) - 1])
+                          item.setMap(vm.flight_map);
+                          vm.setCurrentPos();
+                          found = true
+                      }
+                      return found;
+                  })
+              }
+
+              vm.handleCairns();
+      };
+
+      vm.flagImage = () => {
+          window.alert("Thank you for flagging this image");
+          var body = {
+              projectID: vm.data.id,
+              taskID: vm.tasks[0]
+          };
+
+          // vm.previousTaskName = vm.tasks[0]["name"];
+
+          $http.post('/api/tasks/flagimage', body).then(function () {
+                vm.submitResponse();
+          });
+      }
+
       $scope.showDebug = false;
-      // activated by hitting the debug button
-      vm.handleDebug = () => {
-          console.log("Debugging");
+      vm.graphcairnbar = undefined;
+      vm.startgraph = 0;
+      $scope.showPlayerSidebar = false;
+
+      vm.handleGraphCairn = (option) => {
+          let graphcairn = document.getElementById("cairn-sidebar-header");
+          
+          if (vm.startgraph == 0) {
+              vm.graphcairnbar = document.createElement("p");
+              vm.graphcairnbar.setAttribute("class", "cairn-message");
+              graphcairn?.insertAdjacentElement("afterend", vm.graphcairnbar);
+              vm.startgraph = 1;
+          }
+          
+          var countyes = 0;
+          var countno = 0;
+          var ratio = 0;
+          
+          $http.get('/api/tasks/getreponsecount?projectID='+vm.data.id+'&taskID='+vm.tasks[0].name+'&option=0').then(function(data) {
+              console.log('got count yes'+data.data[0]['count']);
+              countyes = data.data[0]['count'];
+              $http.get('/api/tasks/getreponsecount?projectID='+vm.data.id+'&taskID='+vm.tasks[0].name+'&option=1').then(function(data) {
+                  console.log('got count no'+data.data[0]['count']);
+                  countno = data.data[0]['count'];
+                  vm.getResponseCount(countyes, countno, option, graphcairn);
+              });
+          });
+      }
+
+      vm.getResponseCount = (countyes, countno, option, graphcairn) => {
+          vm.finished = true;
+          let black_square = "⬛";
+          let green_square = "🟩";
+          let red_square   = "🟥";
+          // let blue_square  = "🟦";
+          let white_square = "⬜";
+          if(countyes+countno <= 5) {
+              graphcairn!.innerText = "You were one of the first ones to vote on this image!";
+              vm.graphcairnbar.innerText = "";
+          }
+          else {
+              graphcairn!.innerText = "How others voted for this image!";
+              let ratio = Math.round(countyes/(countyes+countno)*10);
+              if(vm.startgraph == 1) {
+                  vm.graphcairnbar.innerText = "";
+                  console.log("ratio " + ratio);
+                  let vote  = option;
+                  console.log("vote " + vote);
+                  for(let i = 0; i < 12; i++) {
+                      if (i - ratio == 1 && vote == 0) vm.graphcairnbar.innerText += white_square;
+                      else vm.graphcairnbar.innerText += i > ratio ? black_square : green_square;
+                  }
+                  vm.graphcairnbar.innerText += "\n";
+                  for(let i = 0; i < 12; i++) {
+                      if (i + ratio == 11 && vote == 1) vm.graphcairnbar.innerText += white_square;
+                      else vm.graphcairnbar.innerText += i > (10 - ratio) ? black_square : red_square;
+                  }
+              }
+          }
       }
 
       vm.wasContinueHit = false;
@@ -1339,9 +1480,9 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           $http.post('/api/tasks/submit', body)
       }
 
-      vm.noImageCounter = 0;
-      function submit(option,option_text) {
-
+      vm.submitAnswer = function(option,option_text) {
+          vm.finished = false;
+          console.log("inside submit " + vm.finished);
           // if a player is attempting to submit when there is no task visible, just ignore
           if (!$scope.showMainTask) return;
           if (vm.data.template.selectedTaskType === "ngs" && option_text === "No Image") {
@@ -1451,81 +1592,37 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   projectID: vm.data.id,
                   option: option,
                   taskID: vm.tasks[0],
-                  mapCenterLat:   $scope.votedLat,
-                  mapCenterLon:   $scope.votedLng,
+                  mapCenterLat: $scope.votedLat,
+                  mapCenterLon: $scope.votedLng,
                   option_text: option_text
 
               };
 
               vm.previousTaskName = vm.tasks[0]["name"];
-
-              $http.post('/api/tasks/submit', body).then(function() {
-
-                  vm.defZoom = dZoom;
-                  vm.tasks.shift();
-
-
-                  //if out of tasks, fetch next group, else reset latCenter
-                  if (vm.tasks.length == 0) {
-                      vm.getTasks();
-                  } else {
-                      latCenter = vm.tasks[0].x;
-                      lngCenter = vm.tasks[0].y;
-                      if (vm.viewMarkerPoints){
-                          vm.addMarker(vm.tasks[0].x,vm.tasks[0].y)
-                      }
-                  }
-
-                  //reset vote location
-                  $scope.votedLat = latCenter;
-                  $scope.votedLng = lngCenter;
-
-
-                  vm.hideModal();
-
-
-
-                  //percentage complete
-                  $scope.next_per2 = Math.floor($scope.next_per);
-
-
-                  vm.data.progress = parseInt(vm.data.progress) + 1;
-                  //update progress bar:
-                  $scope.next_per = (vm.data.progress / vm.data.size).toFixed(2) *100;
-                  $scope.mturkbarStyle = {"width" : $scope.next_per.toString() + "%"};
-
-                  //if we are past the required amount for the project, show exit button
-                  if (vm.data.progress > vm.req_amount ) {
-                      $scope.showSurvButton = true;
-                  }
-
-                  if ((vm.data.progress == vm.data.size + 1) && vm.image_loop) {
-                      console.log("Reached end")
-                      vm.alertLoop();
-                  }
-
-                  //if flight path, change color of marker for the image that was just voted
-                  if (vm.showFlightPath) {
-                      $scope.geoMarkers.some(function (item) {
-                          found = false;
-                          if (item.title === vm.image) {
-                              var col = vm.data.template.options[option].color;
-                              item.icon = $scope.icon_array[parseInt(col)-1];
-                              // item.setZIndex(google.maps.Marker.MAX_ZINDEX + 1);
-                              item.setIcon($scope.icon_array[parseInt(col)-1])
-                              item.setMap(vm.flight_map);
-                              vm.setCurrentPos();
-                              found = true
-                          }
-                          return found;
-                      })
-                  }
-
-                  vm.handleCairns();
+              $http.post('/api/tasks/submit', body).then(function () {
+                  vm.submitResponse();
               });
           }
+      }
 
-
+      vm.noImageCounter = 0;
+      var handlecairn = true;
+      async function submit(option,option_text) {
+          $scope.showPlayerSidebar = true;
+          if(handlecairn) {
+              vm.handleCairns();
+              handlecairn = false;
+          }
+          if(vm.showGraph) {
+              await setTimeout(function () {
+                  vm.handleGraphCairn(option);
+              },10);
+              await setTimeout(function() {
+                  vm.submitAnswer(option,option_text);
+              }, 2000);
+          } else {
+              vm.submitAnswer(option,option_text);
+          }
       };
 
       vm.map_init = function(){

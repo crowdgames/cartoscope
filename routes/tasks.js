@@ -596,6 +596,38 @@ function checkDataSetReady(project) {
   });
 }
 
+router.post('/flagimage', [filters.requireLogin, filters.requiredParamHandler(['taskID', 'projectID'])],
+            function(req, res, next) {
+                
+    var taskID = req.body.taskID.name;
+    var projectID = req.body.projectID;
+    var userID = req.session.passport.user.id;
+    projectDB.addFlaggedImage(userID, projectID, taskID).then(function (data) {
+        console.log("flagged image" + data);
+        res.send({});
+    }).catch(function(err) {
+        res.status(500).send({err: err.code || 'Could not submit response'});
+    });
+    
+});
+
+router.get('/getreponsecount', [filters.requireLogin],
+        function(req, res, next) {
+
+        var taskID = req.query.taskID;
+        var projectID = req.query.projectID;
+        var option = req.query.option;
+        console.log("taskid "+ taskID);
+        console.log("option "+ option);
+        console.log("projectID "+ projectID);
+        projectDB.getResponseCount(projectID, taskID, option).then(function(data) {
+           res.send(data);
+        }).catch(function(err) {
+            res.status(500).send({err: err.code || 'Could not get response'});
+        });
+});
+
+
 router.post('/submit', [filters.requireLogin, filters.requiredParamHandler(['taskID', 'option', 'projectID'])],
   function(req, res, next) {
     //var taskID = req.body.taskID;

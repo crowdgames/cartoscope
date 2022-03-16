@@ -53,7 +53,7 @@ These ids are duplicates of the erosion project. When cairn frequency wasn't tie
 ("WfpKAneXebT1", "J94tYYPMngNk", "qEEKIgFoFh1m", "dDONGlkBAGUO", "Hzp4vca3LZ4a", "OfohqkweDjEB")
 
 And these are the ids of the original Land Loss Lookout projects:\
-["UOYIiFeapnyI","ocioawiaGcjw","KyW6Ti9QUr4I","Srz9arMDwthQ","94yoCWhFkpMk","cXz6ImkmG9k5"]
+["UOYIiFeapnyI","ocioawiaGcjw","KyW6Ti9QUr4I","Srz9arMDwthQ","94yoCWhFkpMk","cXz6ImkmG9k5"] (55-60)
 
 Hurricane Ida projects:\
 ("1zJIIjBDaWuw", "X3riraL1vXeT", "Ou9nXNDyuLPm")
