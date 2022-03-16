@@ -1,137 +1,125 @@
 <div class="container" ng-controller="gridMapProjectController">
-        <h1 style="color: black">Results & Contributions</h1>
-        <p ng-if=" proj_data.has_location"> Below you can see how other people have contributed to the project. You can see results
+    <div style="text-align: center;">
+        <h1 style="color: black;">Results & Contributions</h1>
+        <p ng-if="proj_data.has_location"> Below you can see how other people have contributed to the project. You can
+            see results
             by answer by clicking on the buttons below. Zoom in for more detailed results.</p>
+    </div>
 
-
-        <center>
-            <div id="map_canvas" ng-if="successProject1 && proj_data.has_location" >
-                <ng-map   center="[{{map1.center.latitude}},{{map1.center.longitude}} ]"
-                        map-type-id="ROADMAP"
-                        zoom="{{map1.zoom}}"
-                          street-view-control="false"
-                          fullscreen-control="false"
-                        on-center-changed="drawGrid()"
-                        on-bounds-changed="drawGrid()"
-                        zoomControl= "true"
-                          fullscreenControl="false"
-                        zoom-control-options="{ style:'small',position:'RIGHT_BOTTOM'}"
-                        style="height:400px;"
-                        class="mapDiv">
-                <heatmap-layer  id="heatID" data="geodata"></heatmap-layer>
-                    <custom-control ng-show="showMarkers" id="legnd"   position="TOP_RIGHT"  index="1">
-                        <div class="marker_legend" >
-                            <h6>Legend</h6>
-                            <div  style="text-align: left"
-                                  ng-repeat="leg_item in legendObject">
-                                <img src="{{leg_item.image}}" > {{leg_item.key}}
-                            </div>
+    <center>
+        <div id="map_canvas" ng-if="successProject1 && proj_data.has_location">
+            <ng-map center="[{{map1.center.latitude}},{{map1.center.longitude}} ]" map-type-id="ROADMAP"
+                zoom="{{map1.zoom}}" street-view-control="false" fullscreen-control="false"
+                on-center-changed="drawGrid()" on-bounds-changed="drawGrid()" zoomControl="true"
+                fullscreenControl="false" zoom-control-options="{ style:'small',position:'RIGHT_BOTTOM'}"
+                style="height:400px;" class="mapDiv">
+                <heatmap-layer id="heatID" data="geodata"></heatmap-layer>
+                <custom-control ng-show="showMarkers" id="legnd" position="TOP_RIGHT" index="1">
+                    <div class="marker_legend">
+                        <h6>Legend</h6>
+                        <div style="text-align: left" ng-repeat="leg_item in legendObject">
+                            <img src="{{leg_item.image}}"> {{leg_item.key}}
                         </div>
-                    </custom-control>
-                    <custom-control ng-show="!showMarkers" id="viz_select"   position="TOP_RIGHT"  index="1">
-                        <div class="marker_legend" style="color:black" >
-                            <h6>Toggle:</h6>
-                            <button ng-click="toggleGridMap()" >Grid Map
-                               </button>
-                        </div>
-                    </custom-control>
-                    <custom-control id="recenter_button"   position="TOP_CENTER"  index="1">
-                        <div class="map_button_kiosk"  >
-                            <button ng-click="recenterMap()" >Reset Map
-                            </button>
-                        </div>
-                    </custom-control>
-                    <shape ng-if="gridMap" name="polygon" ng-repeat="poly in rectArr"
-                           paths="[
+                    </div>
+                </custom-control>
+                <custom-control ng-show="!showMarkers" id="viz_select" position="TOP_RIGHT" index="1">
+                    <div class="marker_legend" style="color:black">
+                        <h6>Toggle:</h6>
+                        <button ng-click="toggleGridMap()">Grid Map
+                        </button>
+                    </div>
+                </custom-control>
+                <custom-control id="recenter_button" position="TOP_CENTER" index="1">
+                    <div class="map_button_kiosk">
+                        <button ng-click="recenterMap()">Reset Map
+                        </button>
+                    </div>
+                </custom-control>
+                <shape ng-if="gridMap" name="polygon" ng-repeat="poly in rectArr" paths="[
                             [{{poly.ne.lat}},{{poly.ne.lng}}],
                             [{{poly.nw.lat}},{{poly.nw.lng}}],
                             [{{poly.sw.lat}},{{poly.sw.lng}}],
                             [{{poly.se.lat}},{{poly.se.lng}}]
-                            ]"
-                           stroke-color="{{poly.strokeColor}}"
-                           stroke-opacity="{{poly.strokeOpacity}}"
-                           stroke-weight="2"
-                           fill-color="{{poly.fillColor}}"
-                           fill-opacity="{{poly.fillOpacity}}">
-                    </shape>
+                            ]" stroke-color="{{poly.strokeColor}}" stroke-opacity="{{poly.strokeOpacity}}"
+                    stroke-weight="2" fill-color="{{poly.fillColor}}" fill-opacity="{{poly.fillOpacity}}">
+                </shape>
 
 
-                </ng-map>
+            </ng-map>
 
-            </div>
-            <div class="row" ng-if="successProject1 && !showMarkers && projType !='ngs' && proj_data.has_location">
-                <small><b>Note:</b> <span ng-if="gridMap">GridMap</span><span ng-if="!gridMap">HeatMap</span> generated based on image GPS locations
-                    <span ng-if="showPoiName">, not {{project_poi_name}} locations</span>
-                    </small>
+        </div>
+        <div class="row" ng-if="successProject1 && !showMarkers && projType !='ngs' && proj_data.has_location">
+            <small><b>Note:</b> <span ng-if="gridMap">GridMap</span><span ng-if="!gridMap">HeatMap</span> generated
+                based on image GPS locations
+                <span ng-if="showPoiName">, not {{project_poi_name}} locations</span>
+            </small>
 
-            </div>
+        </div>
 
-            <div class="row" ng-if="fromTileARUser">
-                <h4><b>Markers indicate your contributions!</b>
-                </h4>
+        <div class="row" ng-if="fromTileARUser">
+            <h4><b>Markers indicate your contributions!</b>
+            </h4>
 
-            </div>
+        </div>
 
-            <div class="row" ng-if="successProject1 && proj_data.has_location">
-                <h3>{{question1}}</h3>
-                <div class="col-lg-2 col-md-2"></div>
-                <div ng-hide="showMarkers" class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
-                    <button  class="btn-lg black " placeholder="Option" ng-repeat="option in options1"
-                            style=" margin-right:10px; background-color: {{option.color}};border-color: {{option.color}};
-                   border:2px solid {{option.color}};" ng-click="update_heatmap(option.ncolor);">{{option.name}}</button>
-
-
-
-                    <!--<button class="btn-lg black" placeholder="Show All"-->
-                            <!--style="background-color: #FF69B4; border-color: #FF69B4;-->
-                <!--border:2px solid #FF69B4;" ng-click="update_heatmap('all','map1');">Show All</button>-->
-                </div>
-
-                <div ng-show="showMarkers" class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
-                    <button class="btn-lg black " placeholder="Option" ng-repeat="option in options1"
-                            style=" margin-right:10px; background-color: {{option.color}};border-color: {{option.color}};
-                   border:2px solid {{option.color}};" ng-click="update_Markers(option.ncolor,'map1');">{{option.name}}</button>
-                </div>
-
-            </div>
-
+        <div class="row" ng-if="successProject1 && proj_data.has_location">
+            <h3>{{question1}}</h3>
             <div class="col-lg-2 col-md-2"></div>
-            <!--<center><h5 ng-if="successProject1">{{unique_images1}} images tagged so far by {{unique_workers1}} people</h5></center>-->
+            <div ng-hide="showMarkers" class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                <button class="btn-lg black " placeholder="Option" ng-repeat="option in options1" style=" margin-right:10px; background-color: {{option.color}};border-color: {{option.color}};
+                   border:2px solid {{option.color}};"
+                    ng-click="update_heatmap(option.ncolor);">{{option.name}}</button>
 
-            <div ng-show="showMarkers" class="row" style="margin-top: 10px;">
-                <center>
-                <button class="btn btn-primary  " placeholder="Option"
-                         ng-click="update_Markers('reset','map1');">Reset Markers</button>
-                </center>
+
+
+                <!--<button class="btn-lg black" placeholder="Show All"-->
+                <!--style="background-color: #FF69B4; border-color: #FF69B4;-->
+                <!--border:2px solid #FF69B4;" ng-click="update_heatmap('all','map1');">Show All</button>-->
             </div>
 
-
-
-            <br>
-
-            <div class="row" ng-hide="successProject1">
-                <h2>Results coming soon!</h2>
+            <div ng-show="showMarkers" class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                <button class="btn-lg black " placeholder="Option" ng-repeat="option in options1" style=" margin-right:10px; background-color: {{option.color}};border-color: {{option.color}};
+                   border:2px solid {{option.color}};"
+                    ng-click="update_Markers(option.ncolor,'map1');">{{option.name}}</button>
             </div>
 
-            <div class="row" ng-if="proj_data.external_sign_up">
-                <div class="col-md-1"></div>
-                <div class="col-md-10">
+        </div>
 
-                    <iframe id="iframe_div2"
-                            ng-src="{{getExternalFrame(proj_data.external_sign_up)}}"
-                            style="width: 100%;height:800px"
-                    ></iframe>
-                </div>
-                <div class="col-md-1"></div>
+        <div class="col-lg-2 col-md-2"></div>
+        <!--<center><h5 ng-if="successProject1">{{unique_images1}} images tagged so far by {{unique_workers1}} people</h5></center>-->
 
+        <div ng-show="showMarkers" class="row" style="margin-top: 10px;">
+            <center>
+                <button class="btn btn-primary  " placeholder="Option" ng-click="update_Markers('reset','map1');">Reset
+                    Markers</button>
+            </center>
+        </div>
+
+
+
+        <br>
+
+        <div class="row" ng-hide="successProject1">
+            <h2>Results coming soon!</h2>
+        </div>
+
+        <div class="row" ng-if="proj_data.external_sign_up">
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+
+                <iframe id="iframe_div2" ng-src="{{getExternalFrame(proj_data.external_sign_up)}}"
+                    style="width: 100%;height:800px"></iframe>
             </div>
+            <div class="col-md-1"></div>
+
+        </div>
 
 
 
-            <div class="row">
-                <h3>Thank you for taking the time to contribute to our study!</h3>
-                <div ng-show="successProject1 && (!showMarkers || projType == 'ngs')">
-                    <button class="submit-button" ng-click="downloadCSV()" style="margin-top: 20px;
+        <div class="row">
+            <h3>Thank you for taking the time to contribute to our study!</h3>
+            <div ng-show="successProject1 && (!showMarkers || projType == 'ngs')">
+                <button class="submit-button" ng-click="downloadCSV()" style="margin-top: 20px;
             border-radius: 8px;
             background-color: #9ACA3C;
             color: #000;
@@ -140,8 +128,8 @@
             outline: none;
             border: none;
             padding: 10px 25px;">Download Results</button>
-                </div>
             </div>
-        </center>
+        </div>
+    </center>
 
 </div>
