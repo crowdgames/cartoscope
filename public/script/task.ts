@@ -223,7 +223,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       // if it's the main task, it should be "noCairn"
       vm.cairnState = cairnState.noCairn;
-      vm.tasksUntilNextCairn = 5;
+      vm.tasksUntilNextCairn = -1;
       vm.nextCairnToShow = cairnTypes.none;
       vm.showGraph = false;
       vm.handleCairns = () => {
@@ -243,7 +243,11 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           vm.timeCairnShownToPlayer = Math.floor(Date.now() / 1000);
 
           // initialize the counter. I'd like to initialize it outside, but it needs to be different based on debug mode
-          if (vm.tasksUntilNextCairn === -1) resetCairnCounter();
+          if (vm.tasksUntilNextCairn === -1) {
+              // initialize vm.tasksUntilNextCairn. If the number is larger than 5, set it to 5 that way players can see a cairn early, even if cairns are generally rare.
+              resetCairnCounter();
+              vm.tasksUntilNextCairn = vm.tasksUntilNextCairn > 5 ? 5 : vm.tasksUntilNextCairn;
+          }
           if (vm.tasksUntilNextCairn > 0) {
               vm.tasksUntilNextCairn--;
               vm.showGraph = false;
