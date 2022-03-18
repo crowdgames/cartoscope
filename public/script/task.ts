@@ -1,7 +1,9 @@
 /**
  * Created by kiprasad on 26/09/16.
  */
-var module = angular.module('taskApp', ['ui.router', 'ngMap','configApp','ngJuxtapose', 'ngSanitize']);
+ 
+
+var taskmodule = angular.module('taskApp', ['ui.router', 'ngMap','configApp','ngJuxtapose', 'ngSanitize']);
 let shuffle = (inA: Array<any>) => {
   let a = inA.slice(0);
   for (let i = a.length - 1; i > 0; i--) {
@@ -12,7 +14,7 @@ let shuffle = (inA: Array<any>) => {
 }
 
 //change \n to br
-module.filter("textBreaks", ['$sce', function ($sce) {
+taskmodule.filter("textBreaks", ['$sce', function ($sce) {
     return function (x: any) {
         if (x){
             // var new_text = x.replace(new RegExp('\\n', 'g'), '<br/>');
@@ -39,14 +41,14 @@ var latCenter: any;
 var lngCenter: any;
 var dZoom = 15;
 
-module.config(['$locationProvider', function($locationProvider: any) {
+taskmodule.config(['$locationProvider', function($locationProvider: any) {
   // $locationProvider.html5Mode({
   //   enabled: true,
   //   requireBase: false,
   // });
 }]);
 
-module.config(function($stateProvider: any, $urlRouterProvider: any) {
+taskmodule.config(function($stateProvider: any, $urlRouterProvider: any) {
   
   $stateProvider.state({
     name: 'tasks',
@@ -86,14 +88,15 @@ module.config(function($stateProvider: any, $urlRouterProvider: any) {
   
 });
 
-module.controller('defaultController', ['$scope', '$location', function($scope, $location) {
+taskmodule.controller('defaultController', ['$scope', '$location', function($scope, $location) {
   $scope.uiMask = {};
   $scope.uiMask.show = false;
 }]);
 
 // I deleted commented out map controller code here, see git if you want to look at it
+// const moduleTask = angular.module('taskApp', ['$scope', '$location', '$http', 'userData', '$window', '$timeout', 'NgMap','$q', '$sce',  'heatMapProject1', 'heatMapProject2']);
 
-module.controller('taskController', ['$scope', '$location', '$http', 'userData', '$window', '$timeout', 'NgMap','$q', '$sce',  'heatMapProject1', 'heatMapProject2',
+taskmodule.controller('taskController', ['$scope', '$location', '$http', 'userData', '$window', '$timeout', 'NgMap','$q', '$sce',  'heatMapProject1', 'heatMapProject2',
   function($scope, $location, $http, userData,  $window, $timeout, NgMap, $q,$sce,  heatMapProject1, heatMapProject2) {
       $window.document.title = "Tasks";
 
@@ -389,19 +392,33 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               vm.startgraph = 1;
           }
           
-          var countyes = 0;
-          var countno = 0;
-          var ratio = 0;
+          let ratio = 0;
           
-          $http.get('/api/tasks/getreponsecount?projectID='+vm.data.id+'&taskID='+vm.tasks[0].name+'&option=0').then(function(data) {
-              console.log('got count yes'+data.data[0]['count']);
-              countyes = data.data[0]['count'];
-              $http.get('/api/tasks/getreponsecount?projectID='+vm.data.id+'&taskID='+vm.tasks[0].name+'&option=1').then(function(data) {
-                  console.log('got count no'+data.data[0]['count']);
-                  countno = data.data[0]['count'];
+          $http.get('/api/tasks/getreponsecountforalloptions?projectID='+vm.data.id+'&taskID='+vm.tasks[0].name).then(function(data) {
+            //console.log('got count'+ JSON.stringify(data.data));
+            let countyes = 0;
+            let countno = 0;
+            let response = data.data;
+            for(let i =0;i< response.length;i++){
+                if(response[i]["option"] === 0){
+                    countyes = response[i]["count"];
+                }
+                else if(response[i]["option"] === 1){
+                    countno = response[i]["count"];
+                }
+            }
                   vm.getResponseCount(countyes, countno, option, graphcairn);
+            
               });
-          });
+        //   $http.get('/api/tasks/getreponsecount?projectID='+vm.data.id+'&taskID='+vm.tasks[0].name+'&option=0').then(function(data) {
+        //       console.log('got count yes'+data.data[0]['count']);
+        //       countyes = data.data[0]['count'];
+        //       $http.get('/api/tasks/getreponsecount?projectID='+vm.data.id+'&taskID='+vm.tasks[0].name+'&option=1').then(function(data) {
+        //           console.log('got count no'+data.data[0]['count']);
+        //           countno = data.data[0]['count'];
+        //           vm.getResponseCount(countyes, countno, option, graphcairn);
+        //       });
+        //   });
       }
 
       vm.getResponseCount = (countyes, countno, option, graphcairn) => {
@@ -1989,7 +2006,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
   }]);
 
 
-module.controller('geneticTaskController', ['$scope', '$location', '$http', 'userData', '$window', '$timeout', 'NgMap','$q', '$sce', 'heatMapProject1', 'heatMapProject2',
+
+taskmodule.controller('geneticTaskController', ['$scope', '$location', '$http', 'userData', '$window', '$timeout', 'NgMap','$q', '$sce', 'heatMapProject1', 'heatMapProject2',
     function($scope, $location, $http, userData,  $window, $timeout, NgMap, $q,$sce, heatMapProject1, heatMapProject2) {
         $window.document.title = "Tasks";
 
