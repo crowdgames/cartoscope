@@ -1629,12 +1629,12 @@ taskmodule.controller('taskController', ['$scope', '$location', '$http', 'userDa
       vm.noImageCounter = 0;
       var handlecairn = true;
       async function submit(option,option_text) {
-          $scope.showPlayerSidebar = true;
           if(handlecairn) {
               vm.handleCairns();
               handlecairn = false;
           }
           if(vm.showGraph) {
+            $scope.showPlayerSidebar = true;
               await setTimeout(function () {
                   vm.handleGraphCairn(option);
               },10);
