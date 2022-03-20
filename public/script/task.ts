@@ -228,7 +228,7 @@ taskmodule.controller('taskController', ['$scope', '$location', '$http', 'userDa
       vm.cairnState = cairnState.noCairn;
       vm.tasksUntilNextCairn = -1;
       vm.nextCairnToShow = cairnTypes.none;
-      vm.showGraph = false;
+      vm.showGraph = true;
       vm.handleCairns = () => {
           console.assert(vm.cairnState === cairnState.noCairn, "cairn state is not noCairn, despite the main task showing");
           let cairnMode  = cairnTypes.none;
