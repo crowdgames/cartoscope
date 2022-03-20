@@ -409,7 +409,9 @@ taskmodule.controller('taskController', ['$scope', '$location', '$http', 'userDa
             }
                   vm.getResponseCount(countyes, countno, option, graphcairn);
             
-              });
+              }).catch((function(err){
+                  console.log(err);
+              }));
         //   $http.get('/api/tasks/getreponsecount?projectID='+vm.data.id+'&taskID='+vm.tasks[0].name+'&option=0').then(function(data) {
         //       console.log('got count yes'+data.data[0]['count']);
         //       countyes = data.data[0]['count'];
