@@ -374,6 +374,22 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.graphcairnbar = undefined;
       vm.startgraph = 0;
       $scope.showPlayerSidebar = false;
+      vm.countyes = 0;
+      vm.countno = 0;
+
+      vm.fetchResponse = () => {
+          var projectid = vm.data.id;
+          var taskname = vm.tasks[0].name;
+          console.log("taskname in fetching response" + taskname);
+          $http.get('/api/tasks/getreponsecount?projectID='+projectid+'&taskID='+taskname+'&option=0').then(function(data) {
+              console.log('got count yes'+data.data[0]['count']);
+              vm.countyes = data.data[0]['count'];
+              $http.get('/api/tasks/getreponsecount?projectID='+projectid+'&taskID='+taskname+'&option=1').then(function(data) {
+                  console.log('got count no'+data.data[0]['count']);
+                  vm.countno = data.data[0]['count'];
+              });
+          });
+      }
 
       vm.handleGraphCairn = (option) => {
           let graphcairn = document.getElementById("cairn-sidebar-header");
@@ -384,36 +400,21 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               graphcairn?.insertAdjacentElement("afterend", vm.graphcairnbar);
               vm.startgraph = 1;
           }
-          
-          var countyes = 0;
-          var countno = 0;
-          var ratio = 0;
-          
-          $http.get('/api/tasks/getreponsecount?projectID='+vm.data.id+'&taskID='+vm.tasks[0].name+'&option=0').then(function(data) {
-              console.log('got count yes'+data.data[0]['count']);
-              countyes = data.data[0]['count'];
-              $http.get('/api/tasks/getreponsecount?projectID='+vm.data.id+'&taskID='+vm.tasks[0].name+'&option=1').then(function(data) {
-                  console.log('got count no'+data.data[0]['count']);
-                  countno = data.data[0]['count'];
-                  vm.getResponseCount(countyes, countno, option, graphcairn);
-              });
-          });
-      }
 
-      vm.getResponseCount = (countyes, countno, option, graphcairn) => {
+          // vm.getResponseCount(countyes, countno, option, graphcairn);
           vm.finished = true;
           let black_square = "⬛";
           let green_square = "🟩";
           let red_square   = "🟥";
           // let blue_square  = "🟦";
           let white_square = "⬜";
-          if(countyes+countno <= 5) {
+          if(vm.countyes+vm.countno <= 5) {
               graphcairn!.innerText = "You were one of the first ones to vote on this image!";
               vm.graphcairnbar.innerText = "";
           }
           else {
               graphcairn!.innerText = "How others voted for this image!";
-              let ratio = Math.round(countyes/(countyes+countno)*10);
+              let ratio = Math.round(vm.countyes/(vm.countyes+vm.countno)*10);
               if(vm.startgraph == 1) {
                   vm.graphcairnbar.innerText = "";
                   console.log("ratio " + ratio);
@@ -1482,7 +1483,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       vm.submitAnswer = function(option,option_text) {
           vm.finished = false;
-          console.log("inside submit " + vm.finished);
           // if a player is attempting to submit when there is no task visible, just ignore
           if (!$scope.showMainTask) return;
           if (vm.data.template.selectedTaskType === "ngs" && option_text === "No Image") {
@@ -1603,6 +1603,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   vm.submitResponse();
               });
           }
+          console.log("taskname in after submitting response" + vm.tasks[0]["name"]);
       }
 
       vm.noImageCounter = 0;
@@ -1618,9 +1619,12 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   vm.handleGraphCairn(option);
               },10);
               await setTimeout(function() {
+                  vm.fetchResponse();
                   vm.submitAnswer(option,option_text);
               }, 2000);
           } else {
+              console.log("not in graph cairn");
+              vm.fetchResponse();
               vm.submitAnswer(option,option_text);
           }
       };
