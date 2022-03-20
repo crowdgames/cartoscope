@@ -299,12 +299,12 @@ taskmodule.controller('taskController', ['$scope', '$location', '$http', 'userDa
           $http.post('api/tasks/submitCairn', body).then((data: object) => console.log(data));
       }
 
-      vm.submitResponse = () => {
+      vm.submitResponse = async () => {
               $scope.showPlayerSidebar = false;
               vm.defZoom = dZoom;
               vm.tasks.shift();
 
-
+              await getResponseCountForCurrentTask();
               //if out of tasks, fetch next group, else reset latCenter
               if (vm.tasks.length == 0) {
                   vm.getTasks();
@@ -394,24 +394,19 @@ taskmodule.controller('taskController', ['$scope', '$location', '$http', 'userDa
           
           let ratio = 0;
           
-          $http.get('/api/tasks/getreponsecountforalloptions?projectID='+vm.data.id+'&taskID='+vm.tasks[0].name).then(function(data) {
-            //console.log('got count'+ JSON.stringify(data.data));
             let countyes = 0;
             let countno = 0;
-            let response = data.data;
-            for(let i =0;i< response.length;i++){
-                if(response[i]["option"] === 0){
+          const response = vm.tasks[0].responseCount;
+          for (let i = 0; i < response.length; i++) {
+              if (response[i]["option"] === 0) {
                     countyes = response[i]["count"];
                 }
-                else if(response[i]["option"] === 1){
+              else if (response[i]["option"] === 1) {
                     countno = response[i]["count"];
                 }
             }
                   vm.getResponseCount(countyes, countno, option, graphcairn);
             
-              }).catch((function(err){
-                  console.log(err);
-              }));
         //   $http.get('/api/tasks/getreponsecount?projectID='+vm.data.id+'&taskID='+vm.tasks[0].name+'&option=0').then(function(data) {
         //       console.log('got count yes'+data.data[0]['count']);
         //       countyes = data.data[0]['count'];
@@ -1128,9 +1123,10 @@ taskmodule.controller('taskController', ['$scope', '$location', '$http', 'userDa
               endpoint = '/api/tasks/gettaskloop/';
           }
 
-          $http.get(endpoint + vm.code).then(function(e) {
+          $http.get(endpoint + vm.code).then(async function(e) {
               vm.dataset = e.data.dataset;
               vm.tasks = e.data.items;
+              vm.tasks[0].responseCount = await getResponseCountForCurrentTask();
 
 
               if (e.data.finished && !vm.image_loop) {
@@ -1354,10 +1350,26 @@ taskmodule.controller('taskController', ['$scope', '$location', '$http', 'userDa
               vm.getLng();
               vm.defZoom = dZoom;
               vm.image = vm.tasks[0].name;
+
               vm.ngs_before_image_link = vm.getBeforeImageNGS();
               return '/api/tasks/getImage/' + vm.dataset + '/' + vm.tasks[0].name;
           }
       };
+
+    function getResponseCountForCurrentTask() {
+        if(!vm.showGraph){
+            return;
+        }
+        $http.get('/api/tasks/getreponsecountforalloptions?projectID='+vm.data.id+'&taskID='+vm.tasks[0].name).then(function(data) {
+            //console.log('got count'+ JSON.stringify(data.data));
+            let countyes = 0;
+            let countno = 0;
+            vm.tasks[0].responseCount = data.data;
+              }).catch((function(err){
+                  console.log(err);
+              }));
+            
+    }
 
       function getLat() {
           if (!vm.dataset || vm.tasks.length == 0) {
@@ -1564,11 +1576,13 @@ taskmodule.controller('taskController', ['$scope', '$location', '$http', 'userDa
               promiseArray.push($http.post('/api/tasks/submit', body));
 
               //wait until all posts are completed then continue to next image
-              $q.all(promiseArray).then(function(dataArray) {
+              $q.all(promiseArray).then(async function(dataArray) {
                   latCenter = vm.tasks[0].x;
                   lngCenter = vm.tasks[0].y;
                   vm.defZoom = dZoom;
                   vm.tasks.shift();
+                  await getResponseCountForCurrentTask();
+
                   vm.hideModal();
                   vm.data.progress = parseInt(vm.data.progress) + 1;
                   //update progress bar:
@@ -2572,10 +2586,11 @@ taskmodule.controller('geneticTaskController', ['$scope', '$location', '$http', 
                 promiseArray.push($http.post('/api/tasks/submit', body));
 
                 //wait until all posts are completed then continue to next image
-                $q.all(promiseArray).then(function(dataArray) {
+                $q.all(promiseArray).then(async function(dataArray) {
 
                     vm.defZoom = dZoom;
                     vm.tasks.shift();
+                    await getResponseCountForCurrentTask();
                     vm.current_block_progress++;
 
                     //if out of tasks, fetch next group, else reset latCenter
@@ -2710,7 +2725,7 @@ taskmodule.controller('geneticTaskController', ['$scope', '$location', '$http', 
                     option_text: option_text
                 };
 
-                $http.post('/api/tasks/submit', body).then(function() {
+                $http.post('/api/tasks/submit', body).then(async function() {
 
                     vm.defZoom = dZoom;
                     vm.tasks.shift();
