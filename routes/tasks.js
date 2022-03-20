@@ -627,6 +627,20 @@ router.get('/getreponsecount', [filters.requireLogin],
         });
 });
 
+router.get('/getreponsecountforalloptions', [filters.requireLogin],
+        function(req, res, next) {
+
+        var taskID = req.query.taskID;
+        var projectID = req.query.projectID;
+        console.log("taskid "+ taskID);
+        console.log("projectID "+ projectID);
+        projectDB.getResponseCountForAllOptions(projectID, taskID).then(function(data) {
+           res.send(data);
+        }).catch(function(err) {
+            res.status(500).send({err: err.code || 'Could not get response for options'});
+        });
+});
+
 
 router.post('/submit', [filters.requireLogin, filters.requiredParamHandler(['taskID', 'option', 'projectID'])],
   function(req, res, next) {

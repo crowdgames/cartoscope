@@ -1,7 +1,9 @@
 /**
  * Created by kiprasad on 26/09/16.
  */
-var module = angular.module('taskApp', ['ui.router', 'ngMap','configApp','ngJuxtapose', 'ngSanitize']);
+ 
+
+var taskmodule = angular.module('taskApp', ['ui.router', 'ngMap','configApp','ngJuxtapose', 'ngSanitize']);
 let shuffle = (inA: Array<any>) => {
   let a = inA.slice(0);
   for (let i = a.length - 1; i > 0; i--) {
@@ -12,7 +14,7 @@ let shuffle = (inA: Array<any>) => {
 }
 
 //change \n to br
-module.filter("textBreaks", ['$sce', function ($sce) {
+taskmodule.filter("textBreaks", ['$sce', function ($sce) {
     return function (x: any) {
         if (x){
             // var new_text = x.replace(new RegExp('\\n', 'g'), '<br/>');
@@ -39,14 +41,14 @@ var latCenter: any;
 var lngCenter: any;
 var dZoom = 15;
 
-module.config(['$locationProvider', function($locationProvider: any) {
+taskmodule.config(['$locationProvider', function($locationProvider: any) {
   // $locationProvider.html5Mode({
   //   enabled: true,
   //   requireBase: false,
   // });
 }]);
 
-module.config(function($stateProvider: any, $urlRouterProvider: any) {
+taskmodule.config(function($stateProvider: any, $urlRouterProvider: any) {
   
   $stateProvider.state({
     name: 'tasks',
@@ -86,14 +88,15 @@ module.config(function($stateProvider: any, $urlRouterProvider: any) {
   
 });
 
-module.controller('defaultController', ['$scope', '$location', function($scope, $location) {
+taskmodule.controller('defaultController', ['$scope', '$location', function($scope, $location) {
   $scope.uiMask = {};
   $scope.uiMask.show = false;
 }]);
 
 // I deleted commented out map controller code here, see git if you want to look at it
+// const moduleTask = angular.module('taskApp', ['$scope', '$location', '$http', 'userData', '$window', '$timeout', 'NgMap','$q', '$sce',  'heatMapProject1', 'heatMapProject2']);
 
-module.controller('taskController', ['$scope', '$location', '$http', 'userData', '$window', '$timeout', 'NgMap','$q', '$sce',  'heatMapProject1', 'heatMapProject2',
+taskmodule.controller('taskController', ['$scope', '$location', '$http', 'userData', '$window', '$timeout', 'NgMap','$q', '$sce',  'heatMapProject1', 'heatMapProject2',
   function($scope, $location, $http, userData,  $window, $timeout, NgMap, $q,$sce,  heatMapProject1, heatMapProject2) {
       $window.document.title = "Tasks";
 
@@ -225,7 +228,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.cairnState = cairnState.noCairn;
       vm.tasksUntilNextCairn = -1;
       vm.nextCairnToShow = cairnTypes.none;
-      vm.showGraph = false;
+      vm.showGraph = true;
       vm.handleCairns = () => {
           console.assert(vm.cairnState === cairnState.noCairn, "cairn state is not noCairn, despite the main task showing");
           let cairnMode  = cairnTypes.none;
@@ -296,12 +299,12 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           $http.post('api/tasks/submitCairn', body).then((data: object) => console.log(data));
       }
 
-      vm.submitResponse = () => {
+      vm.submitResponse = async () => {
               $scope.showPlayerSidebar = false;
               vm.defZoom = dZoom;
               vm.tasks.shift();
 
-
+              await getResponseCountForCurrentTask();
               //if out of tasks, fetch next group, else reset latCenter
               if (vm.tasks.length == 0) {
                   vm.getTasks();
@@ -389,19 +392,30 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               vm.startgraph = 1;
           }
           
-          var countyes = 0;
-          var countno = 0;
-          var ratio = 0;
+          let ratio = 0;
           
-          $http.get('/api/tasks/getreponsecount?projectID='+vm.data.id+'&taskID='+vm.tasks[0].name+'&option=0').then(function(data) {
-              console.log('got count yes'+data.data[0]['count']);
-              countyes = data.data[0]['count'];
-              $http.get('/api/tasks/getreponsecount?projectID='+vm.data.id+'&taskID='+vm.tasks[0].name+'&option=1').then(function(data) {
-                  console.log('got count no'+data.data[0]['count']);
-                  countno = data.data[0]['count'];
+            let countyes = 0;
+            let countno = 0;
+          const response = vm.tasks[0].responseCount;
+          for (let i = 0; i < response.length; i++) {
+              if (response[i]["option"] === 0) {
+                    countyes = response[i]["count"];
+                }
+              else if (response[i]["option"] === 1) {
+                    countno = response[i]["count"];
+                }
+            }
                   vm.getResponseCount(countyes, countno, option, graphcairn);
-              });
-          });
+            
+        //   $http.get('/api/tasks/getreponsecount?projectID='+vm.data.id+'&taskID='+vm.tasks[0].name+'&option=0').then(function(data) {
+        //       console.log('got count yes'+data.data[0]['count']);
+        //       countyes = data.data[0]['count'];
+        //       $http.get('/api/tasks/getreponsecount?projectID='+vm.data.id+'&taskID='+vm.tasks[0].name+'&option=1').then(function(data) {
+        //           console.log('got count no'+data.data[0]['count']);
+        //           countno = data.data[0]['count'];
+        //           vm.getResponseCount(countyes, countno, option, graphcairn);
+        //       });
+        //   });
       }
 
       vm.getResponseCount = (countyes, countno, option, graphcairn) => {
@@ -1109,9 +1123,10 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               endpoint = '/api/tasks/gettaskloop/';
           }
 
-          $http.get(endpoint + vm.code).then(function(e) {
+          $http.get(endpoint + vm.code).then(async function(e) {
               vm.dataset = e.data.dataset;
               vm.tasks = e.data.items;
+              await getResponseCountForCurrentTask();
 
 
               if (e.data.finished && !vm.image_loop) {
@@ -1335,10 +1350,23 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               vm.getLng();
               vm.defZoom = dZoom;
               vm.image = vm.tasks[0].name;
+
               vm.ngs_before_image_link = vm.getBeforeImageNGS();
               return '/api/tasks/getImage/' + vm.dataset + '/' + vm.tasks[0].name;
           }
       };
+
+    function getResponseCountForCurrentTask() {
+        if(!vm.showGraph || vm.tasks.length === 0 || !vm.data.id){
+            return;
+        }
+        $http.get('/api/tasks/getreponsecountforalloptions?projectID='+vm.data.id+'&taskID='+vm.tasks[0].name).then(function(data) {
+            vm.tasks[0].responseCount = data.data;
+              }).catch((function(err){
+                  console.log(err);
+              }));
+            
+    }
 
       function getLat() {
           if (!vm.dataset || vm.tasks.length == 0) {
@@ -1545,11 +1573,13 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               promiseArray.push($http.post('/api/tasks/submit', body));
 
               //wait until all posts are completed then continue to next image
-              $q.all(promiseArray).then(function(dataArray) {
+              $q.all(promiseArray).then(async function(dataArray) {
                   latCenter = vm.tasks[0].x;
                   lngCenter = vm.tasks[0].y;
                   vm.defZoom = dZoom;
                   vm.tasks.shift();
+                  await getResponseCountForCurrentTask();
+
                   vm.hideModal();
                   vm.data.progress = parseInt(vm.data.progress) + 1;
                   //update progress bar:
@@ -1612,12 +1642,12 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.noImageCounter = 0;
       var handlecairn = true;
       async function submit(option,option_text) {
-          $scope.showPlayerSidebar = true;
           if(handlecairn) {
               vm.handleCairns();
               handlecairn = false;
           }
           if(vm.showGraph) {
+            $scope.showPlayerSidebar = true;
               await setTimeout(function () {
                   vm.handleGraphCairn(option);
               },10);
@@ -1989,7 +2019,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
   }]);
 
 
-module.controller('geneticTaskController', ['$scope', '$location', '$http', 'userData', '$window', '$timeout', 'NgMap','$q', '$sce', 'heatMapProject1', 'heatMapProject2',
+
+taskmodule.controller('geneticTaskController', ['$scope', '$location', '$http', 'userData', '$window', '$timeout', 'NgMap','$q', '$sce', 'heatMapProject1', 'heatMapProject2',
     function($scope, $location, $http, userData,  $window, $timeout, NgMap, $q,$sce, heatMapProject1, heatMapProject2) {
         $window.document.title = "Tasks";
 
@@ -2552,10 +2583,11 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
                 promiseArray.push($http.post('/api/tasks/submit', body));
 
                 //wait until all posts are completed then continue to next image
-                $q.all(promiseArray).then(function(dataArray) {
+                $q.all(promiseArray).then(async function(dataArray) {
 
                     vm.defZoom = dZoom;
                     vm.tasks.shift();
+                    await getResponseCountForCurrentTask();
                     vm.current_block_progress++;
 
                     //if out of tasks, fetch next group, else reset latCenter
@@ -2690,7 +2722,7 @@ module.controller('geneticTaskController', ['$scope', '$location', '$http', 'use
                     option_text: option_text
                 };
 
-                $http.post('/api/tasks/submit', body).then(function() {
+                $http.post('/api/tasks/submit', body).then(async function() {
 
                     vm.defZoom = dZoom;
                     vm.tasks.shift();

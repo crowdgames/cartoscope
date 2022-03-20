@@ -796,6 +796,20 @@ exports.getResponseCount = function(projectId, taskID, option) {
     });
 };
 
+exports.getResponseCountForAllOptions = function(projectId, taskID) {
+  return new Promise(function(resolve, error) {
+      var connection = db.get();
+      connection.queryAsync(`SELECT COUNT(r.response) as "count", r.response as "option" FROM response r WHERE r.project_id=? AND r.task_id=? Group By r.response`, [projectId, taskID]).then(
+          function(data) {
+              console.log("get response count " + JSON.stringify(data));
+              resolve(data);
+          }, function (err) {
+              error(err);
+          }
+      );
+  });
+};
+
 exports.increaseProgress = function(userId, projectId) {
   return new Promise(function(resolve, error) {
       var connection = db.get();
