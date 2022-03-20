@@ -1126,7 +1126,7 @@ taskmodule.controller('taskController', ['$scope', '$location', '$http', 'userDa
           $http.get(endpoint + vm.code).then(async function(e) {
               vm.dataset = e.data.dataset;
               vm.tasks = e.data.items;
-              vm.tasks[0].responseCount = await getResponseCountForCurrentTask();
+              await getResponseCountForCurrentTask();
 
 
               if (e.data.finished && !vm.image_loop) {
@@ -1357,13 +1357,10 @@ taskmodule.controller('taskController', ['$scope', '$location', '$http', 'userDa
       };
 
     function getResponseCountForCurrentTask() {
-        if(!vm.showGraph){
+        if(!vm.showGraph || vm.tasks.length === 0 || !vm.data.id){
             return;
         }
         $http.get('/api/tasks/getreponsecountforalloptions?projectID='+vm.data.id+'&taskID='+vm.tasks[0].name).then(function(data) {
-            //console.log('got count'+ JSON.stringify(data.data));
-            let countyes = 0;
-            let countno = 0;
             vm.tasks[0].responseCount = data.data;
               }).catch((function(err){
                   console.log(err);
