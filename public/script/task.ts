@@ -239,7 +239,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           // note the time the cairn was created. Divide by 1000 because mysql wants second precision, not ms precision
           let resetCairnCounter = () => {
               vm.tasksUntilNextCairn = getRandomIntInclusive(parseInt(vm.cairnsInfoArray[1]), parseInt(vm.cairnsInfoArray[2])) - 1;
-              console.log("inside reset cairn " +  vm.tasksUntilNextCairn);
           }
 
           vm.timeCairnShownToPlayer = Math.floor(Date.now() / 1000);
@@ -247,17 +246,14 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           // initialize the counter. I'd like to initialize it outside, but it needs to be different based on debug mode
           if (vm.tasksUntilNextCairn === -1) {
               resetCairnCounter();
-              console.log("inside tasksUntilNextCairn = -1 " +  vm.tasksUntilNextCairn);
               vm.tasksUntilNextCairn = vm.tasksUntilNextCairn > 5 ? 5 : vm.tasksUntilNextCairn;
           }
           if (vm.tasksUntilNextCairn > 0) {
-              console.log("inside tasksUntilNextCairn > 0 " +  vm.tasksUntilNextCairn);
               vm.tasksUntilNextCairn--;
               vm.showGraph = false;
           }
           else {
               resetCairnCounter();
-              console.log("inside tasksUntilNextCairn < 0 " +  vm.tasksUntilNextCairn);
               if (cairnMode === cairnTypes.soapstone)
                   vm.startSoapstoneCairn();
               else if (cairnMode === cairnTypes.emoji)
@@ -1619,10 +1615,10 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       var handlecairn = true;
       async function submit(option,option_text) {
           $scope.showPlayerSidebar = true;
-          // if(handlecairn) {
-          //     vm.handleCairns();
-          //     handlecairn = false;
-          // }
+          if(handlecairn) {
+              vm.handleCairns();
+              handlecairn = false;
+          }
           if(vm.showGraph) {
               await setTimeout(function () {
                   vm.handleGraphCairn(option);
