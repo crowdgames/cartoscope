@@ -241,6 +241,8 @@ taskmodule.controller('taskController', ['$scope', '$location', '$http', 'userDa
           else console.error("a cairns style hitID was passed, but the cairn type was not in [n,e,s,b]");
           // note the time the cairn was created. Divide by 1000 because mysql wants second precision, not ms precision
           let resetCairnCounter = () => {
+              if(vm.cairnsInfoArray === null)
+                return;
               vm.tasksUntilNextCairn = getRandomIntInclusive(parseInt(vm.cairnsInfoArray[1]), parseInt(vm.cairnsInfoArray[2])) - 1;
           }
           vm.timeCairnShownToPlayer = Math.floor(Date.now() / 1000);
@@ -397,7 +399,7 @@ taskmodule.controller('taskController', ['$scope', '$location', '$http', 'userDa
           let countyes = 0;
           let countno = 0;
           const response = vm.tasks[0].responseCount;
-          if(response && response.length > 0){
+          //if(response && response.length > 0){
             for (let i = 0; i < response.length; i++) {
                 if (response[i]["option"] === 0) {
                     countyes = response[i]["count"];
@@ -406,7 +408,7 @@ taskmodule.controller('taskController', ['$scope', '$location', '$http', 'userDa
                     countno = response[i]["count"];
                 }
             }
-          }
+          //}
           vm.getResponseCount(countyes, countno, option, graphcairn);
             
         //   $http.get('/api/tasks/getreponsecount?projectID='+vm.data.id+'&taskID='+vm.tasks[0].name+'&option=0').then(function(data) {
