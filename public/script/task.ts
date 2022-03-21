@@ -301,12 +301,12 @@ taskmodule.controller('taskController', ['$scope', '$location', '$http', 'userDa
           $http.post('api/tasks/submitCairn', body).then((data: object) => console.log(data));
       }
 
-      vm.submitResponse = async () => {
+      vm.submitResponse = () => {
               $scope.showPlayerSidebar = false;
               vm.defZoom = dZoom;
               vm.tasks.shift();
 
-              await getResponseCountForCurrentTask();
+            getResponseCountForCurrentTask();
               //if out of tasks, fetch next group, else reset latCenter
               if (vm.tasks.length == 0) {
                   vm.getTasks();
@@ -1127,10 +1127,10 @@ taskmodule.controller('taskController', ['$scope', '$location', '$http', 'userDa
               endpoint = '/api/tasks/gettaskloop/';
           }
 
-          $http.get(endpoint + vm.code).then(async function(e) {
+          $http.get(endpoint + vm.code).then(function(e) {
               vm.dataset = e.data.dataset;
               vm.tasks = e.data.items;
-              await getResponseCountForCurrentTask();
+              getResponseCountForCurrentTask();
 
 
               if (e.data.finished && !vm.image_loop) {
@@ -1579,12 +1579,12 @@ taskmodule.controller('taskController', ['$scope', '$location', '$http', 'userDa
               promiseArray.push($http.post('/api/tasks/submit', body));
 
               //wait until all posts are completed then continue to next image
-              $q.all(promiseArray).then(async function(dataArray) {
+              $q.all(promiseArray).then(function(dataArray) {
                   latCenter = vm.tasks[0].x;
                   lngCenter = vm.tasks[0].y;
                   vm.defZoom = dZoom;
                   vm.tasks.shift();
-                  await getResponseCountForCurrentTask();
+                  getResponseCountForCurrentTask();
 
                   vm.hideModal();
                   vm.data.progress = parseInt(vm.data.progress) + 1;
@@ -2589,11 +2589,10 @@ taskmodule.controller('geneticTaskController', ['$scope', '$location', '$http', 
                 promiseArray.push($http.post('/api/tasks/submit', body));
 
                 //wait until all posts are completed then continue to next image
-                $q.all(promiseArray).then(async function(dataArray) {
+                $q.all(promiseArray).then(function(dataArray) {
 
                     vm.defZoom = dZoom;
                     vm.tasks.shift();
-                    await getResponseCountForCurrentTask();
                     vm.current_block_progress++;
 
                     //if out of tasks, fetch next group, else reset latCenter
