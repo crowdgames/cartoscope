@@ -393,19 +393,21 @@ taskmodule.controller('taskController', ['$scope', '$location', '$http', 'userDa
           }
           
           let ratio = 0;
-          
-            let countyes = 0;
-            let countno = 0;
+
+          let countyes = 0;
+          let countno = 0;
           const response = vm.tasks[0].responseCount;
-          for (let i = 0; i < response.length; i++) {
-              if (response[i]["option"] === 0) {
+          if(response && response.length > 0){
+            for (let i = 0; i < response.length; i++) {
+                if (response[i]["option"] === 0) {
                     countyes = response[i]["count"];
                 }
-              else if (response[i]["option"] === 1) {
+                else if (response[i]["option"] === 1) {
                     countno = response[i]["count"];
                 }
             }
-                  vm.getResponseCount(countyes, countno, option, graphcairn);
+          }
+          vm.getResponseCount(countyes, countno, option, graphcairn);
             
         //   $http.get('/api/tasks/getreponsecount?projectID='+vm.data.id+'&taskID='+vm.tasks[0].name+'&option=0').then(function(data) {
         //       console.log('got count yes'+data.data[0]['count']);
@@ -1362,9 +1364,11 @@ taskmodule.controller('taskController', ['$scope', '$location', '$http', 'userDa
         }
         $http.get('/api/tasks/getreponsecountforalloptions?projectID='+vm.data.id+'&taskID='+vm.tasks[0].name).then(function(data) {
             vm.tasks[0].responseCount = data.data;
-              }).catch((function(err){
-                  console.log(err);
-              }));
+            return;
+        }).catch((function(err){
+            return;
+            console.log(err);
+        }));
             
     }
 
