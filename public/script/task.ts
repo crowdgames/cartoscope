@@ -232,7 +232,7 @@ taskmodule.controller('taskController', ['$scope', '$location', '$http', 'userDa
       vm.handleCairns = () => {
           console.assert(vm.cairnState === cairnState.noCairn, "cairn state is not noCairn, despite the main task showing");
           let cairnMode  = cairnTypes.none;
-          if (vm.cairnsInfoArray === null) return;
+          if (vm.cairnsInfoArray === null || vm.cairnsInfoArray.length < 1) return;
           else if (vm.cairnsInfoArray[0] === "b") cairnMode = cairnTypes.both;
           else if (vm.cairnsInfoArray[0] === "e") cairnMode = cairnTypes.emoji;
           else if (vm.cairnsInfoArray[0] === "s") cairnMode = cairnTypes.soapstone;
