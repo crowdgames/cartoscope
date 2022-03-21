@@ -431,6 +431,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   }
               }
           }
+
       }
 
       vm.wasContinueHit = false;
@@ -1623,7 +1624,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   vm.submitAnswer(option,option_text);
               }, 2000);
           } else {
-              console.log("not in graph cairn");
+              let graphcairn = document.getElementById("cairn-sidebar-header");
+              graphcairn!.innerText = "";
               vm.fetchResponse();
               vm.submitAnswer(option,option_text);
           }
