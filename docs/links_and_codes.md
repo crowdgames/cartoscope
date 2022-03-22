@@ -7,7 +7,7 @@ cartosco.pe/api/results/votesKiosk/(hitID)
 Starting an arbitrary project:
 http://cartosco.pe/kioskProject.html#/kioskStart/(projectID)
 
-Starting the current LLL project:
+Starting the current LLL project (which is currently 2008 w/ cairns):
 https://cartosco.pe/landloss
 
 Testing cairns frequency (amongst no cairns vs emojis every 40-60 images **This is the current cairns/LLL project**)
