@@ -1119,7 +1119,9 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           $http.get(endpoint + vm.code).then(function(e) {
               vm.dataset = e.data.dataset;
               vm.tasks = e.data.items;
-              vm.fetchResponse();
+              if(vm.tasks.length != 0) {
+                  vm.fetchResponse();
+              }
 
               if (e.data.finished && !vm.image_loop) {
                   vm.finished = true;
