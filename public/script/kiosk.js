@@ -3012,10 +3012,12 @@ module.controller('hubProjectController', ['$window','$scope','$location','$stat
 
         $scope.show_start_button = false;
 
-
-        if ($location.search().hasOwnProperty("trialId")){
-            $scope.isMturk = true
+        if ($location.search().hasOwnProperty("trialId")){    
             $scope.hit_id = $location.search().trialId;
+            //check if mturk in the trial id, to slightly change the flow
+            if ($scope.hit_id.indexOf("mturk") !== -1 ){
+                $scope.isMturk = true
+            }
         }
 
         $scope.acceptConsent = function() {
