@@ -440,7 +440,7 @@ exports.getHubRawResultsMultiplebyTextGrouped = function(project_ids,dataset_id,
         (select r.user_id,r.task_id,r.project_id,r.response_text as answer,p.unique_code,p.name from \
             (select * from response where project_id in ('+ project_ids.toString() + ') and task_id !=\'dummy\') as r left join projects as p on p.id=r.project_id) as pr\
         left join dataset_'+dataset_id + '  as d on d.name=pr.task_id) as pvr \
-        left join (select workerID,hitID from kiosk_workers) as k on pvr.user_id=k.workerID ) as pvrh where pvrh.hitID NOT LIKE \'%mturk%\' \
+        left join (select workerID,hitID from kiosk_workers) as k on pvr.user_id=k.workerID ) as pvrh where pvrh.hitID NOT LIKE \'%mturk%\' and pvrh.x IS NOT NULL and pvrh.y IS NOT NULL \
         group by pvrh.task_id,pvrh.x,pvrh.y,pvrh.project_id,pvrh.answer'
 
         var grouped_data = {};
