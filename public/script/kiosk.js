@@ -74,7 +74,8 @@ module.config(function($stateProvider, $urlRouterProvider, $cookiesProvider) {
             assignmentId:'',
             hitId:'',
             submitTo:'',
-            projectType: ''
+            projectType: '',
+            hubUrl: null
         },
         controller: 'exampleController'
     });
@@ -2097,7 +2098,6 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
     vm.goTo=5;
     vm.showTutorialLink = false;
 
-
     vm.annotated = false;
         $scope.next_per2 = 0;
         $scope.progressBarStyle = {"width" : "0%"};
@@ -2409,7 +2409,9 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
         }
         //console.log('reqParams ', reqParams);
         if(reqParams.kioskId==1){
-            window.location.replace('/api/anon/startKiosk/' + vm.params.project + '?' + 'workerId='+ vm.params.workerId+'&kioskUser=1');
+            var red_link = '/api/anon/startKiosk/' + vm.params.project + '?' + 'workerId='+ vm.params.workerId+'&kioskUser=1'
+            if ($stateParams.hubUrl !== null) { red_link += '&hubUrl=' + $stateParams.hubUrl }
+            window.location.replace(red_link);
         } else{
             window.location.replace('/api/anon/startAnon/' + vm.params.project + '?' + qs.substr(1));
         }
@@ -3081,7 +3083,7 @@ module.controller('hubProjectController', ['$window','$scope','$location','$stat
                     $http.get('/api/anon/consentKiosk/' + project_code + '?' + 'workerId='+ $scope.workerId+'&cookie='+$cookies.get('kiosk')+'&hitID='+ $scope.hit_id)
                         .then(function(e, data) {
                             //console.log('data ', e.data.workerId);
-                            $state.go('examples', {pCode: project_code, workerId: e.data.workerId, projectType: $scope.projectType, kioskId:1, hitId: $scope.hit_id});
+                            $state.go('examples', {pCode: project_code, workerId: e.data.workerId, projectType: $scope.projectType, kioskId:1, hitId: $scope.hit_id, hubUrl: $scope.hub_url});
                             //window.location.replace('/api/anon/startKiosk/' + $scope.params.project+ '?workerId='+e.data.workerId+'&kioskId=1');
                         }, function(err) {
                             alert('error'+ err);
@@ -3102,6 +3104,7 @@ module.controller('hubProjectController', ['$window','$scope','$location','$stat
             $scope.hub_title = $scope.hub_data.name;
             $scope.hub_description = $scope.hub_data.description;
             $scope.hub_subprojects = $scope.hub_data.project_codes.split(",");
+            $scope.hub_url = $scope.hub_data.url_name;
             $scope.show_start_button = true;
             $scope.cover_pic = 'default'; //TODO: this should come from hub
 

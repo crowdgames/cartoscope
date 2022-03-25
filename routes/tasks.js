@@ -550,6 +550,7 @@ router.get('/startProject/:project', [filters.requireLogin], function(req, res, 
                   red_link += "&image_loop=1"
               }
 
+              if(req.query.hubUrl){ red_link += "&hubUrl=" + req.query.hubUrl}
 
 
 

@@ -265,7 +265,9 @@ router.get('/startKiosk/:pCode',
                     if (user.id) {
                         console.log('user object ', user);
                         loginAnonKioskUser(req, user).then(function(data) {
-                            res.redirect('/api/tasks/startProject/' + projectID);
+                            var red_link = '/api/tasks/startProject/' + projectID 
+                            if (req.query.hubUrl) {red_link += '?hubUrl=' + req.query.hubUrl}
+                            res.redirect(red_link);
                         });
 
                     } else {
