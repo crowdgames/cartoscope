@@ -3017,6 +3017,7 @@ module.controller('hubProjectController', ['$window','$scope','$location','$stat
             //check if mturk in the trial id, to slightly change the flow
             if ($scope.hit_id.indexOf("mturk") !== -1 ){
                 $scope.isMturk = true
+                $scope.showConsentMturk = true;
             }
         }
 
