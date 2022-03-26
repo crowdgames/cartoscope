@@ -169,6 +169,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.slider_obj = {};
       //if we do loop after we reach end
       vm.image_loop = $location.search().image_loop || 0;
+      vm.hubUrl = $location.search().hubUrl;
 
 
       vm.showChainQuestions = 0;
@@ -1170,10 +1171,9 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                       window.location.replace('/survey.html#/survey?code=' + vm.code+ '&userType=kiosk');
                   } else {
 
-                      var hitID = $location.search().hitID || $location.search().trialID || "kiosk";
-
-                      window.location.replace('/survey.html#/' + vm.survey_type + '?code=' + vm.code+ '&userType=kiosk&hitId=' + hitID + "&contributions=" + vm.data.progress);
-
+                        var hitID = $location.search().hitID || $location.search().trialID || "kiosk";
+                        var hubpar = (vm.hubUrl) ? "&hubUrl=" + vm.hubUrl : "" //if coming from hub, move that information along in the survey
+                        window.location.replace('/survey.html#/' + vm.survey_type + '?code=' + vm.code+ '&userType=kiosk&hitId=' + hitID + "&contributions=" + vm.data.progress + hubpar);
                   }
               }
 
@@ -1244,7 +1244,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
               } else {
                   //Add the chaining parameter to show relevant questions at the survey
-                  window.location.replace('/survey.html#/'+ vm.survey_type + '?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
+                  var hubpar = (vm.hubUrl) ? "&hubUrl=" + vm.hubUrl : "" //if coming from hub, move that information along in the survey
+                  window.location.replace('/survey.html#/'+ vm.survey_type + '?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last + hubpar);
               }
           } else {
               window.location.replace('/UserProfile.html');
@@ -1324,7 +1325,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                       }
                       else {
                           //Add the chaining parameter to show relevant questions at the survey
-                          window.location.replace('/survey.html#/'+ vm.survey_type + '?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last + "&contributions=" + vm.data.progress)
+                          var hubpar = (vm.hubUrl) ? "&hubUrl=" + vm.hubUrl : "" //if coming from hub, move that information along in the survey
+                          window.location.replace('/survey.html#/'+ vm.survey_type + '?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last + "&contributions=" + vm.data.progress + hubpar)
 
                       }
                   }
