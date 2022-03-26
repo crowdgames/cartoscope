@@ -120,8 +120,7 @@
 
 
 
-            <nav class="navbar navbar-fixed-bottom navbar-bottom"
-                ng-if="model.data.template.selectedTaskType == 'mapping'">
+            <nav class="navbar navbar-fixed-bottom navbar-bottom" ng-if="model.data.template.selectedTaskType == 'mapping'">
                 <div class="container text-center" style="padding: 0;width: 100%;">
 
                     <div class="bottom-panel">
@@ -136,9 +135,7 @@
                                         {{option.text}}
                                     </button>
                                     <!--<span ng-show="model.userType === 'mTurk'"  style="color: #9ACA3C;cursor: pointer;display:inline;margin-left:-5px" ng-click="showTutorial(option.text)"><i class="fa fa-lightbulb-o" aria-hidden="true"></i></span>-->
-                                    <span style="color: #9ACA3C;cursor: pointer;display:inline;margin-left:-5px"
-                                        ng-click="showTutorial(option.text)">Hint <i class="fa fa-lightbulb-o"
-                                            aria-hidden="true"></i></span>
+                                  
 
                                 </div>
                                 <button ng-show="model.data.point_selection" class="btn btn-default btn-primary "
@@ -214,10 +211,10 @@
                                         class="options btn">
                                         {{option.text}}
                                     </button>
-                                    <span ng-if="model.data.template.selectedTaskType != 'ngs'"
+                                    <!-- <span ng-if="model.data.template.selectedTaskType != 'ngs'"
                                         style="color: #9ACA3C;cursor: pointer;display:inline;margin-left:-5px"
                                         ng-click="showTutorial(option.text)">Hint <i class="fa fa-lightbulb-o"
-                                            aria-hidden="true"></i></span>
+                                            aria-hidden="true"></i></span> -->
 
                                 </div>
                                 <!--<button ng-show="model.data.point_selection"  class="btn btn-default btn-primary "-->
@@ -288,9 +285,9 @@
                                         class="options btn">
                                         {{option.text}}
                                     </button>
-                                    <span style="color: #9ACA3C;cursor: pointer;display:inline;margin-left:-5px"
+                                    <!-- <span style="color: #9ACA3C;cursor: pointer;display:inline;margin-left:-5px"
                                         ng-click="showTutorial(option.text)">Hint <i class="fa fa-lightbulb-o"
-                                            aria-hidden="true"></i></span>
+                                            aria-hidden="true"></i></span> -->
 
                                 </div>
                                 <!--<button ng-show="model.data.point_selection"  class="btn btn-default btn-primary "-->
