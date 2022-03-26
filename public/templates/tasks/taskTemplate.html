@@ -10,7 +10,7 @@
                     <h5> {{model.data.progress <= model.data.size ? model.data.progress : model.data.size }}</h5>
                 </div>
             </div>
-            <div class="col col-xs-4 col-md-6 col-lg-6">
+            <div class="col col-xs-6 col-md-6 col-lg-6">
                 <!-- Progress bar-->
                 <div ng-switch="model.userType" ng-if="!model.showFlightPath">
 
@@ -74,7 +74,7 @@
         <!--MAPPING TASK MAP VIEW-->
         <div class="row" ng-if="model.data.template.selectedTaskType == 'mapping'">
             <div id="mapQuestion">
-                <h3 class="mapQuestion text-center" style="color:white">{{model.data.template.question}}
+                <h3 class="mapQuestion text-center" style="color:black">{{model.data.template.question}}
                     <span ng-show="model.userType === 'mTurk'" style="color: #9ACA3C;cursor: pointer;"
                         data-target="#helpModal" data-toggle="modal"><i class="fa fa-question-circle-o"
                             aria-hidden="true"></i></span>
@@ -160,7 +160,7 @@
         <!-- NGS TASK MAP VIEW-->
         <div class="row" ng-if="model.data.template.selectedTaskType == 'ngs'">
             <div id="ngsQuestion">
-                <h3 class="mapQuestion text-center" style="color:white">{{model.data.template.question}}
+                <h3 class="mapQuestion text-center" style="color:black">{{model.data.template.question}}
                     <span ng-show="model.userType === 'mTurk'" style="color: #9ACA3C;cursor: pointer;"
                         data-target="#helpModal" data-toggle="modal"><i class="fa fa-question-circle-o"
                             aria-hidden="true"></i></span>
@@ -238,7 +238,7 @@
         <!-- SLIDER TASK  VIEW-->
         <div class="row" ng-if="model.data.template.selectedTaskType == 'slider'">
             <div id="sliderQuestion">
-                <h3 class="mapQuestion text-center" style="color:white">{{model.data.template.question}}
+                <h3 class="mapQuestion text-center" style="color:black">{{model.data.template.question}}
                     <span ng-show="model.userType === 'mTurk'" style="color: #9ACA3C;cursor: pointer;"
                         data-target="#helpModal" data-toggle="modal"><i class="fa fa-question-circle-o"
                             aria-hidden="true"></i></span>
