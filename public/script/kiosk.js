@@ -2333,7 +2333,6 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
 
             if(vm.params.projectType == 'mapping'){
 
-
                 document.getElementById("markerShowAnswerButton").style.display = "none";
                 vm.zoomToMarker(vm.tutorialMapping[vm.counter]);
 
@@ -2342,11 +2341,12 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                 document.getElementById("tut_text_mapping").style.visibility = "visible";
 
 
-
             } else {
 
 
-                vm.annotated = true; //show annotated image if available
+                if (vm.tutorial[vm.counter].image_annotation) {
+                    vm.annotated = true; //show annotated image if available
+                }
 
 
                 var l_answer = vm.tutorial[vm.counter].answer;
@@ -2578,11 +2578,10 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
 
             $http.get('/api/project/getTutorial/' + vm.params.project).then(function(tdata) {
 
-
                 // tutorial data
                 var tutData = tdata.data;
 
-                console.log(tutData)
+                //console.log(tutData)
                 if (tutData.length == 0){
                     vm.start();
                 }
@@ -2611,7 +2610,6 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
 
                 tutData.forEach(function(item) {
 
-
                     var tmpl = JSON.parse(item.template);
                     var opt = [];
                     var sel_col = '';
@@ -2630,16 +2628,18 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                     //if tutorial image in dataset, fetch from dataset
                     var tutpath = '../../images/Tutorials/';
 
-
                     if (item.hasOwnProperty('in_dataset') &&  item.in_dataset == 1){
                         //tutpath = '../../../dataset/' + data.data[0].dataset_id + '/';
                         tutpath = '/api/tasks/getImageFree/' + data.data[0].dataset_id + '/'
                     }
                     var it_annot = tutpath + item.image_name;
-                    if (item.image_annotation){
+                    //if an annotated image is available, we should show that after they pick the right answer. Otherwise, keep showing the same image
+                    if (item.image_annotation != 0){
                         it_annot = item.image_annotation.includes("/")
                             ? `../../images/Tutorials/${item.image_annotation}`
                             : `../../images/Tutorials/${vm.params.project}/${item.image_annotation}`;
+                    } else {
+                        it_anot = 0
                     }
 
                     var obj = {
@@ -2679,9 +2679,7 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                 if (vm.tutorial[vm.counter].ask_user == 0) {
                     show_Correct_Options(vm.tutorial[vm.counter].answer);
                 }
-
                 if(vm.params.projectType == 'mapping'){
-
                     vm.map_init();
                 }
 
