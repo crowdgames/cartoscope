@@ -74,7 +74,8 @@ module.config(function($stateProvider, $urlRouterProvider, $cookiesProvider) {
             assignmentId:'',
             hitId:'',
             submitTo:'',
-            projectType: ''
+            projectType: '',
+            hubUrl: null
         },
         controller: 'exampleController'
     });
@@ -1908,11 +1909,11 @@ module.controller('resultsHubController',
             $scope.update_hub_Markers($scope.hub_positives[0],0)
 
             //generate map
-            //TODO: check back for this center, it might not be adjusted if we make projects in other locations
+            //check back for this center, it might not be adjusted if we make projects in other locations
             $scope.map1 = {
                 center: {
-                    latitude: parseFloat(29.905498110016907),
-                    longitude: parseFloat(-90.26941133000318)
+                    latitude: $scope.hub_center_lat,
+                    longitude: $scope.hub_center_lon
                 },
                 streetViewControl: false,
                 zoom: zoom,
@@ -1960,6 +1961,11 @@ module.controller('resultsHubController',
                             id: pointId,
                             icon: $scope.icon_array[color_index]
                         });
+
+                        if ($scope.hub_center_lat == undefined && $scope.hub_center_lon == undefined){
+                            $scope.hub_center_lat = parseFloat(item.lat)
+                            $scope.hub_center_lon = parseFloat(item.lon)
+                        }
     
     
                         var image_path = 'api/tasks/getImageFree/' + item.dataset_id + '/' + key  + '.jpg';
@@ -2017,7 +2023,7 @@ module.controller('resultsHubController',
             //STEP 2: get data for the projects in the hub
             $http.get('/api/results/hub_data/' + $stateParams.hub_code).then(function(pdata) {
 
-                $scope.raw_data = pdata.data; //all the data    
+                $scope.raw_data = pdata.data; //all the data  
                 $scope.showMap = true;
                 $scope.InitMap(7);
     
@@ -2091,7 +2097,6 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
     vm.googleMapsUrl= "https://maps.googleapis.com/maps/api/js?key="+googleMapAPIKey;
     vm.goTo=5;
     vm.showTutorialLink = false;
-
 
     vm.annotated = false;
         $scope.next_per2 = 0;
@@ -2405,7 +2410,9 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
         }
         //console.log('reqParams ', reqParams);
         if(reqParams.kioskId==1){
-            window.location.replace('/api/anon/startKiosk/' + vm.params.project + '?' + 'workerId='+ vm.params.workerId+'&kioskUser=1');
+            var red_link = '/api/anon/startKiosk/' + vm.params.project + '?' + 'workerId='+ vm.params.workerId+'&kioskUser=1'
+            if ($stateParams.hubUrl !== null) { red_link += '&hubUrl=' + $stateParams.hubUrl }
+            window.location.replace(red_link);
         } else{
             window.location.replace('/api/anon/startAnon/' + vm.params.project + '?' + qs.substr(1));
         }
@@ -3008,10 +3015,13 @@ module.controller('hubProjectController', ['$window','$scope','$location','$stat
 
         $scope.show_start_button = false;
 
-
-        if ($location.search().hasOwnProperty("trialId")){
-            $scope.isMturk = true
+        if ($location.search().hasOwnProperty("trialId")){    
             $scope.hit_id = $location.search().trialId;
+            //check if mturk in the trial id, to slightly change the flow
+            if ($scope.hit_id.indexOf("mturk") !== -1 ){
+                $scope.isMturk = true
+                $scope.showConsentMturk = true;
+            }
         }
 
         $scope.acceptConsent = function() {
@@ -3074,7 +3084,7 @@ module.controller('hubProjectController', ['$window','$scope','$location','$stat
                     $http.get('/api/anon/consentKiosk/' + project_code + '?' + 'workerId='+ $scope.workerId+'&cookie='+$cookies.get('kiosk')+'&hitID='+ $scope.hit_id)
                         .then(function(e, data) {
                             //console.log('data ', e.data.workerId);
-                            $state.go('examples', {pCode: project_code, workerId: e.data.workerId, projectType: $scope.projectType, kioskId:1, hitId: $scope.hit_id});
+                            $state.go('examples', {pCode: project_code, workerId: e.data.workerId, projectType: $scope.projectType, kioskId:1, hitId: $scope.hit_id, hubUrl: $scope.hub_url});
                             //window.location.replace('/api/anon/startKiosk/' + $scope.params.project+ '?workerId='+e.data.workerId+'&kioskId=1');
                         }, function(err) {
                             alert('error'+ err);
@@ -3095,6 +3105,7 @@ module.controller('hubProjectController', ['$window','$scope','$location','$stat
             $scope.hub_title = $scope.hub_data.name;
             $scope.hub_description = $scope.hub_data.description;
             $scope.hub_subprojects = $scope.hub_data.project_codes.split(",");
+            $scope.hub_url = $scope.hub_data.url_name;
             $scope.show_start_button = true;
             $scope.cover_pic = 'default'; //TODO: this should come from hub
 

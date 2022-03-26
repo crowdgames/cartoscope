@@ -274,8 +274,12 @@ app.get('/ida', function(req, res) {
 //hub url shortcuts
 app.get('/hub/:hub_url', function(req, res) {
 
-    console.log(req.params.hub_url)
+    //are there trial id on the url? pass them
+    var hitID = req.query.trialId;    
     var link = "/kioskProject.html#/hubPage/" + req.params.hub_url;
+    if (hitID){
+        link += '?trialId=' + hitID
+    }
     res.redirect(link); // send to hub page
 });
 
