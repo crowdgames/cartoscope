@@ -1379,7 +1379,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               // tutorial data
               var tutData = tdata.data;
 
-
               vm.tutorial = [];
               //TODO: Mapping
               vm.tutorialMapping = [];
@@ -1398,22 +1397,24 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   var sel_num = -1;
 
                   //get only the images of the button that is hovering
-                  if (item.answer == option) {
+                  //and only tutorial items that were not informational (ask_user == 1)
+                  if (item.answer == option && item.ask_user) {
 
                       var tutpath = '../../images/Tutorials/';
 
                       if (item.hasOwnProperty('in_dataset') &&  item.in_dataset == 1){
                           //tutpath = '../../../dataset/' + data.data[0].dataset_id + '/';
-                          tutpath = '/api/tasks/getImageFree/' + tdata.data[0].dataset_id + '/'
+                          tutpath = '/api/tasks/getImageFree/' + vm.data.dataset_id + '/' //pick the dataset id from the loaded project
                       }
+                      
                       let it_annot = tutpath + item.image_name;
                       // Some images have drawings on them, arrows and the like. Use this image if it exists
-                      if (item.image_annotation){
+                      if (item.image_annotation != 0){
                           // sometimes image annotations already have the project code in them, sometimes they don't. This is a hacky way of seeing if we need to add the project code or not.
                           it_annot = item.image_annotation.includes('/') 
                               ? `${tutpath}${item.image_annotation}`
                               : `${tutpath}${vm.code}/${item.image_annotation}`;
-                      }
+                      } 
 
                       var obj = {
                           image: it_annot,

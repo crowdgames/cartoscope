@@ -602,7 +602,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <!-- <h4 class="modal-title"> {{model.tutorial_button.text ||  "Identifying Shoreline Erosion"  }}</h4> -->
-                        <h4 class="modal-title help-modal-title"> Identifying Shoreline Erosion</h4>
+                        <h4 class="modal-title help-modal-title"> {{model.data.name}}</h4>
                         <button type="button" class="close" style="margin-top: -25px;" data-dismiss="modal"
                             aria-label="Close">
                             &times;
@@ -634,7 +634,7 @@
                                         <img ng-src="{{item.image}}"
                                             style="max-height: 300px; max-width: 300px;margin: 5px;">
                                         <div class="modal-image-explanation">
-                                            <p ng-bind-html="item.explanation"></p>
+                                            <p ng-bind-html="item.explanation | textBreaks"></p>
                                         </div>
                                     </div>
                                 </div>
