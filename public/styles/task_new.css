@@ -379,6 +379,7 @@ div.jx-slider {
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
     border: 2px solid #EDE9E8;
+    min-height: 44em;
 }
 .task-body .maingame-progress-bar {
     height:5em;
