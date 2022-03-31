@@ -524,3 +524,7 @@ margin-bottom:1em;
     border:5px dotted #EDE9E8;
     padding:10px;
 }
+.btn:hover{
+    /* opacity: 0.5 !important; */
+    filter: brightness(90%);
+}
