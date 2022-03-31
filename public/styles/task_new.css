@@ -482,12 +482,12 @@ margin-bottom:1em;
 .btn-success {
     color: black;
     background-color: #9ACA3C;
-    border-color: #9ACA3C;
+    border: 5px #9ACA3C solid;
     width: 12em;
 }
 
-.btn-success:hover {
-    background-color: #779c2d;
+.btn-success:hover, .btn-success:focus, .btn-success:active {
+    background-color: #779c2d !important;
     border: 5px #779c2d solid;
     color:black;
     opacity: 1.5;
