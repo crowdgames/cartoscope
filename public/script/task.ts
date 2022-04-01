@@ -367,7 +367,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       };
 
       vm.flagImage = () => {
-          window.alert("Thank you for flagging this image");
+          const shouldFlag = window.confirm("Are you sure you want to flag the image?");
+          if(shouldFlag){
           var body = {
               projectID: vm.data.id,
               taskID: vm.tasks[0]
@@ -378,6 +379,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           $http.post('/api/tasks/flagimage', body).then(function () {
                 vm.submitResponse();
           });
+        }
       }
 
       $scope.showDebug = false;

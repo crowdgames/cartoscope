@@ -379,6 +379,7 @@ div.jx-slider {
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
     border: 2px solid #EDE9E8;
+    min-height: 44em;
 }
 .task-body .maingame-progress-bar {
     height:5em;
@@ -481,12 +482,12 @@ margin-bottom:1em;
 .btn-success {
     color: black;
     background-color: #9ACA3C;
-    border-color: #9ACA3C;
+    border: 5px #9ACA3C solid;
     width: 12em;
 }
 
-.btn-success:hover {
-    background-color: #779c2d;
+.btn-success:hover, .btn-success:focus, .btn-success:active {
+    background-color: #779c2d !important;
     border: 5px #779c2d solid;
     color:black;
     opacity: 1.5;
@@ -522,4 +523,8 @@ margin-bottom:1em;
     margin-top:10px;
     border:5px dotted #EDE9E8;
     padding:10px;
+}
+.btn:hover{
+    /* opacity: 0.5 !important; */
+    filter: brightness(90%);
 }
