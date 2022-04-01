@@ -616,35 +616,35 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
     }
   });
 
-  $stateProvider.state({
-    name: 'root.projectCreation.step3',
-    url: '/step3',
-    views: {
-      'createProjChildView': {
-        templateUrl: 'templates/userProfile/projectCreation/step3.html',
-        controller: 'stepThreeController'
-      }
-    },
-    params: {
-      project: null
-    },
-    resolve: {
-      project: ['$stateParams', '$timeout', '$q', function($stateParams, $timeout, $q) {
-        return $q(function(resolve, reject) {
-          $timeout(function() {
-            if ($stateParams.project && $stateParams.project.id) {
-              resolve($stateParams.project);
-            } else {
-              reject('no id');
-            }
-          }, 50);
-        });
-      }],
-      admins: function() {
-        return [];
-      }
-    }
-  });
+  // $stateProvider.state({
+  //   name: 'root.projectCreation.step3',
+  //   url: '/step3',
+  //   views: {
+  //     'createProjChildView': {
+  //       templateUrl: 'templates/userProfile/projectCreation/step3.html',
+  //       controller: 'stepThreeController'
+  //     }
+  //   },
+  //   params: {
+  //     project: null
+  //   },
+  //   resolve: {
+  //     project: ['$stateParams', '$timeout', '$q', function($stateParams, $timeout, $q) {
+  //       return $q(function(resolve, reject) {
+  //         $timeout(function() {
+  //           if ($stateParams.project && $stateParams.project.id) {
+  //             resolve($stateParams.project);
+  //           } else {
+  //             reject('no id');
+  //           }
+  //         }, 50);
+  //       });
+  //     }],
+  //     admins: function() {
+  //       return [];
+  //     }
+  //   }
+  // });
 
   $stateProvider.state({
     name: 'root.projectCreation.step4',
