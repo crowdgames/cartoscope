@@ -283,6 +283,15 @@ app.get('/hub/:hub_url', function(req, res) {
     res.redirect(link); // send to hub page
 });
 
+//hub url shortcuts for teams
+app.get('/hub/:hub_url/:trialId', function(req, res) {
+
+    //are there trial id on the url? pass them
+    var hitID = req.params.trialId;    
+    var link = "/kioskProject.html#/hubPage/" + req.params.hub_url  + '?trialId=' + hitID
+    res.redirect(link); // send to hub page
+});
+
 //healthy gulf event: algal Blooms
 app.get('/hg', function(req, res) {
     var project_code = "ChAkLfwYIBgo";
