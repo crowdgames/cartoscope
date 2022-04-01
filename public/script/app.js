@@ -933,10 +933,9 @@ module.controller('projectEditController', ['$scope', '$http', '$state','$timeou
       var curr = $state.current.name;
       var stateMap = {
         'root.projectEdit.step1': '^.step2',
-
        //commented out the linking part in admin step removal
-       // 'root.projectEdit.step2': '^.step3',
-
+       //skip admin step (step3) since this feature is not used right now
+       'root.projectEdit.step2': '^.step4',
         'root.projectEdit.step3': '^.step4',
         'root.projectEdit.step4': '^.step5',
         'root.projectEdit.step5': '^.step6',
@@ -1030,8 +1029,10 @@ module.controller('projectCreationController', ['$scope', '$http', '$state', '$t
       var curr = $state.current.name;
       var stateMap = {
         'root.projectCreation.step1': '^.step2',
-        'root.projectCreation.step2': 'root.projectCreation.step3',
-        'root.projectCreation.step3': 'root.projectCreation.step4',
+        //skip admin step (step 3) since we are not using it now
+        // 'root.projectCreation.step2': 'root.projectCreation.step3',
+        // 'root.projectCreation.step3': 'root.projectCreation.step4',
+        'root.projectCreation.step2': 'root.projectCreation.step4',
         'root.projectCreation.step4': 'root.projectCreation.step5',
         'root.projectCreation.step5': 'root.projectCreation.step6',
         'root.projectCreation.step6': 'root.projectCreation.step7'
