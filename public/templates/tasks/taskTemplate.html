@@ -10,7 +10,7 @@
                     <h5> {{model.data.progress <= model.data.size ? model.data.progress : model.data.size }}</h5>
                 </div>
             </div>
-            <div class="col col-xs-6 col-md-6 col-lg-6">
+            <div class="col col-xs-6 col-md-7 col-lg-7">
                 <!-- Progress bar-->
                 <div ng-switch="model.userType" ng-if="!model.showFlightPath">
 
@@ -29,7 +29,7 @@
                 </div>
             </div>
 
-            <div ng-switch="model.userType" class="col col-xs-4 col-md-4 col-lg-4 pull-right">
+            <div ng-switch="model.userType" class="col col-xs-4 col-md-3 col-lg-3 pull-right">
                 <button ng-switch-when="kiosk" class="btn btn-default btn-secondary done-button"
                     ng-click="showHelpHintModal()" style="height: 45px;">Help</button>
 
@@ -48,6 +48,11 @@
     <!-- </nav> -->
 
     <div class="maingame-body">
+        <div class="row" >
+                <button ng-click="model.flagImage()" class="btn btn-secondary" style="height: 45px;float: right;margin-right: 2em; margin-top: 0.5em;"> 
+                    Report Image
+                <i class="fa fa-flag" style="color:#A92323;" aria-hidden="true"></i></button>
+        </div>
 
         <div class="row" ng-switch="model.userType" style="text-align: center;margin-bottom:5px;">
 
@@ -410,11 +415,6 @@
             <div class="col col-xs-2 col-md-3 col-lg-3"></div>
         </div>
 
-        <a ng-click="model.flagImage()">
-            <button class="btn btn-secondary"
-                    style="height: 45px; position: absolute;right: 11em;top: 43em; z-index: 100;"> Report Image
-            <i class="fa fa-flag" style="color:#A92323;" aria-hidden="true"></i></button>
-        </a>
 
         <div ng-show="!showPlayerSidebar" class="actions-div">
 
