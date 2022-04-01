@@ -2168,7 +2168,7 @@ module.controller('projectsPageController', ['$scope', 'userData', 'projects', '
       });
     };
 
-    var startTaskPath = window.location.protocol + '//' + window.location.host + '/api/tasks/startProject/';
+    var startTaskPath = window.location.protocol + '//' + window.location.host + '/page/';
 
     var getPathToStart = function(code) {
       return startTaskPath + code;
@@ -2896,8 +2896,8 @@ module.controller('userProfileController', ['$scope','$http', '$state', 'project
     });
 
     function showProjectDetails(project){
-        $scope.currentProject = project;
-        $state.go('root.showProjectDetails', {project: project});
+        //directly go to the project page
+        window.location.replace("/kioskProject.html#/kioskStart/" + project.unique_code)
     }
 
   $scope.editProfile = function() {
