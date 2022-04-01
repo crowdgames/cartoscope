@@ -13,10 +13,15 @@
                       ng-class="{'active': isActive('root.projectCreation.step2'), 'greyed-out':!project.id}">
                     CUSTOMIZE TASK
                 </span>
+
+                <!--
+                Commented out front end code for project creation step 3 -> administration step -> for the tab removal
+
                 <span ui-sref="root.projectCreation.step3({project: project})"
                       ng-class="{'active': isActive('root.projectCreation.step3'), 'greyed-out': !verifyCanImportData()}">
                     ADMINISTRATORS
                 </span>
+                -->
                 <span ui-sref="root.projectCreation.step4({project: project})"
                       ng-class="{'active': isActive('root.projectCreation.step4'), 'greyed-out': !verifyCanImportData()}">
                     IMPORT IMAGES
