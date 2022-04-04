@@ -423,21 +423,27 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           }
           else {
               graphcairn!.innerText = "How others voted for this image!";
-              let ratio = Math.round(vm.countyes/(vm.countyes+vm.countno)*10);
+              let ratio = Math.round(vm.countyes/(vm.countyes+vm.countno)*100);
               if(vm.startgraph == 1) {
-                  vm.graphcairnbar.innerText = "";
-                  console.log("ratio " + ratio);
-                  let vote  = option;
-                  console.log("vote " + vote);
-                  for(let i = 0; i < 12; i++) {
-                      if (i - ratio == 1 && vote == 0) vm.graphcairnbar.innerText += white_square;
-                      else vm.graphcairnbar.innerText += i > ratio ? black_square : green_square;
-                  }
-                  vm.graphcairnbar.innerText += "\n";
-                  for(let i = 0; i < 12; i++) {
-                      if (i + ratio == 11 && vote == 1) vm.graphcairnbar.innerText += white_square;
-                      else vm.graphcairnbar.innerText += i > (10 - ratio) ? black_square : red_square;
-                  }
+                  // vm.graphcairnbar.innerText = "";
+                  // console.log("ratio " + ratio);
+                  // let vote  = option;
+                  // console.log("vote " + vote);
+                  // for(let i = 0; i < 12; i++) {
+                  //     if (i - ratio == 1 && vote == 0) vm.graphcairnbar.innerText += white_square;
+                  //     else vm.graphcairnbar.innerText += i > ratio ? black_square : green_square;
+                  // }
+                  // vm.graphcairnbar.innerText += "\n";
+                  // for(let i = 0; i < 12; i++) {
+                  //     if (i + ratio == 11 && vote == 1) vm.graphcairnbar.innerText += white_square;
+                  //     else vm.graphcairnbar.innerText += i > (10 - ratio) ? black_square : red_square;
+                  // }
+                  vm.graphcairnbar.innerHTML = "";
+                  vm.graphcairnbar.innerHTML += "<div id=\"progress\">\n" +
+                      " <progress max=\"100\" value=\"22\" class=\"progressBar1\" style='background : green'></progress>\n" +
+                      "<div class=\"progressText\">22% Done</div>\n" +
+                      "</div>";
+                  $('#progress .progressBar1').val(ratio);
               }
           }
 

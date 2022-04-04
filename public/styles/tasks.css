@@ -108,3 +108,9 @@ h1, h2, h3, h4, h5 {
   outline: none;
   margin: 5px 20px;
 }
+progress::-webkit-progress-bar {
+  background-color: red;
+}
+progress::-webkit-progress-value {
+  background-color: #039603 !important;
+}
