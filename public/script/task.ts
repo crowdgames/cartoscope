@@ -118,6 +118,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.hideBiggerImg = hideBiggerImg;
       vm.addMarker = addMarker;
       vm.getFullIframe = getFullIframe;
+      vm.getFullIframeTutorial = getFullIframeTutorial;
       vm.ngs_before_image_link = "../../images/ngs_hint.png"
      
 
@@ -987,6 +988,20 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           var url = link + '#' + zoom + '/'+  x + '/' + y;
           return  $sce.trustAsResourceUrl(url)
       };
+
+      function getFullIframeTutorial(x,y,zoom){
+
+        console.log("TUTORIAL NGS")
+
+        console.log(x)
+        console.log(y)
+        console.log(zoom)
+
+        var link = vm.data.image_source;
+        var zoom = vm.defZoom;
+        var url = link + '#' + zoom + '/'+  x + '/' + y;
+        return  $sce.trustAsResourceUrl(url)
+    };
 
       vm.alertText = function(text){
           if (text){
