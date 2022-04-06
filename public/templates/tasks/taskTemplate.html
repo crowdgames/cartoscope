@@ -335,7 +335,7 @@
                     ng-src="{{model.getNextTask()}}" ng-click="model.showBiggerImg()">
                 <h2 id="cairn-header" ng-show="showCairnElements"> Would you like to leave something for another player?
                 </h2>
-                <div ng-show="showPhysics">
+                <div ng-if="showPhysics">
                     <div class="container-fluid">
                         <br><br>
                         <div class="row" ng-show="showEmoji" id="emoji-picker">
