@@ -605,14 +605,14 @@
                             &times;
                         </button>
                     </div>
-                    <div class="modal-body" style="padding: 2em 7em;">
+                    <div class="modal-body" >
                         <center>
-                            <div class="help-modal" style="width: 100%;align-self: flex-start;">
+                            <div class="help-modal" style="">
                                 <div class="{{helpHintModalActiveTab === option.text  ? 'modal-help-tabs help-tab-active' : 'modal-help-tabs help-tabs'}}"
                                     ng-repeat="option in model.data.template.options"
                                     ng-click="showTutorial(option.text)">
 
-                                    <span> {{option.text}} </span>
+                                    <span style="padding:10px;"> {{option.text}} </span>
 
                                 </div>
 
@@ -629,8 +629,7 @@
                                         <div class="col-md-12 col-sm-12">
                                             <div>
                                                 <!-- <img ng-src ="{{item.image}}" ng-click="model.alertText(item.explanation)" style="max-height: 150px; max-width: 150px;margin: 5px;"> -->
-                                                <img ng-src="{{item.image}}"
-                                                    style="max-height: 300px; max-width: 300px;margin: 5px;">
+                                                <img ng-src="{{item.image}}" class="hint-image">
                                             </div>
                                         </div>
                                         <div class="row">

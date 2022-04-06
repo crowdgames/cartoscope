@@ -333,9 +333,18 @@ div.jx-slider {
         left:0; */
 
     }
-
-
     
+    .modal-help-tabs{
+        font-size:0.75em !important; 
+    }
+    .modal-image-explanation{
+        font-size:0.5em !important;
+    }
+
+    .hint-image{
+        max-height: 200px !important; 
+        max-width: 200px !important;
+    }
 
     .contribution-details{
         margin-top: 50px;
@@ -487,6 +496,11 @@ margin-bottom:1em;
     color:black;
 }
 
+.help-modal{
+    width: 90%;
+    align-self: flex-start;
+}
+
 .help-modal-footer{
     justify-content: center;
     align-items: center;
@@ -496,6 +510,7 @@ margin-bottom:1em;
 .help-modal-body{
     color: black;
     border: 3px solid #9ACA3C;
+    width:95%
 }
 
 .btn-success {
@@ -516,7 +531,8 @@ margin-bottom:1em;
     border-radius: 5px 5px 0px 0px;
     display: inline-block;
     margin-right: 1%;
-    width: 15%;
+    width:15%;
+    min-width: fit-content;
     line-height:2em;
     font-family: Raleway;
     font-style: normal;
@@ -535,7 +551,6 @@ margin-bottom:1em;
 .help-tab-active{
     background-color: white;
     border: 3px solid #9ACA3C;
-    border-bottom: none;
 }
 
 .cairn-container{
@@ -546,4 +561,10 @@ margin-bottom:1em;
 .btn:hover{
     /* opacity: 0.5 !important; */
     filter: brightness(90%);
+}
+
+.hint-image{
+    max-height: 300px; 
+    max-width: 300px;
+    margin: 5px;
 }
