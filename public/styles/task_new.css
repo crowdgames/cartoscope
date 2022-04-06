@@ -360,7 +360,7 @@ div.jx-slider {
         align-items: center;
     }
 
-    .imgDiv{
+    .imgDiv, .mapDiv{
         width: 100%;
         margin-top: 20px;
         height: 250px;

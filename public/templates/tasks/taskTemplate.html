@@ -4,13 +4,13 @@
     <div class="maingame-progress-bar">
         <div class="row text-center">
             <!-- <div class="col col-lg-1"></div> -->
-            <div class="col col-xs-2 col-md-2 col-lg-2">
+            <div class="col col-xs-3 col-md-2 col-lg-2">
                 <div class="image-number">
                     <p>Image</p>
                     <h5> {{model.data.progress <= model.data.size ? model.data.progress : model.data.size }}</h5>
                 </div>
             </div>
-            <div class="col col-xs-6 col-md-7 col-lg-7">
+            <div class="col col-xs-5 col-md-7 col-lg-7">
                 <!-- Progress bar-->
                 <div ng-switch="model.userType" ng-if="!model.showFlightPath">
 
