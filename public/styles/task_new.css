@@ -430,7 +430,7 @@ div.jx-slider {
     width: 100%; */
     margin-top: 5px;
     border-radius: 10px;
-    margin: 18px auto;
+    margin: 18px;
     text-align: center;
     width :100%;
     height: 23px;
@@ -510,7 +510,7 @@ margin-bottom:1em;
 .help-modal-body{
     color: black;
     border: 3px solid #9ACA3C;
-    width:95%
+    width:91%
 }
 
 .btn-success {
@@ -564,7 +564,7 @@ margin-bottom:1em;
 }
 
 .hint-image{
-    max-height: 300px; 
-    max-width: 300px;
+    max-height: 50%; 
+    width: 50%;
     margin: 5px;
 }
