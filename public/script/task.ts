@@ -404,7 +404,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           let graphcairn = document.getElementById("cairn-sidebar-header");
           
           if (vm.startgraph == 0) {
-              vm.graphcairnbar = document.createElement("p");
+              vm.graphcairnbar = document.createElement("div");
               vm.graphcairnbar.setAttribute("class", "cairn-message");
               graphcairn?.insertAdjacentElement("afterend", vm.graphcairnbar);
               vm.startgraph = 1;
@@ -439,10 +439,9 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   //     else vm.graphcairnbar.innerText += i > (10 - ratio) ? black_square : red_square;
                   // }
                   vm.graphcairnbar.innerHTML = "";
-                  vm.graphcairnbar.innerHTML += "<div id=\"progress\">\n" +
-                      " <progress max=\"100\" value=\"22\" class=\"progressBar1\" style='background : green'></progress>\n" +
-                      "<div class=\"progressText\">22% Done</div>\n" +
-                      "</div>";
+                  vm.graphcairnbar.innerHTML += "<div style=\"float: left; color: green\">YES</div><div id=\"progress\">" +
+                      " <progress max=\"100\" value=\"22\" class=\"progressBar1\"></progress>\n" +
+                      "</div><div style=\"float: right; color: red\">NO</div>";
                   $('#progress .progressBar1').val(ratio);
               }
           }
