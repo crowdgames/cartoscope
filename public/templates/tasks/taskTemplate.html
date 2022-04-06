@@ -78,14 +78,6 @@
 
         <!--MAPPING TASK MAP VIEW-->
         <div class="row" ng-if="model.data.template.selectedTaskType == 'mapping'">
-            <div id="mapQuestion">
-                <h3 class="mapQuestion text-center" style="color:black">{{model.data.template.question}}
-                    <span ng-show="model.userType === 'mTurk'" style="color: #9ACA3C;cursor: pointer;"
-                        data-target="#helpModal" data-toggle="modal"><i class="fa fa-question-circle-o"
-                            aria-hidden="true"></i></span>
-                </h3>
-
-            </div>
 
             <div id="maps" class="col-md-12 text-center">
                 <div class="col-md-6 col-xs-12 col-sm-12">
@@ -107,7 +99,7 @@
                     </ng-map>
                 </div>
 
-                <div class="col-md-6 col-xs-12 col-sm-12" style="width: auto">
+                <div class="col-md-6 col-xs-12 col-sm-12">
                     <img ng-src="{{model.getNextTask()}}" ng-click="model.showBiggerImg()" class="imgDiv" />
                 </div>
 
@@ -122,11 +114,19 @@
 
             <!--</div>-->
 
+            <div id="mapQuestion" class="question">
+                <span class="mapQuestion text-center" style="color:black">{{model.data.template.question}}
+                    <span ng-show="model.userType === 'mTurk'" style="color: #9ACA3C;cursor: pointer;"
+                        data-target="#helpModal" data-toggle="modal"><i class="fa fa-question-circle-o"
+                            aria-hidden="true"></i></span>
+                </span>
+
+            </div>
 
 
 
-            <nav class="navbar navbar-fixed-bottom navbar-bottom" ng-if="model.data.template.selectedTaskType == 'mapping'">
-                <div class="container text-center" style="padding: 0;width: 100%;">
+            <div class="row" ng-if="model.data.template.selectedTaskType == 'mapping'">
+                <div class="container text-center" style="margin-top:1em; padding: 0;width: 100%;">
 
                     <div class="bottom-panel">
                         <div class="row" ng-if="model.data.template.selectedTaskType == 'mapping'">
@@ -154,7 +154,7 @@
                     </div>
                 </div>
 
-            </nav>
+            </div>
 
 
         </div>
