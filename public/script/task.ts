@@ -991,12 +991,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
       function getFullIframeTutorial(x,y,zoom){
 
-        console.log("TUTORIAL NGS")
-
-        console.log(x)
-        console.log(y)
-        console.log(zoom)
-
         var link = vm.data.image_source;
         var zoom = vm.defZoom;
         var url = link + '#' + zoom + '/'+  x + '/' + y;
