@@ -315,24 +315,27 @@ div.jx-slider {
     .done-button{
         background-color:#9ACA3C;
         text-transform: uppercase;
-        margin-top:0;
+        margin-top:0px !important;
         top:0;
         right:0;
         left:0;
         position: fixed;
-        margin-bottom: 300px;
+        margin-bottom: 20px;
         height: 50px;
         width: 100%;
         font-weight: bolder;
     }
 
-    .parent-view .task-body {
-        position: fixed;
-        top:60px;
+    .task-body {
+        margin-top: 60px;
+        margin-bottom: 5px;
         /* right:0;
         left:0; */
 
     }
+
+
+    
 
     .contribution-details{
         margin-top: 50px;
@@ -396,7 +399,6 @@ div.jx-slider {
     text-align: center;
 }
 .task-body .maingame-body {
-    overflow: hidden;
     padding: 10px;
     font-size: 15px;
     border-bottom-left-radius: 5px;
