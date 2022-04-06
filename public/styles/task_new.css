@@ -150,6 +150,21 @@ button:hover{
     background-color: #EDE9E8;
 }
 
+.hint-button{
+    margin-top: 5px;
+    text-transform: capitalize;
+    padding-left: 20px;
+    padding-right: 20px;
+    border-radius: 0.75em;
+    background-color:white;
+    color: black;
+    border: none;
+}
+
+.hint-button:hover{
+    background-color: #EDE9E8;
+}
+
 .options:hover {
     background-color: #EDE9E8;
     /*border: 5px #9ACA3C solid;*/
@@ -309,6 +324,14 @@ div.jx-slider {
         height: 50px;
         width: 100%;
         font-weight: bolder;
+    }
+
+    .parent-view .task-body {
+        position: fixed;
+        top:60px;
+        /* right:0;
+        left:0; */
+
     }
 
     .contribution-details{
