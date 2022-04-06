@@ -4,13 +4,13 @@
     <div class="maingame-progress-bar">
         <div class="row text-center">
             <!-- <div class="col col-lg-1"></div> -->
-            <div class="col col-xs-2 col-md-2 col-lg-2">
+            <div class="col col-xs-3 col-md-2 col-lg-2">
                 <div class="image-number">
                     <p>Image</p>
                     <h5> {{model.data.progress <= model.data.size ? model.data.progress : model.data.size }}</h5>
                 </div>
             </div>
-            <div class="col col-xs-6 col-md-7 col-lg-7">
+            <div class="col col-xs-5 col-md-7 col-lg-7">
                 <!-- Progress bar-->
                 <div ng-switch="model.userType" ng-if="!model.showFlightPath">
 
@@ -30,7 +30,7 @@
             </div>
 
             <div ng-switch="model.userType" class="col col-xs-4 col-md-3 col-lg-3 pull-right">
-                <button ng-switch-when="kiosk" class="btn btn-default btn-secondary done-button"
+                <button ng-switch-when="kiosk" class="btn btn-default btn-secondary hint-button"
                     ng-click="showHelpHintModal()" style="height: 45px;">Help</button>
 
                 <button ng-switch-when="mTurk" class="btn btn-default btn-secondary done-button"
@@ -605,14 +605,14 @@
                             &times;
                         </button>
                     </div>
-                    <div class="modal-body" style="padding: 2em 7em;">
+                    <div class="modal-body" >
                         <center>
-                            <div class="help-modal" style="width: 100%;align-self: flex-start;">
+                            <div class="help-modal" style="">
                                 <div class="{{helpHintModalActiveTab === option.text  ? 'modal-help-tabs help-tab-active' : 'modal-help-tabs help-tabs'}}"
                                     ng-repeat="option in model.data.template.options"
                                     ng-click="showTutorial(option.text)">
 
-                                    <span> {{option.text}} </span>
+                                    <span style="padding:10px;"> {{option.text}} </span>
 
                                 </div>
 
@@ -629,8 +629,7 @@
                                         <div class="col-md-12 col-sm-12">
                                             <div>
                                                 <!-- <img ng-src ="{{item.image}}" ng-click="model.alertText(item.explanation)" style="max-height: 150px; max-width: 150px;margin: 5px;"> -->
-                                                <img ng-src="{{item.image}}"
-                                                    style="max-height: 300px; max-width: 300px;margin: 5px;">
+                                                <img ng-src="{{item.image}}" class="hint-image">
                                             </div>
                                         </div>
                                         <div class="row">

@@ -150,6 +150,21 @@ button:hover{
     background-color: #EDE9E8;
 }
 
+.hint-button{
+    margin-top: 5px;
+    text-transform: capitalize;
+    padding-left: 20px;
+    padding-right: 20px;
+    border-radius: 0.75em;
+    background-color:white;
+    color: black;
+    border: none;
+}
+
+.hint-button:hover{
+    background-color: #EDE9E8;
+}
+
 .options:hover {
     background-color: #EDE9E8;
     /*border: 5px #9ACA3C solid;*/
@@ -300,15 +315,35 @@ div.jx-slider {
     .done-button{
         background-color:#9ACA3C;
         text-transform: uppercase;
-        margin-top:0;
+        margin-top:0px !important;
         top:0;
         right:0;
         left:0;
         position: fixed;
-        margin-bottom: 300px;
+        margin-bottom: 20px;
         height: 50px;
         width: 100%;
         font-weight: bolder;
+    }
+
+    .task-body {
+        margin-top: 60px;
+        margin-bottom: 5px;
+        /* right:0;
+        left:0; */
+
+    }
+    
+    .modal-help-tabs{
+        font-size:0.75em !important; 
+    }
+    .modal-image-explanation{
+        font-size:0.5em !important;
+    }
+
+    .hint-image{
+        max-height: 200px !important; 
+        max-width: 200px !important;
     }
 
     .contribution-details{
@@ -337,7 +372,7 @@ div.jx-slider {
         align-items: center;
     }
 
-    .imgDiv{
+    .imgDiv, .mapDiv{
         width: 100%;
         margin-top: 20px;
         height: 250px;
@@ -367,7 +402,6 @@ div.jx-slider {
     text-align: center;
 }
 .task-body .maingame-body {
-    overflow: hidden;
     padding: 10px;
     font-size: 15px;
     border-bottom-left-radius: 5px;
@@ -396,7 +430,7 @@ div.jx-slider {
     width: 100%; */
     margin-top: 5px;
     border-radius: 10px;
-    margin: 18px auto;
+    margin: 18px;
     text-align: center;
     width :100%;
     height: 23px;
@@ -438,11 +472,10 @@ color: #221D1B;
     font-family: Raleway;
 font-style: normal;
 font-weight: 500;
-font-size: 20px;
+font-size: 1.05em;
 line-height: 1.5;
 color: #221D1B;
-width:550px;
-height:200px;
+width:85%;
 text-align:center;
 margin-bottom:1em;
 }
@@ -453,6 +486,7 @@ margin-bottom:1em;
 
 .help-modal-title{
     font-weight: 700;
+    font-size: 2em;
 }
 .modal-header {
     padding: 25px;
@@ -460,6 +494,11 @@ margin-bottom:1em;
 
 .btnTextBlack{
     color:black;
+}
+
+.help-modal{
+    width: 90%;
+    align-self: flex-start;
 }
 
 .help-modal-footer{
@@ -471,6 +510,7 @@ margin-bottom:1em;
 .help-modal-body{
     color: black;
     border: 3px solid #9ACA3C;
+    width:91%
 }
 
 .btn-success {
@@ -491,12 +531,13 @@ margin-bottom:1em;
     border-radius: 5px 5px 0px 0px;
     display: inline-block;
     margin-right: 1%;
-    width: 15%;
+    width:15%;
+    min-width: fit-content;
     line-height:2em;
     font-family: Raleway;
     font-style: normal;
     font-weight: bold;
-    font-size: 24px;
+    font-size: 1.5em;
     align-items: center;
     text-align: center;
     cursor: pointer;
@@ -510,7 +551,6 @@ margin-bottom:1em;
 .help-tab-active{
     background-color: white;
     border: 3px solid #9ACA3C;
-    border-bottom: none;
 }
 
 .cairn-container{
@@ -521,4 +561,10 @@ margin-bottom:1em;
 .btn:hover{
     /* opacity: 0.5 !important; */
     filter: brightness(90%);
+}
+
+.hint-image{
+    max-height: 50%; 
+    width: 50%;
+    margin: 5px;
 }
