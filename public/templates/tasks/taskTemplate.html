@@ -335,7 +335,7 @@
                     ng-src="{{model.getNextTask()}}" ng-click="model.showBiggerImg()">
                 <h2 id="cairn-header" ng-show="showCairnElements"> Would you like to leave something for another player?
                 </h2>
-                <div ng-show="showPhysics">
+                <div ng-if="showPhysics">
                     <div class="container-fluid">
                         <br><br>
                         <div class="row" ng-show="showEmoji" id="emoji-picker">
@@ -627,9 +627,13 @@
                                 <div  ng-repeat="item in model.tutorial">
                                     <div class="row">
                                         <div class="col-md-12 col-sm-12">
-                                            <div>
+                                            <div ng-if="model.data.template.selectedTaskType != 'ngs'">
                                                 <!-- <img ng-src ="{{item.image}}" ng-click="model.alertText(item.explanation)" style="max-height: 150px; max-width: 150px;margin: 5px;"> -->
                                                 <img ng-src="{{item.image}}" class="hint-image">
+                                            </div>
+                                            <div ng-if="model.data.template.selectedTaskType == 'ngs'">
+                                                <!-- <img ng-src ="{{item.image}}" ng-click="model.alertText(item.explanation)" style="max-height: 150px; max-width: 150px;margin: 5px;"> -->
+                                                <iframe id="iframe_div3" class="iframeDiv" ng-src="{{model.getFullIframeTutorial(item.lat,item.lng,item.zoom)}}"></iframe>
                                             </div>
                                         </div>
                                         <div class="row">
