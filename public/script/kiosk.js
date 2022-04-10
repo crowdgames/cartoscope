@@ -3010,6 +3010,8 @@ module.controller('hubProjectController', ['$window','$scope','$location','$stat
         $scope.showConsentMturk = false;
         $scope.isMturk = false;
         $scope.hit_id = "kiosk";
+        $scope.showVideo = false;
+        
 
         $scope.show_start_button = false;
 
@@ -3106,6 +3108,10 @@ module.controller('hubProjectController', ['$window','$scope','$location','$stat
             $scope.hub_url = $scope.hub_data.url_name;
             $scope.show_start_button = true;
             $scope.cover_pic = 'default'; //TODO: this should come from hub
+            $scope.video_url = $sce.trustAsResourceUrl($scope.hub_data.video_url)
+            if ($scope.video_url){
+                $scope.showVideo = true;
+            }
 
             //Get the creator name from the collaborators:
             //get collaborator info from db, using the first available subproject

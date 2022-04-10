@@ -145,6 +145,7 @@ CREATE TABLE `hub_projects` (
   `name` varchar(512) DEFAULT NULL,
   `description` varchar(2048) DEFAULT NULL,
   `url_name` varchar(512) DEFAULT NULL,
+  `video_url` varchar(2048) DEFAULT NULL,
   `hub_unique_code` varchar(255) DEFAULT NULL,
   `published` int(11) DEFAULT '0',
   `external_sign_up` text,
