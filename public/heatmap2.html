@@ -76,7 +76,7 @@
                     </div>
                     <div class="col col-lg-6  contributions_options">
                         <h5><strong>Everyone's Contributions</strong></h5>
-                        <div class="options_contributions" ng-repeat="itm in legendObject">{{itm.key}}</div>
+                        <div class="options_contributions" style="color: #000; background-color: {{itm.color}};border-color: {{itm.color}};" ng-repeat="itm in options">{{itm.name}}</div>
                     </div>
                 </div>
                 
@@ -88,7 +88,7 @@
                 <div class="col-lg-2 col-md-2"></div>
                 <div ng-hide="showMarkers" class="col-lg-8 col-md-8 col-sm-12 col-xs-12 contributions_options">
                     <button class="btn btn-lg black btn-primary" placeholder="Option" ng-repeat="option in options"
-                            style=" color: #000; background-color: {{option.color}};border-color: {{option.color}};
+                            style="color: #000; background-color: {{option.color}};border-color: {{option.color}};
                        border:2px solid {{option.color}};margin-right:10px;" ng-click="update_heatmap(option.ncolor,'map1');">{{option.name}}</button>
                     <!--<button class="btn-lg black" placeholder="Show All"-->
                             <!--style=" background-color: #FF69B4; border-color: #FF69B4;-->
