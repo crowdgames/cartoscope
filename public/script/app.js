@@ -40,7 +40,7 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
 
     $stateProvider.state({
         name: 'login',
-        url: '/login',
+        url: '/{path:login|UserProfile.html#/login}',
         templateUrl: 'logon.html',
         controller: 'loginController'
     });
@@ -826,10 +826,6 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
     }
   });
 
-  
-
-
-
   $urlRouterProvider.otherwise('/home');
 });
 
@@ -843,7 +839,7 @@ module.controller('appController', ['$scope', '$http', 'userData', '$window', fu
   $scope.logout = function() {
     $http.get('/api/logout').then(function() {
       //window.location = '/';
-        window.location.href='/login';
+        $window.location.href='#/login';
     }, function() {
       alert('Couldn\'t sign you out');
     });
@@ -3199,18 +3195,19 @@ module.factory('swalService', function() {
 
 // login module
 
-module.controller('loginController', ['$scope', '$http', '$state',
-    function($scope, $http,$state) {
+module.controller('loginController', ['$scope', '$http', '$state', '$window',
+    function($scope, $http,$state,$window) {
 
     $scope.userRegData = {};
     $scope.loginData = {};
 
     $scope.checkLogin = function() {
         $http.get('/api/user').then(function(response) {
-             window.location.replace('/UserProfile.html');
+          $window.location.href = '#/UserProfile.html';
             //window.location.replace('/userProfile/showAllProjects.html');
-        }, function(response) {
-
+        }).catch(function(response) {
+          //$window.location.href = "#/login";
+          //$window.location.reload();
         });
     };
     $scope.checkLogin();
