@@ -230,7 +230,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       }
 
       vm.nextCairnToShow = cairnTypes.none;
-      vm.showGraph = true;
+      vm.showGraph = false;
       vm.handleCairns = () => {
           console.assert(vm.cairnState === cairnState.noCairn, "cairn state is not noCairn, despite the main task showing");
           let cairnMode  = cairnTypes.none;
@@ -439,11 +439,11 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   //     else vm.graphcairnbar.innerText += i > (10 - ratio) ? black_square : red_square;
                   // }
                   vm.graphcairnbar.innerHTML = "";
-                  vm.graphcairnbar.innerHTML += `<div class="w3-border">
+                  vm.graphcairnbar.innerHTML += `<div style="min-height: 4.4em;"><div style="text-align: left; color: green;">YES</div><div class="w3-border">
                   <div id="myBar" class="w3-container w3-padding w3-green" style="width:${ratio}%">
                         <div class="w3-center" id="demo">${ratio}%</div>
                   </div>
-                </div>`;
+                </div> <div style="float: right; color: red">NO</div></div>`;
               }
           }
 
