@@ -37,3 +37,7 @@
 button:hover {
     opacity: 0.5;
 }
+
+button{
+    white-space: normal !important;
+}
