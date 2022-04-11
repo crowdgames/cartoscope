@@ -153,3 +153,25 @@ progress:after {
   content: attr(value) '%';
   color:black;
 }
+
+
+.w3-border {
+  background:red;
+  border-radius:50px;
+}
+
+.w3-green, .w3-hover-green:hover {
+  color: #fff !important;
+  background-color: #4CAF50 !important;
+  border: 2px solid #4CAF50 !important;
+  border-radius:50px;
+}
+.w3-padding {
+  padding: 8px 16px !important;
+}
+.w3-container, .w3-panel {
+  padding: 0.01em 16px;
+}
+.w3-center{
+ text-align:right; 
+}

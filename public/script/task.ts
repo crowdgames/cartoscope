@@ -230,7 +230,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       }
 
       vm.nextCairnToShow = cairnTypes.none;
-      vm.showGraph = false;
+      vm.showGraph = true;
       vm.handleCairns = () => {
           console.assert(vm.cairnState === cairnState.noCairn, "cairn state is not noCairn, despite the main task showing");
           let cairnMode  = cairnTypes.none;
@@ -421,7 +421,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               graphcairn!.innerText = "You were one of the first ones to vote on this image!";
               vm.graphcairnbar.innerText = "";
           }
-          else {
+          else if (vm.countyes+vm.countno <= 0) {
               graphcairn!.innerText = "How others voted for this image!";
               let ratio = Math.round(vm.countyes/(vm.countyes+vm.countno)*100);
               if(vm.startgraph == 1) {
@@ -439,10 +439,11 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   //     else vm.graphcairnbar.innerText += i > (10 - ratio) ? black_square : red_square;
                   // }
                   vm.graphcairnbar.innerHTML = "";
-                  vm.graphcairnbar.innerHTML += "<div style=\"float: left; color: green\">YES</div><div id=\"progress\">" +
-                      " <progress max=\"100\" value=\"22\" class=\"progressBar1\"></progress>\n" +
-                      "</div><div style=\"float: right; color: red\">NO</div>";
-                  $('#progress .progressBar1').val(ratio);
+                  vm.graphcairnbar.innerHTML += `<div class="w3-border">
+                  <div id="myBar" class="w3-container w3-padding w3-green" style="width:${ratio}%">
+                        <div class="w3-center" id="demo">${ratio}%</div>
+                  </div>
+                </div>`;
               }
           }
 
