@@ -19,7 +19,7 @@
 
 
     <div class="row">
-        <h3>Contributions So Far</h3>
+        <!-- <h3>Contributions So Far</h3> -->
 
         <p> Below you can see how
             you and other people have contributed to the project. The heatmap visualization corresponds to everyone's contributions.
@@ -65,6 +65,7 @@
 
            
         </div>
+    </div>
         
         <div class="row legend_contributions_dataset"> 
             <div class="legend_contributions">
@@ -72,18 +73,18 @@
                 <div class="row" style="margin-top:-1em; margin-left: -5em;">
                     <div class="col col-lg-6 contributions_options">
                         <h5><strong>My Contributions</strong></h5>
-                        <div ng-repeat="itm in legendObject" style="margin-left: -5em;"><img src="{{itm.image}}" > {{itm.key}}</div>
+                        <div ng-repeat="itm in legendObject" style="margin-left: -5em; "><img src="{{itm.image}}" > {{itm.key}}</div>
                     </div>
                     <div class="col col-lg-6  contributions_options">
                         <h5><strong>Everyone's Contributions</strong></h5>
-                        <div class="options_contributions" style="color: #000; background-color: {{itm.color}};border-color: {{itm.color}};" ng-repeat="itm in options">{{itm.name}}</div>
+                        <div class="options_contributions" style=" color: #000; background-color: {{itm.color}};border-color: {{itm.color}};" ng-repeat="itm in options">{{itm.name}}</div>
                     </div>
                 </div>
                 
             </div>
             <div class="change_dataset" ng-if="callSuccess">
     
-                    <h3 class="" style=" text-transform: none">Change Dataset</h3>
+                    <h3 class="" style=" text-transform: none">Change Category</h3>
     
                 <div class="col-lg-2 col-md-2"></div>
                 <div ng-hide="showMarkers" class="col-lg-8 col-md-8 col-sm-12 col-xs-12 contributions_options">
