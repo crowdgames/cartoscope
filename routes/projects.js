@@ -18,9 +18,9 @@ var anonUserDB = require('../db/anonUser');
 var userDB = require('../db/user');
 var hubProjectDB = require('../db/hubProject');
 
-var mmm = require('mmmagic');
-var Magic = mmm.Magic;
-var magic = new Magic(mmm.MAGIC_MIME_TYPE);
+// var mmm = require('mmmagic');
+// var Magic = mmm.Magic;
+// var magic = new Magic(mmm.MAGIC_MIME_TYPE);
 
 var isValidImage = require('../constants/imageMimeTypes').validMimeTypes;
 var Promise = require('bluebird');
@@ -415,14 +415,9 @@ router.post('/add', [fupload.single('file'), filters.requireLogin, filters.requi
       filename = req.file.filename;
         // console.log('file '+ filename);
 
-      magic.detectFile(req.file.path, function(err, result) {
-        if (err) {
-            console.log('result err'+ err);
-            res.status(500).send({error: 'problem with the uploaded image, please try again'});
-          fs.unlink(req.file.path);
-        }
+      
         
-        if (isValidImage(result)) {
+        
           fs.renameSync(req.file.path, 'profile_photos/' + filename);
           generateUniqueProjectCode().then(function(projectCode) {
             projectDB.addProject(body.name, req.session.passport.user.id, body.description, filename, projectCode,body.short_name,body.short_name_friendly, body.short_description,
@@ -435,13 +430,7 @@ router.post('/add', [fupload.single('file'), filters.requireLogin, filters.requi
                 res.status(500).send({error: err.code});
               });
           });
-          
-        } else {
-            console.log(err);
-            res.status(500).send({error: 'problem with the uploaded image, please try again'});
-          fs.unlink(req.file.path);
-        }
-      });
+               
       
     } else {
       generateUniqueProjectCode().then(function(projectCode) {
@@ -516,13 +505,8 @@ router.post('/updateDescriptionName',
             filename = req.files[0].filename;
             // console.log('file '+ filename);
 
-            magic.detectFile(req.files[0].path, function(err, result) {
-                if (err) {
-                    console.log('result err' + err);
-                    res.status(500).send({error: 'problem with the uploaded image, please try again'});
-                    fs.unlink(req.files[0].path);
-                }
-                if (isValidImage(result)) {
+           
+                
                     fs.renameSync(req.files[0].path, 'profile_photos/' + filename);
 
                     projectDB.updateDescriptionName(req.body.projectID, req.body.description,req.body.name,req.body.short_name, req.body.short_name_friendly,req.body.short_description,req.body.is_inaturalist,filename).then(function(data) {
@@ -535,10 +519,9 @@ router.post('/updateDescriptionName',
                         console.log(err);
                         res.status(500).send({'error': err.code});
                     });
-                }
+                
 
 
-            })
         } else {
 
             projectDB.updateDescriptionName(req.body.projectID, req.body.description,req.body.name,req.body.short_name, req.body.short_name_friendly,req.body.short_description,req.body.is_inaturalist,filename).then(function(data) {
@@ -570,14 +553,10 @@ router.post('/updateProjectInfoMain', [fupload.single('file'), filters.requireLo
             console.log(filename)
             // console.log('file '+ filename);
 
-            magic.detectFile(req.file.path, function(err, result) {
-                if (err) {
-                    console.log('result err'+ err);
-                    res.status(500).send({error: 'problem with the uploaded image, please try again'});
-                    fs.unlink(req.file.path);
-                }
+            
+               
 
-                if (isValidImage(result)) {
+                
                     fs.renameSync(req.file.path, 'profile_photos/' + filename);
                     projectDB.updateDescriptionName(req.body.projectID, req.body.description,req.body.name,req.body.short_name, req.body.short_name_friendly,
                         req.body.short_description,req.body.is_inaturalist,filename,body.scistarter_link,body.external_sign_up).
@@ -588,13 +567,7 @@ router.post('/updateProjectInfoMain', [fupload.single('file'), filters.requireLo
                             res.status(500).send({error: 'Project not found'});
                         }
                     })
-
-                } else {
-                    console.log(err);
-                    res.status(500).send({error: 'problem with the uploaded image, please try again'});
-                    fs.unlink(req.file.path);
-                }
-            });
+        
 
         } else {
             projectDB.updateDescriptionName(req.body.projectID, req.body.description,req.body.name,req.body.short_name,

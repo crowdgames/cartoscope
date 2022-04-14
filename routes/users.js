@@ -3,14 +3,14 @@ var userDB = require('../db/user');
 var projectDB = require('../db/project');
 var hubProjectDB = require('../db/hubProject');
 
-var mmm = require('mmmagic');
 var router = express.Router();
 var multer = require('multer');
 var validator = require('validator');
 var fs = require('fs');
 var isValidImage = require('../constants/imageMimeTypes').validMimeTypes;
-var Magic = mmm.Magic;
-var magic = new Magic(mmm.MAGIC_MIME_TYPE);
+// var mmm = require('mmmagic');
+// var Magic = mmm.Magic;
+// var magic = new Magic(mmm.MAGIC_MIME_TYPE);
 var path = require('path');
 var filters = require('../constants/filters');
 
@@ -126,21 +126,12 @@ router.post('/add', upload.any(), function(req, res, next) {
     filename = req.files[0].filename;
       console.log('filename ', filename);
 
-    magic.detectFile(req.files[0].path, function(err, result) {
-      if (err) {
-        res.status(500).send({error: 'problem with the uploaded image, please try again'});
-        fs.unlink(req.files[0].path);
-      }
-
-      if (isValidImage(result)) {
+  
         console.log('result ', result);
         fs.renameSync(req.files[0].path, 'profile_photos/' + filename);
         addToDB(body, filename, res);
-      } else {
-        res.status(500).send({error: 'problem with the uploaded image, please try again'});
-        fs.unlink(req.files[0].path);
-      }
-    });
+      
+ 
   } else {
     addToDB(body, filename, res);
   }
@@ -197,21 +188,15 @@ router.post('/editUser', upload.any(), filters.requireLogin, function(req, res, 
         filename = req.files[0].filename;
         console.log('filename ', filename);
 
-        magic.detectFile(req.files[0].path, function(err, result) {
-            if (err) {
-                res.status(500).send({error: 'problem with the uploaded image, please try again'});
-                fs.unlink(req.files[0].path);
-            }
+        
+            
 
-            if (isValidImage(result)) {
+          
                 console.log('result ', result);
                 fs.renameSync(req.files[0].path, 'profile_photos/' + filename);
                 updateToDB(body, filename, res);
-            } else {
-                res.status(500).send({error: 'problem with the uploaded image, please try again'});
-                fs.unlink(req.files[0].path);
-            }
-        });
+           
+       
     } else {
         updateToDB(body, filename, res);
     }
