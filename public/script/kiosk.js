@@ -2639,7 +2639,7 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                             ? `../../images/Tutorials/${item.image_annotation}`
                             : `../../images/Tutorials/${vm.params.project}/${item.image_annotation}`;
                     } else {
-                        it_anot = 0
+                        it_annot = 0
                     }
 
                     var obj = {
