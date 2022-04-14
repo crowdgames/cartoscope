@@ -2634,7 +2634,7 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                     }
                     var it_annot = tutpath + item.image_name;
                     //if an annotated image is available, we should show that after they pick the right answer. Otherwise, keep showing the same image
-                    if (item.image_annotation != 0){
+                    if (item.image_annotation){
                         it_annot = item.image_annotation.includes("/")
                             ? `../../images/Tutorials/${item.image_annotation}`
                             : `../../images/Tutorials/${vm.params.project}/${item.image_annotation}`;
