@@ -79,12 +79,13 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
       //Get all public projects:
       $http({
         method: 'GET',
-        url: '/api/project/getProjects/public'
+        url: '/api/hub/getAllHubProjectsPublic'
       }).then(function successCallback(response) {
         $scope.projects = response.data;
+        console.log($scope.projects)
 
         //Filter out archived, unpublished and private projects:
-        $scope.projects = $scope.projects.filter(function(project) { return (project.archived === 0 && project.published === 1 && project.access_type === 0)});
+        $scope.projects = $scope.projects.filter(function(project) { return (project.published === 1 && project.access_type === 1)});
       }, function errorCallback(response) {
         $scope.projects = [];
       });
@@ -109,7 +110,7 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
 
       //Go to project subpage
       $scope.goToProject = function(code) {
-          $window.location.href = '/kioskProject.html#/kioskStart/' + code;
+          $window.location.href = '/hub/' + code;
         };
 
       window.makeLinkActive = function(link){
@@ -2415,9 +2416,9 @@ module.controller('hubStepOneController', ['$scope', '$state', '$http', 'swalSer
     });
 
     $scope.validate = function() {
-      if (!$scope.hub.name || !$scope.hub.description || !$scope.hub.url_name) {
+      if (!$scope.hub.name || !$scope.hub.description || !$scope.hub.url_name || !$scope.hub.short_description) {
         $scope.showErr = true;
-        swalService.showErrorMsg('Please enter a name, a url name and description for the  hub project.');
+        swalService.showErrorMsg('Please enter a name, a url name and descriptions for the  hub project.');
       } else if (  invalid_characters.some(el => $scope.hub.url_name.includes(el))) {
           $scope.showErr = true;
           swalService.showErrorMsg('URL shortcut cannot contain the following characters: \n' + invalid_characters.join(','));
@@ -2443,6 +2444,8 @@ module.controller('hubStepOneController', ['$scope', '$state', '$http', 'swalSer
         }
         fd.append('name', $scope.hub.name);
         fd.append('description', $scope.hub.description);
+        fd.append('short_description', $scope.hub.short_description);
+
           fd.append('url_name', $scope.hub.url_name);
           if ($scope.has_external_signup){
               fd.append('external_sign_up', $scope.hub.external_sign_up);
@@ -2803,7 +2806,7 @@ module.controller('hubStepOneController', ['$scope', '$state', '$http', 'swalSer
     });
 
     $scope.validate = function() {
-      if (!$scope.hub.name || !$scope.hub.description || !$scope.hub.url_name) {
+      if (!$scope.hub.name || !$scope.hub.description || !$scope.hub.short_description || !$scope.hub.url_name) {
         $scope.showErr = true;
         swalService.showErrorMsg('Please enter a name, a url name and description for the  hub project.');
       } else if (  invalid_characters.some(el => $scope.hub.url_name.includes(el))) {
@@ -2830,6 +2833,7 @@ module.controller('hubStepOneController', ['$scope', '$state', '$http', 'swalSer
         fd.append('hub_unique_code', $scope.hub.hub_unique_code);
         fd.append('name', $scope.hub.name);
         fd.append('description', $scope.hub.description);
+        fd.append('short_description', $scope.hub.short_description);
         fd.append('url_name', $scope.hub.url_name);
           if ($scope.has_external_signup){
               fd.append('external_sign_up', $scope.hub.external_sign_up);
