@@ -254,7 +254,7 @@ app.get('/landloss', function(req, res) {
     // var link = "kioskProject.html#/kioskStart/" + project_code;
     // res.redirect('./' + link); // send to project page
 
-    res.redirect('https://cartosco.pe/api/trials/cairns_2008_l/kiosk_landloss');
+    res.redirect('https://cartosco.pe/hub/landloss2016');
 
 });
 
