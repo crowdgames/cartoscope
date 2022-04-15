@@ -4,12 +4,12 @@
  var path = require('path');
  var databaseName = process.env.CARTO_DB_NAME;
 
-exports.addHubProject = function(name, userID, desc, short_desc, picID, uniqueCode, url_name,external_sign_up) {
+exports.addHubProject = function(name, userID, desc, short_desc, picID, uniqueCode, url_name,external_sign_up,scistarter_link) {
     return new Promise(function(resolve, reject) {
   
       var connection = db.get();
-      connection.queryAsync('INSERT INTO hub_projects (name,creatorID,description,short_description,cover_pic,hub_unique_code,url_name,external_sign_up) VALUES(?,?,?,?,?,?,?,?)',
-        [name, userID, desc,short_desc, picID, uniqueCode,url_name,external_sign_up]).then(
+      connection.queryAsync('INSERT INTO hub_projects (name,creatorID,description,short_description,cover_pic,hub_unique_code,url_name,external_sign_up,scistarter_link) VALUES(?,?,?,?,?,?,?,?,?)',
+        [name, userID, desc,short_desc, picID, uniqueCode,url_name,external_sign_up,scistarter_link]).then(
         function(result) {
           resolve(result);
         }).catch(function(err) {
@@ -18,11 +18,11 @@ exports.addHubProject = function(name, userID, desc, short_desc, picID, uniqueCo
     });
   };
 
-  exports.editHubProject = function(name, desc, short_description,picID, uniqueCode, url_name,external_sign_up) {
+  exports.editHubProject = function(name, desc, short_description,picID, uniqueCode, url_name,external_sign_up,scistarter_link) {
     return new Promise(function(resolve, reject) {
       var connection = db.get();
-      connection.queryAsync('update hub_projects set name=? , description=?, short_description=?, cover_pic=?, url_name=?, external_sign_up=? where hub_unique_code=?',
-        [name, desc,short_description, picID,url_name,external_sign_up,uniqueCode]).then(
+      connection.queryAsync('update hub_projects set name=? , description=?, short_description=?, cover_pic=?, url_name=?, external_sign_up=?, scistarter_link=? where hub_unique_code=?',
+        [name, desc,short_description, picID,url_name,external_sign_up,scistarter_link,uniqueCode]).then(
         function(result) {
           resolve(result);
         }).catch(function(err) {

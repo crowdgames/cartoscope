@@ -2406,10 +2406,15 @@ module.controller('hubStepOneController', ['$scope', '$state', '$http', 'swalSer
 
     var invalid_characters = ['\\','/',':','?','\"','<','>','|'];
     $scope.has_external_signup = false;
+    $scope.has_scistarter = false;
 
     if ($scope.hub.hasOwnProperty("external_sign_up")){
         $scope.has_external_signup = true;
     }
+
+    if ($scope.hub.hasOwnProperty("external_sign_up")){
+      $scope.has_scistarter = true;
+  }
 
     $scope.$on('validate', function(e) {
       $scope.validate();
@@ -2425,7 +2430,10 @@ module.controller('hubStepOneController', ['$scope', '$state', '$http', 'swalSer
       } else if ($scope.has_external_signup && ($scope.hub.external_sign_up === "" || !$scope.hub.external_sign_up)){
           $scope.showErr = true;
           swalService.showErrorMsg('Please enter valid URL for external signup form.');
-      }
+      } else if ($scope.has_scistarter && ($scope.hub.scistarter_link === "" || !$scope.hub.scistarter_link)){
+        $scope.showErr = true;
+        swalService.showErrorMsg('Please enter valid URL for scostarter form.');
+    }
 
       else {
         $scope.createHubProject();
@@ -2450,6 +2458,9 @@ module.controller('hubStepOneController', ['$scope', '$state', '$http', 'swalSer
           if ($scope.has_external_signup){
               fd.append('external_sign_up', $scope.hub.external_sign_up);
           }
+          if ($scope.has_scistarter){
+            fd.append('scistarter_link', $scope.hub.scistarter_link);
+        }
 
           var link = '/api/hub/add'
           $http.post(link, fd, {
@@ -2796,10 +2807,14 @@ module.controller('hubStepOneController', ['$scope', '$state', '$http', 'swalSer
     console.log(hub);
     var invalid_characters = ['\\','/',':','?','\"','<','>','|'];
     $scope.has_external_signup = false;
+    $scope.has_scistarter = false;
 
     if ($scope.hub.hasOwnProperty("external_sign_up") && $scope.hub.external_sign_up ){
         $scope.has_external_signup = true;
     }
+    if ($scope.hub.hasOwnProperty("scistarter_link") && $scope.hub.scistarter_link ){
+      $scope.has_scistarter = true;
+  }
 
     $scope.$on('validate', function(e) {
       $scope.validate();
@@ -2815,7 +2830,11 @@ module.controller('hubStepOneController', ['$scope', '$state', '$http', 'swalSer
       } else if ($scope.has_external_signup && ($scope.hub.external_sign_up === "" || !$scope.hub.external_sign_up)){
           $scope.showErr = true;
           swalService.showErrorMsg('Please enter valid URL for external signup form.');
-      }
+      } else if ($scope.has_scistarter && ($scope.hub.scistarter_link === "" || !$scope.hub.scistarter_link)){
+        $scope.showErr = true;
+        swalService.showErrorMsg('Please enter valid URL for external signup form.');
+    }
+
 
       else {
         $scope.createHubProject();
@@ -2838,6 +2857,9 @@ module.controller('hubStepOneController', ['$scope', '$state', '$http', 'swalSer
           if ($scope.has_external_signup){
               fd.append('external_sign_up', $scope.hub.external_sign_up);
           }
+          if ($scope.has_scistarter){
+            fd.append('scistarter_link', $scope.hub.scistarter_link);
+        }
 
           var link = '/api/hub/edit' 
           $http.post(link, fd, {

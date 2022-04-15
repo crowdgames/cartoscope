@@ -151,6 +151,7 @@ CREATE TABLE `hub_projects` (
   `published` int(11) DEFAULT '0',
   `access_type` int(11) DEFAULT '0',
   `external_sign_up` text,
+  `scistarter_link` text,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `last_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `project_codes` varchar(512) DEFAULT NULL,

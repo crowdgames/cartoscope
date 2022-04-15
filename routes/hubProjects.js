@@ -78,7 +78,7 @@ router.post('/add', [fupload.single('file'), filters.requireLogin, filters.requi
         if (isValidImage(result)) {
           fs.renameSync(req.file.path, 'profile_photos/' + filename);
           generateUniqueProjectCode().then(function(projectCode) {
-            hubProjectDB.addHubProject(body.name, req.session.passport.user.id, body.description,body.short_description, filename, projectCode,body.url_name,body.external_sign_up).then(
+            hubProjectDB.addHubProject(body.name, req.session.passport.user.id, body.description,body.short_description, filename, projectCode,body.url_name,body.external_sign_up,body.scistarter_link).then(
               function(result) {
                 console.log('result '+ result);
                 res.send({id: result.insertId, hub_unique_code: projectCode});
@@ -97,7 +97,7 @@ router.post('/add', [fupload.single('file'), filters.requireLogin, filters.requi
       
     } else {
       generateUniqueProjectCode().then(function(projectCode) {
-        hubProjectDB.addHubProject(body.name, req.session.passport.user.id, body.description,body.short_description, filename, projectCode,body.url_name,body.external_sign_up).then(
+        hubProjectDB.addHubProject(body.name, req.session.passport.user.id, body.description,body.short_description, filename, projectCode,body.url_name,body.external_sign_up,body.scistarter_link).then(
           function(result) {
             console.log(result)
             res.send({id: result.insertId, hub_unique_code: projectCode});
@@ -133,7 +133,7 @@ function(req, res, next) {
       
       if (isValidImage(result)) {
         fs.renameSync(req.file.path, 'profile_photos/' + filename);
-          hubProjectDB.editHubProject(body.name, body.description,body.short_description, filename, projectCode,body.url_name,body.external_sign_up).then(
+          hubProjectDB.editHubProject(body.name, body.description,body.short_description, filename, projectCode,body.url_name,body.external_sign_up,body.scistarter_link).then(
             function(result) {
               console.log('result '+ result);
               res.send({id: result.insertId, hub_unique_code: projectCode});
@@ -150,7 +150,7 @@ function(req, res, next) {
     });
     
   } else {
-      hubProjectDB.editHubProject(body.name , body.description,body.short_description, filename, projectCode,body.url_name,body.external_sign_up).then(
+      hubProjectDB.editHubProject(body.name , body.description,body.short_description, filename, projectCode,body.url_name,body.external_sign_up,body.scistarter_link).then(
         function(result) {
           console.log(result)
           res.send({id: result.insertId, hub_unique_code: projectCode});
