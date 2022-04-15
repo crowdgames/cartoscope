@@ -3011,6 +3011,7 @@ module.controller('hubProjectController', ['$window','$scope','$location','$stat
         $scope.isMturk = false;
         $scope.hit_id = "kiosk";
         $scope.showVideo = false;
+        $scope.is_scistarter = false;
         
 
         $scope.show_start_button = false;
@@ -3111,6 +3112,10 @@ module.controller('hubProjectController', ['$window','$scope','$location','$stat
             $scope.video_url = $sce.trustAsResourceUrl($scope.hub_data.video_url)
             if ($scope.video_url){
                 $scope.showVideo = true;
+            }
+            $scope.scistarter_link = $scope.hub_data.scistarter_link
+            if ($scope.scistarter_link){
+                $scope.is_scistarter = true
             }
 
             //Get the creator name from the collaborators:
