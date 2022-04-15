@@ -7,19 +7,19 @@ cartosco.pe/api/results/votesKiosk/(hitID)
 Starting an arbitrary project:
 http://cartosco.pe/kioskProject.html#/kioskStart/(projectID)
 
-Starting the current LLL project (which is currently 2008 w/ cairns):
+Starting the current LLL project (which is currently 2016):
 https://cartosco.pe/landloss
 
-Testing cairns frequency (amongst no cairns vs emojis every 40-60 images **This is the current cairns/LLL project**)
+Testing cairns frequency (amongst no cairns vs emojis every 40-60 images **This is broken due to s/e cairns being broken**)
 http://cartosco.pe/api/trials/cairns_2008_l/kiosk_landloss
 
-Testing cairns frequency (amongst [no cairns, soapstone, emojis] x [every 5-20 imgs, every 20-40, 4060]):
+Testing cairns frequency (amongst [no cairns, soapstone, emojis] x [every 5-20 imgs, every 20-40, 4060] **also broken**):
 http://cartosco.pe/api/trials/cairns_2008/kiosk_landloss
 
-Original LLL project:
+Original LLL project: (deprecated, use the hub now)
 https://cartosco.pe/kioskProject.html#/hg_landloss
 
-Webinar cairns link:
+Webinar cairns link: (redirects to 2016)
 https://cartosco.pe/api/trials/cairns_webinar/kiosk_webinar
 
 ----
