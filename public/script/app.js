@@ -2070,22 +2070,27 @@ module.controller('stepSevenController', ['$scope', '$state', '$http', 'Upload',
 
     }
 
-    $scope.fetchSurveyItems = function() {
+    $scope.fetchSurveyItems = function(code) {
 
 
-        $http.get('/api/project/surveyItems/' + $scope.project.unique_code).then(function (sdata) {
+      if(code){
+        $http.get('/api/project/surveyItems/' + code).then(function (sdata) {
 
-            var survey_items_all = JSON.parse(sdata.data.survey_form);
-            $scope.survey_questions = survey_items_all.questions;
-            console.log($scope.survey_questions)
-            $scope.parseSurveyItems(0)
-            if ($scope.survey_questions.length){
-                $scope.add_survey_text = "Update Survey";
-            }
+          var survey_items_all = JSON.parse(sdata.data.survey_form);
+          console.log(survey_items_all)
 
-        }, function () {
-            $scope.survey_questions = [];
-        });
+          $scope.survey_questions = survey_items_all.questions;
+          console.log($scope.survey_questions)
+          $scope.parseSurveyItems(0)
+          if ($scope.survey_questions.length){
+              $scope.add_survey_text = "Update Survey";
+          }
+
+      }, function () {
+          $scope.survey_questions = [];
+      });
+      }
+       
     }
 
     $scope.setSurveyItems = function() {
@@ -2123,7 +2128,29 @@ module.controller('stepSevenController', ['$scope', '$state', '$http', 'Upload',
             })
     };
 
-    $scope.fetchSurveyItems();
+    $scope.fetchProjectsWithSurveys = function() {
+      $http.get('/api/project/getCustomSurveyProjects/' + $scope.project.creatorID).then(function (sdata) {
+
+        $scope.survey_project_options = {}
+        sdata.data.forEach(function(item){
+          $scope.survey_project_options[item.unique_code] = item.name
+        })
+        $scope.survey_project_list = Object.keys($scope.survey_project_options)
+
+
+    }, function () {
+      swalService.showErrorMsg('Could not fetch projects with custom surveys!');
+    });
+
+    $scope.importProjectQuestions = function() {
+      console.log($scope.project_to_import)
+      $scope.fetchSurveyItems($scope.project_to_import);
+
+    }
+
+    }
+    $scope.fetchProjectsWithSurveys();
+    $scope.fetchSurveyItems($scope.project.unique_code);
 }]);
 
 module.controller('defaultController', ['$scope', 'userData', '$window', function($scope, userData, $window) {

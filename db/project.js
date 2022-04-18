@@ -1298,6 +1298,24 @@ exports.setSurveyType = function(unique_code,survey_type) {
     });
 };
 
+//get custom survey items from db
+exports.getCustomSurveyProjects = function(user_id) {
+  return new Promise(function(resolve, error) {
+      var connection = db.get();
+      connection.queryAsync('SELECT unique_code,name from projects WHERE creatorID=? and published=1 and survey_type="CUSTOM"',
+          [user_id]).then(
+          function(data) {
+              if (data.length > 0) {
+                  resolve(data);
+              } else {
+                  error({code: 'No survey projects found'});
+              }
+          }, function(err) {
+              error(err);
+          });
+  });
+};
+
 
 //store cairn message from Cartoscope
 exports.storeCairnMessage = function(userID, projectID, hitID, message, progress, type, time_shown_to_player, time_player_submitted, task_name) {

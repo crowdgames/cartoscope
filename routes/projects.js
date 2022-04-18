@@ -883,6 +883,17 @@ router.get('/ngsLocations/:code', function(req, res, next) {
 
 
 //get survey items from backend
+router.get('/getCustomSurveyProjects/:user_id',[filters.requireLogin], function(req, res, next) {
+
+  projectDB.getCustomSurveyProjects(req.params.user_id).then(function(data) {
+      res.send(data)
+  }).catch(function(error) {
+      res.status(400).send({error: error.body || 'Survey items could not be found for ' + req.params.uniqueCode});
+  });
+});
+
+
+//get survey items from backend
 router.get('/surveyItems/:unique_code', function(req, res, next) {
 
     projectDB.getCustomSurveyItems(req.params.unique_code).then(function(data) {

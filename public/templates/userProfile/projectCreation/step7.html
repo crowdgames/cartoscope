@@ -27,8 +27,42 @@ File for uploading Exit surveys to projects.
                 <span class="title"><i class="fa fa-check-circle sel-check"></i>Custom</span>
                 <span class="msg"> Create your own survey. </span>
             </div>
+
         </div>
     </div>
+
+    <br>
+
+    <div class="row" ng-show="project.survey_type == 'CUSTOM'">
+            <div class="col-md-2">
+                <span class="txt">
+                   Import from project?
+                    <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
+                       data-placement="right" style="margin-left: 10px; color: #9ACA3C;"
+                       title="Choose this option if you want to import questions from another project. You can still edit your survey afterwards.">
+            </i>
+                 </span>
+    
+            </div>
+            <div class="col-md-1"><input type="checkbox" ng-model="try_import"  checked="checked"></div>
+            <div class="col-md-3" ng-show="try_import">
+                <select class="form-control"  ng-model="project_to_import" >
+                    <option ng-repeat="x in survey_project_list" value="{{x}}" > {{survey_project_options[x]}} ({{x}})
+                    </option>
+                </select>
+            </div>
+            <div class="col-md-2" ng-show="try_import">
+                <button style="border: none"  class="btn btn-primary " ng-click="importProjectQuestions()" >Import Questions</button>
+                </div>
+        </div>
+
+
+       
+
+        
+        
+
+    <br>
 
 
 
