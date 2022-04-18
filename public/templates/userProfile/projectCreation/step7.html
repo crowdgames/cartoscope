@@ -69,15 +69,19 @@ File for uploading Exit surveys to projects.
                 <div  class="col-md-3" ng-switch-default>  Question Text:</div>
             </div>
             <div ng-switch="item.question_type" >
-                <div  class="col-md-5" ng-switch-when="radio">  Options:</div>
-                <div  class="col-md-5" ng-switch-when="checkbox">  Options:</div>
+                <div  class="col-md-4" ng-switch-when="radio">  Options:</div>
+                <div  class="col-md-4" ng-switch-when="checkbox">  Options:</div>
                 <div ng-switch-when="likert">
                     <div class="col-md-1"> Value: </div>
-                    <div class="col-md-2"> Leftmost Value: </div>
-                    <div class="col-md-2"> Rightmost Value: </div>
+                    <div class="col-md-1"> Left Value: </div>
+                    <div class="col-md-1"> Right Value: </div>
                 </div>
-                <div  class="col-md-5" ng-switch-when="external">  URL Link:</div>
+                <div  class="col-md-4" ng-switch-when="external">  URL Link:</div>
+                <div  class="col-md-4" ng-switch-default></div>
+
             </div>
+            <div  class="col-md-1">  Required</div>
+
 
         </div>
 
@@ -120,12 +124,12 @@ File for uploading Exit surveys to projects.
             <div   ng-switch="item.question_type">
 
                 <!--Radio-->
-                <div class="col-md-5" ng-switch-when="radio">
+                <div class="col-md-4" ng-switch-when="radio">
                     <input type="text" class="form-control" ng-model="item.options_raw" placeholder="Input options separated by commas."/>
                 </div>
 
                 <!--Checkboxes-->
-                <div class="col-md-5" ng-switch-when="checkbox">
+                <div class="col-md-4" ng-switch-when="checkbox">
                     <input type="text" class="form-control" ng-model="item.options_raw" placeholder="Input options separated by commas."/>
                 </div>
 
@@ -143,17 +147,24 @@ File for uploading Exit surveys to projects.
 
                 </div>
 
-                <div class="col-md-5" ng-switch-when="external">
+                <div class="col-md-4" ng-switch-when="external">
                     <input type="url" class="form-control" ng-model="item.external_link" placeholder="URL for website to be embedded."/>
                 </div>
+                
 
 
-                <div class="col-md-5" ng-switch-default>
+                <div class="col-md-4" ng-switch-default>
                 </div>
 
             </div>
 
+            <div class="col-md-1">
+                <span><small>
+                    <input type="checkbox"  ng-model="item.required">
+                </small>
+                </span>
 
+            </div>
 
             <div class="col-md-1">
                 <span class="" ng-click="deleteSurveyItem($index)" style="color:#DC1F3A;cursor: pointer;">

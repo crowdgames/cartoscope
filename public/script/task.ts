@@ -391,17 +391,20 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.countno = 0;
 
       vm.fetchResponse = () => {
-          var projectid = vm.data.id;
-          var taskname = vm.tasks[0].name;
-          console.log("taskname in fetching response" + taskname);
-          $http.get('/api/tasks/getreponsecount?projectID='+projectid+'&taskID='+taskname+'&option=0').then(function(data) {
-              console.log('got count yes'+data.data[0]['count']);
-              vm.countyes = data.data[0]['count'];
-              $http.get('/api/tasks/getreponsecount?projectID='+projectid+'&taskID='+taskname+'&option=1').then(function(data) {
-                  console.log('got count no'+data.data[0]['count']);
-                  vm.countno = data.data[0]['count'];
-              });
-          });
+          if (vm.cairnsInfoArray){
+            var projectid = vm.data.id;
+            var taskname = vm.tasks[0].name;
+            console.log("taskname in fetching response" + taskname);
+            $http.get('/api/tasks/getreponsecount?projectID='+projectid+'&taskID='+taskname+'&option=0').then(function(data) {
+                console.log('got count yes'+data.data[0]['count']);
+                vm.countyes = data.data[0]['count'];
+                $http.get('/api/tasks/getreponsecount?projectID='+projectid+'&taskID='+taskname+'&option=1').then(function(data) {
+                    console.log('got count no'+data.data[0]['count']);
+                    vm.countno = data.data[0]['count'];
+                });
+            });
+          }
+          
       }
 
       vm.handleGraphCairn = (option) => {
@@ -2011,6 +2014,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           return 'c' + color;
       };
 
-      console.log("model information:");
-      console.log(vm);
+    //   console.log("model information:");
+    //   console.log(vm);
   }]);

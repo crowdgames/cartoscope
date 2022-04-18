@@ -109,8 +109,8 @@
                         <label class="col-form-label" ng-repeat="opt in suv.options">
                             <input type="checkbox" name="{{suv.question}}" style="margin:20px" ng-model="suv.answer[opt]" ng-value=opt   /> {{opt}}
                         </label>
-                        <p ng-if="suv.answer.toLowerCase().includes('other')">Please describe:</p>
-                        <textarea ng-if="suv.answer.toLowerCase().includes('other')" class="form-control" rows="3" cols="50" ng-model="suv.other_text"></textarea>
+                        <p ng-if=" suv.answer.hasOwnProperty('Other') &&  suv.answer['Other']">Please describe:</p>
+                        <textarea ng-if="suv.answer.hasOwnProperty('Other') &&  suv.answer['Other']" class="form-control" rows="3" cols="50" ng-model="suv.other_text"></textarea>
 
                 </div>
 
