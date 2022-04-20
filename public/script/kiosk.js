@@ -74,7 +74,8 @@ module.config(function($stateProvider, $urlRouterProvider, $cookiesProvider) {
             assignmentId:'',
             hitId:'',
             submitTo:'',
-            projectType: ''
+            projectType: '',
+            hubUrl: null
         },
         controller: 'exampleController'
     });
@@ -1908,11 +1909,11 @@ module.controller('resultsHubController',
             $scope.update_hub_Markers($scope.hub_positives[0],0)
 
             //generate map
-            //TODO: check back for this center, it might not be adjusted if we make projects in other locations
+            //check back for this center, it might not be adjusted if we make projects in other locations
             $scope.map1 = {
                 center: {
-                    latitude: parseFloat(29.905498110016907),
-                    longitude: parseFloat(-90.26941133000318)
+                    latitude: $scope.hub_center_lat,
+                    longitude: $scope.hub_center_lon
                 },
                 streetViewControl: false,
                 zoom: zoom,
@@ -1960,6 +1961,11 @@ module.controller('resultsHubController',
                             id: pointId,
                             icon: $scope.icon_array[color_index]
                         });
+
+                        if ($scope.hub_center_lat == undefined && $scope.hub_center_lon == undefined){
+                            $scope.hub_center_lat = parseFloat(item.lat)
+                            $scope.hub_center_lon = parseFloat(item.lon)
+                        }
     
     
                         var image_path = 'api/tasks/getImageFree/' + item.dataset_id + '/' + key  + '.jpg';
@@ -2017,7 +2023,7 @@ module.controller('resultsHubController',
             //STEP 2: get data for the projects in the hub
             $http.get('/api/results/hub_data/' + $stateParams.hub_code).then(function(pdata) {
 
-                $scope.raw_data = pdata.data; //all the data    
+                $scope.raw_data = pdata.data; //all the data  
                 $scope.showMap = true;
                 $scope.InitMap(7);
     
@@ -2091,7 +2097,6 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
     vm.googleMapsUrl= "https://maps.googleapis.com/maps/api/js?key="+googleMapAPIKey;
     vm.goTo=5;
     vm.showTutorialLink = false;
-
 
     vm.annotated = false;
         $scope.next_per2 = 0;
@@ -2328,7 +2333,6 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
 
             if(vm.params.projectType == 'mapping'){
 
-
                 document.getElementById("markerShowAnswerButton").style.display = "none";
                 vm.zoomToMarker(vm.tutorialMapping[vm.counter]);
 
@@ -2337,11 +2341,12 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                 document.getElementById("tut_text_mapping").style.visibility = "visible";
 
 
-
             } else {
 
 
-                vm.annotated = true; //show annotated image if available
+                if (vm.tutorial[vm.counter].image_annotation) {
+                    vm.annotated = true; //show annotated image if available
+                }
 
 
                 var l_answer = vm.tutorial[vm.counter].answer;
@@ -2405,7 +2410,9 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
         }
         //console.log('reqParams ', reqParams);
         if(reqParams.kioskId==1){
-            window.location.replace('/api/anon/startKiosk/' + vm.params.project + '?' + 'workerId='+ vm.params.workerId+'&kioskUser=1');
+            var red_link = '/api/anon/startKiosk/' + vm.params.project + '?' + 'workerId='+ vm.params.workerId+'&kioskUser=1'
+            if ($stateParams.hubUrl !== null) { red_link += '&hubUrl=' + $stateParams.hubUrl }
+            window.location.replace(red_link);
         } else{
             window.location.replace('/api/anon/startAnon/' + vm.params.project + '?' + qs.substr(1));
         }
@@ -2571,11 +2578,10 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
 
             $http.get('/api/project/getTutorial/' + vm.params.project).then(function(tdata) {
 
-
                 // tutorial data
                 var tutData = tdata.data;
 
-                console.log(tutData)
+                //console.log(tutData)
                 if (tutData.length == 0){
                     vm.start();
                 }
@@ -2604,7 +2610,6 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
 
                 tutData.forEach(function(item) {
 
-
                     var tmpl = JSON.parse(item.template);
                     var opt = [];
                     var sel_col = '';
@@ -2623,16 +2628,18 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                     //if tutorial image in dataset, fetch from dataset
                     var tutpath = '../../images/Tutorials/';
 
-
                     if (item.hasOwnProperty('in_dataset') &&  item.in_dataset == 1){
                         //tutpath = '../../../dataset/' + data.data[0].dataset_id + '/';
                         tutpath = '/api/tasks/getImageFree/' + data.data[0].dataset_id + '/'
                     }
                     var it_annot = tutpath + item.image_name;
+                    //if an annotated image is available, we should show that after they pick the right answer. Otherwise, keep showing the same image
                     if (item.image_annotation){
                         it_annot = item.image_annotation.includes("/")
                             ? `../../images/Tutorials/${item.image_annotation}`
                             : `../../images/Tutorials/${vm.params.project}/${item.image_annotation}`;
+                    } else {
+                        it_annot = 0
                     }
 
                     var obj = {
@@ -2672,9 +2679,7 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                 if (vm.tutorial[vm.counter].ask_user == 0) {
                     show_Correct_Options(vm.tutorial[vm.counter].answer);
                 }
-
                 if(vm.params.projectType == 'mapping'){
-
                     vm.map_init();
                 }
 
@@ -3005,13 +3010,19 @@ module.controller('hubProjectController', ['$window','$scope','$location','$stat
         $scope.showConsentMturk = false;
         $scope.isMturk = false;
         $scope.hit_id = "kiosk";
+        $scope.showVideo = false;
+        $scope.is_scistarter = false;
+        
 
         $scope.show_start_button = false;
 
-
-        if ($location.search().hasOwnProperty("trialId")){
-            $scope.isMturk = true
+        if ($location.search().hasOwnProperty("trialId")){    
             $scope.hit_id = $location.search().trialId;
+            //check if mturk in the trial id, to slightly change the flow
+            if ($scope.hit_id.indexOf("mturk") !== -1 ){
+                $scope.isMturk = true
+                $scope.showConsentMturk = true;
+            }
         }
 
         $scope.acceptConsent = function() {
@@ -3074,7 +3085,7 @@ module.controller('hubProjectController', ['$window','$scope','$location','$stat
                     $http.get('/api/anon/consentKiosk/' + project_code + '?' + 'workerId='+ $scope.workerId+'&cookie='+$cookies.get('kiosk')+'&hitID='+ $scope.hit_id)
                         .then(function(e, data) {
                             //console.log('data ', e.data.workerId);
-                            $state.go('examples', {pCode: project_code, workerId: e.data.workerId, projectType: $scope.projectType, kioskId:1, hitId: $scope.hit_id});
+                            $state.go('examples', {pCode: project_code, workerId: e.data.workerId, projectType: $scope.projectType, kioskId:1, hitId: $scope.hit_id, hubUrl: $scope.hub_url});
                             //window.location.replace('/api/anon/startKiosk/' + $scope.params.project+ '?workerId='+e.data.workerId+'&kioskId=1');
                         }, function(err) {
                             alert('error'+ err);
@@ -3095,8 +3106,17 @@ module.controller('hubProjectController', ['$window','$scope','$location','$stat
             $scope.hub_title = $scope.hub_data.name;
             $scope.hub_description = $scope.hub_data.description;
             $scope.hub_subprojects = $scope.hub_data.project_codes.split(",");
+            $scope.hub_url = $scope.hub_data.url_name;
             $scope.show_start_button = true;
             $scope.cover_pic = 'default'; //TODO: this should come from hub
+            $scope.video_url = $sce.trustAsResourceUrl($scope.hub_data.video_url)
+            if ($scope.video_url){
+                $scope.showVideo = true;
+            }
+            $scope.scistarter_link = $scope.hub_data.scistarter_link
+            if ($scope.scistarter_link){
+                $scope.is_scistarter = true
+            }
 
             //Get the creator name from the collaborators:
             //get collaborator info from db, using the first available subproject

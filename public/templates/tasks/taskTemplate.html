@@ -4,13 +4,13 @@
     <div class="maingame-progress-bar">
         <div class="row text-center">
             <!-- <div class="col col-lg-1"></div> -->
-            <div class="col col-xs-2 col-md-2 col-lg-2">
+            <div class="col col-xs-3 col-md-2 col-lg-2">
                 <div class="image-number">
                     <p>Image</p>
                     <h5> {{model.data.progress <= model.data.size ? model.data.progress : model.data.size }}</h5>
                 </div>
             </div>
-            <div class="col col-xs-4 col-md-6 col-lg-6">
+            <div class="col col-xs-5 col-md-7 col-lg-7">
                 <!-- Progress bar-->
                 <div ng-switch="model.userType" ng-if="!model.showFlightPath">
 
@@ -29,8 +29,8 @@
                 </div>
             </div>
 
-            <div ng-switch="model.userType" class="col col-xs-4 col-md-4 col-lg-4 pull-right">
-                <button ng-switch-when="kiosk" class="btn btn-default btn-secondary done-button"
+            <div ng-switch="model.userType" class="col col-xs-4 col-md-3 col-lg-3 pull-right">
+                <button ng-switch-when="kiosk" class="btn btn-default btn-secondary hint-button"
                     ng-click="showHelpHintModal()" style="height: 45px;">Help</button>
 
                 <button ng-switch-when="mTurk" class="btn btn-default btn-secondary done-button"
@@ -48,6 +48,11 @@
     <!-- </nav> -->
 
     <div class="maingame-body">
+        <div class="row" >
+                <button ng-click="model.flagImage()" class="btn btn-secondary" style="height: 45px;float: right;margin-right: 2em; margin-top: 0.5em;"> 
+                    Report Image
+                <i class="fa fa-flag" style="color:#A92323;" aria-hidden="true"></i></button>
+        </div>
 
         <div class="row" ng-switch="model.userType" style="text-align: center;margin-bottom:5px;">
 
@@ -73,14 +78,6 @@
 
         <!--MAPPING TASK MAP VIEW-->
         <div class="row" ng-if="model.data.template.selectedTaskType == 'mapping'">
-            <div id="mapQuestion">
-                <h3 class="mapQuestion text-center" style="color:white">{{model.data.template.question}}
-                    <span ng-show="model.userType === 'mTurk'" style="color: #9ACA3C;cursor: pointer;"
-                        data-target="#helpModal" data-toggle="modal"><i class="fa fa-question-circle-o"
-                            aria-hidden="true"></i></span>
-                </h3>
-
-            </div>
 
             <div id="maps" class="col-md-12 text-center">
                 <div class="col-md-6 col-xs-12 col-sm-12">
@@ -102,7 +99,7 @@
                     </ng-map>
                 </div>
 
-                <div class="col-md-6 col-xs-12 col-sm-12" style="width: auto">
+                <div class="col-md-6 col-xs-12 col-sm-12">
                     <img ng-src="{{model.getNextTask()}}" ng-click="model.showBiggerImg()" class="imgDiv" />
                 </div>
 
@@ -117,12 +114,19 @@
 
             <!--</div>-->
 
+            <div id="mapQuestion" class="question">
+                <span class="mapQuestion text-center" style="color:black">{{model.data.template.question}}
+                    <span ng-show="model.userType === 'mTurk'" style="color: #9ACA3C;cursor: pointer;"
+                        data-target="#helpModal" data-toggle="modal"><i class="fa fa-question-circle-o"
+                            aria-hidden="true"></i></span>
+                </span>
+
+            </div>
 
 
 
-            <nav class="navbar navbar-fixed-bottom navbar-bottom"
-                ng-if="model.data.template.selectedTaskType == 'mapping'">
-                <div class="container text-center" style="padding: 0;width: 100%;">
+            <div class="row" ng-if="model.data.template.selectedTaskType == 'mapping'">
+                <div class="container text-center" style="margin-top:1em; padding: 0;width: 100%;">
 
                     <div class="bottom-panel">
                         <div class="row" ng-if="model.data.template.selectedTaskType == 'mapping'">
@@ -136,9 +140,7 @@
                                         {{option.text}}
                                     </button>
                                     <!--<span ng-show="model.userType === 'mTurk'"  style="color: #9ACA3C;cursor: pointer;display:inline;margin-left:-5px" ng-click="showTutorial(option.text)"><i class="fa fa-lightbulb-o" aria-hidden="true"></i></span>-->
-                                    <span style="color: #9ACA3C;cursor: pointer;display:inline;margin-left:-5px"
-                                        ng-click="showTutorial(option.text)">Hint <i class="fa fa-lightbulb-o"
-                                            aria-hidden="true"></i></span>
+                                  
 
                                 </div>
                                 <button ng-show="model.data.point_selection" class="btn btn-default btn-primary "
@@ -152,7 +154,7 @@
                     </div>
                 </div>
 
-            </nav>
+            </div>
 
 
         </div>
@@ -160,7 +162,7 @@
         <!-- NGS TASK MAP VIEW-->
         <div class="row" ng-if="model.data.template.selectedTaskType == 'ngs'">
             <div id="ngsQuestion">
-                <h3 class="mapQuestion text-center" style="color:white">{{model.data.template.question}}
+                <h3 class="mapQuestion text-center" style="color:black">{{model.data.template.question}}
                     <span ng-show="model.userType === 'mTurk'" style="color: #9ACA3C;cursor: pointer;"
                         data-target="#helpModal" data-toggle="modal"><i class="fa fa-question-circle-o"
                             aria-hidden="true"></i></span>
@@ -214,10 +216,10 @@
                                         class="options btn">
                                         {{option.text}}
                                     </button>
-                                    <span ng-if="model.data.template.selectedTaskType != 'ngs'"
+                                    <!-- <span ng-if="model.data.template.selectedTaskType != 'ngs'"
                                         style="color: #9ACA3C;cursor: pointer;display:inline;margin-left:-5px"
                                         ng-click="showTutorial(option.text)">Hint <i class="fa fa-lightbulb-o"
-                                            aria-hidden="true"></i></span>
+                                            aria-hidden="true"></i></span> -->
 
                                 </div>
                                 <!--<button ng-show="model.data.point_selection"  class="btn btn-default btn-primary "-->
@@ -238,7 +240,7 @@
         <!-- SLIDER TASK  VIEW-->
         <div class="row" ng-if="model.data.template.selectedTaskType == 'slider'">
             <div id="sliderQuestion">
-                <h3 class="mapQuestion text-center" style="color:white">{{model.data.template.question}}
+                <h3 class="mapQuestion text-center" style="color:black">{{model.data.template.question}}
                     <span ng-show="model.userType === 'mTurk'" style="color: #9ACA3C;cursor: pointer;"
                         data-target="#helpModal" data-toggle="modal"><i class="fa fa-question-circle-o"
                             aria-hidden="true"></i></span>
@@ -288,9 +290,9 @@
                                         class="options btn">
                                         {{option.text}}
                                     </button>
-                                    <span style="color: #9ACA3C;cursor: pointer;display:inline;margin-left:-5px"
+                                    <!-- <span style="color: #9ACA3C;cursor: pointer;display:inline;margin-left:-5px"
                                         ng-click="showTutorial(option.text)">Hint <i class="fa fa-lightbulb-o"
-                                            aria-hidden="true"></i></span>
+                                            aria-hidden="true"></i></span> -->
 
                                 </div>
                                 <!--<button ng-show="model.data.point_selection"  class="btn btn-default btn-primary "-->
@@ -333,7 +335,7 @@
                     ng-src="{{model.getNextTask()}}" ng-click="model.showBiggerImg()">
                 <h2 id="cairn-header" ng-show="showCairnElements"> Would you like to leave something for another player?
                 </h2>
-                <div ng-show="showPhysics">
+                <div ng-if="showPhysics">
                     <div class="container-fluid">
                         <br><br>
                         <div class="row" ng-show="showEmoji" id="emoji-picker">
@@ -413,11 +415,6 @@
             <div class="col col-xs-2 col-md-3 col-lg-3"></div>
         </div>
 
-        <a ng-click="model.flagImage()">
-            <button class="btn btn-secondary"
-                    style="height: 45px; position: absolute;right: 11em;top: 43em; z-index: 100;"> Report Image
-            <i class="fa fa-flag" style="color:#A92323;" aria-hidden="true"></i></button>
-        </a>
 
         <div ng-show="!showPlayerSidebar" class="actions-div">
 
@@ -602,20 +599,20 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <!-- <h4 class="modal-title"> {{model.tutorial_button.text ||  "Identifying Shoreline Erosion"  }}</h4> -->
-                        <h4 class="modal-title help-modal-title"> Identifying Shoreline Erosion</h4>
+                        <h4 class="modal-title help-modal-title"> {{model.data.name}}</h4>
                         <button type="button" class="close" style="margin-top: -25px;" data-dismiss="modal"
                             aria-label="Close">
                             &times;
                         </button>
                     </div>
-                    <div class="modal-body" style="padding: 2em 7em;">
+                    <div class="modal-body" >
                         <center>
-                            <div class="help-modal" style="width: 100%;align-self: flex-start;">
+                            <div class="help-modal" style="">
                                 <div class="{{helpHintModalActiveTab === option.text  ? 'modal-help-tabs help-tab-active' : 'modal-help-tabs help-tabs'}}"
                                     ng-repeat="option in model.data.template.options"
                                     ng-click="showTutorial(option.text)">
 
-                                    <span> {{option.text}} </span>
+                                    <span style="padding:10px;"> {{option.text}} </span>
 
                                 </div>
 
@@ -626,22 +623,32 @@
 
                             </div>
 
-                            <div class="row help-modal-body" style="color: black">
-                                <div class="col-md-12 col-sm-12" ng-repeat="item in model.tutorial"
-                                    style="display: inline;">
-                                    <div>
-                                        <!-- <img ng-src ="{{item.image}}" ng-click="model.alertText(item.explanation)" style="max-height: 150px; max-width: 150px;margin: 5px;"> -->
-                                        <img ng-src="{{item.image}}"
-                                            style="max-height: 300px; max-width: 300px;margin: 5px;">
-                                        <div class="modal-image-explanation">
-                                            <p ng-bind-html="item.explanation"></p>
+                            <div class="help-modal-body" style="color: black">
+                                <div  ng-repeat="item in model.tutorial">
+                                    <div class="row">
+                                        <div class="col-md-12 col-sm-12">
+                                            <div ng-if="model.data.template.selectedTaskType != 'ngs'">
+                                                <!-- <img ng-src ="{{item.image}}" ng-click="model.alertText(item.explanation)" style="max-height: 150px; max-width: 150px;margin: 5px;"> -->
+                                                <img ng-src="{{item.image}}" class="hint-image">
+                                            </div>
+                                            <div ng-if="model.data.template.selectedTaskType == 'ngs'">
+                                                <!-- <img ng-src ="{{item.image}}" ng-click="model.alertText(item.explanation)" style="max-height: 150px; max-width: 150px;margin: 5px;"> -->
+                                                <iframe id="iframe_div3" class="iframeDiv" ng-src="{{model.getFullIframeTutorial(item.lat,item.lng,item.zoom)}}"></iframe>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 col-sm-12">
+                                                <!-- <div class="modal-image-explanation"> -->
+                                                    <div class="modal-image-explanation" >
+                                                        <div ng-bind-html="item.explanation | textBreaks">
+                                                    </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="row answers" ng-if="model.tutorial.length">
-                                <!--<button  ng-class="model.getColourClass(model.tutorial_button.color)"class="options">{{model.tutorial_button.text}}</button>-->
-                            </div>
+
+                            
                         </center>
                     </div>
                     <div class="modal-footer help-modal-footer">

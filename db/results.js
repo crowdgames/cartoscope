@@ -434,6 +434,15 @@ exports.getHubRawResultsMultiplebyTextGrouped = function(project_ids,dataset_id,
                 'and task_id!=\'dummy\' and DATE(timestamp) >= \'2020-09-23\' ) as v group by task_id,x,y,project_id,answer '
         }
 
+        var query = 'select pvrh.task_id,pvrh.x,pvrh.y,pvrh.project_id,pvrh.answer, count(*) as votes from (\
+        select pvr.user_id,pvr.task_id,pvr.project_id,pvr.answer,pvr.unique_code,pvr.name,pvr.x,pvr.y,k.hitID from \
+        (select pr.user_id,pr.task_id,pr.project_id,pr.answer,pr.unique_code,pr.name,d.x,d.y from \
+        (select r.user_id,r.task_id,r.project_id,r.response_text as answer,p.unique_code,p.name from \
+            (select * from response where project_id in ('+ project_ids.toString() + ') and task_id !=\'dummy\') as r left join projects as p on p.id=r.project_id) as pr\
+        left join dataset_'+dataset_id + '  as d on d.name=pr.task_id) as pvr \
+        left join (select workerID,hitID from kiosk_workers) as k on pvr.user_id=k.workerID ) as pvrh where pvrh.hitID NOT LIKE \'%mturk%\' and pvrh.x IS NOT NULL and pvrh.y IS NOT NULL \
+        group by pvrh.task_id,pvrh.x,pvrh.y,pvrh.project_id,pvrh.answer'
+
         var grouped_data = {};
 
 

@@ -33,6 +33,8 @@ var debug = require('debug')('converge_backend:server');
 var http = require('http');
 var https = require('https');
 var db = require('./db/db.js');
+var projectDB = require('./db/project');
+
 
 var app = express();
 
@@ -252,7 +254,7 @@ app.get('/landloss', function(req, res) {
     // var link = "kioskProject.html#/kioskStart/" + project_code;
     // res.redirect('./' + link); // send to project page
 
-    res.redirect('https://cartosco.pe/api/trials/cairns_2008_l/kiosk_landloss');
+    res.redirect('https://cartosco.pe/hub/landloss2016');
 
 });
 
@@ -270,12 +272,35 @@ app.get('/ida', function(req, res) {
 
 });
 
+//short link for simple projects
+app.get('/page/:code', function(req, res, next) {
+    projectDB.getSingleProjectFromCode(req.params.code).then(function(project) {
+        var link = "/kioskProject.html#/kioskStart/" + project.unique_code;
+        if (req.query.trialId){
+            link += '?trialId=' + req.query.trialId
+        }
+        res.redirect(link); // send to project page
+    }, function(err) {
+      res.status(400).send(err.code);
+    });
+  });
 
 //hub url shortcuts
 app.get('/hub/:hub_url', function(req, res) {
-
-    console.log(req.params.hub_url)
+    //are there trial id on the url? pass them
+    var hitID = req.query.trialId;    
     var link = "/kioskProject.html#/hubPage/" + req.params.hub_url;
+    if (hitID){
+        link += '?trialId=' + hitID
+    }
+    res.redirect(link); // send to hub page
+});
+
+//hub url shortcuts for teams
+app.get('/hub/:hub_url/:trialId', function(req, res) {
+    //are there trial id on the url? pass them
+    var hitID = req.params.trialId;    
+    var link = "/kioskProject.html#/hubPage/" + req.params.hub_url  + '?trialId=' + hitID
     res.redirect(link); // send to hub page
 });
 

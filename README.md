@@ -4,6 +4,8 @@ Cartoscope is a platform for citizen science mapping. By sorting, labelling, and
 
 [Click here for the live website](https://cartosco.pe/#/home)
 
+[Instructions for creating projects on the live website](docs/projectCreationDocumentation.md)
+
 # Installation instructions
 
  1. Install [Virtualbox](https://www.virtualbox.org/)

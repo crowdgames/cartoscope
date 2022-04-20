@@ -27,7 +27,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
             controller: 'surveyTLXController',
             params: {
                 hitId:'',
-                contributions: 0
+                contributions: 0,
+                hubUrl: null
             }
   });
 
@@ -38,7 +39,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
         controller: 'surveyGAMEontroller',
         params: {
             hitId:'',
-            contributions: 0
+            contributions: 0,
+            hubUrl: null
         }
     });
 
@@ -49,7 +51,9 @@ module.config(function($stateProvider, $urlRouterProvider) {
         controller: 'surveyGAMEontroller',
         params: {
             hitId:'',
-            contributions: 0
+            contributions: 0,
+            hubUrl: null
+
         }
     });
 
@@ -60,7 +64,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
         controller: 'surveyIMIController',
         params: {
             hitId:'',
-            contributions: 0
+            contributions: 0,
+            hubUrl: null
         }
     });
 
@@ -72,7 +77,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
         controller: 'surveyCUSTOMController',
         params: {
             hitId:'',
-            contributions: 0
+            contributions: 0,
+            hubUrl: null
         }
     });
 
@@ -136,7 +142,8 @@ module.config(function($stateProvider, $urlRouterProvider) {
           project: '',
           hitId:null,
           hitCode: null,
-          contributions: 0
+          contributions: 0,
+          hubUrl: null
       },
 
       controller: function ($scope,$stateParams, $state, $window, $http, $sce, heatMapProject1, heatMapProject2) {
@@ -182,8 +189,12 @@ module.config(function($stateProvider, $urlRouterProvider) {
 
           function exit(){
               console.log('in exit');
-              // $window.location.href='/algalBloom.html';
-              $window.location.href='kioskProject.html#/kioskStart/' + $scope.project;
+              var exit_path = 'kioskProject.html#/kioskStart/' + $scope.project;
+              //if we are from a hub project, go back to hub and not subproject
+              if ($scope.params.hubUrl){
+                exit_path = '/hub/' + $scope.params.hubUrl
+            }
+              $window.location.href = exit_path
           }
 
           // $scope.icon_array =  ['http://maps.google.com/mapfiles/ms/icons/green-dot.png',
@@ -841,7 +852,7 @@ module.controller('surveyController', ['$scope', '$http', '$state', '$location',
         if (data.data.hitCode) {
             $state.go('hitCode', {hitCode: data.data.hitCode});
         } else if (data.data.heatMap) {
-            $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId});
+            $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId, contributions: $scope.params.contributions,hubUrl: $scope.params.hubUrl});
         }
       }, function(err) {
           if ($scope.userType == 'mTurk') {
@@ -1023,7 +1034,7 @@ module.controller('surveyTLXController', ['$scope', '$http', '$state', '$locatio
                 if (data.data.hitCode) {
                     $state.go('hitCode', {hitCode: data.data.hitCode});
                 } else if (data.data.heatMap) {
-                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId, contributions: $scope.params.contributions});
+                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId, contributions: $scope.params.contributions,hubUrl: $scope.params.hubUrl});
                 }
             }, function(err) {
                 if ($scope.userType == 'mTurk') {
@@ -1137,7 +1148,7 @@ module.controller('surveyGAMEontroller', ['$scope', '$http', '$state', '$locatio
                 if (data.data.hitCode) {
                     $state.go('hitCode', {hitCode: data.data.hitCode});
                 } else if (data.data.heatMap) {
-                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId, contributions: $scope.params.contributions});
+                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId, contributions: $scope.params.contributions,hubUrl: $scope.params.hubUrl});
                 }
             }, function(err) {
                 if ($scope.userType == 'mTurk') {
@@ -1339,7 +1350,7 @@ module.controller('surveyIMIController', ['$scope', '$http', '$state', '$locatio
                 if (data.data.hitCode) {
                     $state.go('hitCode', {hitCode: data.data.hitCode});
                 } else if (data.data.heatMap) {
-                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId, hitId: $scope.trialId, contributions: $scope.params.contributions });
+                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId, hitId: $scope.trialId, contributions: $scope.params.contributions, hubUrl: $scope.params.hubUrl });
                 }
             }, function(err) {
                 if ($scope.userType == 'mTurk') {
@@ -1420,6 +1431,7 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
 
     $scope.survey_questions = [];
     $scope.survey_questions_shuffled = [];
+
 
 
     $scope.alertError = function(msg) {
@@ -1639,12 +1651,12 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
                 if (data.data.hitCode && $scope.userType == 'mTurk') {
                     $state.go('hitCode', {hitCode: data.data.hitCode});
                 } else if (data.data.heatMap) {
-                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId, hitId: $scope.trialId , contributions: $scope.params.contributions});
+                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId, hitId: $scope.trialId , contributions: $scope.params.contributions, hubUrl:$scope.params.hubUrl});
                 }  else if (data.data.external_survey){
                     alert('Survey responses stored succesfully!')
 
                 } else {
-                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId, hitId: $scope.trialId , contributions: $scope.params.contributions});
+                    $state.go('heatMap', {project: $scope.params.code, workerId: data.data.workerId, hitId: $scope.trialId , contributions: $scope.params.contributions, hubUrl: $scope.params.hubUrl});
                 }
 
 
@@ -1696,7 +1708,7 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
             }
             */
 
-            var q_obj = { "answer" : item.answer || ulb , "type" : item.question_type};
+            var q_obj = { "answer" : item.answer || ulb , "type" : item.question_type, 'other_text': item.other_text};
 
             if ( ($scope.req_answers || item.required) && (item.answer == -1 || item.answer == "ULB") ) {
                 survey_ok = -1;

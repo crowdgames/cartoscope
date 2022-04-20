@@ -118,6 +118,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.hideBiggerImg = hideBiggerImg;
       vm.addMarker = addMarker;
       vm.getFullIframe = getFullIframe;
+      vm.getFullIframeTutorial = getFullIframeTutorial;
       vm.ngs_before_image_link = "../../images/ngs_hint.png"
      
 
@@ -169,6 +170,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.slider_obj = {};
       //if we do loop after we reach end
       vm.image_loop = $location.search().image_loop || 0;
+      vm.hubUrl = $location.search().hubUrl;
 
 
       vm.showChainQuestions = 0;
@@ -366,7 +368,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       };
 
       vm.flagImage = () => {
-          window.alert("Thank you for flagging this image");
+          const shouldFlag = window.confirm("Are you sure you want to flag the image?");
+          if(shouldFlag){
           var body = {
               projectID: vm.data.id,
               taskID: vm.tasks[0]
@@ -377,6 +380,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           $http.post('/api/tasks/flagimage', body).then(function () {
                 vm.submitResponse();
           });
+        }
       }
 
       $scope.showDebug = false;
@@ -387,17 +391,20 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.countno = 0;
 
       vm.fetchResponse = () => {
-          var projectid = vm.data.id;
-          var taskname = vm.tasks[0].name;
-          console.log("taskname in fetching response" + taskname);
-          $http.get('/api/tasks/getreponsecount?projectID='+projectid+'&taskID='+taskname+'&option=0').then(function(data) {
-              console.log('got count yes'+data.data[0]['count']);
-              vm.countyes = data.data[0]['count'];
-              $http.get('/api/tasks/getreponsecount?projectID='+projectid+'&taskID='+taskname+'&option=1').then(function(data) {
-                  console.log('got count no'+data.data[0]['count']);
-                  vm.countno = data.data[0]['count'];
-              });
-          });
+          if (vm.cairnsInfoArray){
+            var projectid = vm.data.id;
+            var taskname = vm.tasks[0].name;
+            console.log("taskname in fetching response" + taskname);
+            $http.get('/api/tasks/getreponsecount?projectID='+projectid+'&taskID='+taskname+'&option=0').then(function(data) {
+                console.log('got count yes'+data.data[0]['count']);
+                vm.countyes = data.data[0]['count'];
+                $http.get('/api/tasks/getreponsecount?projectID='+projectid+'&taskID='+taskname+'&option=1').then(function(data) {
+                    console.log('got count no'+data.data[0]['count']);
+                    vm.countno = data.data[0]['count'];
+                });
+            });
+          }
+          
       }
 
       vm.handleGraphCairn = (option) => {
@@ -993,6 +1000,14 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           return  $sce.trustAsResourceUrl(url)
       };
 
+      function getFullIframeTutorial(x,y,zoom){
+
+        var link = vm.data.image_source;
+        var zoom = vm.defZoom;
+        var url = link + '#' + zoom + '/'+  x + '/' + y;
+        return  $sce.trustAsResourceUrl(url)
+    };
+
       vm.alertText = function(text){
           if (text){
               //alert(text)
@@ -1178,10 +1193,9 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                       window.location.replace('/survey.html#/survey?code=' + vm.code+ '&userType=kiosk');
                   } else {
 
-                      var hitID = $location.search().hitID || $location.search().trialID || "kiosk";
-
-                      window.location.replace('/survey.html#/' + vm.survey_type + '?code=' + vm.code+ '&userType=kiosk&hitId=' + hitID + "&contributions=" + vm.data.progress);
-
+                        var hitID = $location.search().hitID || $location.search().trialID || "kiosk";
+                        var hubpar = (vm.hubUrl) ? "&hubUrl=" + vm.hubUrl : "" //if coming from hub, move that information along in the survey
+                        window.location.replace('/survey.html#/' + vm.survey_type + '?code=' + vm.code+ '&userType=kiosk&hitId=' + hitID + "&contributions=" + vm.data.progress + hubpar);
                   }
               }
 
@@ -1252,7 +1266,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
 
               } else {
                   //Add the chaining parameter to show relevant questions at the survey
-                  window.location.replace('/survey.html#/'+ vm.survey_type + '?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last);
+                  var hubpar = (vm.hubUrl) ? "&hubUrl=" + vm.hubUrl : "" //if coming from hub, move that information along in the survey
+                  window.location.replace('/survey.html#/'+ vm.survey_type + '?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last + hubpar);
               }
           } else {
               window.location.replace('/UserProfile.html');
@@ -1332,7 +1347,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                       }
                       else {
                           //Add the chaining parameter to show relevant questions at the survey
-                          window.location.replace('/survey.html#/'+ vm.survey_type + '?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last + "&contributions=" + vm.data.progress)
+                          var hubpar = (vm.hubUrl) ? "&hubUrl=" + vm.hubUrl : "" //if coming from hub, move that information along in the survey
+                          window.location.replace('/survey.html#/'+ vm.survey_type + '?code=' + vm.code + '&userType=mTurk' + '&showChainQuestions=' + vm.showChainQuestions + '&showFlight=' + flight_last + "&contributions=" + vm.data.progress + hubpar)
 
                       }
                   }
@@ -1387,7 +1403,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
               // tutorial data
               var tutData = tdata.data;
 
-
               vm.tutorial = [];
               //TODO: Mapping
               vm.tutorialMapping = [];
@@ -1406,14 +1421,16 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                   var sel_num = -1;
 
                   //get only the images of the button that is hovering
-                  if (item.answer == option) {
+                  //and only tutorial items that were not informational (ask_user == 1)
+                  if (item.answer == option && item.ask_user) {
 
                       var tutpath = '../../images/Tutorials/';
 
                       if (item.hasOwnProperty('in_dataset') &&  item.in_dataset == 1){
                           //tutpath = '../../../dataset/' + data.data[0].dataset_id + '/';
-                          tutpath = '/api/tasks/getImageFree/' + tdata.data[0].dataset_id + '/'
+                          tutpath = '/api/tasks/getImageFree/' + vm.data.dataset_id + '/' //pick the dataset id from the loaded project
                       }
+                      
                       let it_annot = tutpath + item.image_name;
                       // Some images have drawings on them, arrows and the like. Use this image if it exists
                       if (item.image_annotation){
@@ -1421,7 +1438,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                           it_annot = item.image_annotation.includes('/') 
                               ? `${tutpath}${item.image_annotation}`
                               : `${tutpath}${vm.code}/${item.image_annotation}`;
-                      }
+                      } 
 
                       var obj = {
                           image: it_annot,
@@ -2005,6 +2022,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           return 'c' + color;
       };
 
-      console.log("model information:");
-      console.log(vm);
+    //   console.log("model information:");
+    //   console.log(vm);
   }]);

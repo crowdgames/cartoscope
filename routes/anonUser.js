@@ -224,10 +224,11 @@ router.get('/startKioskProject/:pCode',
         var projectID = req.params.pCode;
         console.log('workerId ', workerId);
         //select a project list from all public projects
-
         projectDB.getSingleProjectFromCode(projectID).then(function(project) {
                 req.logout();
+                
                 anonUserDB.findConsentedKioskWorker(workerId, projectID).then(function(user) {
+                    
                     if (user.id) {
                         console.log('user object ', user);
                         loginAnonKioskUser(req, user).then(function(data) {
@@ -265,7 +266,9 @@ router.get('/startKiosk/:pCode',
                     if (user.id) {
                         console.log('user object ', user);
                         loginAnonKioskUser(req, user).then(function(data) {
-                            res.redirect('/api/tasks/startProject/' + projectID);
+                            var red_link = '/api/tasks/startProject/' + projectID 
+                            if (req.query.hubUrl) {red_link += '?hubUrl=' + req.query.hubUrl}
+                            res.redirect(red_link);
                         });
 
                     } else {

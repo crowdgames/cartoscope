@@ -4,10 +4,8 @@
 
         <div class="row intro"  style="text-align: center">
             <h1 class="col-sm-12 projectName" style="font-size: 36px;margin-top:50px;"><span style="font-size: 20px;">WELCOME TO</span></br>
-                <b><span style="">{{hub_title}}</span></b></h1>
+                <b><span>{{hub_title}}</span></b></h1>
         </div>
-
-
 
     <div ng-if="cover_pic != 'default'" class="row"  style="text-align: center">
         <br>
@@ -16,36 +14,34 @@
         </a>
     </div>
 
+    <div class="row" style="text-align: left">
+        <div class="col-sm-12 description" ng-bind-html="hub_description | textBreaks"> </div>
+    </div>
 
 
-                <div class="col-sm-12" style="">
-                    <center>
-            <p class="description " style="font-size: 22px; ">
-                {{hub_description}}
-            </p>
+    
 
-            <p class="description " style="font-size: 14px; ">
-                    This material is based upon work supported by the National Science Foundation under Grant No. 1816426. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.
-            </p>
-
-                    <div ng-hide="showCC"  >
-                        <p ng-if="showSource" >
-                            <a style="color: black;" target="_blank" ng-href="{{image_source}}">
-
-                                <span ng-if="projectType != 'ngs'">Image Source </span>
-                                <span ng-if="projectType == 'ngs'">Click here for Map Source</span>
-                        </a>
-                        </p>
-                    </div>
-                    <div ng-show="showCC"  >
-                        <p ng-if="showSource" >Images from  <a style="color: black;" target="_blank" ng-href="{{image_source}}">
-                            {{creator}}</a> under a <a href="https://creativecommons.org/licenses/by-nc-sa/2.0/" target="_blank">Creative Commons</a> licence.
-                        </p>
-                    </div>
-
-
-            </center>
+    <div class="row">
+        <div class="col-sm-12" >
+            <div ng-hide="showCC"  >
+                <p ng-if="showSource" >
+                    <a style="color: black;" target="_blank" ng-href="{{image_source}}">
+                        <span ng-if="projectType != 'ngs'">Image Source </span>
+                        <span ng-if="projectType == 'ngs'">Click here for Map Source</span>
+                </a>
+                </p>
+            </div>
+            <div ng-show="showCC"  >
+                <p ng-if="showSource" >Images from  <a style="color: black;" target="_blank" ng-href="{{image_source}}">
+                    {{creator}}</a> under a <a href="https://creativecommons.org/licenses/by-nc-sa/2.0/" target="_blank">Creative Commons</a> licence.
+                </p>
+            </div>
         </div>
+    </div>
+
+
+
+                
 
         <br>
         <br>
@@ -81,12 +77,18 @@
             <br>
             <small>Contributing is free and anonymous.</small>
         </div>
+
         <div class="row">
-            <div style="text-align: center;margin: 1%;margin-top:2%;">
-                <p>Cartoscope is open-source. Code available on:</p><a href="https://github.com/crowdgames/cartoscope-backend">
-                    <img src="../../images/github-logo.png" alt="Github" style="width: 150px; height: 50px;"/>
-                </a>
-            </div>
+            <div class="col-sm-12 description" ng-if="is_scistarter">
+                <p style='font-size:150%'>Coming from <b>Scistarter</b>? Wait until after the survey at the end of the project for a credit form link!</p>
+              </div>
+        </div>
+        
+        
+        <div class="row">
+                <p class="description " style="font-size: 14px; ">
+                    This material is based upon work supported by the National Science Foundation under Grant No. 1816426. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.
+            </p>
         </div>
 
     </div>

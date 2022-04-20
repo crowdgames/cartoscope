@@ -40,7 +40,7 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
 
     $stateProvider.state({
         name: 'login',
-        url: '/login',
+        url: '/{path:login|UserProfile.html#/login}',
         templateUrl: 'logon.html',
         controller: 'loginController'
     });
@@ -79,12 +79,13 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
       //Get all public projects:
       $http({
         method: 'GET',
-        url: '/api/project/getProjects/public'
+        url: '/api/hub/getAllHubProjectsPublic'
       }).then(function successCallback(response) {
         $scope.projects = response.data;
+        console.log($scope.projects)
 
         //Filter out archived, unpublished and private projects:
-        $scope.projects = $scope.projects.filter(function(project) { return (project.archived === 0 && project.published === 1 && project.access_type === 0)});
+        $scope.projects = $scope.projects.filter(function(project) { return (project.published === 1 && project.access_type === 1)});
       }, function errorCallback(response) {
         $scope.projects = [];
       });
@@ -109,7 +110,7 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
 
       //Go to project subpage
       $scope.goToProject = function(code) {
-          $window.location.href = '/kioskProject.html#/kioskStart/' + code;
+          $window.location.href = '/hub/' + code;
         };
 
       window.makeLinkActive = function(link){
@@ -476,7 +477,7 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
     }
   });
 
-  $stateProvider.state({
+  /*$stateProvider.state({
     name: 'root.projectEdit.step3',
     url: '/step3',
     views: {
@@ -494,7 +495,7 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
         });
       }
     }
-  });
+  });*/
 
   $stateProvider.state({
     name: 'root.projectEdit.step4',
@@ -616,35 +617,35 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
     }
   });
 
-  $stateProvider.state({
-    name: 'root.projectCreation.step3',
-    url: '/step3',
-    views: {
-      'createProjChildView': {
-        templateUrl: 'templates/userProfile/projectCreation/step3.html',
-        controller: 'stepThreeController'
-      }
-    },
-    params: {
-      project: null
-    },
-    resolve: {
-      project: ['$stateParams', '$timeout', '$q', function($stateParams, $timeout, $q) {
-        return $q(function(resolve, reject) {
-          $timeout(function() {
-            if ($stateParams.project && $stateParams.project.id) {
-              resolve($stateParams.project);
-            } else {
-              reject('no id');
-            }
-          }, 50);
-        });
-      }],
-      admins: function() {
-        return [];
-      }
-    }
-  });
+  // $stateProvider.state({
+  //   name: 'root.projectCreation.step3',
+  //   url: '/step3',
+  //   views: {
+  //     'createProjChildView': {
+  //       templateUrl: 'templates/userProfile/projectCreation/step3.html',
+  //       controller: 'stepThreeController'
+  //     }
+  //   },
+  //   params: {
+  //     project: null
+  //   },
+  //   resolve: {
+  //     project: ['$stateParams', '$timeout', '$q', function($stateParams, $timeout, $q) {
+  //       return $q(function(resolve, reject) {
+  //         $timeout(function() {
+  //           if ($stateParams.project && $stateParams.project.id) {
+  //             resolve($stateParams.project);
+  //           } else {
+  //             reject('no id');
+  //           }
+  //         }, 50);
+  //       });
+  //     }],
+  //     admins: function() {
+  //       return [];
+  //     }
+  //   }
+  // });
 
   $stateProvider.state({
     name: 'root.projectCreation.step4',
@@ -826,10 +827,6 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
     }
   });
 
-  
-
-
-
   $urlRouterProvider.otherwise('/home');
 });
 
@@ -843,7 +840,7 @@ module.controller('appController', ['$scope', '$http', 'userData', '$window', fu
   $scope.logout = function() {
     $http.get('/api/logout').then(function() {
       //window.location = '/';
-        window.location.href='/login';
+        $window.location.href='#/login';
     }, function() {
       alert('Couldn\'t sign you out');
     });
@@ -933,7 +930,9 @@ module.controller('projectEditController', ['$scope', '$http', '$state','$timeou
       var curr = $state.current.name;
       var stateMap = {
         'root.projectEdit.step1': '^.step2',
-        'root.projectEdit.step2': '^.step3',
+       //commented out the linking part in admin step removal
+       //skip admin step (step3) since this feature is not used right now
+       'root.projectEdit.step2': '^.step4',
         'root.projectEdit.step3': '^.step4',
         'root.projectEdit.step4': '^.step5',
         'root.projectEdit.step5': '^.step6',
@@ -1027,8 +1026,10 @@ module.controller('projectCreationController', ['$scope', '$http', '$state', '$t
       var curr = $state.current.name;
       var stateMap = {
         'root.projectCreation.step1': '^.step2',
-        'root.projectCreation.step2': 'root.projectCreation.step3',
-        'root.projectCreation.step3': 'root.projectCreation.step4',
+        //skip admin step (step 3) since we are not using it now
+        // 'root.projectCreation.step2': 'root.projectCreation.step3',
+        // 'root.projectCreation.step3': 'root.projectCreation.step4',
+        'root.projectCreation.step2': 'root.projectCreation.step4',
         'root.projectCreation.step4': 'root.projectCreation.step5',
         'root.projectCreation.step5': 'root.projectCreation.step6',
         'root.projectCreation.step6': 'root.projectCreation.step7'
@@ -2164,7 +2165,7 @@ module.controller('projectsPageController', ['$scope', 'userData', 'projects', '
       });
     };
 
-    var startTaskPath = window.location.protocol + '//' + window.location.host + '/api/tasks/startProject/';
+    var startTaskPath = window.location.protocol + '//' + window.location.host + '/page/';
 
     var getPathToStart = function(code) {
       return startTaskPath + code;
@@ -2405,26 +2406,34 @@ module.controller('hubStepOneController', ['$scope', '$state', '$http', 'swalSer
 
     var invalid_characters = ['\\','/',':','?','\"','<','>','|'];
     $scope.has_external_signup = false;
+    $scope.has_scistarter = false;
 
     if ($scope.hub.hasOwnProperty("external_sign_up")){
         $scope.has_external_signup = true;
     }
+
+    if ($scope.hub.hasOwnProperty("external_sign_up")){
+      $scope.has_scistarter = true;
+  }
 
     $scope.$on('validate', function(e) {
       $scope.validate();
     });
 
     $scope.validate = function() {
-      if (!$scope.hub.name || !$scope.hub.description || !$scope.hub.url_name) {
+      if (!$scope.hub.name || !$scope.hub.description || !$scope.hub.url_name || !$scope.hub.short_description) {
         $scope.showErr = true;
-        swalService.showErrorMsg('Please enter a name, a url name and description for the  hub project.');
+        swalService.showErrorMsg('Please enter a name, a url name and descriptions for the  hub project.');
       } else if (  invalid_characters.some(el => $scope.hub.url_name.includes(el))) {
           $scope.showErr = true;
           swalService.showErrorMsg('URL shortcut cannot contain the following characters: \n' + invalid_characters.join(','));
       } else if ($scope.has_external_signup && ($scope.hub.external_sign_up === "" || !$scope.hub.external_sign_up)){
           $scope.showErr = true;
           swalService.showErrorMsg('Please enter valid URL for external signup form.');
-      }
+      } else if ($scope.has_scistarter && ($scope.hub.scistarter_link === "" || !$scope.hub.scistarter_link)){
+        $scope.showErr = true;
+        swalService.showErrorMsg('Please enter valid URL for scostarter form.');
+    }
 
       else {
         $scope.createHubProject();
@@ -2443,10 +2452,15 @@ module.controller('hubStepOneController', ['$scope', '$state', '$http', 'swalSer
         }
         fd.append('name', $scope.hub.name);
         fd.append('description', $scope.hub.description);
+        fd.append('short_description', $scope.hub.short_description);
+
           fd.append('url_name', $scope.hub.url_name);
           if ($scope.has_external_signup){
               fd.append('external_sign_up', $scope.hub.external_sign_up);
           }
+          if ($scope.has_scistarter){
+            fd.append('scistarter_link', $scope.hub.scistarter_link);
+        }
 
           var link = '/api/hub/add'
           $http.post(link, fd, {
@@ -2793,17 +2807,21 @@ module.controller('hubStepOneController', ['$scope', '$state', '$http', 'swalSer
     console.log(hub);
     var invalid_characters = ['\\','/',':','?','\"','<','>','|'];
     $scope.has_external_signup = false;
+    $scope.has_scistarter = false;
 
     if ($scope.hub.hasOwnProperty("external_sign_up") && $scope.hub.external_sign_up ){
         $scope.has_external_signup = true;
     }
+    if ($scope.hub.hasOwnProperty("scistarter_link") && $scope.hub.scistarter_link ){
+      $scope.has_scistarter = true;
+  }
 
     $scope.$on('validate', function(e) {
       $scope.validate();
     });
 
     $scope.validate = function() {
-      if (!$scope.hub.name || !$scope.hub.description || !$scope.hub.url_name) {
+      if (!$scope.hub.name || !$scope.hub.description || !$scope.hub.short_description || !$scope.hub.url_name) {
         $scope.showErr = true;
         swalService.showErrorMsg('Please enter a name, a url name and description for the  hub project.');
       } else if (  invalid_characters.some(el => $scope.hub.url_name.includes(el))) {
@@ -2812,7 +2830,11 @@ module.controller('hubStepOneController', ['$scope', '$state', '$http', 'swalSer
       } else if ($scope.has_external_signup && ($scope.hub.external_sign_up === "" || !$scope.hub.external_sign_up)){
           $scope.showErr = true;
           swalService.showErrorMsg('Please enter valid URL for external signup form.');
-      }
+      } else if ($scope.has_scistarter && ($scope.hub.scistarter_link === "" || !$scope.hub.scistarter_link)){
+        $scope.showErr = true;
+        swalService.showErrorMsg('Please enter valid URL for external signup form.');
+    }
+
 
       else {
         $scope.createHubProject();
@@ -2830,10 +2852,14 @@ module.controller('hubStepOneController', ['$scope', '$state', '$http', 'swalSer
         fd.append('hub_unique_code', $scope.hub.hub_unique_code);
         fd.append('name', $scope.hub.name);
         fd.append('description', $scope.hub.description);
+        fd.append('short_description', $scope.hub.short_description);
         fd.append('url_name', $scope.hub.url_name);
           if ($scope.has_external_signup){
               fd.append('external_sign_up', $scope.hub.external_sign_up);
           }
+          if ($scope.has_scistarter){
+            fd.append('scistarter_link', $scope.hub.scistarter_link);
+        }
 
           var link = '/api/hub/edit' 
           $http.post(link, fd, {
@@ -2892,8 +2918,8 @@ module.controller('userProfileController', ['$scope','$http', '$state', 'project
     });
 
     function showProjectDetails(project){
-        $scope.currentProject = project;
-        $state.go('root.showProjectDetails', {project: project});
+        //directly go to the project page
+        window.location.replace("/kioskProject.html#/kioskStart/" + project.unique_code)
     }
 
   $scope.editProfile = function() {
@@ -3195,18 +3221,19 @@ module.factory('swalService', function() {
 
 // login module
 
-module.controller('loginController', ['$scope', '$http', '$state',
-    function($scope, $http,$state) {
+module.controller('loginController', ['$scope', '$http', '$state', '$window',
+    function($scope, $http,$state,$window) {
 
     $scope.userRegData = {};
     $scope.loginData = {};
 
     $scope.checkLogin = function() {
         $http.get('/api/user').then(function(response) {
-             window.location.replace('/UserProfile.html');
+          $window.location.href = '#/UserProfile.html';
             //window.location.replace('/userProfile/showAllProjects.html');
-        }, function(response) {
-
+        }).catch(function(response) {
+          //$window.location.href = "#/login";
+          //$window.location.reload();
         });
     };
     $scope.checkLogin();
