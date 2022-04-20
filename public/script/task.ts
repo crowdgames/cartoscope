@@ -232,7 +232,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       }
 
       vm.nextCairnToShow = cairnTypes.none;
-      vm.showGraph = false;
+      vm.showGraph = true;
       vm.handleCairns = () => {
           console.assert(vm.cairnState === cairnState.noCairn, "cairn state is not noCairn, despite the main task showing");
           let cairnMode  = cairnTypes.none;
@@ -411,7 +411,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           let graphcairn = document.getElementById("cairn-sidebar-header");
           
           if (vm.startgraph == 0) {
-              vm.graphcairnbar = document.createElement("p");
+              vm.graphcairnbar = document.createElement("div");
               vm.graphcairnbar.setAttribute("class", "cairn-message");
               graphcairn?.insertAdjacentElement("afterend", vm.graphcairnbar);
               vm.startgraph = 1;
@@ -430,21 +430,29 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           }
           else {
               graphcairn!.innerText = "How others voted for this image!";
-              let ratio = Math.round(vm.countyes/(vm.countyes+vm.countno)*10);
+              let ratio = Math.round(vm.countyes/(vm.countyes+vm.countno)*100);
               if(vm.startgraph == 1) {
-                  vm.graphcairnbar.innerText = "";
-                  console.log("ratio " + ratio);
-                  let vote  = option;
-                  console.log("vote " + vote);
-                  for(let i = 0; i < 12; i++) {
-                      if (i - ratio == 1 && vote == 0) vm.graphcairnbar.innerText += white_square;
-                      else vm.graphcairnbar.innerText += i > ratio ? black_square : green_square;
-                  }
-                  vm.graphcairnbar.innerText += "\n";
-                  for(let i = 0; i < 12; i++) {
-                      if (i + ratio == 11 && vote == 1) vm.graphcairnbar.innerText += white_square;
-                      else vm.graphcairnbar.innerText += i > (10 - ratio) ? black_square : red_square;
-                  }
+                  // vm.graphcairnbar.innerText = "";
+                  // console.log("ratio " + ratio);
+                  // let vote  = option;
+                  // console.log("vote " + vote);
+                  // for(let i = 0; i < 12; i++) {
+                  //     if (i - ratio == 1 && vote == 0) vm.graphcairnbar.innerText += white_square;
+                  //     else vm.graphcairnbar.innerText += i > ratio ? black_square : green_square;
+                  // }
+                  // vm.graphcairnbar.innerText += "\n";
+                  // for(let i = 0; i < 12; i++) {
+                  //     if (i + ratio == 11 && vote == 1) vm.graphcairnbar.innerText += white_square;
+                  //     else vm.graphcairnbar.innerText += i > (10 - ratio) ? black_square : red_square;
+                  // }
+                  vm.graphcairnbar.innerHTML = "";
+                  // vm.graphcairnbar.innerHTML += '<div style="color: green">YES</div><div id="progress"><progress class="progressBar1" value="32" max="100"> 32% </progress></div><div style="color: red">NO</div>';
+                  vm.graphcairnbar.innerHTML += `<div style="min-height: 5em;"><div style="color: green; text-align: left">YES</div><div class="w3-border">
+                  <div id="myBar" class="w3-container w3-padding w3-green" style="width:${ratio}%">
+                        <div class="w3-center" id="demo">${ratio}%</div>
+                  </div>
+                </div></div><div style="float:right; color: red;margin-top: -15px">NO</div></div>`;
+                  $( ".progressBar1" ).val(ratio);
               }
           }
 
