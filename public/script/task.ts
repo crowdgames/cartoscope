@@ -1425,7 +1425,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                       
                       let it_annot = tutpath + item.image_name;
                       // Some images have drawings on them, arrows and the like. Use this image if it exists
-                      if (item.image_annotation != 0){
+                      if (item.image_annotation){
                           // sometimes image annotations already have the project code in them, sometimes they don't. This is a hacky way of seeing if we need to add the project code or not.
                           it_annot = item.image_annotation.includes('/') 
                               ? `${tutpath}${item.image_annotation}`
