@@ -56,12 +56,12 @@
 
     <div class="projects-panel" id="projects-panel">
 
-        <div class="project-box" ng-repeat="project in projects" ng-class="getRandomClass()" ng-click="goToProject(project.unique_code)">
+        <div class="project-box" ng-repeat="project in projects" ng-class="getRandomClass()" ng-click="goToProject(project.url_name)">
             <span class="title">
                 {{project.name}}
             </span>
             <p class="desc">
-                {{project.description}}
+                {{project.short_description}}
             </p>
 
         </div>
