@@ -70,12 +70,12 @@
         <div class="row legend_contributions_dataset"> 
             <div class="legend_contributions">
                 <h3>Legend</h3>
-                <div class="row" style="margin-top:-1em; margin-left: -5em;">
-                    <div class="col col-lg-6 contributions_options">
+                <div class="row" style="margin-top:-1em;">
+                    <div class="col col-xs-6 col-md-6 col-lg-6 contributions_options">
                         <h5><strong>My Contributions</strong></h5>
-                        <div ng-repeat="itm in legendObject" style="margin-left: -5em; "><img src="{{itm.image}}" > {{itm.key}}</div>
+                        <div ng-repeat="itm in legendObject"><img src="{{itm.image}}" > {{itm.key}}</div>
                     </div>
-                    <div class="col col-lg-6  contributions_options">
+                    <div class="col col-xs-6 col-md-6 col-lg-6 contributions_options">
                         <h5><strong>Everyone's Contributions</strong></h5>
                         <div class="options_contributions" style=" color: #000; background-color: {{itm.color}};border-color: {{itm.color}};" ng-repeat="itm in options">{{itm.name}}</div>
                     </div>
