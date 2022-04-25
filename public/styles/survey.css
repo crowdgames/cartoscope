@@ -228,6 +228,7 @@ textarea.form-control{
     flex-direction: column;
     gap: 10px;
     margin-top: 1em;
+    align-items: center;
 }
 
 .legend_contributions h6 {
@@ -235,13 +236,12 @@ textarea.form-control{
     font-weight:bold;
 }
 .legend_contributions img {
-    max-width:10%;
-    max-height:10%;
+    max-width:40%;
+    max-height:30%;
 }
 .options_contributions{
-    width: 225px;
+    width: 80%;
     height: 30px;
-    margin-left: 4em;
     line-height: 2.5;
     background: #9ACA3C;
     border-radius: 30px;
