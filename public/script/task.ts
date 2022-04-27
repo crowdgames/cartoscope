@@ -232,7 +232,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       }
 
       vm.nextCairnToShow = cairnTypes.none;
-      vm.showGraph = true;
+      vm.showGraph = false;
       vm.handleCairns = () => {
           console.assert(vm.cairnState === cairnState.noCairn, "cairn state is not noCairn, despite the main task showing");
           let cairnMode  = cairnTypes.none;
