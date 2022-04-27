@@ -60,3 +60,10 @@ Hurricane Ida projects:\
 
 MTurk oil spills for AI training:\
 "YkkjyVNcPRDn"
+
+Graph cairn testing w/ just 40 images:\
+"IBJ51h3pcq3H" (106)
+
+LLL Nigeria project:\
+
+101,102,103,104 ("3mQIXe3ioFr1", "4gsOWQ77pkHv", "TGiUFIjnLx3K", "5Ziq4Hb7nXNH")
