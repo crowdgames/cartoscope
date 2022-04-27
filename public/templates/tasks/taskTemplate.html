@@ -15,10 +15,10 @@
                 <div ng-switch="model.userType" ng-if="!model.showFlightPath">
 
 
-                    <div ng-switch-default class="progress progressDiv progress-bar-div">
+                    <div ng-switch-default class="progress progressDiv progress-bar-div" ng-if="model.showProgressBar">
                         <!-- Deleted the progress bar, see git for an example of how to put it back -->
                         <!-- Placing the progress bar back as mentioned in the new ui templates-->
-                        <div ng-hide="model.showProgressBar"
+                        <div
                             class="progress-bar progress-bar-striped progress-bar-success" role="progressbar"
                             aria-valuenow="{{next_per2}}" aria-valuemin="0" aria-valuemax="100"
                             ng-style="mturkbarStyle">
