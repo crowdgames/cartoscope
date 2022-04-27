@@ -424,6 +424,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           let red_square   = "🟥";
           // let blue_square  = "🟦";
           let white_square = "⬜";
+          console.log(`count yes: ${vm.countyes}, count no: ${vm.countno}`)
           if(vm.countyes+vm.countno <= 5) {
               graphcairn!.innerText = "You were one of the first ones to vote on this image!";
               vm.graphcairnbar.innerText = "";
