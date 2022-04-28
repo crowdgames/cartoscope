@@ -318,8 +318,23 @@ exports.getSurveyVotesTGHITRaw = function(hit_id) {
 
 }
 
-
+//TODO: remove and replace all calls with getSurveyAnswersHub (see below)
 exports.getSurveyAnswersLandLoss = function(project_ids) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+        var query = 'select * from survey where  hitID=\'kiosk\' and project_id in (' + project_ids.toString() + ')'
+        connection.queryAsync(query).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+
+};
+
+exports.getSurveyAnswersHub = function(project_ids) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
 
