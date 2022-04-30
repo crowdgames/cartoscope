@@ -612,7 +612,7 @@ exports.generateTileoscopeARDatasetInfoJSON = function(unique_code) {
             short_description: '',      //short description to show
             cartoscope_page_link: '',         //link to project page on Cartoscope
             filenames: [],              //names of images without extension
-            has_location: 0,
+            has_location: 1,
             name: '',
             short_name: '',
             short_name_friendly: '',
