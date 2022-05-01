@@ -1635,7 +1635,11 @@ module.controller('stepFourController', ['$scope', '$state', '$http', 'swalServi
                       $scope.update_ar_ready();
 
                   }
-              }, function (resp) {
+              }, function(err) {
+                          alert('The data set failed to upload');
+                        },
+
+               function (resp) {
                   $scope.showUploadProgress = false;
 
                   alert('Something wrong with the uploaded data set');
