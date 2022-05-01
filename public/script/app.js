@@ -1680,7 +1680,10 @@ module.controller('stepFourController', ['$scope', '$state', '$http', 'swalServi
                   $scope.showUploadProgress = false;
 
                   alert('Something wrong with the uploaded data set');
-              }, function (evt) {
+              }, function(err) {
+                        alert('The data set failed to upload');
+                      },
+              function (evt) {
                   $scope.showUploadProgress = true;
 
                   $scope.progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
