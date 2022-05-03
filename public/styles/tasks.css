@@ -27,7 +27,7 @@ h1, h2, h3, h4, h5 {
   padding: 10px;
   font-size: 20px;
   transition: 2s;
-  animation: slidein 0.5s forwards;
+  /*animation: slidein 0.5s forwards; */
 }
 @keyframes slidein {
   from {
