@@ -214,6 +214,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.hitID = $location.search().hitID || $location.search().trialID || "kiosk";
       vm.hitIDSplit = vm.hitID.split('_');
       vm.cairnsInfoArray = vm.hitIDSplit.length > 2 && vm.hitIDSplit[2].split("-")[0] === "cairns" ? vm.hitIDSplit[2].split("-").slice(1) : null;
+      vm.showProgressBar = true;
       // vm.showProgressBar = !vm.hitID.startsWith("mturk");
 
       enum cairnTypes {
