@@ -22,7 +22,7 @@ var tileoscope = require('./routes/tileoscope');
 var inaturalist = require('./routes/inaturalist');
 var qlearn = require('./routes/qlearn');
 var localDataset = require('./routes/localDataset');
-
+var nodemailer = require("nodemailer");
 var trials = require('./routes/trials');
 
 
@@ -291,7 +291,36 @@ app.get('*', function(req, res) {
     res.sendfile('./public/index.html'); // load the single view file (angular will handle the page changes on the front-end)
 });
 
+let mailTransporter = {
+    service: 'gmail',
+    auth: {
+        user: 'drishtisabhaya@gmail.com',
+        pass: 'Drishti@2000'
+    }
+};
 
+let mailModule = nodemailer.createTransport(mailTransporter);
+
+app.post('/sendemail',function(req,res) {
+    console.log(req.body);
+    var mailOptions = {
+        from: 'drishtisabhaya@gmail.com',
+        to: req.body.to,
+        subject: "reset password",
+        text: req.body.text,
+        html: '<p>Click on the <a href="http://localhost:8081/#/resetpassword/' + req.body.text + '">link</a> to reset your password</p>'
+    };
+    // mailModule.sendMail(mailOptions);
+    mailModule.sendMail(mailOptions, function(error){
+        if(error){
+            console.log("error failed", error);
+            res.sendStatus(400);
+        }else{
+            res.sendStatus(200);
+        }
+
+    });
+});
 
 
 
@@ -316,7 +345,7 @@ app.use(function(req, res, next) {
 // will print stacktrace
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
-    console.log(err);
+    console.log("development error",err);
     res.status(err.status || 500);
     res.send('error', {
       message: err.message,
@@ -328,9 +357,9 @@ if (app.get('env') === 'development') {
 // production error handler
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
-  console.log(err);
+  console.log("erorrrrrr",err);
   res.status(err.status || 500);
-  res.render('error', {
+  res.send('error', {
     message: err.message,
     error: {}
   });

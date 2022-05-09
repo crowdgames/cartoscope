@@ -109,6 +109,30 @@ router.get('/', filters.requireLogin, function(req, res, next) {
     res.status(404).send({error: 'Missing ID'});
   }
 });
+router.put('/resetpassword', function(req,res,next) {
+    var body = req.body;
+    var userid;
+    console.log("body"+body.username);
+    if (!body.password) {
+        res.status(400).send({error: 'Missing one of required parameters: password and repeat password'});
+        return;
+    }
+    userDB.getIdfromUsername(body.username, function(err, result1) {
+        if (!err) {
+            userid = result1;
+        } else {
+            res.send(400);
+        }
+    });
+    userDB.resetPassword(userid, body.password,
+       function(err, result) {
+           if (!err) {
+               res.send(200);
+           } else {
+               res.status(500).send({error: err.code});
+           }
+    });
+});
 
 router.post('/add', upload.any(), function(req, res, next) {
   var body = req.body;

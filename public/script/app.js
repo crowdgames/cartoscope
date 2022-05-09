@@ -46,6 +46,13 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
     });
 
     $stateProvider.state({
+         name: 'resetpassword',
+         url: '/resetpassword/:id',
+         templateUrl: 'resetPassword.html',
+         controller: 'ResetPasswordController'
+     });
+
+    $stateProvider.state({
         name: 'cmnh',
         url: '/museum',
         controller: function($scope, $window) {
@@ -3200,6 +3207,51 @@ module.controller('loginController', ['$scope', '$http', '$state',
 
     $scope.userRegData = {};
     $scope.loginData = {};
+    $scope.resetPassword = {};
+    $scope.disable = true;
+    $scope.resetpassword = function () {
+        const username = $scope.resetPassword.username;
+        $http.get('/api/user/checkid/'+username).then(function(response) {
+            if(!response.data.present) {
+                swal({
+                         title: 'Error!',
+                         confirmButtonColor: '#9ACA3C',
+                         allowOutsideClick: true,
+                         text: 'Invalid/Missing Username',
+                         type: 'error',
+                         confirmButtonText: 'Back'
+                     });
+                return;
+            }
+        });
+        if (!validateEmail($scope.resetPassword.email)) {
+            swal({
+                     title: 'Error!',
+                     confirmButtonColor: '#9ACA3C',
+                     allowOutsideClick: true,
+                     text: 'Invalid/Missing Email',
+                     type: 'error',
+                     confirmButtonText: 'Back'
+                 });
+            return;
+        } else {
+            $scope.disable = false;
+            let elm1 = document.getElementById("passwordreset");
+            let elm2 = document.getElementById("useremail");
+            let elm3 = document.getElementById("username");
+            elm1.innerText = "An email with password link has been sent to you.";
+            elm2.innerText = "";
+            elm3.innerText = "";
+            // var link = `http:localhost:8081/#/resetpassword/`+username;
+            $http.post('/sendemail', {
+                to: $scope.resetPassword.email,
+                subject: 'Message from AngularCode ',
+                text: username
+            }).then(res=>{
+                console.log(res);
+            });
+        }
+    };
 
     $scope.checkLogin = function() {
         $http.get('/api/user').then(function(response) {
@@ -3388,6 +3440,62 @@ module.controller('loginController', ['$scope', '$http', '$state',
         var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         return re.test(email);
     }
+}])
+//     .config(function($routeProvider) {
+//     $routeProvider
+//         .when('/resetpassword/:token', {
+//             templateUrl: 'resetPassword.html',
+//             controller: 'ResetPasswordController'
+//         })
+// });
+
+module.controller('ResetPasswordController', ['$scope', '$http', '$state', '$stateParams',
+              function($scope, $http,$state,$stateParams) {
+      var fd = {};
+      var username = $stateParams.id;
+      $scope.resetPassword = {};
+      $scope.resetpassword = function() {
+          if (!$scope.resetPassword.password) {
+              swal({
+                       title: 'Error!',
+                       confirmButtonColor: '#9ACA3C',
+                       allowOutsideClick: true,
+                       text: 'Please enter a password',
+                       type: 'error',
+                       confirmButtonText: 'Back'
+                   });
+              return;
+          } else if ($scope.resetPassword.password != $scope.resetPassword.spassword) {
+              swal({
+                       title: 'Error!',
+                       confirmButtonColor: '#9ACA3C',
+                       allowOutsideClick: true,
+                       text: 'Passwords do not match',
+                       type: 'error',
+                       confirmButtonText: 'Back'
+                   });
+              return;
+          }
+          fd.password = $scope.resetPassword.password;
+          fd.username = username;
+          console.log("fd"+fd);
+          $http.put('/api/user/resetpassword', fd).then(function(response) {
+              console.log("done reset password");
+          }, function(response) {
+              var msg = response.data.error || 'error';
+              swal({
+                       title: 'Error!',
+                       confirmButtonColor: '#9ACA3C',
+                       allowOutsideClick: true,
+                       text: msg,
+                       type: 'error',
+                       confirmButtonText: 'Back'
+                   });
+          }
+          );
+
+      }
+
 }]);
 
 module.directive('fileModel', ['$parse', function($parse) {

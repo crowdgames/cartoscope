@@ -168,6 +168,35 @@ exports.updateUser = function(userId, username, email, password, profilePhotoId,
 
 };
 
+exports.resetPassword = function(userId, password, done) {
+    var connection = db.get();
+    if(password!==" "){
+        var salt = bcrypt.genSaltSync(saltRounds);
+        var hash = bcrypt.hashSync(password, salt);
+        connection.query('UPDATE password SET salt=?, password=? WHERE id=?',
+                         [salt, hash, userId],
+                         function(err, res) {
+                             if (err) {
+                                 console.log('in update password error');
+                                 return done(err);
+                             }
+                             done(null, userId);
+                         });
+    } else{
+        done(null, userId);
+    }
+};
+
+exports.getIdfromUsername = function(username, done) {
+    var connection = db.get();
+    connection.query('SELECT id FROM users where username = ?', username, function(err, result) {
+        if (err) {
+            return done(err);
+        }
+        done(null, result);
+    });
+}
+
 exports.deleteUser = function(id, done) {
   var connection = db.get();
   connection.query('UPDATE users SET is_active=0 WHERE id=?', id, function(err, result) {
