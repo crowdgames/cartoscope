@@ -1,6 +1,7 @@
 <!--
 File Title of the project.
 -->
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" />
 <div class="step-1">
     <div class="row">
         <div class="col-md-6">
@@ -40,7 +41,8 @@ File Title of the project.
                        data-placement="right" style="margin-left: 10px;color: #9ACA3C;"
                        title="A full description of your project."></i>
                 </span>
-                <textarea ng-model="project.description"></textarea>
+                <!-- <textarea ng-model="project.description"></textarea> -->
+                <text-angular name="textBox" ng-model="project.description" required></text-angular>
             </div>
             <div>
                 <span>
@@ -58,6 +60,7 @@ File Title of the project.
 
         </div>
         <div class="col-md-6">
+            <div class="row">
             <span>
                 Project Image
                 <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
@@ -72,6 +75,62 @@ File Title of the project.
             <div>
                 <canvas id="imageCanvas" style="max-height: 200px;width: auto;"></canvas>
             </div>
+            </div>
+            <div> <button class="next-btn bottom-btn ng-binding" ng-click="showpreview =!showpreview"> Show/Hide Preview</button></div>
+            <div ng-if="showpreview"  style="background: white;color: black;" class="row previewSection">
+                <div>
+
+                    <div>
+                
+                        <div class="row intro"  style="text-align: center">
+                            <h1 class="col-sm-12 projectName" style="font-size: 36px;"><p style="font-size: 20px;"><b>WELCOME TO</b></p></br>
+                                <b><p style="">{{project.name}}</p></b></h1>
+                        </div>
+                        <div ng-if="cover_pic != 'default'" class="row"  style="text-align: center">
+                            <br>
+                            <img ng-src="{{cover_pic_path}}" alt="project logo" style="width: 200px; height: auto"/>
+                        </div>
+                
+                        <div class="row"  style="text-align: center">
+                
+                            <div class="col-sm-12 description" ng-bind-html="project.description">
+                
+                            </div>
+                            <div class="col-sm-12 description" ng-if="has_scistarter">
+                              <p style='font-size:150%'>Coming from <b>Scistarter</b>? Wait until the after the survey at the end of the project for a credit form link!</p>
+                            </div>
+                        </div>
+                        <br>
+                        <br>
+                        <div class="row" ng-show="showVideo" style="text-align: center;margin-bottom:20px;">
+
+                            <div class="col-lg-3 col-md-3 col-sm-0 col-xs-0"></div>
+                
+                            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12" ng-show="video_url.indexOf('youtube') != -1">
+                
+                            <!--<iframe style="width:600px;height: 400px" ng-src="{{video_url  }}" ></iframe>-->
+                                <div class=" video-container" >
+                                    <iframe width="800" height="400" class="" ng-src="{{video_url }}" allowfullscreen></iframe>
+                                </div>
+                                <small>Watch video for more information</small>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-0 col-xs-0"></div>
+                
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" ng-show="video_url.indexOf('youtube') == -1">
+                                    <video  class=" border border-primary" width="600" height="400" controls src="{{video_url }}">
+                                    </video>
+                            </div>
+                
+                        </div>
+                        <div class="row" style="text-align: center;margin-bottom:20px;cursor: pointer;">
+                            <p>Contributing is free and anonymous.</p>
+                            <!-- <a ng-click="showTerms()"> -->
+                                <button type="button" class="btn btn-lg btn-success btnGetStarted" disabled>Get Started</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
 

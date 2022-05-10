@@ -1,7 +1,7 @@
 /**
  * Created by kiprasad on 12/09/16.
  */
-var module = angular.module('app', ['ui.router', 'angucomplete-alt', 'ngAnimate','uiGmapgoogle-maps','configApp','ngFileUpload'])
+var module = angular.module('app', ['ui.router', 'angucomplete-alt', 'ngAnimate','uiGmapgoogle-maps','configApp','ngFileUpload', 'ngSanitize', 'textAngular'])
 
     .config(['uiGmapGoogleMapApiProvider', function (GoogleMapApi) {
         GoogleMapApi.configure({
@@ -1326,6 +1326,7 @@ module.controller('stepOneController', ['$scope', '$state', '$http', 'swalServic
 
     $scope.has_scistarter = false;
     $scope.has_external_signup = false;
+    $scope.showpreview = false;
 
     if ($scope.project.hasOwnProperty("scistarter_link")){
         $scope.has_scistarter = true;

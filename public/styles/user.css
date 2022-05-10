@@ -935,3 +935,19 @@ button {
   color: #26272a;
   background: #9ACA3C;
 }
+
+.ta-root.focussed .ta-scroll-window.form-control {
+  border-color: none !important;
+  outline: 0px;
+   box-shadow: none !important;
+}
+.ta-scroll-window .form-control{
+
+  border: 2px solid #9ACA3C;
+  min-height: 100px;
+}
+
+.ta-scroll-window ng-scope ta-text ta-editor form-control{
+  border: 2px solid #9ACA3C  !important;
+  min-height: 100px !important;
+}

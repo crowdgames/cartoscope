@@ -1,4 +1,4 @@
-var module = angular.module('consentApp', ['ui.router', 'ngAnimate', 'ngRoute', 'uiGmapgoogle-maps','ngCookies', 'ngMap', 'configApp'])
+var module = angular.module('consentApp', ['ui.router', 'ngAnimate', 'ngRoute', 'uiGmapgoogle-maps','ngCookies', 'ngMap', 'configApp', 'ngSanitize',' textAngular'])
 
     // .config(['uiGmapGoogleMapApiProvider', function (GoogleMapApi, googleMapAPIKey) {
     //     GoogleMapApi.configure({

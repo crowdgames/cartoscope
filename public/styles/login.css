@@ -734,3 +734,18 @@ html .modal-kill-btn button {
 span.selected a {
   color: #9CDC18;
 }
+
+.ta-root.focussed .ta-scroll-window.form-control {
+  border-color: none !important;
+  box-shadow: none !important;
+  border: 2px solid #9ACA3C !important;
+}
+.ta-scroll-window.form-control{
+
+  border: 2px solid #9ACA3C !important;
+  min-height: 100px !important;
+}
+
+.ta-scroll-window > .ta-bind {
+  min-height: 100px !important;
+}
