@@ -951,3 +951,22 @@ button {
   border: 2px solid #9ACA3C  !important;
   min-height: 100px !important;
 }
+
+ng-quill-editor{
+   display: block;
+   border: 2px solid #9ACA3C  !important;
+   min-height: 10em !important;
+   background-color: white;
+}
+.ql-tooltip ql-editing{
+  position: relative;
+  top:0;
+  left: 0;
+}
+
+.ql-picker-item, .ql-picker-label{
+  color:black !important;
+}
+.ql-picker-item .ql-selected{
+  color:#06c !important;
+}

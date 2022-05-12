@@ -1,7 +1,7 @@
 /**
  * Created by kiprasad on 12/09/16.
  */
-var module = angular.module('app', ['ui.router', 'angucomplete-alt', 'ngAnimate','uiGmapgoogle-maps','configApp','ngFileUpload', 'ngSanitize', 'textAngular'])
+var module = angular.module('app', ['ui.router', 'angucomplete-alt', 'ngAnimate','uiGmapgoogle-maps','configApp','ngFileUpload', 'ngSanitize', 'ngQuill'])
 
     .config(['uiGmapGoogleMapApiProvider', function (GoogleMapApi) {
         GoogleMapApi.configure({
@@ -9,9 +9,11 @@ var module = angular.module('app', ['ui.router', 'angucomplete-alt', 'ngAnimate'
             // v: '3.20',
             libraries: 'weather,geometry,visualization'
         });
+    }])
+
+    .config(['ngQuillConfigProvider', function (ngQuillConfigProvider) {
+      ngQuillConfigProvider.set(null, null, 'custom placeholder')
     }]);
-
-
 
 // .config(['uiGmapGoogleMapApiProvider', function (GoogleMapApi) {
 //     GoogleMapApi.configure({
@@ -426,6 +428,16 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
           if ($scope.project.hasOwnProperty("external_sign_up") && $scope.project.external_sign_up){
                 $scope.has_external_signup = true;
           }
+
+          $scope.changeDetected = false;
+
+          $scope.editorCreated = function (editor) {
+              console.log(editor);
+          };
+          $scope.contentChanged = function (editor, html, text) {
+              $scope.changeDetected = true;
+              console.log('editor: ', editor, 'html: ', html, 'text:', text);
+          };
 
           $scope.validate = function() {
 
@@ -1414,6 +1426,7 @@ module.controller('stepOneController', ['$scope', '$state', '$http', 'swalServic
           ctx.drawImage(img, 0, 0);
         };
         img.src = event.target.result;
+        $scope.projectPreviewImageSource = img.src;
       };
       reader.readAsDataURL(f);
     };
@@ -2497,6 +2510,7 @@ module.controller('hubStepOneController', ['$scope', '$state', '$http', 'swalSer
           ctx.drawImage(img, 0, 0);
         };
         img.src = event.target.result;
+        $scope.projectPreviewImageSource = img.src;
       };
       reader.readAsDataURL(f);
     };
@@ -2893,6 +2907,7 @@ module.controller('hubStepOneController', ['$scope', '$state', '$http', 'swalSer
           ctx.drawImage(img, 0, 0);
         };
         img.src = event.target.result;
+        $scope.projectPreviewImageSource = img.src;
       };
       reader.readAsDataURL(f);
     };
@@ -3010,6 +3025,7 @@ module.controller('userProfileController', ['$scope','$http', '$state', 'project
                     ctx.drawImage(img, 0, 0);
                 };
                 img.src = event.target.result;
+                $scope.projectPreviewImageSource = img.src;
             };
             reader.readAsDataURL(f);
         }
@@ -3402,6 +3418,7 @@ module.controller('loginController', ['$scope', '$http', '$state', '$window',
                 ctx.drawImage(img, 0, 0);
             };
             img.src = event.target.result;
+            $scope.projectPreviewImageSource = img.src;
         };
         reader.readAsDataURL(f);
     }
