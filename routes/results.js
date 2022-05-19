@@ -410,7 +410,7 @@ router.get('/ida_survey', (_, res) => {
 });
 
 // get survey data for a specific project
-router.get('/project_survey/:pid', (_, res) => {
+router.get('/project_survey/:pid', (req, res) => {
 
     resultDB.getSurveyAnswersLandLoss([req.params.pid]).then(
         results => res.send(results),
