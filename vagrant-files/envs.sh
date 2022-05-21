@@ -7,5 +7,4 @@ export CARTO_PORT=8081
 export CARTO_PORT_SSL=8082
 export CARTO_SSL_KEY='/vagrant/domain.key'
 export CARTO_SSL_CRT='/vagrant/domain.crt'
-
 export CARTO_DEV='development'

@@ -118,19 +118,19 @@ router.get('/getInfoRegister/:code', [filters.requireLogin], function(req, res, 
 });
 
 
-router.get('/getInfoFree/:code', function(req, res, next) {
-        //console.log('In CheckUserAllowed Acess', data);
-        var getProject = projectDB.getProjectFromCode(req.params.code);
-        getProject.then(function(project) {
-            if (project.length > 0) {
-                res.send(project)
-            } else {
-                res.status(500).send({error: 'Project not found'});
-            }
-        }).catch(function(error) {
-            res.status(500).send({error: error.code || 'Project not found'});
-        });
-
+router.get("/getInfoFree/:code", function (req, res, next) {
+  var getProject = projectDB.getProjectFromCode(req.params.code);
+  getProject
+    .then(function (project) {
+      if (project.length > 0) {
+        res.send(project);
+      } else {
+        res.status(500).send({ error: "Project not found" });
+      }
+    })
+    .catch(function (error) {
+      res.status(500).send({ error: error.code || "Project not found" });
+    });
 });
 
 
