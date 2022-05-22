@@ -292,6 +292,10 @@ app.get('/hub/:hub_url', function(req, res) {
     var link = "/kioskProject.html#/hubPage/" + req.params.hub_url;
     if (hitID){
         link += '?trialId=' + hitID
+    } 
+    else if (req.params.hub_url === "landpollution") {
+        link += '?trialId=';
+        link += randomInt(0, 1) ? 'kiosk_landpollution_cairns-g-1-1' : 'kiosk_landpollution_cairns-n';
     }
     res.redirect(link); // send to hub page
 });
