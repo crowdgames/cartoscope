@@ -44,3 +44,10 @@ To make projects for testing purposes, you need to create a user on the website.
 
 [See the legacy install instructions](docs/legacy_install_instructions.md)
 
+## Vagrant Developer Instructions
+  - Assumed mmmagic module was causing the issue stopping the code base from working in Linux systems and M1 macs and resolved it
+  - Removed mmmagic module from the entire code base.
+  - Removing mmmagic module partially resolved the issue such that currently the code base is Working in Linux systems.
+  - Changed and updated the method using which images are uploaded.
+  - Yet to figure out other ways to make it work in M1 mac.
+
