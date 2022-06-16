@@ -196,12 +196,13 @@ router.get('/survey_hub/:url_name', [filters.requireLogin], function(req, res, n
 });
 
 //get information of visits based on a list of unique codes
-router.post('/fetchVisitStatsRaw', [filters.requireLogin], function(req, res, next) {
+router.post('/fetchVisitStatsRaw', function(req, res, next) {
 
     if (req.body.hasOwnProperty('project_codes') && req.body.hasOwnProperty('project_codes')){
         var project_codes = req.body.project_codes.split(',');
         var hit_id = req.body.hitIDs.split(',');
         resultDB.fetchVisitStats(project_codes,hit_id).then(function(results) {
+            
             res.send(results);
         }, function(err) {
             console.log(err);

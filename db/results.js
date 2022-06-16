@@ -362,8 +362,12 @@ exports.fetchVisitStats = function(project_codes, hitIDs) {
         hitIDs.forEach(function(id){
             hitIDString.push("\'" + id + "\'")
         });
-        var query = 'select u.hitID,u.cookieID,count(*) as num_visits from \
-        (select * from kiosk_workers where projectID in ('+ proj_code_string + ') ) as u group by cookieID, hitID having hitID in (' + hitIDString + ')'
+
+        var query = 'select ur.hitID,ur.num_visits, @row := @row + 1 AS hidden_id from \
+        (select u.cookieID,u.hitID,count(*) as num_visits  from \
+        (select * from kiosk_workers where projectID in ('+ proj_code_string + ') ) as u group by cookieID, hitID having hitID in (' + hitIDString + ') order by cookieID) as ur, \
+        (SELECT @row := 0) r'
+
         
         connection.queryAsync(query).then(
             function(data) {
