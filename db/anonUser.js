@@ -330,7 +330,7 @@ exports.saveParams = (workerID, params) => {
   return new Promise((resolve, reject) => {
 
     // reject the request if the worker id is not alphanumeric or if params is not a JS object
-    if (!workerID.match(/^[a-zA-Z0-9]+$/) || typeof params !== "object") {
+    if (!workerID?.match(/^[a-zA-Z0-9]+$/) || typeof params !== "object") {
       reject(new Error("Invalid arguments."))
     }
 
@@ -351,14 +351,13 @@ exports.saveParams = (workerID, params) => {
 
 /**
  * @param {string} workerID workerID for the participant 
- * @returns {[{workerID: string, params: object}]} a promise with data that reolves into an array of JS objects
- *          with workerID and params 
+ * @returns {[{params: object}]} a promise with data that reolves into a list of params for that worker.
  */
 exports.getParamsForWorker = (workerID) => {
   return new Promise((resolve, reject) => {
 
     // reject the request if the worker id is not alphanumeric
-    if (!workerID.match(/^[a-zA-Z0-9]+$/)) {
+    if (!workerID?.match(/^[a-zA-Z0-9]+$/)) {
       reject(new Error("Invalid arguments."))
     }
 
@@ -368,11 +367,10 @@ exports.getParamsForWorker = (workerID) => {
 
     connection.queryAsync(query)
                 .then((data) => {
-                  let workersToParams = data.map((entry) => ({
-                    workerID: entry.workerID,
+                  let paramsList = data.map((entry) => ({
                     params: JSON.parse(entry.params)
                   }))
-                  resolve(workersToParams);
+                  resolve(paramsList);
                 }, 
                 (err) => reject(err))
   })

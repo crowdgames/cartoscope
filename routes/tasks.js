@@ -717,3 +717,21 @@ router.post('/getCairns', [filters.requiredParamHandler(['projectID', 'cairnType
             .then((data) => {console.log(data); res.send(data)})
             .catch((err) => res.status(500).send({err: err.code || 'Could not get cairns'}));
 });
+
+// Posts a new entry on the worker_params. Takes in a workerID in request body.
+router.post('/saveParams', [filters.requiredBodyParamHandler(['workerID'])], (req, res) => {
+  let { workerID } = req.body;
+
+  anonUserDB.saveParams(workerID)
+              .then((data) => res.status(200).send())
+              .catch((err) => res.status(500).send({err: err.code || 'Could not save params'}))
+})
+
+// Gets a list of params for the worker. Takes in a workerID in query params
+router.get('/getParams', [filters.requiredQueryParamHandler(['workerID'])], (req, res) => {
+  let { workerID } = req.query;
+
+  anonUserDB.getParamsForWorker(workerID)
+              .then((data) => res.status(200).send(data))
+              .catch((err) => res.status(500).send({err: err.code || 'Could not get params'}))
+})
