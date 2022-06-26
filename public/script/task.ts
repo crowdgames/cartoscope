@@ -120,7 +120,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.getFullIframe = getFullIframe;
       vm.getFullIframeTutorial = getFullIframeTutorial;
       vm.ngs_before_image_link = "../../images/ngs_hint.png"
-     
 
 
       vm.map={};
@@ -2025,6 +2024,22 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           return 'c' + color;
       };
 
+      const saveParamsOnLoad = () => {
+        let params = $location.search();
+        let workerID: string = params.workerID || params.participantID;
+        delete params["workerID"]
+        delete params["participantID"]
+        
+        let body = {
+            workerID,
+            params
+        }
+
+        $http.post('api/tasks/saveParams', body).catch(err => console.error(err))
+      }
+
+      // When the user lands, we want to store the set of parameters they got here with.
+      saveParamsOnLoad();
     //   console.log("model information:");
     //   console.log(vm);
   }]);

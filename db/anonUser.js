@@ -330,7 +330,7 @@ exports.saveParams = (workerID, params) => {
   return new Promise((resolve, reject) => {
 
     // reject the request if the worker id is not alphanumeric or if params is not a JS object
-    if (!workerID?.match(/^[a-zA-Z0-9]+$/) || typeof params !== "object") {
+    if (!workerID.match(/^[a-zA-Z0-9]+$/) || typeof params !== "object") {
       reject(new Error("Invalid arguments."))
     }
 
@@ -341,11 +341,14 @@ exports.saveParams = (workerID, params) => {
     // TODO: Introduce some kind of restrictions to avoid multiple entries for the same workerID.
     // Make workerID a secondary key depending on some primary key?
     
-    let query = `INSERT INTO workers_params (workerID, params) VALUES (${workerID}, ${jsonifiedParams})`
+    let query = `INSERT INTO worker_params (workerID, params) VALUES (?, ?)`
 
-    connection.queryAsync(query)
+    connection.queryAsync(query, [workerID, jsonifiedParams])
                 .then((data) => resolve(data),
-                      (err) => reject(err));
+                      (err) => {
+                        console.log(err)
+                        reject(err)
+                      });
                 })
 }
 
@@ -357,15 +360,15 @@ exports.getParamsForWorker = (workerID) => {
   return new Promise((resolve, reject) => {
 
     // reject the request if the worker id is not alphanumeric
-    if (!workerID?.match(/^[a-zA-Z0-9]+$/)) {
+    if (!workerID.match(/^[a-zA-Z0-9]+$/)) {
       reject(new Error("Invalid arguments."))
     }
 
     let connection = db.get();
 
-    let query = `SELECT * FROM worker_params WHERE workerID=${workerID}`
+    let query = `SELECT * FROM worker_params WHERE workerID=?`
 
-    connection.queryAsync(query)
+    connection.queryAsync(query, workerID)
                 .then((data) => {
                   let paramsList = data.map((entry) => ({
                     params: JSON.parse(entry.params)

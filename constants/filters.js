@@ -48,7 +48,7 @@ exports.requiredBodyParamsHandler = (bodyParams) => {
   }
 }
 
-exports.requiredQueryParamsHendler = (queryParams) => {
+exports.requiredQueryParamsHandler = (queryParams) => {
   return (req, res, next) => {
     for (let param in queryParams) {
       if (!param in req.query) {
