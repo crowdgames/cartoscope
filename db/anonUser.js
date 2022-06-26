@@ -15,6 +15,7 @@ var mailCentralPWD = process.env.CARTO_MAILER_PWD || "";
 
 /* Mail notifications  */
 var nodemailer = require('nodemailer');
+const { resolve } = require('path');
 var transport = nodemailer.createTransport({
     service: "gmail",
     host: "smtp.gmail.com",
@@ -320,3 +321,59 @@ exports.addHitCode = function(userIDHash, projectCode) {
       });
   });
 };
+
+/**
+ * Saves the parameters that the user with `workerID` used to sign on for tasks
+ * after converting them into a JSON string to the `workers_params` table. 
+ */
+exports.saveParams = (workerID, params) => {
+  return new Promise((resolve, reject) => {
+
+    // reject the request if the worker id is not alphanumeric or if params is not a JS object
+    if (!workerID.match(/^[a-zA-Z0-9]+$/) || typeof params !== "object") {
+      reject(new Error("Invalid arguments."))
+    }
+
+    let connection = db.get();
+
+    let jsonifiedParams = JSON.stringify(params);
+    
+    // TODO: Introduce some kind of restrictions to avoid multiple entries for the same workerID.
+    // Make workerID a secondary key depending on some primary key?
+    
+    let query = `INSERT INTO workers_params (workerID, params) VALUES (${workerID}, ${jsonifiedParams})`
+
+    connection.queryAsync(query)
+                .then((data) => resolve(data),
+                      (err) => reject(err));
+                })
+}
+
+/**
+ * @param {string} workerID workerID for the participant 
+ * @returns {[{workerID: string, params: object}]} a promise with data that reolves into an array of JS objects
+ *          with workerID and params 
+ */
+exports.getParamsForWorker = (workerID) => {
+  return new Promise((resolve, reject) => {
+
+    // reject the request if the worker id is not alphanumeric
+    if (!workerID.match(/^[a-zA-Z0-9]+$/)) {
+      reject(new Error("Invalid arguments."))
+    }
+
+    let connection = db.get();
+
+    let query = `SELECT * FROM worker_params WHERE workerID=${workerID}`
+
+    connection.queryAsync(query)
+                .then((data) => {
+                  let workersToParams = data.map((entry) => ({
+                    workerID: entry.workerID,
+                    params: JSON.parse(entry.params)
+                  }))
+                  resolve(workersToParams);
+                }, 
+                (err) => reject(err))
+  })
+}
