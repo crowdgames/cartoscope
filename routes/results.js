@@ -195,6 +195,40 @@ router.get('/survey_hub/:url_name', [filters.requireLogin], function(req, res, n
         }) 
 });
 
+//get information of visits based on a list of unique codes
+router.post('/fetchVisitStatsRaw', function(req, res, next) {
+
+    if (req.body.hasOwnProperty('project_codes') && req.body.hasOwnProperty('project_codes')){
+        var project_codes = req.body.project_codes.split(',');
+        var hit_id = req.body.hitIDs.split(',');
+        resultDB.fetchVisitStats(project_codes,hit_id).then(function(results) {
+            
+            res.send(results);
+        }, function(err) {
+            console.log(err);
+            res.status(400).send('Could not fetch visit stats for given project codes');
+        });
+    } else {
+        res.status(400).send('Missing project_codes (comma separated string of unique codes) and/or hitIDs (comma separated string of hit ids). Try again');
+    }
+})
+
+//get information of visits based on a list of unique codes
+router.post('/fetchVisitStatsSummary', function(req, res, next) {
+
+    if (req.body.hasOwnProperty('project_codes') && req.body.hasOwnProperty('project_codes')){
+        var project_codes = req.body.project_codes.split(',');
+        var hit_id = req.body.hitIDs.split(',');
+        resultDB.fetchVisitStatsSummary(project_codes,hit_id).then(function(results) {
+            res.send(results);
+        }, function(err) {
+            console.log(err);
+            res.status(400).send('Could not fetch visit stats for given project codes');
+        });
+    } else {
+        res.status(400).send('Missing project_codes (comma separated string of unique codes) and/or hitIDs (comma separated string of hit ids). Try again');
+    }
+})
 
 //Check Expert progress
 router.get('/checkExpertProgress/:hit_code', function(req, res, next) {

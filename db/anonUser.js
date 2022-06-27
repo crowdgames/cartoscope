@@ -320,3 +320,60 @@ exports.addHitCode = function(userIDHash, projectCode) {
       });
   });
 };
+
+/**
+ * Saves the parameters that the user with `workerID` used to sign on for tasks
+ * after converting them into a JSON string to the `workers_params` table. 
+ */
+exports.saveParams = (workerID, params) => {
+  return new Promise((resolve, reject) => {
+
+    // reject the request if the worker id is not alphanumeric or if params is not a JS object
+    if (!workerID.match(/^[a-zA-Z0-9]+$/) || typeof params !== "object") {
+      reject(new Error("Invalid arguments."))
+    }
+
+    let connection = db.get();
+
+    let jsonifiedParams = JSON.stringify(params);
+    
+    // TODO: Introduce some kind of restrictions to avoid multiple entries for the same workerID.
+    // Make workerID a secondary key depending on some primary key?
+    
+    let query = `INSERT INTO worker_params (workerID, params) VALUES (?, ?)`
+
+    connection.queryAsync(query, [workerID, jsonifiedParams])
+                .then((data) => resolve(data),
+                      (err) => {
+                        console.log(err)
+                        reject(err)
+                      });
+                })
+}
+
+/**
+ * @param {string} workerID workerID for the participant 
+ * @returns {[{params: object}]} a promise with data that reolves into a list of params for that worker.
+ */
+exports.getParamsForWorker = (workerID) => {
+  return new Promise((resolve, reject) => {
+
+    // reject the request if the worker id is not alphanumeric
+    if (!workerID.match(/^[a-zA-Z0-9]+$/)) {
+      reject(new Error("Invalid arguments."))
+    }
+
+    let connection = db.get();
+
+    let query = `SELECT * FROM worker_params WHERE workerID=?`
+
+    connection.queryAsync(query, workerID)
+                .then((data) => {
+                  let paramsList = data.map((entry) => ({
+                    params: JSON.parse(entry.params)
+                  }))
+                  resolve(paramsList);
+                }, 
+                (err) => reject(err))
+  })
+}
