@@ -21,15 +21,32 @@ export DEBIAN_FRONTEND=noninteractive
 sudo add-apt-repository ppa:deadsnakes/ppa
 sudo apt-get update
 
-sudo apt-get -y install \
-  python3.6 python-pip python3-pip \
-  mysql-client mysql-server \
-  nodejs npm \
-  wget \
-  dos2unix \
-  openssl \
-  build-essential libffi-dev python3-dev \
-  python-cairosvg
+# Sometimes installing certain packages leads to errors, so we try to install again using --fix-missing tag
+
+echo "== INSTALLING PY =="
+sudo apt-get -y install python3.6 python-pip python3-pip
+sudo apt-get -y --fix-missing install python3.6 python-pip python3-pip
+echo "== INSTALLING MYSQL =="
+sudo apt-get -y install mysql-client mysql-server
+sudo apt-get -y --fix-missing install mysql-client mysql-server
+echo "== INSTALLING NODE =="
+sudo apt-get -y install nodejs npm
+sudo apt-get -y --fix-missing install nodejs npm
+echo "== INSTALLING WGET =="
+sudo apt-get -y install wget
+sudo apt-get -y --fix-missing install wget
+echo "== INSTALLING DOS2UNIX =="
+sudo apt-get -y install dos2unix
+sudo apt-get -y --fix-missing install dos2unix
+echo "== INSTALLING OPENSSL =="
+sudo apt-get -y install openssl
+sudo apt-get -y --fix-missing install openssl
+echo "== INSTALLING BUILD ESSENTIALS =="
+sudo apt-get -y install build-essential libffi-dev python3-dev
+sudo apt-get -y --fix-missing install build-essential libffi-dev python3-dev
+echo "== INSTALLING CAIROSVG =="
+sudo apt-get -y install python-cairosvg
+sudo apt-get -y --fix-missing install python-cairosvg
 
 echo "== INSTALLING PYTHON PACKAGES =="
 
@@ -72,6 +89,7 @@ echo "== SETTING UP ENV VARIABLES =="
 
 cat vagrant-files/envs.sh >> /home/vagrant/.bashrc
 /usr/bin/python3.6 vagrant-files/salt_generator.py >> /home/vagrant/.bashrc
+dos2unix /home/vagrant/.bashrc
 
 echo "== INSTALLING NODE MODULES =="
 
