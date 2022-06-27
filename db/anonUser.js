@@ -15,7 +15,6 @@ var mailCentralPWD = process.env.CARTO_MAILER_PWD || "";
 
 /* Mail notifications  */
 var nodemailer = require('nodemailer');
-const { resolve } = require('path');
 var transport = nodemailer.createTransport({
     service: "gmail",
     host: "smtp.gmail.com",
