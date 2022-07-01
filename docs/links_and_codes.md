@@ -43,11 +43,12 @@ Project IDs
 -----------
 
 These projectIDs are 2008 Land Loss Lookout data and is what the current cairns project uses:\
-["mKSRWYI4E59f", "Z2cg3ppyCsZW", "vOihRaFY2lSS", "ENtBwQQtcK3L", "DQ0RAb6nVgXr", "D1Y4k21Xb9NL"]
+["mKSRWYI4E59f", "Z2cg3ppyCsZW", "vOihRaFY2lSS", "ENtBwQQtcK3L", "DQ0RAb6nVgXr", "D1Y4k21Xb9NL"] (82,83,84,85,86,87)
 
 And this is 2008, but a limited set for the experts to look at
 ["q6iy8qOdUG6u", "nUUnyBXbnOVf", "TvOSOpG6jxtY", "8eHeJI8gOdzX", "yl5uE9JdhaP1", "pbhF6wKhvGK6"]
 ["shoreline erosion", "farming", "O&G", "Shipping", "Sea Level Rise", "Restoration"]
+(95,96,97,98,99,100)
 
 These ids are duplicates of the erosion project. When cairn frequency wasn't tied to hitID, these all had different cairn frequencies, but this is no longer necessary.\
 ("WfpKAneXebT1", "J94tYYPMngNk", "qEEKIgFoFh1m", "dDONGlkBAGUO", "Hzp4vca3LZ4a", "OfohqkweDjEB")
@@ -56,7 +57,7 @@ And these are the ids of the original Land Loss Lookout projects:\
 ["UOYIiFeapnyI","ocioawiaGcjw","KyW6Ti9QUr4I","Srz9arMDwthQ","94yoCWhFkpMk","cXz6ImkmG9k5"] (55-60)
 
 Hurricane Ida projects:\
-("1zJIIjBDaWuw", "X3riraL1vXeT", "Ou9nXNDyuLPm")
+("1zJIIjBDaWuw", "X3riraL1vXeT", "Ou9nXNDyuLPm") (88,89,90)
 
 MTurk oil spills for AI training:\
 "YkkjyVNcPRDn"
