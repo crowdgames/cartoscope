@@ -172,6 +172,16 @@ router.get('/ida_mturk/:trialId', (req, res) => {
     res.redirect(`http://cartosco.pe/kioskProject.html#/kioskStart/${project_code}?trialId=${req.params.trialId}`); 
 });
 
+// testing graph cairns with MTurkers
+router.get('/gcairns_lpl', (req, res) => {
+    let trialIDs = ["mturk_landpollution_cairns-g-1-1", "mturk_landpollution_cairns-n"];
+    let project_code = "8jMn5kSPvLv9";
+    let trialId  = chance.pickone(trialIDs);
+    let link = `http://cartosco.pe/kioskProject.html#/kioskStart/${project_code}?trialId=${trialId}`; 
+    // send to project page
+    res.redirect(link); 
+});
+
 //healthy gulf: Landloss Lookout, mturk randomized, different options
 router.get('/hg_test_options/:hit_id', function(req, res,next) {
 
