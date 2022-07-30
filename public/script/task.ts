@@ -1,15 +1,10 @@
+// TODO: Split all other modules-controller pairs into modules and controllers. Controller for each module should reside in script/controllers.
+
+
 /**
  * Created by kiprasad on 26/09/16.
  */
-var taskApp = angular.module('taskApp', ['ui.router', 'ngMap','configApp','ngJuxtapose', 'ngSanitize']);
-let shuffle = (inA: Array<any>) => {
-  let a = inA.slice(0);
-  for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
+const taskApp = angular.module('taskApp', ['ui.router', 'ngMap','configApp','ngJuxtapose', 'ngSanitize']);
 
 //change \n to br
 taskApp.filter("textBreaks", ['$sce', function ($sce) {

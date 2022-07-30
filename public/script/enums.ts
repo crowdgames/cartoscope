@@ -13,11 +13,11 @@ enum CairnState {
 }
 
 enum CairnType {
-  none,
-  both,
-  soapstone,
-  emoji,
-  graph,
+  none = "none",
+  both = "both",
+  soapstone = "soapstone",
+  emoji = "emoji",
+  graph = "graph",
 }
 
 enum ResponseOptions {
