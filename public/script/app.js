@@ -728,6 +728,33 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
     }
   });
 
+  $stateProvider.state({
+    name: 'root.projectCreation.step7',
+    url: '/step7',
+    views: {
+      'createProjChildView': {
+        templateUrl: 'templates/userProfile/projectCreation/step7.html',
+        controller: 'stepSevenController'
+      }
+    },
+    params: {
+      project: null
+    },
+    resolve: {
+      project: ['$stateParams', '$timeout', '$q', function($stateParams, $timeout, $q) {
+        return $q(function(resolve, reject) {
+          $timeout(function() {
+            if ($stateParams.project && $stateParams.project.id) {
+              resolve($stateParams.project);
+            } else {
+              reject('no id');
+            }
+          }, 50);
+        });
+      }]
+    }
+  });
+
   // HUB PROJECTS
 
 
@@ -912,9 +939,9 @@ module.controller('projectEditController', ['$scope', '$http', '$state','$timeou
 
 
 
-        if ($state.current && $state.current.name == 'root.projectCreation.step6') {
+        if ($state.current && $state.current.name == 'root.projectCreation.step7') {
         $scope.openPublishPopup();
-      } if ($state.current && $state.current.name == 'root.projectEdit.step6') {
+      } if ($state.current && $state.current.name == 'root.projectEdit.step7') {
 
             // $timeout( function(){
                 $state.go('root.getAllProjects');
@@ -996,7 +1023,7 @@ module.controller('projectCreationController', ['$scope', '$http', '$state', '$t
     };
 
     $scope.getNextText = function() {
-      if ($state.current && $state.current.name == 'root.projectCreation.step6') {
+      if ($state.current && $state.current.name == 'root.projectCreation.step7') {
         return 'Publish';
       } else {
         return 'Next';
@@ -1006,7 +1033,7 @@ module.controller('projectCreationController', ['$scope', '$http', '$state', '$t
     $scope.goNext = function() {
 
 
-      if ($state.current && $state.current.name == 'root.projectCreation.step6') {
+      if ($state.current && $state.current.name == 'root.projectCreation.step7') {
         $scope.openPublishPopup();
       } else {
         $scope.$broadcast('validate');
@@ -1759,7 +1786,9 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
             answer: null,
             explanation: null,
             ask_user: 1,
-            in_dataset: 1 };
+            in_dataset: 1,
+            zoom:16 
+          };
         $scope.tutorial_items.push(default_item);
     };
 
@@ -1848,6 +1877,7 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
 
 
     $scope.fetchDatasetItems = function(){
+      $scope.dataset_image_list = [];
 
         $http.get('/api/project/getProjectPoints/' + $scope.project.unique_code).then(function (sdata) {
 
@@ -1858,7 +1888,7 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
 
                     $scope.dataset_image_list.push(  item.name);
                     //default zoom here
-                    $scope.location_dict[item.name] = {x: item.x, y: item.y, zoom:16} ;
+                    $scope.location_dict[item.name] = {x: item.x, y: item.y, zoom:item.zoom} ;
                 } else {
                     $scope.dataset_image_list.push(  item.name + '.jpg');
                 }
@@ -1870,7 +1900,20 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
 
             //andle error!
             $scope.dataset_image_list = [];
-            swalService.showErrorMsg("No images in dataset yet!");
+            //swalService.showErrorMsg("Project upload is not finished yet! Check back again after you have published the project.");
+            swal({
+              title: "Project upload is not finished yet! ",
+              confirmButtonColor: '#9ACA3C',
+              allowOutsideClick: false,
+              html: false,
+              text: "Click continue to proceed to setting up a survey for your project. Once you have published the project, make sure to revisit this page by clicking Edit and going to the tutorial tab.",
+              type: 'info'
+          }).then(function(){
+            $scope.$emit('moveNext');
+          }
+
+          );
+            
         });
     };
 
@@ -1896,7 +1939,7 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
             if($scope.project.task.selectedTaskType !== "tagging"){
                 tutorial_items_to_send[i].x = $scope.location_dict[tutorial_items_to_send[i].image_name].x;
                 tutorial_items_to_send[i].y = $scope.location_dict[tutorial_items_to_send[i].image_name].y;
-                tutorial_items_to_send[i].zoom = $scope.location_dict[tutorial_items_to_send[i].image_name].zoom
+                tutorial_items_to_send[i].zoom = parseInt(tutorial_items_to_send[i].zoom);
                 tutorial_items_to_send[i].image_source = $scope.project.image_source;
             }
 
@@ -1908,6 +1951,7 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
             })
 
         }
+
         $http.post('/api/project/addTutorialItems',
             {
                 'unique_code': $scope.project.unique_code,
@@ -1970,6 +2014,14 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
             swalService.showErrorMsg('Please enter a valid compressed folder');
         }
     };
+
+    $scope.getNGSZoomOptions = function(start,end){
+      var zoom_array = [];
+      for (var i = start; i <= end; i ++){
+        zoom_array.push(i)
+      }
+      return zoom_array;
+  };
 
 
     $scope.fetchDatasetItems();
