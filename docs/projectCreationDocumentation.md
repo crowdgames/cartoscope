@@ -49,6 +49,8 @@ In this step, you will be asked to upload images. We offer two ways to do so, Dr
 - NGS Map: You must a) provide a link to the NGS map you want to use and b) upload a .zip file that contains a .csv with names and coordinates of locations that you wish to be monitored.
 - Slider: For every image, you should also provide a 'before' version, which is denoted by prepending the name of the image with 'before_'. For example, you for image a.jpg, you should also have a before_a.jpg image. This way the slider will switch between files before_a.jpg (left) and a.jpg (right). 
 
+For examples of image sets and tutorials, see the `dataset_examples` on github
+
 ## Publish Settings
 
 - Public: Project will be showing on the Cartoscope main page.
