@@ -1,13 +1,20 @@
 # Project Creation Documentation
 
 
-1. [Basic Info](#basic-info)
-2. [Task Setup](#customizing-task)
-3. [Image Upload](#image-upload)
-4. [Publish Settings](#publish-settings)
-5. [Tutorial Setup](#tutorial)
-6. [Survey Setup](#survey)
+1. [Setting up a User](#user-setup)
+2. [Basic Info](#basic-info)
+3. [Task Setup](#customizing-task)
+4. [Image Upload](#image-upload)
+5. [Publish Settings](#publish-settings)
+6. [Tutorial Setup](#tutorial)
+7. [Survey Setup](#survey)
 8. [Hub projects](#hub-projects)
+
+## User Setup
+
+To create a Cartoscope account which can create projects, navigate to `https://cartosco.pe/#/login` and click "Register". After registration, contact the cartoscope team to receive authorization to create projects.
+
+Once your user has been authorized, logging in will take you to a landing page where you can press "New Project" to start building your first project!
 
 ## Basic Info
 
@@ -16,8 +23,8 @@
 This is the tab for setting basic information about your project, like the title (project name) and full description. 
 If you wish to make your project available on Tile-o-Scope AR as well (TOSAR), the short description and the friendly name fields will be shown on TOSAR instead. This tab also contains some advanced settings:
 
-- Scistarter: Check this option and paste a valid scistarter form to allow participants to report their contributions on Scistarter projects. A banner at the end of the task will appear, that redirects participants to that form.
-- External Sign Up: Check this option and paste a valid form url, if you want to embed external forms at the end of the task, or the results page. Useful when creating projects with organizations that would like to set up signing up for memberships,newsletters etc.
+- Scistarter: Check this option and paste a valid scistarter form to allow participants to report their contributions on Scistarter projects. A banner at the end of the task will appear, that redirects participants to that form. For example, this is the form link for scistarter land loss lookout: `https://scistarter.org/form/landlosslookout`
+- External Sign Up: Check this option and paste a valid form url if you want to embed external forms at the end of the task, or the results page. Useful when creating projects with organizations that would like to set up signing up for memberships,newsletters etc.
 - iNaturalist: TOSAR specific. Check this option if you are uploading a iNaturalist dataset for TOSAR, and you'd like to allow participants to be able to report their labels back to iNaturalist.
 
 ## Customizing Task
@@ -52,13 +59,19 @@ In this step, you will be asked to upload images. We offer two ways to do so, Dr
 ![image](https://user-images.githubusercontent.com/14333910/161312145-babf54cb-aca2-4714-b25f-fecbde619e94.png)
 
 
-You can set up tutorials for your projects here. We currently offer two ways, choosing from images in the project, and uploading custom tutorials. **When first making the project, you may get an error that no images available yet, as your image upload has not finished yet. Proceed to next steps of the project creation by clicking save. After you've published the project, you can setup the tutorial by editing the project.**
+You can set up tutorials for your projects here. We currently offer two ways, choosing from images in the project, and uploading custom tutorials. **When first making the project, you may get an error that no images available yet, as your image upload has not finished yet. Proceed to next steps of the project creation by clicking save. After you've published the project, you can setup the tutorial by editing the project.**. If you continue to receive this error after you've published the project and returned, there may have been something wrong with your image upload.
 
-- Upload Tutorial: Use this option if you wish to use examples that are not in your dataset, or if you wish to show annotations. You will have to uplaod a .zip file containing the images for seting tutorials, along with a csv containing information for every tutorial image. _Information coming soon_
+- Upload Tutorial: Use this option if you wish to use examples that are not in your dataset, or if you wish to show annotations. You will have to upload a .zip file containing the images for the tutorials, along with a csv containing information for every tutorial image.
+    - The CSV should have the following columns: image_name, answer, explanation, image_annotation, ask_user
+      - image_name: The name of an image file. Must be included within the tutorial zip file
+      - answer: The text of the correct answer. e.g. if your project has "Yes" and "No" as potential answers, then "answer" within the tutorial csv can be "Yes". Keep capitalization in mind
+      - explanation: HTML describing why the answer is the correct answer.
+      - image_annotation: The name of an image file represented an annotated version of the main image. Must be included within the tutorial zip file.
+      - ask_user: 0 or 1. 0 if the user should just be shown the correct answer immediately, 1 if the user should be quizzed on the right answer.
 - Choose existing: 
-- - Click the 'Add item' button to start adding examples. For every example, pick an image from the dataset, the correct answer, and an explanation to show participants. Unchecking the 'ask user' option will set this item in _information_ mode: directly show the image and the explanation.
-- - You can change the order of the examples by clicking the arrows on the left.
-- - Once you have added all the tutorial items you wish, click the 'Update Tutorial' button.
+  - Click the 'Add item' button to start adding examples. For every example, pick an image from the dataset, the correct answer, and an explanation to show participants. Unchecking the 'ask user' option will set this item in _information_ mode: directly show the image and the explanation.
+  - You can change the order of the examples by clicking the arrows on the left.
+  - Once you have added all the tutorial items you wish, click the 'Update Tutorial' button.
 
 ## Survey
 
@@ -79,6 +92,3 @@ To create a hub project, you must first create the sub-projects for it. **Curren
 5. Make a new hub project:
 6. 1. Basic Info: Set the title and description that will appear in the hub page. Choose an identifier for your hub project in the URL Link. Your hub project will be accessible at cartosco.pe/hub/URL_LINK 
 7. Choose Subprojects: Add the subprojects you wish to be part of the hub project. For each subproject, pick the label you want to be included in the aggregated hub results page. **For best results, make sure you pick distinct label options in the subprojects**. For example, if you have two sub-projects that look at patterns A and B, instead of giving Yes/No options for both, set the options as A/No A and B/No B. 
-
-
-
