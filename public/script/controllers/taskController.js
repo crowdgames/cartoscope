@@ -23,6 +23,11 @@ taskApp.controller("taskController", [
     "heatMapProject2",
     function ($scope, $location, $http, userData, $window, $timeout, NgMap, $q, $sce, heatMapProject1, heatMapProject2) {
         $window.document.title = "Tasks";
+        if (!$location.search().code) {
+            alert("You seem to have a wrong link");
+            window.location.replace("/");
+            return;
+        }
         let vm = this;
         vm.centerChanged = centerChanged;
         vm.zoomChanged = zoomChanged;
@@ -46,6 +51,8 @@ taskApp.controller("taskController", [
         vm.getFullIframe = getFullIframe;
         vm.getFullIframeTutorial = getFullIframeTutorial;
         vm.ngs_before_image_link = "../../images/ngs_hint.png";
+        // handles all the api calls to tasks api
+        const taskService = new TaskService($http);
         vm.map = {};
         vm.lat = "";
         vm.lang = "";
@@ -120,6 +127,8 @@ taskApp.controller("taskController", [
         vm.showGraph = false;
         vm.handleCairns = () => {
             console.assert(vm.cairnState === CairnState.noCairn, "cairn state is not noCairn, despite the main task showing");
+            if (vm.cairnsInfoArray === null || vm.cairnsInfoArray[0] === "n")
+                return;
             let cairnMode = vm.cairnsInfoArray
                 ? getCairnTypeFromAbbr(vm.cairnsInfoArray[0])
                 : CairnType.none;
@@ -150,7 +159,10 @@ taskApp.controller("taskController", [
                 else if (cairnMode === CairnType.both) {
                     // If we are supposed to show both cairns, alternate between them, starting with a random one
                     if (vm.nextCairnToShow === CairnType.none)
-                        vm.nextCairnToShow = pickRandomInArray([CairnType.soapstone, CairnType.emoji]);
+                        vm.nextCairnToShow = pickRandomInArray([
+                            CairnType.soapstone,
+                            CairnType.emoji,
+                        ]);
                     if (vm.nextCairnToShow === CairnType.soapstone) {
                         vm.nextCairnToShow = CairnType.emoji;
                         vm.startSoapstoneCairn();
@@ -167,19 +179,8 @@ taskApp.controller("taskController", [
             // if the message is empty, the cairnType should be "empty-" + cairnType
             let cairnType = message.length === 0 ? "empty-" + baseCairnType : baseCairnType;
             let timeCairnSubmitted = Math.floor(Date.now() / 1000);
-            console.log("submitting cairn of type " + cairnType + " with message " + message);
-            let body = {
-                projectID: vm.data.id,
-                hitID: vm.hitID,
-                message: encodeURI(message),
-                cairnType: cairnType,
-                progress: vm.data.progress - 1,
-                timeWhenCairnShownToPlayer: vm.timeCairnShownToPlayer,
-                timeCairnSubmitted: timeCairnSubmitted,
-                taskName: vm.previousTaskName,
-            };
-            $http
-                .post("api/tasks/submitCairn", body)
+            taskService
+                .submitCairn(vm.data.id, vm.hitID, encodeURI(message), cairnType, vm.data.progress - 1, vm.timeCairnShownToPlayer, timeCairnSubmitted, vm.previousTaskName)
                 .then((data) => console.log(data));
         };
         vm.submitResponse = () => {
@@ -216,12 +217,12 @@ taskApp.controller("taskController", [
                 console.log("Reached end");
                 vm.alertLoop();
             }
-            // TODO: find out where does this "option" come from.
             //if flight path, change color of marker for the image that was just voted
             if (vm.showFlightPath) {
                 $scope.geoMarkers.some(function (item) {
                     let found = false;
                     if (item.title === vm.image) {
+                        // TODO: find out where does this "option" come from.
                         var col = vm.data.template.options[option].color;
                         item.icon = $scope.icon_array[parseInt(col) - 1];
                         // item.setZIndex(google.maps.Marker.MAX_ZINDEX + 1);
@@ -235,17 +236,13 @@ taskApp.controller("taskController", [
             }
             vm.handleCairns();
         };
+        // This method is not used anywhere..remove it?
         vm.flagImage = () => {
             const shouldFlag = window.confirm("Are you sure you want to flag the image?");
             if (shouldFlag) {
-                var body = {
-                    projectID: vm.data.id,
-                    taskID: vm.tasks[0],
-                };
-                // vm.previousTaskName = vm.tasks[0]["name"];
-                $http.post("/api/tasks/flagimage", body).then(function () {
-                    vm.submitResponse();
-                });
+                taskService
+                    .flagImage(vm.data.id, vm.tasks[0])
+                    .then(() => vm.submitResponse());
             }
         };
         $scope.showDebug = false;
@@ -255,31 +252,25 @@ taskApp.controller("taskController", [
         vm.countyes = 0;
         vm.countno = 0;
         vm.fetchResponse = () => {
-            if (vm.cairnsInfoArray) {
-                var projectid = vm.data.id;
-                var taskname = vm.tasks[0].name;
-                console.log("taskname in fetching response" + taskname);
-                $http
-                    .get("/api/tasks/getreponsecount?projectID=" +
-                    projectid +
-                    "&taskID=" +
-                    taskname +
-                    "&option=0")
-                    .then(function (data) {
-                    console.log("got count yes" + data.data[0]["count"]);
-                    vm.countyes = data.data[0]["count"];
-                    $http
-                        .get("/api/tasks/getreponsecount?projectID=" +
-                        projectid +
-                        "&taskID=" +
-                        taskname +
-                        "&option=1")
-                        .then(function (data) {
-                        console.log("got count no" + data.data[0]["count"]);
-                        vm.countno = data.data[0]["count"];
-                    });
-                });
-            }
+            if (!vm.cairnsInfoArray)
+                return;
+            var projectid = vm.data.id;
+            var taskname = vm.tasks[0].name;
+            console.log("taskname in fetching response" + taskname);
+            let yesCountResponse = taskService
+                .getResponseCount(projectid, taskname, ResponseOptions.Yes)
+                .then((data) => data)
+                .catch((err) => false);
+            let noCountResponse = taskService
+                .getResponseCount(projectid, taskname, ResponseOptions.No)
+                .then((data) => data)
+                .catch((err) => false);
+            if (!yesCountResponse || !noCountResponse)
+                return;
+            vm.countyes = yesCountResponse[0]["count"];
+            console.log(`Count yes: ${vm.countyes}`);
+            vm.countno = noCountResponse[0]["count"];
+            console.log(`Count No: ${vm.countno}`);
         };
         vm.handleGraphCairn = (option) => {
             let graphcairn = document.getElementById("cairn-sidebar-header");
@@ -296,7 +287,6 @@ taskApp.controller("taskController", [
             let red_square = "🟥";
             // let blue_square  = "🟦";
             let white_square = "⬜";
-            console.log(`count yes: ${vm.countyes}, count no: ${vm.countno}`);
             if (vm.countyes + vm.countno <= 5) {
                 graphcairn.innerText =
                     "You were one of the first ones to vote on this image!";
@@ -346,7 +336,7 @@ taskApp.controller("taskController", [
                     break;
                 case CairnState.soapstoneSign:
                     if (vm.chosenSignature === "")
-                        vm.showToast("No avatar chosen!");
+                        showToast("No avatar chosen!");
                     else
                         vm.soapstoneThankYou();
                     break;
@@ -369,11 +359,7 @@ taskApp.controller("taskController", [
             vm.wasSkipHit = true;
             switch (vm.cairnState) {
                 case CairnState.soapstoneGreet:
-                    vm.submitEmptySoapstone();
-                    break;
                 case CairnState.soapstoneMsgTypePick:
-                    vm.submitEmptySoapstone();
-                    break;
                 case CairnState.soapstoneMain:
                     vm.submitEmptySoapstone();
                     break;
@@ -385,8 +371,6 @@ taskApp.controller("taskController", [
                     vm.soapstoneFinish();
                     break;
                 case CairnState.emojiGreet:
-                    vm.finishEmojiCreate();
-                    break;
                 case CairnState.emojiMain:
                     vm.finishEmojiCreate();
                     break;
@@ -400,10 +384,11 @@ taskApp.controller("taskController", [
             vm.wasSkipHit = false;
             switch (vm.cairnState) {
                 case CairnState.soapstoneGreet:
-                    vm.showToast("Can't go back here");
-                    break;
                 case CairnState.soapstoneMsgTypePick:
-                    vm.showToast("Can't go back here");
+                case CairnState.soapstoneThankYou:
+                case CairnState.emojiGreet:
+                case CairnState.emojiMain:
+                    showToast("Can't go back here");
                     break;
                 case CairnState.soapstoneMain:
                     vm.soapstoneMsgTypePick();
@@ -412,86 +397,49 @@ taskApp.controller("taskController", [
                     vm.chosenSignature = "";
                     vm.soapstoneMain();
                     break;
-                case CairnState.soapstoneThankYou:
-                    vm.showToast("Can't go back here");
-                    break;
-                case CairnState.emojiGreet:
-                    vm.showToast("Can't go back here");
-                    break;
-                case CairnState.emojiMain:
-                    vm.showToast("Can't go back here");
-                    break;
                 default:
                     console.error("Handling an unknown cairn state");
             }
         };
-        // == SOAPSTONE MSG CODE ==
-        vm.showSoapstoneMsgToast = () => {
-            // This function is as of now unused and has been replaced with sidebar soapstone messages
-            let body = { projectID: vm.data.id, cairnType: "soapstone" };
-            // TODO this should be a get, but gets have to have body as part of the url
-            $http.post("api/tasks/getCairns", body).then((serverReturn) => {
-                if (serverReturn.data.length > 0) {
-                    let message = "Another user left you a message: <br><br>" +
-                        serverReturn.data[0].message;
-                    vm.showToast(message);
-                }
-                else {
-                    console.error("No relevant soapstone messages found");
-                }
-            });
-        };
-        vm.showToast = (message) => {
-            Toastify({
-                text: message,
-                duration: 5000,
-                close: true,
-                gravity: "top",
-                position: "left",
-                escapeMarkup: false,
-                style: { background: "#4663ac" },
-            }).showToast();
-        };
+        // * The unused showSoapstoneMsgToast() method has now been deleted. Please refer to older versions
+        // * of tasks.ts.
+        // == START SOAPSTONE MSG CODE ==
         /**
          * Populate the sidebar with messages from other players
          * If a message is already in the sidebar, ignore it
          */
         vm.populateMsgSidebar = (numMsgs) => {
             console.log("populating sidebar");
-            let body = {
-                projectID: vm.data.id,
-                cairnType: "soapstone",
-                numberRequested: numMsgs,
-                random: false,
-            };
             // let the messages filter in, with this many ms between them showing up
             let msBetweenMessages = 1000;
             // messages already in the sidebar
             let existingMessages = Array.from(document.getElementsByClassName("cairn-message")).map((p) => p.innerText);
-            $http.post("api/tasks/getCairns", body).then((serverReturn) => {
-                console.log(serverReturn);
-                if (serverReturn["data"].length > 0)
-                    serverReturn["data"]
+            const body = {
+                projectID: vm.data.id,
+                cairnType: CairnType.soapstone,
+                numberRequested: numMsgs,
+                random: false,
+            };
+            taskService
+                .getCairns(body)
+                .then((response) => {
+                if (response && response.length) {
+                    response
                         .map((datum) => decodeURI(datum["message"]))
                         // remove any messages already in the sidebar
                         // (yes I could use .include, but some browsers don't support it)
-                        .filter((message) => existingMessages.filter((existingMsg) => existingMsg === message).length === 0)
+                        .filter((message) => existingMessages.filter((msg) => msg === message).length === 0)
                         // The messages come in reverse order, so reverse back
                         .reverse()
                         // for each message, add it to the sidebar with a short delay
                         // (that way the messages don't all pop up at once)
-                        .forEach((message, idx) => setTimeout(() => vm.insertSidebarMsg(message), idx * msBetweenMessages));
-                else
-                    console.error("No relevant soapstone messages found");
-            });
-        };
-        // insert a message into the sidebar
-        vm.insertSidebarMsg = (msg) => {
-            let sidebar = document.getElementById("cairn-sidebar-header");
-            let messageElement = document.createElement("p");
-            messageElement.innerText = msg;
-            messageElement.setAttribute("class", "cairn-message");
-            sidebar === null || sidebar === void 0 ? void 0 : sidebar.insertAdjacentElement("afterend", messageElement);
+                        .forEach((message, idx) => setTimeout(() => insertSidebarMsg(message), idx * msBetweenMessages));
+                }
+                else {
+                    console.error("No relevant soapstone messages found.");
+                }
+            })
+                .catch(() => console.error("No relevant soapstone messages found."));
         };
         vm.clearMsgSidebar = () => document.querySelectorAll(".cairn-message").forEach((e) => e.remove());
         // == END SOAPSTONE MSG CODE ==
@@ -557,67 +505,10 @@ taskApp.controller("taskController", [
                 "Build up your message! Your message so far: <br><br>" +
                     vm.soapstoneFormValues;
         };
-        vm.soapstones = Object.entries({
-            Thanks: [
-                "Your",
-                ["help", "participation", "effort", "time"],
-                ["is helping to", "shows that you want to"],
-                [
-                    "understand the world!",
-                    "fight coastal damage!",
-                    "save the planet!",
-                    "benefit science",
-                    "care for the gulf",
-                ],
-            ],
-            Collaboration: [
-                [
-                    "Together we can",
-                    "I know we can",
-                    "Thank you for helping to",
-                    "You, me, and the rest of this community can work together to",
-                ],
-                [
-                    "save the Lousiana wetlands!",
-                    "fight environmental damage!",
-                    "advance science!",
-                ],
-            ],
-            Encouragement: [
-                "You",
-                [
-                    "are so helpful!",
-                    "are doing great!",
-                    "can do it!",
-                    "are providing so much helpful data!",
-                ],
-            ],
-            Reassurance: [
-                [
-                    "Don't worry about getting it exactly right,",
-                    "Do your best,",
-                    "It's ok if you don't know,",
-                    "It's ok if you mess up,",
-                ],
-                [
-                    "just say what you see",
-                    "being wrong isn't the end of the world",
-                    "statistical techniques are used to get the most from your answers.",
-                ],
-            ],
-            Concern: [
-                "I",
-                ["feel bored", "am having trouble", "feel angry"],
-                "with",
-                [
-                    "these images",
-                    "this task",
-                    "the state of our environment",
-                    "pollution and habitat loss",
-                ],
-            ],
-        }).reduce((acc, [k, v]) => {
-            acc[k] = v.map((stringOrArry) => typeof stringOrArry === "string" ? stringOrArry : shuffle(stringOrArry));
+        vm.soapstones = Object.entries(soapstoneTypesToMessagesMap).reduce((acc, [k, v]) => {
+            acc[k] = v.map((stringOrArry) => typeof stringOrArry === "string"
+                ? stringOrArry
+                : shuffle(stringOrArry));
             return acc;
         }, {});
         vm.soapstoneTypes = shuffle(Object.keys(vm.soapstones));
@@ -764,7 +655,7 @@ taskApp.controller("taskController", [
                 ? vm.soapstoneFormValues + " - " + vm.chosenSignature
                 : vm.soapstoneFormValues;
             vm.submitCairn("soapstone", soapstoneAndSignature);
-            vm.insertSidebarMsg(soapstoneAndSignature);
+            insertSidebarMsg(soapstoneAndSignature);
         };
         vm.submitEmptySoapstone = () => {
             vm.submitCairn("soapstone", "");
@@ -905,17 +796,18 @@ taskApp.controller("taskController", [
         // populate the ballpit
         vm.fillPhysicsWithEmojisFromDatabase = () => {
             let numEmojis = 30;
-            let body = {
+            const body = {
                 projectID: vm.data.id,
-                cairnType: "emoji",
+                cairnType: CairnType.emoji,
                 numberRequested: numEmojis,
             };
-            $http.post("api/tasks/getCairns", body).then((serverReturn) => {
+            taskService.getCairns(body).then((response) => {
                 // Fill with emojis from the server
-                serverReturn["data"].forEach((datum) => vm.addEmojiToPhysics(datum["message"]));
+                response.forEach((datum) => vm.addEmojiToPhysics(datum["message"]));
                 // If there aren't enough emojis, fill with emojis randomly chosen
-                // it has to be this verbose because js is bad at iterators and randomness
-                Array.from(Array(numEmojis - serverReturn["data"].length).keys()).forEach(() => vm.addEmojiToPhysics(vm.emojis[getRandomIntInclusive(0, vm.emojis.length - 1)]));
+                for (let i = 0; i < numEmojis - response.length; i++) {
+                    vm.addEmojiToPhysics(pickRandomInArray(vm.emojis));
+                }
             });
         };
         /* ==============================
@@ -1010,32 +902,18 @@ taskApp.controller("taskController", [
             var zoom = dZoom;
             zoom = Math.min(dZoom, 18); //Google breaks when you go > 18 zoom
             //convert lat,lon to tile coordinates
-            var x = Math.floor(((lon + 180) / 360) * Math.pow(2, zoom));
-            var y = Math.floor(((1 -
-                Math.log(Math.tan((lat * Math.PI) / 180) +
-                    1 / Math.cos((lat * Math.PI) / 180)) /
-                    Math.PI) /
-                2) *
-                Math.pow(2, zoom));
-            var y = Math.floor(((1 -
-                Math.log(Math.tan((lat * Math.PI) / 180) +
-                    1 / Math.cos((lat * Math.PI) / 180)) /
-                    Math.PI) /
-                2) *
-                Math.pow(2, zoom));
+            var x = convertLongitudeToTileX(lon, zoom);
+            var y = convertLatitudeToTileY(lat, zoom);
             //format the google maps url
-            var g_link = "https://mt1.google.com/vt/lyrs=s&x=" +
-                x.toString() +
-                "&y=" +
-                y.toString() +
-                "&z=" +
-                zoom.toString();
+            var g_link = `https://mt1.google.com/vt/lyrs=s&x=${x}&y=${y}&z=${zoom}`;
             return g_link;
         };
         function showModal() {
+            console.log("modal shown");
             $scope.uiMask.show = true;
         }
         function hideModal() {
+            console.log("modal hidden");
             $scope.uiMask.show = false;
         }
         function showBiggerImg() {
@@ -1044,28 +922,21 @@ taskApp.controller("taskController", [
         function hideBiggerImg() {
             $scope.triggerClick("#hideImModalButton");
         }
-        if (!$location.search().code) {
-            alert("You seem to have a wrong link");
-            window.location.replace("/");
-            return;
-        }
         vm.userType = $location.search().type;
         vm.tasks = [];
         vm.dataset = null;
         function getTasks() {
-            showModal();
-            var endpoint = "/api/tasks/gettask/";
-            //if we want to keep going after hitting the end
-            if (vm.image_loop) {
-                endpoint = "/api/tasks/gettaskloop/";
-            }
-            $http.get(endpoint + vm.code).then(function (e) {
-                vm.dataset = e.data.dataset;
-                vm.tasks = e.data.items;
-                if (vm.tasks.length != 0) {
+            vm.showModal();
+            taskService
+                .getTask(vm.code, vm === null || vm === void 0 ? void 0 : vm.image_loop)
+                .then((response) => {
+                var _a;
+                vm.dataset = response === null || response === void 0 ? void 0 : response.dataset;
+                vm.tasks = response === null || response === void 0 ? void 0 : response.items;
+                if (((_a = vm.tasks) === null || _a === void 0 ? void 0 : _a.length) !== 0) {
                     vm.fetchResponse();
                 }
-                if (e.data.finished && !vm.image_loop) {
+                if ((response === null || response === void 0 ? void 0 : response.finishsed) && !vm.image_loop) {
                     vm.finished = true;
                     if (vm.userType == "kiosk") {
                         vm.handleEnd();
@@ -1077,16 +948,14 @@ taskApp.controller("taskController", [
                 latCenter = vm.tasks[0].x;
                 lngCenter = vm.tasks[0].y;
                 if (vm.viewMarkerPoints) {
-                    vm.addMarker(vm.tasks[0].x, vm.tasks[0].y);
+                    vm.addMarker(latCenter, lngCenter);
                 }
-                vm.hideModal();
                 if (vm.showFlightPath && $scope.geoMarkers.length != 0) {
                     vm.setCurrentPos();
                 }
                 vm.ngs_before_image_link = vm.getBeforeImageNGS();
-            }, function (err) {
-                vm.hideModal();
-            });
+            })
+                .finally(() => vm.hideModal());
         }
         function handleEnd($window) {
             vm.handleCairnSkip();
@@ -1130,6 +999,7 @@ taskApp.controller("taskController", [
                 //if chaining, go to next task if needed
                 if (vm.chaining != -1) {
                     var workerID = $location.search().workerID || $location.search().participantID;
+                    // TODO: Create a project service
                     //get the next projects in the chain
                     $http
                         .get("/api/project/getNextProjectChain/" + encodeURIComponent(workerID))
@@ -1205,93 +1075,86 @@ taskApp.controller("taskController", [
         function skipToSurvey() {
             //console.log('Scope code', $scope.code);
             var skip = confirm("Are you sure ?");
-            if (skip == true) {
-                if (!userData) {
-                    var flight_last = 0;
-                    if (vm.showFlightPath) {
-                        flight_last = 1;
-                    }
-                    //if no survey present, go to results
-                    if (!parseInt(vm.data.has_survey)) {
-                        window.location.replace("/kioskProject.html#/results/" + vm.code);
-                    }
-                    else {
-                        //if we have to chain, call DB to get the next project code
-                        if (vm.chaining != -1) {
-                            var workerID = $location.search().workerID || $location.search().participantID;
-                            //get the next projects in the chain
-                            $http
-                                .get("/api/project/getNextProjectChain/" +
-                                encodeURIComponent(workerID))
-                                .then(function (data) {
-                                var next_codes = data.data;
-                                //if out of projects, go to survey
-                                if (next_codes.length == 0) {
-                                    window.location.replace("/survey.html#/" +
-                                        vm.survey_type +
-                                        "?code=" +
-                                        vm.code +
-                                        "&userType=mTurk" +
-                                        "&showChainQuestions=" +
-                                        vm.showChainQuestions +
-                                        "&showFlight=" +
-                                        flight_last);
-                                }
-                                else {
-                                    //pick the next at random
-                                    var random_pick = next_codes[Math.floor(Math.random() * next_codes.length)];
-                                    var next_code = random_pick.unique_code;
-                                    var parms = $location.search();
-                                    var qs = "";
-                                    for (let i in parms) {
-                                        if (i == "code") {
-                                            qs += "&" + i + "=" + next_code;
-                                            continue;
-                                        }
-                                        else if (i == "chain") {
-                                            if (next_codes.length == 1) {
-                                                qs += "&" + i + "=0";
-                                                continue;
-                                            }
-                                            else {
-                                                qs += "&" + i + "=1";
-                                                continue;
-                                            }
-                                        }
-                                        else {
-                                            qs += "&" + i + "=" + parms[i];
-                                            continue;
-                                        }
-                                    }
-                                    qs += "&fromChain=1";
-                                    //go to next task
-                                    window.location.replace("/consentForm.html#/instruction?" + qs.substr(1));
-                                }
-                            }, function (err) {
-                                alert("Error trying to find next project in the chain.");
-                            });
-                        }
-                        else {
-                            //Add the chaining parameter to show relevant questions at the survey
-                            var hubpar = vm.hubUrl ? "&hubUrl=" + vm.hubUrl : ""; //if coming from hub, move that information along in the survey
-                            window.location.replace("/survey.html#/" +
-                                vm.survey_type +
-                                "?code=" +
-                                vm.code +
-                                "&userType=mTurk" +
-                                "&showChainQuestions=" +
-                                vm.showChainQuestions +
-                                "&showFlight=" +
-                                flight_last +
-                                "&contributions=" +
-                                vm.data.progress +
-                                hubpar);
-                        }
-                    }
+            if (!skip)
+                return;
+            if (!userData) {
+                var flight_last = 0;
+                if (vm.showFlightPath) {
+                    flight_last = 1;
+                }
+                //if no survey present, go to results
+                if (!parseInt(vm.data.has_survey)) {
+                    window.location.replace("/kioskProject.html#/results/" + vm.code);
                 }
                 else {
-                    window.location.replace("/UserProfile.html");
+                    //if we have to chain, call DB to get the next project code
+                    if (vm.chaining != -1) {
+                        var workerID = $location.search().workerID || $location.search().participantID;
+                        //get the next projects in the chain
+                        $http
+                            .get("/api/project/getNextProjectChain/" +
+                            encodeURIComponent(workerID))
+                            .then(function (data) {
+                            var next_codes = data.data;
+                            //if out of projects, go to survey
+                            if (next_codes.length == 0) {
+                                window.location.replace("/survey.html#/" +
+                                    vm.survey_type +
+                                    "?code=" +
+                                    vm.code +
+                                    "&userType=mTurk" +
+                                    "&showChainQuestions=" +
+                                    vm.showChainQuestions +
+                                    "&showFlight=" +
+                                    flight_last);
+                            }
+                            else {
+                                //pick the next at random
+                                var random_pick = pickRandomInArray(next_codes);
+                                var next_code = random_pick.unique_code;
+                                var parms = $location.search();
+                                // Configure query parameters of the redirect string
+                                let queryParams = Object.entries(parms).map(([key, value]) => {
+                                    if (key === "code") {
+                                        return { key, value: String(next_code) };
+                                    }
+                                    if (key == "chain") {
+                                        if (next_codes.length === 1)
+                                            return { key, value: "0" };
+                                        else
+                                            return { key, value: "1" };
+                                    }
+                                    return { key, value: String(value) };
+                                });
+                                queryParams.push({ key: "fromChain", value: "1" });
+                                //go to next task
+                                window.location.replace("/consentForm.html#/instruction?" +
+                                    serialializeQueryParams(queryParams));
+                            }
+                        }, function (err) {
+                            alert("Error trying to find next project in the chain.");
+                        });
+                    }
+                    else {
+                        //Add the chaining parameter to show relevant questions at the survey
+                        var hubpar = vm.hubUrl ? "&hubUrl=" + vm.hubUrl : ""; //if coming from hub, move that information along in the survey
+                        window.location.replace("/survey.html#/" +
+                            vm.survey_type +
+                            "?code=" +
+                            vm.code +
+                            "&userType=mTurk" +
+                            "&showChainQuestions=" +
+                            vm.showChainQuestions +
+                            "&showFlight=" +
+                            flight_last +
+                            "&contributions=" +
+                            vm.data.progress +
+                            hubpar);
+                    }
                 }
+            }
+            else {
+                window.location.replace("/UserProfile.html");
             }
         }
         function getNextTask() {
@@ -1304,7 +1167,7 @@ taskApp.controller("taskController", [
                 vm.defZoom = dZoom;
                 vm.image = vm.tasks[0].name;
                 vm.ngs_before_image_link = vm.getBeforeImageNGS();
-                return "/api/tasks/getImage/" + vm.dataset + "/" + vm.tasks[0].name;
+                return taskImageUrl(vm.dataset, vm.tasks[0].name);
             }
         }
         function getLat() {
@@ -1420,16 +1283,15 @@ taskApp.controller("taskController", [
         }
         //submit a dummy vote to indicate start of voting
         function submitStartTime() {
-            var dummyTask = { name: "dummy" };
-            var body = {
+            const body = {
                 projectID: vm.data.id,
                 option: -1,
-                taskID: dummyTask,
+                taskID: { name: "dummy" },
                 mapCenterLat: 0.1,
                 mapCenterLon: 0.1,
                 multiple: 1,
             };
-            $http.post("/api/tasks/submit", body);
+            taskService.submit(body);
         }
         vm.submitAnswer = function (option, option_text) {
             vm.finished = false;
@@ -1440,7 +1302,7 @@ taskApp.controller("taskController", [
                 option_text === "No Image") {
                 vm.noImageCounter++;
                 if (vm.noImageCounter === 4) {
-                    vm.showToast("<b>Please keep going even if you aren't finding images</b>.<br> It is helpful for us to know that these facilities have not been photographed.");
+                    showToast("<b>Please keep going even if you aren't finding images</b>.<br> It is helpful for us to know that these facilities have not been photographed.");
                     vm.noImageCounter = 0;
                 }
             }
@@ -1524,7 +1386,7 @@ taskApp.controller("taskController", [
             }
             else {
                 //all other types of tasks that submit only one response per image
-                var body = {
+                let body = {
                     projectID: vm.data.id,
                     option: option,
                     taskID: vm.tasks[0],
@@ -1533,11 +1395,8 @@ taskApp.controller("taskController", [
                     option_text: option_text,
                 };
                 vm.previousTaskName = vm.tasks[0]["name"];
-                $http.post("/api/tasks/submit", body).then(function () {
-                    vm.submitResponse();
-                });
+                taskService.submit(body).then(() => vm.submitResponse());
             }
-            console.log("taskname in after submitting response" + vm.tasks[0]["name"]);
         };
         vm.noImageCounter = 0;
         var handlecairn = true;
@@ -1638,255 +1497,257 @@ taskApp.controller("taskController", [
                 point_marker.setMap(point_map);
             });
         }
-        //Get project info:
-        $http.get("/api/tasks/getInfo/" + vm.code).then(function (data) {
-            vm.data = data.data;
-            vm.data.template = JSON.parse(vm.data.template);
-            vm.req_amount = vm.data.req_count;
-            vm.survey_t = vm.data.survey_type || "IMI";
-            vm.survey_type = "survey" + vm.survey_t;
-            vm.show_cairns = vm.data.show_cairns || 0;
-            if (vm.data.template.selectedTaskType === "ngs") {
-                if (vm.data.ngs_zoom) {
-                    dZoom = vm.data.ngs_zoom;
-                }
-            }
-            if (parseInt(vm.req_amount) == 0) {
-                $scope.req_text =
-                    'You may complete any number of subtasks before clicking the "Go to Survey" button to finish.';
-            }
-            else {
-                $scope.req_text =
-                    "You must complete at least " +
-                        vm.req_amount +
-                        " subtasks in order to continue to the survey.";
-            }
-            //get the tasks
-            vm.getTasks();
-            //load map with minor timeout to make sure getTasks is done
-            $timeout(function () {
-                vm.map_init();
-            }, 1000);
-            //record dummy vote for start of task
-            submitStartTime();
-            //if slider, make the slider obj
-            if (vm.data.template.selectedTaskType == "slider") {
-                vm.makeSliderObj();
-            }
-            //Set progress bar:
-            $scope.next_per = (vm.data.progress / vm.data.size).toFixed(2) * 100;
-            $scope.mturkbarStyle = { width: $scope.next_per.toString() + "%" };
-            $scope.next_per2 = Math.floor($scope.next_per);
-            // required amount to be able to continue to survey
-            if (vm.data.progress > vm.req_amount) {
-                $scope.showSurvButton = true;
-            }
-            //check if flight path enabled for project:
-            if (vm.data.flight_path) {
-                vm.showFlightPath = true;
-            }
-            //check if flight path enabled for project:
-            if (vm.data.point_selection) {
-                vm.showMarkerPoints = true;
-                vm.point_csv_file = vm.data.points_file;
-                //show the modal with extra info for the first time
-                if (vm.userType == "mTurk") {
-                    $("#helpModal").modal("show");
-                }
-            }
-            else if (vm.data.points_file != null) {
-                //zoom in on location
-                dZoom = 17;
-                vm.point_csv_file = vm.data.points_file;
-                vm.viewMarkerPoints = true;
-            }
-            //if flight path enabled, prepare progress map with markers:
-            if (vm.showFlightPath) {
-                vm.flight_centerChanged = flight_centerChanged;
-                function flight_centerChanged() {
-                    //console.log('IN center CHnaged' +vm.map.getCenter().lat(), vm.map.getCenter().lng() );
-                    var latCenter = vm.flight_map.getCenter().lat();
-                    var lngCenter = vm.flight_map.getCenter().lng();
-                }
-                //Get all images from the project and set as grey markers
-                $http
-                    .get("/api/project/getProjectPoints/" + vm.code)
-                    .then(function (data) {
-                    var projectPoints = data.data;
-                    if (userData) {
-                        var queryline = "/api/results/all/" + vm.code + "/" + userData.id;
+        const getProjectInfo = () => {
+            taskService
+                .getInfo(vm.code)
+                .then((response) => {
+                console.log(response);
+                vm.data = response;
+                vm.data.template = JSON.parse(vm.data.template);
+                vm.req_amount = vm.data.req_count;
+                vm.survey_t = vm.data.survey_type || "IMI";
+                vm.survey_type = "survey" + vm.survey_t;
+                vm.show_cairns = vm.data.show_cairns || 0;
+                if (vm.data.template.selectedTaskType === "ngs") {
+                    if (vm.data.ngs_zoom) {
+                        dZoom = vm.data.ngs_zoom;
                     }
-                    else {
-                        var workerID = $location.search().workerID ||
-                            $location.search().participantID;
-                        var hitID = $location.search().hitID || $location.search().trialID;
-                        var queryline = "/api/results/all/" +
-                            vm.code +
-                            "/" +
-                            encodeURIComponent(workerID);
+                }
+                if (parseInt(vm.req_amount) == 0) {
+                    $scope.req_text =
+                        'You may complete any number of subtasks before clicking the "Go to Survey" button to finish.';
+                }
+                else {
+                    $scope.req_text =
+                        "You must complete at least " +
+                            vm.req_amount +
+                            " subtasks in order to continue to the survey.";
+                }
+                //get the tasks
+                vm.getTasks();
+                //load map with minor timeout to make sure getTasks is done
+                $timeout(function () {
+                    vm.map_init();
+                }, 1000);
+                //record dummy vote for start of task
+                submitStartTime();
+                //if slider, make the slider obj
+                if (vm.data.template.selectedTaskType == "slider") {
+                    vm.makeSliderObj();
+                }
+                //Set progress bar:
+                $scope.next_per = (vm.data.progress / vm.data.size).toFixed(2) * 100;
+                $scope.mturkbarStyle = { width: $scope.next_per.toString() + "%" };
+                $scope.next_per2 = Math.floor($scope.next_per);
+                // required amount to be able to continue to survey
+                if (vm.data.progress > vm.req_amount) {
+                    $scope.showSurvButton = true;
+                }
+                //check if flight path enabled for project:
+                if (vm.data.flight_path) {
+                    vm.showFlightPath = true;
+                }
+                //check if flight path enabled for project:
+                if (vm.data.point_selection) {
+                    vm.showMarkerPoints = true;
+                    vm.point_csv_file = vm.data.points_file;
+                    //show the modal with extra info for the first time
+                    if (vm.userType == "mTurk") {
+                        $("#helpModal").modal("show");
                     }
-                    //Get all the user's votes so far on the project and change icon based on answer
-                    $http.get(queryline).then(function (vote_data) {
-                        var userVotes = vote_data.data;
-                        //Map initialization
-                        NgMap.getMap({ id: "flight_path" }).then(function (flight_map) {
-                            //all unvisited points are gray
-                            var markerID = 0;
-                            vm.flight_map = flight_map;
-                            projectPoints.forEach(function (item) {
-                                var pos = {
-                                    lat: parseFloat(item.x),
-                                    lng: parseFloat(item.y),
-                                };
-                                var marker = new google.maps.Marker({
-                                    position: pos,
-                                    map: flight_map,
-                                    title: item.name,
-                                    id: markerID,
-                                    zIndex: markerID,
-                                    icon: $scope.icon_array[$scope.icon_array.length - 1],
+                }
+                else if (vm.data.points_file != null) {
+                    //zoom in on location
+                    dZoom = 17;
+                    vm.point_csv_file = vm.data.points_file;
+                    vm.viewMarkerPoints = true;
+                }
+                //if flight path enabled, prepare progress map with markers:
+                if (vm.showFlightPath) {
+                    vm.flight_centerChanged = flight_centerChanged;
+                    function flight_centerChanged() {
+                        //console.log('IN center CHnaged' +vm.map.getCenter().lat(), vm.map.getCenter().lng() );
+                        var latCenter = vm.flight_map.getCenter().lat();
+                        var lngCenter = vm.flight_map.getCenter().lng();
+                    }
+                    //Get all images from the project and set as grey markers
+                    $http
+                        .get("/api/project/getProjectPoints/" + vm.code)
+                        .then(function (data) {
+                        var projectPoints = data.data;
+                        if (userData) {
+                            var queryline = "/api/results/all/" + vm.code + "/" + userData.id;
+                        }
+                        else {
+                            var workerID = $location.search().workerID ||
+                                $location.search().participantID;
+                            var hitID = $location.search().hitID || $location.search().trialID;
+                            var queryline = "/api/results/all/" +
+                                vm.code +
+                                "/" +
+                                encodeURIComponent(workerID);
+                        }
+                        //Get all the user's votes so far on the project and change icon based on answer
+                        $http.get(queryline).then(function (vote_data) {
+                            var userVotes = vote_data.data;
+                            //Map initialization
+                            NgMap.getMap({ id: "flight_path" }).then(function (flight_map) {
+                                //all unvisited points are gray
+                                var markerID = 0;
+                                vm.flight_map = flight_map;
+                                projectPoints.forEach(function (item) {
+                                    var pos = {
+                                        lat: parseFloat(item.x),
+                                        lng: parseFloat(item.y),
+                                    };
+                                    var marker = new google.maps.Marker({
+                                        position: pos,
+                                        map: flight_map,
+                                        title: item.name,
+                                        id: markerID,
+                                        zIndex: markerID,
+                                        icon: $scope.icon_array[$scope.icon_array.length - 1],
+                                    });
+                                    $scope.geoMarkers.push(marker);
+                                    markerID += 1;
                                 });
-                                $scope.geoMarkers.push(marker);
-                                markerID += 1;
+                                //change icon color based on vote
+                                userVotes.forEach(function (item) {
+                                    var indx = $scope.geoMarkers
+                                        .map(function (x) {
+                                        return x.title;
+                                    })
+                                        .indexOf(item.task_id);
+                                    $scope.geoMarkers[indx].icon =
+                                        $scope.icon_array[parseInt(item.color) - 1];
+                                });
+                                //set current position:
+                                vm.setCurrentPos();
+                                //get center
+                                var midindex = Math.floor($scope.geoMarkers.length / 2);
+                                vm.map_center_latlng = $scope.geoMarkers[midindex].position;
+                                vm.map_center_lat = $scope.geoMarkers[midindex]
+                                    .getPosition()
+                                    .lat();
+                                vm.map_center_lng = $scope.geoMarkers[midindex]
+                                    .getPosition()
+                                    .lng();
+                                //set map
+                                vm.flight_map = flight_map;
+                                vm.flight_map.setCenter(vm.map_center_latlng);
+                                vm.flight_map_lat = vm.map_center_lat; //- 0.015;
+                                vm.flight_map_lng = vm.map_center_lng; //+ 0.02;
+                                // vm.defZoomFlight = 10;
+                                //Put markers on the map
+                                var bounds = new google.maps.LatLngBounds();
+                                $scope.geoMarkers.forEach(function (item) {
+                                    item.setMap(vm.flight_map);
+                                    bounds.extend(item.getPosition());
+                                });
+                                vm.flight_map.setCenter(bounds.getCenter());
+                                vm.flight_map.fitBounds(bounds);
+                                vm.flight_map.setZoom(vm.flight_map.getZoom() + 2);
                             });
-                            //change icon color based on vote
-                            userVotes.forEach(function (item) {
-                                var indx = $scope.geoMarkers
-                                    .map(function (x) {
-                                    return x.title;
-                                })
-                                    .indexOf(item.task_id);
-                                $scope.geoMarkers[indx].icon =
-                                    $scope.icon_array[parseInt(item.color) - 1];
-                            });
-                            //set current position:
-                            vm.setCurrentPos();
-                            //get center
-                            var midindex = Math.floor($scope.geoMarkers.length / 2);
-                            vm.map_center_latlng = $scope.geoMarkers[midindex].position;
-                            vm.map_center_lat = $scope.geoMarkers[midindex]
-                                .getPosition()
-                                .lat();
-                            vm.map_center_lng = $scope.geoMarkers[midindex]
-                                .getPosition()
-                                .lng();
-                            //set map
-                            vm.flight_map = flight_map;
-                            vm.flight_map.setCenter(vm.map_center_latlng);
-                            vm.flight_map_lat = vm.map_center_lat; //- 0.015;
-                            vm.flight_map_lng = vm.map_center_lng; //+ 0.02;
-                            // vm.defZoomFlight = 10;
-                            //Put markers on the map
-                            var bounds = new google.maps.LatLngBounds();
-                            $scope.geoMarkers.forEach(function (item) {
-                                item.setMap(vm.flight_map);
-                                bounds.extend(item.getPosition());
-                            });
-                            vm.flight_map.setCenter(bounds.getCenter());
-                            vm.flight_map.fitBounds(bounds);
-                            vm.flight_map.setZoom(vm.flight_map.getZoom() + 2);
                         });
                     });
-                });
-            }
-            //if markers task, read points from csv, make markers, add listener, add them to the map
-            if (vm.showMarkerPoints || vm.viewMarkerPoints) {
-                // reject all colors that are not in the project creation options
-                //reject dummy vote QQQ (allows for project creation with only one answer for markers)
-                $scope.point_array_filtered = [];
-                vm.data.template.options.forEach(function (item) {
-                    if (item.text != "QQQ") {
-                        $scope.point_array_filtered.push($scope.point_array[item.color - 1]);
-                    }
-                });
-                $scope.point_array_filtered.push($scope.point_array[$scope.point_array.length - 1]);
-                //get map from task:
-                NgMap.getMap({ id: "main_map" }).then(function (point_map) {
-                    // read CSV file content
-                    $scope.pointMarkers = [];
-                    var pointId = 0;
-                    if (vm.showMarkerPoints) {
-                        d3.csv("/images/files/" + vm.point_csv_file, function (csv_data) {
-                            for (var i = 0; i < csv_data.length; i++) {
-                                // split content based on comma
-                                var csv_obj = csv_data[i];
-                                //make marker from csv point in csv_obj
-                                var point_pos = {
-                                    lat: parseFloat(csv_obj.latitude),
-                                    lng: parseFloat(csv_obj.longitude),
-                                };
-                                var point_marker = new google.maps.Marker({
-                                    position: point_pos,
-                                    map: point_map,
-                                    title: csv_obj.name,
-                                    id: pointId,
-                                    // zIndex: pointId,
-                                    icon: $scope.point_array[$scope.point_array.length - 1], //all unclicked markers are gray
-                                });
-                                //If markers clickable, add click listener to change color on click
-                                if (vm.showMarkerPoints) {
-                                    google.maps.event.addListener(point_marker, "click", function () {
-                                        var col = this.icon;
-                                        //get index of color from array
-                                        var marker_indx = $scope.point_array_filtered.indexOf(col);
-                                        marker_indx =
-                                            (marker_indx + 1) %
-                                                $scope.point_array_filtered.length;
-                                        this.icon = $scope.point_array_filtered[marker_indx];
-                                        this.setIcon($scope.point_array_filtered[marker_indx]);
-                                        this.setMap(point_map);
+                }
+                //if markers task, read points from csv, make markers, add listener, add them to the map
+                if (vm.showMarkerPoints || vm.viewMarkerPoints) {
+                    // reject all colors that are not in the project creation options
+                    //reject dummy vote QQQ (allows for project creation with only one answer for markers)
+                    $scope.point_array_filtered = [];
+                    vm.data.template.options.forEach(function (item) {
+                        if (item.text != "QQQ") {
+                            $scope.point_array_filtered.push($scope.point_array[item.color - 1]);
+                        }
+                    });
+                    $scope.point_array_filtered.push($scope.point_array[$scope.point_array.length - 1]);
+                    //get map from task:
+                    NgMap.getMap({ id: "main_map" }).then(function (point_map) {
+                        // read CSV file content
+                        $scope.pointMarkers = [];
+                        var pointId = 0;
+                        if (vm.showMarkerPoints) {
+                            d3.csv("/images/files/" + vm.point_csv_file, function (csv_data) {
+                                for (var i = 0; i < csv_data.length; i++) {
+                                    // split content based on comma
+                                    var csv_obj = csv_data[i];
+                                    //make marker from csv point in csv_obj
+                                    var point_pos = {
+                                        lat: parseFloat(csv_obj.latitude),
+                                        lng: parseFloat(csv_obj.longitude),
+                                    };
+                                    var point_marker = new google.maps.Marker({
+                                        position: point_pos,
+                                        map: point_map,
+                                        title: csv_obj.name,
+                                        id: pointId,
+                                        // zIndex: pointId,
+                                        icon: $scope.point_array[$scope.point_array.length - 1], //all unclicked markers are gray
                                     });
-                                }
-                                $scope.pointMarkers.push(point_marker);
-                                pointId += 1;
-                            } //end of csv loop
-                            //add markers on the map:
-                            $scope.pointMarkers.forEach(function (item) {
-                                item.setMap(point_map);
-                            });
-                            //Make the legend:
-                            if (vm.showMarkerPoints) {
-                                vm.legendObject = [];
-                                vm.data.template.options.forEach(function (item) {
-                                    //Ignore dummy 'QQQ' option
-                                    if (item.text != "QQQ") {
-                                        vm.legendObject.push({
-                                            key: item.text,
-                                            image: $scope.point_array[item.color - 1],
+                                    //If markers clickable, add click listener to change color on click
+                                    if (vm.showMarkerPoints) {
+                                        google.maps.event.addListener(point_marker, "click", function () {
+                                            var col = this.icon;
+                                            //get index of color from array
+                                            var marker_indx = $scope.point_array_filtered.indexOf(col);
+                                            marker_indx =
+                                                (marker_indx + 1) %
+                                                    $scope.point_array_filtered.length;
+                                            this.icon =
+                                                $scope.point_array_filtered[marker_indx];
+                                            this.setIcon($scope.point_array_filtered[marker_indx]);
+                                            this.setMap(point_map);
                                         });
                                     }
+                                    $scope.pointMarkers.push(point_marker);
+                                    pointId += 1;
+                                } //end of csv loop
+                                //add markers on the map:
+                                $scope.pointMarkers.forEach(function (item) {
+                                    item.setMap(point_map);
                                 });
-                                vm.legendObject.push({
-                                    key: "Unselected",
-                                    image: $scope.point_array[$scope.point_array.length - 1],
-                                });
-                            }
-                        }); //end of csv http get
-                    }
-                    else {
-                        //if viewMarkers, just show one marker
-                        vm.addMarker(vm.fetchCenter()[0], vm.fetchCenter()[1]);
-                    }
-                }); //end of map fetch
-            } //end of if showPoints
-        }, function (err) {
-            alert("You seem to have a wrong/invalid link");
-        });
+                                //Make the legend:
+                                if (vm.showMarkerPoints) {
+                                    vm.legendObject = [];
+                                    vm.data.template.options.forEach(function (item) {
+                                        //Ignore dummy 'QQQ' option
+                                        if (item.text != "QQQ") {
+                                            vm.legendObject.push({
+                                                key: item.text,
+                                                image: $scope.point_array[item.color - 1],
+                                            });
+                                        }
+                                    });
+                                    vm.legendObject.push({
+                                        key: "Unselected",
+                                        image: $scope.point_array[$scope.point_array.length - 1],
+                                    });
+                                }
+                            }); //end of csv http get
+                        }
+                        else {
+                            //if viewMarkers, just show one marker
+                            vm.addMarker(vm.fetchCenter()[0], vm.fetchCenter()[1]);
+                        }
+                    }); //end of map fetch
+                } //end of if showPoints
+            })
+                .catch(() => {
+                alert("You seem to have a wrong link!");
+                return;
+            });
+        };
+        getProjectInfo();
         function getColourClass(color) {
             return "c" + color;
         }
         const saveParamsOnLoad = () => {
-            let params = $location.search();
+            let params = Object.assign({}, $location.search());
             let workerID = params.workerID || params.participantID;
             delete params["workerID"];
             delete params["participantID"];
-            let body = {
-                workerID,
-                params,
-            };
-            $http
-                .post("api/tasks/saveParams", body)
-                .catch((err) => console.error(err));
+            taskService.saveParams(workerID, params);
         };
         // When the user lands, we want to store the set of parameters they got here with.
         saveParamsOnLoad();

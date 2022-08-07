@@ -39,10 +39,36 @@ const defaultPointArray = () => [
     "/images/markers/marker_purple2.svg",
     "/images/markers/marker_grey.svg",
 ];
+const showToast = (message) => {
+    Toastify({
+        text: message,
+        duration: 5000,
+        close: true,
+        gravity: "top",
+        position: "left",
+        escapeMarkup: false,
+        style: { background: "#4663ac" },
+    }).showToast();
+};
+const insertSidebarMsg = (message) => {
+    let sidebar = document.getElementById("cairn-sidebar-header");
+    let messageElement = document.createElement("p");
+    messageElement.innerText = message;
+    messageElement.setAttribute("class", "cairn-message");
+    sidebar === null || sidebar === void 0 ? void 0 : sidebar.insertAdjacentElement("afterend", messageElement);
+};
 const getRandomIntInclusive = (min, max) => {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1) + min); //The maximum is inclusive and the minimum is inclusive
+};
+let shuffle = (inA) => {
+    let a = inA.slice(0);
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
 };
 const pickRandomInArray = (arr) => {
     if (!arr)
@@ -62,4 +88,87 @@ const modifyGraphCairnBar = (graph, ratio) => {
             <div class="w3-center" id="demo">${ratio}%</div>
         </div>
     </div></div><div style="float:right; color: red;margin-top: -15px">NO</div></div>`;
+};
+const serialializeQueryParams = (queryParams) => {
+    if (!queryParams.length)
+        return "";
+    let partiallySerialized = queryParams.map((qp) => `${qp.key}=${qp.value}`);
+    return partiallySerialized.join("&");
+};
+const convertLongitudeToTileX = (longitude, zoom) => {
+    return Math.floor(((longitude + 180) / 360) * Math.pow(2, zoom));
+};
+const convertLatitudeToTileY = (latitude, zoom) => {
+    return Math.floor(((1 -
+        Math.log(Math.tan((latitude * Math.PI) / 180) +
+            1 / Math.cos((latitude * Math.PI) / 180)) /
+            Math.PI) /
+        2) *
+        Math.pow(2, zoom));
+};
+/**
+ * @param dataset name of the dataset
+ * @param imageName name of the image
+ * @returns the URL for the specified task image.
+ */
+const taskImageUrl = (dataset, imageName) => `/api/tasks/getImage/${dataset}/${imageName}`;
+const soapstoneTypesToMessagesMap = {
+    Thanks: [
+        "Your",
+        ["help", "participation", "effort", "time"],
+        ["is helping to", "shows that you want to"],
+        [
+            "understand the world!",
+            "fight coastal damage!",
+            "save the planet!",
+            "benefit science",
+            "care for the gulf",
+        ],
+    ],
+    Collaboration: [
+        [
+            "Together we can",
+            "I know we can",
+            "Thank you for helping to",
+            "You, me, and the rest of this community can work together to",
+        ],
+        [
+            "save the Lousiana wetlands!",
+            "fight environmental damage!",
+            "advance science!",
+        ],
+    ],
+    Encouragement: [
+        "You",
+        [
+            "are so helpful!",
+            "are doing great!",
+            "can do it!",
+            "are providing so much helpful data!",
+        ],
+    ],
+    Reassurance: [
+        [
+            "Don't worry about getting it exactly right,",
+            "Do your best,",
+            "It's ok if you don't know,",
+            "It's ok if you mess up,",
+        ],
+        [
+            "just say what you see",
+            "being wrong isn't the end of the world",
+            "statistical techniques are used to get the most from your answers.",
+        ],
+    ],
+    Concern: [
+        "I",
+        ["feel bored", "am having trouble", "feel angry"],
+        "with",
+        [
+            "these images",
+            "this task",
+            "the state of our environment",
+            "pollution and habitat loss",
+        ],
+    ],
 };

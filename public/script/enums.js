@@ -15,9 +15,14 @@ var CairnState;
 })(CairnState || (CairnState = {}));
 var CairnType;
 (function (CairnType) {
-    CairnType[CairnType["none"] = 0] = "none";
-    CairnType[CairnType["both"] = 1] = "both";
-    CairnType[CairnType["soapstone"] = 2] = "soapstone";
-    CairnType[CairnType["emoji"] = 3] = "emoji";
-    CairnType[CairnType["graph"] = 4] = "graph";
+    CairnType["none"] = "none";
+    CairnType["both"] = "both";
+    CairnType["soapstone"] = "soapstone";
+    CairnType["emoji"] = "emoji";
+    CairnType["graph"] = "graph";
 })(CairnType || (CairnType = {}));
+var ResponseOptions;
+(function (ResponseOptions) {
+    ResponseOptions[ResponseOptions["Yes"] = 0] = "Yes";
+    ResponseOptions[ResponseOptions["No"] = 1] = "No";
+})(ResponseOptions || (ResponseOptions = {}));
