@@ -95,9 +95,9 @@ echo "== INSTALLING NODE MODULES =="
 
 npm config set python /usr/bin/python3.6
 sudo npm i
-sudo npm i -g nodemon typescript bower
+sudo npm i -g nodemon typescript
 
-echo "== INSTALLING BOWER MODULES =="
+echo "== INSTALLING FRONTEND NPM MODULES =="
 
 cd ./public
-bower install
+npm install

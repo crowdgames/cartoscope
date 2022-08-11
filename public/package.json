@@ -1,0 +1,25 @@
+{
+  "name": "cartoscope-frontend",
+  "version": "1.0.0",
+  "description": "",
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "angucomplete-alt": "^2.4.2",
+    "angular": "^1.5.8",
+    "angular-animate": "^1.5.8",
+    "angular-simple-logger": "^0.1.7",
+    "angular-ui-router": "^0.3.1",
+    "bootstrap": "^3.3.7",
+    "font-awesome": "^4.6.3",
+    "google-maps-utility-library-v3-markerwithlabel": "^1.1.10",
+    "jquery": "^3.6.0",
+    "js-rich-marker": "^1.1.2",
+    "juxtapose": "^4.0.42",
+    "lodash": "^4.17.21",
+    "markerclustererplus": "^2.1.4",
+    "ng-juxtapose": "^1.0.2",
+    "ngmap": "^1.17.0",
+    "sweetalert": "^1.1.3"
+  }
+}
