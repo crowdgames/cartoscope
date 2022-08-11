@@ -20,7 +20,7 @@ var exec = require('child_process').exec;
 var spawn = require('child_process').spawn;
 
 var unzip = require('unzip');
-var Minizip = require('node-minizip');
+var Minizip = null; // var Minizip = require('node-minizip');
 var mv = require('mv');
 
 
