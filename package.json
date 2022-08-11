@@ -50,7 +50,6 @@
     "lodash": "^4.15.0",
     "mathjs": "^5.4.2",
     "matter-js": "^0.14.2",
-    // "mmmagic": "^0.4.5",
     "morgan": "~1.7.0",
     "multer": "^1.2.0",
     "mv": "^2.1.1",
@@ -60,7 +59,6 @@
     "ng-juxtapose": "^1.0.2",
     "node-fetch": "^3.0.0",
     "node-gyp": "^3.8.0",
-    "node-minizip": "^0.3.0",
     "nodemailer": "^2.7.2",
     "passport": "^0.2.2",
     "passport-http": "^0.3.0",
@@ -81,7 +79,6 @@
   },
   "devDependencies": {
     "@types/node": "^16.11.4",
-    "node-minizip": "^0.3.0",
     "unzip": "^0.1.11"
   }
 }
