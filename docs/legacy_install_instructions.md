@@ -94,6 +94,9 @@ In this case, the formatting is important since there should be three values whe
 		npm install
 		cd ./public
 		bower install
+
+some npm modules (such as the ones that rely on node-gyp) may require additional dependencies such as `build-essentials` or `libffi-dev`. If in doubt, look at the dependencies installed by the install script in `vagrant-files/vagrant-provision.sh` and try to match those.
+
 12. To facilitate development, also install nodemon and typescript with ```npm install -g nodemon typescript```
 
 14. #### Start Server
