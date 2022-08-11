@@ -79,12 +79,13 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
       //Get all public projects:
       $http({
         method: 'GET',
-        url: '/api/project/getProjects/public'
+        url: '/api/hub/getAllHubProjectsPublic'
       }).then(function successCallback(response) {
         $scope.projects = response.data;
+        console.log($scope.projects)
 
         //Filter out archived, unpublished and private projects:
-        $scope.projects = $scope.projects.filter(function(project) { return (project.archived === 0 && project.published === 1 && project.access_type === 0)});
+        $scope.projects = $scope.projects.filter(function(project) { return (project.published === 1 && project.access_type === 1)});
       }, function errorCallback(response) {
         $scope.projects = [];
       });
@@ -109,7 +110,7 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
 
       //Go to project subpage
       $scope.goToProject = function(code) {
-          $window.location.href = '/kioskProject.html#/kioskStart/' + code;
+          $window.location.href = '/hub/' + code;
         };
 
       window.makeLinkActive = function(link){
@@ -727,6 +728,33 @@ module.config(function($stateProvider, $urlRouterProvider, $httpProvider) {
     }
   });
 
+  $stateProvider.state({
+    name: 'root.projectCreation.step7',
+    url: '/step7',
+    views: {
+      'createProjChildView': {
+        templateUrl: 'templates/userProfile/projectCreation/step7.html',
+        controller: 'stepSevenController'
+      }
+    },
+    params: {
+      project: null
+    },
+    resolve: {
+      project: ['$stateParams', '$timeout', '$q', function($stateParams, $timeout, $q) {
+        return $q(function(resolve, reject) {
+          $timeout(function() {
+            if ($stateParams.project && $stateParams.project.id) {
+              resolve($stateParams.project);
+            } else {
+              reject('no id');
+            }
+          }, 50);
+        });
+      }]
+    }
+  });
+
   // HUB PROJECTS
 
 
@@ -911,9 +939,9 @@ module.controller('projectEditController', ['$scope', '$http', '$state','$timeou
 
 
 
-        if ($state.current && $state.current.name == 'root.projectCreation.step6') {
+        if ($state.current && $state.current.name == 'root.projectCreation.step7') {
         $scope.openPublishPopup();
-      } if ($state.current && $state.current.name == 'root.projectEdit.step6') {
+      } if ($state.current && $state.current.name == 'root.projectEdit.step7') {
 
             // $timeout( function(){
                 $state.go('root.getAllProjects');
@@ -995,7 +1023,7 @@ module.controller('projectCreationController', ['$scope', '$http', '$state', '$t
     };
 
     $scope.getNextText = function() {
-      if ($state.current && $state.current.name == 'root.projectCreation.step6') {
+      if ($state.current && $state.current.name == 'root.projectCreation.step7') {
         return 'Publish';
       } else {
         return 'Next';
@@ -1005,7 +1033,7 @@ module.controller('projectCreationController', ['$scope', '$http', '$state', '$t
     $scope.goNext = function() {
 
 
-      if ($state.current && $state.current.name == 'root.projectCreation.step6') {
+      if ($state.current && $state.current.name == 'root.projectCreation.step7') {
         $scope.openPublishPopup();
       } else {
         $scope.$broadcast('validate');
@@ -1758,7 +1786,9 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
             answer: null,
             explanation: null,
             ask_user: 1,
-            in_dataset: 1 };
+            in_dataset: 1,
+            zoom:16 
+          };
         $scope.tutorial_items.push(default_item);
     };
 
@@ -1847,6 +1877,7 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
 
 
     $scope.fetchDatasetItems = function(){
+      $scope.dataset_image_list = [];
 
         $http.get('/api/project/getProjectPoints/' + $scope.project.unique_code).then(function (sdata) {
 
@@ -1857,7 +1888,7 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
 
                     $scope.dataset_image_list.push(  item.name);
                     //default zoom here
-                    $scope.location_dict[item.name] = {x: item.x, y: item.y, zoom:16} ;
+                    $scope.location_dict[item.name] = {x: item.x, y: item.y, zoom:item.zoom} ;
                 } else {
                     $scope.dataset_image_list.push(  item.name + '.jpg');
                 }
@@ -1869,7 +1900,20 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
 
             //andle error!
             $scope.dataset_image_list = [];
-            swalService.showErrorMsg("No images in dataset yet!");
+            //swalService.showErrorMsg("Project upload is not finished yet! Check back again after you have published the project.");
+            swal({
+              title: "Project upload is not finished yet! ",
+              confirmButtonColor: '#9ACA3C',
+              allowOutsideClick: false,
+              html: false,
+              text: "Click continue to proceed to setting up a survey for your project. Once you have published the project, make sure to revisit this page by clicking Edit and going to the tutorial tab.",
+              type: 'info'
+          }).then(function(){
+            $scope.$emit('moveNext');
+          }
+
+          );
+            
         });
     };
 
@@ -1895,7 +1939,7 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
             if($scope.project.task.selectedTaskType !== "tagging"){
                 tutorial_items_to_send[i].x = $scope.location_dict[tutorial_items_to_send[i].image_name].x;
                 tutorial_items_to_send[i].y = $scope.location_dict[tutorial_items_to_send[i].image_name].y;
-                tutorial_items_to_send[i].zoom = $scope.location_dict[tutorial_items_to_send[i].image_name].zoom
+                tutorial_items_to_send[i].zoom = parseInt(tutorial_items_to_send[i].zoom);
                 tutorial_items_to_send[i].image_source = $scope.project.image_source;
             }
 
@@ -1907,6 +1951,7 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
             })
 
         }
+
         $http.post('/api/project/addTutorialItems',
             {
                 'unique_code': $scope.project.unique_code,
@@ -1969,6 +2014,14 @@ module.controller('stepSixController', ['$scope', '$state', '$http', 'Upload', '
             swalService.showErrorMsg('Please enter a valid compressed folder');
         }
     };
+
+    $scope.getNGSZoomOptions = function(start,end){
+      var zoom_array = [];
+      for (var i = start; i <= end; i ++){
+        zoom_array.push(i)
+      }
+      return zoom_array;
+  };
 
 
     $scope.fetchDatasetItems();
@@ -2405,26 +2458,34 @@ module.controller('hubStepOneController', ['$scope', '$state', '$http', 'swalSer
 
     var invalid_characters = ['\\','/',':','?','\"','<','>','|'];
     $scope.has_external_signup = false;
+    $scope.has_scistarter = false;
 
     if ($scope.hub.hasOwnProperty("external_sign_up")){
         $scope.has_external_signup = true;
     }
+
+    if ($scope.hub.hasOwnProperty("external_sign_up")){
+      $scope.has_scistarter = true;
+  }
 
     $scope.$on('validate', function(e) {
       $scope.validate();
     });
 
     $scope.validate = function() {
-      if (!$scope.hub.name || !$scope.hub.description || !$scope.hub.url_name) {
+      if (!$scope.hub.name || !$scope.hub.description || !$scope.hub.url_name || !$scope.hub.short_description) {
         $scope.showErr = true;
-        swalService.showErrorMsg('Please enter a name, a url name and description for the  hub project.');
+        swalService.showErrorMsg('Please enter a name, a url name and descriptions for the  hub project.');
       } else if (  invalid_characters.some(el => $scope.hub.url_name.includes(el))) {
           $scope.showErr = true;
           swalService.showErrorMsg('URL shortcut cannot contain the following characters: \n' + invalid_characters.join(','));
       } else if ($scope.has_external_signup && ($scope.hub.external_sign_up === "" || !$scope.hub.external_sign_up)){
           $scope.showErr = true;
           swalService.showErrorMsg('Please enter valid URL for external signup form.');
-      }
+      } else if ($scope.has_scistarter && ($scope.hub.scistarter_link === "" || !$scope.hub.scistarter_link)){
+        $scope.showErr = true;
+        swalService.showErrorMsg('Please enter valid URL for scostarter form.');
+    }
 
       else {
         $scope.createHubProject();
@@ -2443,10 +2504,15 @@ module.controller('hubStepOneController', ['$scope', '$state', '$http', 'swalSer
         }
         fd.append('name', $scope.hub.name);
         fd.append('description', $scope.hub.description);
+        fd.append('short_description', $scope.hub.short_description);
+
           fd.append('url_name', $scope.hub.url_name);
           if ($scope.has_external_signup){
               fd.append('external_sign_up', $scope.hub.external_sign_up);
           }
+          if ($scope.has_scistarter){
+            fd.append('scistarter_link', $scope.hub.scistarter_link);
+        }
 
           var link = '/api/hub/add'
           $http.post(link, fd, {
@@ -2793,17 +2859,21 @@ module.controller('hubStepOneController', ['$scope', '$state', '$http', 'swalSer
     console.log(hub);
     var invalid_characters = ['\\','/',':','?','\"','<','>','|'];
     $scope.has_external_signup = false;
+    $scope.has_scistarter = false;
 
     if ($scope.hub.hasOwnProperty("external_sign_up") && $scope.hub.external_sign_up ){
         $scope.has_external_signup = true;
     }
+    if ($scope.hub.hasOwnProperty("scistarter_link") && $scope.hub.scistarter_link ){
+      $scope.has_scistarter = true;
+  }
 
     $scope.$on('validate', function(e) {
       $scope.validate();
     });
 
     $scope.validate = function() {
-      if (!$scope.hub.name || !$scope.hub.description || !$scope.hub.url_name) {
+      if (!$scope.hub.name || !$scope.hub.description || !$scope.hub.short_description || !$scope.hub.url_name) {
         $scope.showErr = true;
         swalService.showErrorMsg('Please enter a name, a url name and description for the  hub project.');
       } else if (  invalid_characters.some(el => $scope.hub.url_name.includes(el))) {
@@ -2812,7 +2882,11 @@ module.controller('hubStepOneController', ['$scope', '$state', '$http', 'swalSer
       } else if ($scope.has_external_signup && ($scope.hub.external_sign_up === "" || !$scope.hub.external_sign_up)){
           $scope.showErr = true;
           swalService.showErrorMsg('Please enter valid URL for external signup form.');
-      }
+      } else if ($scope.has_scistarter && ($scope.hub.scistarter_link === "" || !$scope.hub.scistarter_link)){
+        $scope.showErr = true;
+        swalService.showErrorMsg('Please enter valid URL for external signup form.');
+    }
+
 
       else {
         $scope.createHubProject();
@@ -2830,10 +2904,14 @@ module.controller('hubStepOneController', ['$scope', '$state', '$http', 'swalSer
         fd.append('hub_unique_code', $scope.hub.hub_unique_code);
         fd.append('name', $scope.hub.name);
         fd.append('description', $scope.hub.description);
+        fd.append('short_description', $scope.hub.short_description);
         fd.append('url_name', $scope.hub.url_name);
           if ($scope.has_external_signup){
               fd.append('external_sign_up', $scope.hub.external_sign_up);
           }
+          if ($scope.has_scistarter){
+            fd.append('scistarter_link', $scope.hub.scistarter_link);
+        }
 
           var link = '/api/hub/edit' 
           $http.post(link, fd, {

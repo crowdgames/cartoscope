@@ -58,7 +58,7 @@ var email = process.env.CARTO_MAILER;
 module.exports = router;
 
 
-router.post('/add', [fupload.single('file'), filters.requireLogin, filters.requiredParamHandler(['name', 'description','url_name'])],
+router.post('/add', [fupload.single('file'), filters.requireLogin, filters.requiredParamHandler(['name', 'description','short_description','url_name'])],
   function(req, res, next) {
     var body = req.body;
     var filename = 'default';
@@ -72,7 +72,7 @@ router.post('/add', [fupload.single('file'), filters.requireLogin, filters.requi
         
           fs.renameSync(req.file.path, 'profile_photos/' + filename);
           generateUniqueProjectCode().then(function(projectCode) {
-            hubProjectDB.addHubProject(body.name, req.session.passport.user.id, body.description, filename, projectCode,body.url_name,body.external_sign_up).then(
+            hubProjectDB.addHubProject(body.name, req.session.passport.user.id, body.description,body.short_description, filename, projectCode,body.url_name,body.external_sign_up,body.scistarter_link).then(
               function(result) {
                 console.log('result '+ result);
                 res.send({id: result.insertId, hub_unique_code: projectCode});
@@ -87,7 +87,7 @@ router.post('/add', [fupload.single('file'), filters.requireLogin, filters.requi
       
     } else {
       generateUniqueProjectCode().then(function(projectCode) {
-        hubProjectDB.addHubProject(body.name, req.session.passport.user.id, body.description, filename, projectCode,body.url_name,body.external_sign_up).then(
+        hubProjectDB.addHubProject(body.name, req.session.passport.user.id, body.description,body.short_description, filename, projectCode,body.url_name,body.external_sign_up,body.scistarter_link).then(
           function(result) {
             console.log(result)
             res.send({id: result.insertId, hub_unique_code: projectCode});
@@ -100,7 +100,7 @@ router.post('/add', [fupload.single('file'), filters.requireLogin, filters.requi
   });
 
 
-router.post('/edit', [fupload.single('file'), filters.requireLogin, filters.requiredParamHandler(['name', 'description','url_name', 'hub_unique_code'])],
+router.post('/edit', [fupload.single('file'), filters.requireLogin, filters.requiredParamHandler(['name', 'description','short_description','url_name', 'hub_unique_code'])],
 function(req, res, next) {
   var body = req.body;
   var filename = 'default';
@@ -117,7 +117,7 @@ function(req, res, next) {
        //TODO: FIND A WAY TO TEST IF IMAGE IS VALID HERE
       
         fs.renameSync(req.file.path, 'profile_photos/' + filename);
-          hubProjectDB.editHubProject(body.name, body.description, filename, projectCode,body.url_name,body.external_sign_up).then(
+          hubProjectDB.editHubProject(body.name, body.description,body.short_description, filename, projectCode,body.url_name,body.external_sign_up,body.scistarter_link).then(
             function(result) {
               console.log('result '+ result);
               res.send({id: result.insertId, hub_unique_code: projectCode});
@@ -130,7 +130,7 @@ function(req, res, next) {
     
     
   } else {
-      hubProjectDB.editHubProject(body.name , body.description, filename, projectCode,body.url_name,body.external_sign_up).then(
+      hubProjectDB.editHubProject(body.name , body.description,body.short_description, filename, projectCode,body.url_name,body.external_sign_up,body.scistarter_link).then(
         function(result) {
           console.log(result)
           res.send({id: result.insertId, hub_unique_code: projectCode});
@@ -167,6 +167,21 @@ router.post('/publish', [filters.requireLogin, filters.requiredParamHandler(['hu
     });
   });
 
+
+  
+  router.get('/getAllHubProjectsPublic', function(req, res, next) {
+    var getHubProjects = hubProjectDB.getAllHubProjectsPublic();
+    getHubProjects.then(function(hub) {
+        if (hub.length > 0) {
+            res.send(hub)
+        } else {
+            res.status(500).send({error: 'Public projects not found'});
+        }
+    }).catch(function(error) {
+        res.status(500).send({error: error.code || 'Hub projects not found'});
+    });
+  
+  });
 
 
   function generateUniqueProjectCode() {

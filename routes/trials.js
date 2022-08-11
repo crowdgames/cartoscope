@@ -148,6 +148,9 @@ router.get('/cairns_2008_l/:trialId', (req, res) => {
 // LLL w/ frequency and type of cairns as experimental variable
 router.get('/cairns_webinar/:trialId', (req, res) => {
     // The trialid here should be mturk_something or kiosk_something
+    res.redirect('https://cartosco.pe/hub/landloss2016/kiosk_webinar')
+    // We used to test various cairns, but now we just redirect to the 2016 project
+    /*
     let projects    = ["mKSRWYI4E59f", "Z2cg3ppyCsZW", "vOihRaFY2lSS", "ENtBwQQtcK3L", "DQ0RAb6nVgXr", "D1Y4k21Xb9NL"];
     let cairnTypes = ["b-20-40"];
 
@@ -156,6 +159,7 @@ router.get('/cairns_webinar/:trialId', (req, res) => {
     let cairnType    = chance.pickone(cairnTypes);
     // send to project page
     res.redirect(`http://cartosco.pe/kioskProject.html#/kioskStart/${project_code}?trialId=${hitIDBase}${cairnType}`); 
+    */
 });
 
 // Ida link for mturkers
@@ -166,6 +170,16 @@ router.get('/ida_mturk/:trialId', (req, res) => {
     let project_code = chance.pickone(projects);
     // send to project page
     res.redirect(`http://cartosco.pe/kioskProject.html#/kioskStart/${project_code}?trialId=${req.params.trialId}`); 
+});
+
+// testing graph cairns with MTurkers
+router.get('/gcairns_lpl', (req, res) => {
+    let trialIDs = ["mturk_landpollution_cairns-g-1-1", "mturk_landpollution_cairns-n"];
+    let project_code = "8jMn5kSPvLv9";
+    let trialId  = chance.pickone(trialIDs);
+    let link = `http://cartosco.pe/kioskProject.html#/kioskStart/${project_code}?trialId=${trialId}`; 
+    // send to project page
+    res.redirect(link); 
 });
 
 //healthy gulf: Landloss Lookout, mturk randomized, different options

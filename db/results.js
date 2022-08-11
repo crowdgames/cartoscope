@@ -318,12 +318,86 @@ exports.getSurveyVotesTGHITRaw = function(hit_id) {
 
 }
 
-
+//TODO: remove and replace all calls with getSurveyAnswersHub (see below)
 exports.getSurveyAnswersLandLoss = function(project_ids) {
     return new Promise(function(resolve, error) {
         var connection = db.get();
 
         var query = 'select * from survey where  hitID=\'kiosk\' and project_id in (' + project_ids.toString() + ')'
+        connection.queryAsync(query).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+
+};
+
+exports.getSurveyAnswersHub = function(project_ids) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+
+        var query = 'select * from survey where  hitID=\'kiosk\' and project_id in (' + project_ids.toString() + ')'
+        connection.queryAsync(query).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+
+};
+
+//get return visit information
+exports.fetchVisitStats = function(project_codes, hitIDs) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        console.log(project_codes)
+        var proj_code_string = [];
+        project_codes.forEach(function(id){
+            proj_code_string.push("\'" + id + "\'")
+        });
+        var hitIDString = [];
+        hitIDs.forEach(function(id){
+            hitIDString.push("\'" + id + "\'")
+        });
+
+        var query = 'select ur.hitID,ur.num_visits, @row := @row + 1 AS hidden_id from \
+        (select u.cookieID,u.hitID,count(*) as num_visits  from \
+        (select * from kiosk_workers where projectID in ('+ proj_code_string + ') ) as u group by cookieID, hitID having hitID in (' + hitIDString + ') order by cookieID) as ur, \
+        (SELECT @row := 0) r'
+
+        
+        connection.queryAsync(query).then(
+            function(data) {
+                resolve(data);
+            }, function(err) {
+                error(err);
+            });
+    });
+
+};
+
+
+//get return visit information
+exports.fetchVisitStatsSummary = function(project_codes, hitIDs) {
+    return new Promise(function(resolve, error) {
+        var connection = db.get();
+        console.log(project_codes)
+        var proj_code_string = [];
+        project_codes.forEach(function(id){
+            proj_code_string.push("\'" + id + "\'")
+        });
+        var hitIDString = [];
+        hitIDs.forEach(function(id){
+            hitIDString.push("\'" + id + "\'")
+        });
+        var query = 'select uu.hitID, avg(uu.num_visits) as average_visits,min(uu.num_visits) as min_num_visits, max(uu.num_visits) as max_num_visits,  count(distinct(cookieID)) as num_people from \
+        (select u.hitID,u.cookieID,count(*) as num_visits from \
+        (select * from kiosk_workers where projectID in ('+ proj_code_string + ') ) as u group by cookieID, hitID having hitID in (' + hitIDString + ')) \
+        as uu group by hitID'
+        
         connection.queryAsync(query).then(
             function(data) {
                 resolve(data);

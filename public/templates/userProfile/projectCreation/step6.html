@@ -134,7 +134,7 @@ File for uploading Tutorial of the projects.
                         </i>
                     </div>
 
-                    <div class="col-md-3" >
+                    <div class="col-md-2" >
                         <span>
                         Image Name
                             <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
@@ -167,6 +167,12 @@ File for uploading Tutorial of the projects.
                                                 Only the image and explanation will be shown in this case. ">
                     </i>
                     </div>
+                    <div class="col-md-2" ng-if="project.task.selectedTaskType =='ngs'" > NGS ZOOM
+                        <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
+                                                data-placement="right" style="color: #9ACA3C;"
+                                                title="If you wish to select a specific zoom level for the tutorial image. The current default is 16 ">
+                    </i>
+                    </div>
 
                 </div>
 
@@ -190,7 +196,7 @@ File for uploading Tutorial of the projects.
                 </div>
 
                 <!-- image picker-->
-                <div class="col-md-3" ng-if="item.in_dataset"   >
+                <div class="col-md-2" ng-if="item.in_dataset"   >
                     <select class="form-control" ng-model="item.image_name" >
                         <option ng-repeat="x in dataset_image_list" value="{{x}}" > {{x}}
                         </option>
@@ -199,7 +205,7 @@ File for uploading Tutorial of the projects.
 
 
 
-                <div class="col-md-3" ng-if="!item.in_dataset" >
+                <div class="col-md-2" ng-if="!item.in_dataset" >
                     <span style="color: #9ACA3C;" style="top:0px;">
                         <small>
                     <span class="fa fa-warning "></span>
@@ -230,13 +236,25 @@ File for uploading Tutorial of the projects.
                 </div>
 
                 <!--ask user: checkbox-->
-                <div class="col-md-1">
+                <div class="col-md-2">
                     <label class="col-form-label" >
                         <input type="checkbox" name="{{item.ask_user}}"  ng-model="item.ask_user"
                                ng-value="item.ask_user"
                                ng-true-value="1"
                                ng-false-value="0"
                                ng-checked="item.ask_user == 1"  />
+                        <span class="option-add-btn">  </span>
+                    </label>
+                </div>
+                <!--NGS SPECIFIC: choose zoom-->
+                <div class="col-md-2" ng-if="project.task.selectedTaskType =='ngs'">
+                    <label class="col-form-label" >
+                        <select class="form-control" ng-model="item.zoom" >
+                            <option 
+                            ng-repeat="x in getNGSZoomOptions(16,20)" 
+                            value={{x}} > {{x}}
+                            </option>
+                        </select>
                         <span class="option-add-btn">  </span>
                     </label>
                 </div>

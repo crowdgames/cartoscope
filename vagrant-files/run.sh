@@ -1,5 +1,4 @@
 #!/bin/bash
 
 cd /vagrant
-tsc --watch
-nodemon app.js
+tsc --watch & nodemon app.js

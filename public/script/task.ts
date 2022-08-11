@@ -214,6 +214,8 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.hitID = $location.search().hitID || $location.search().trialID || "kiosk";
       vm.hitIDSplit = vm.hitID.split('_');
       vm.cairnsInfoArray = vm.hitIDSplit.length > 2 && vm.hitIDSplit[2].split("-")[0] === "cairns" ? vm.hitIDSplit[2].split("-").slice(1) : null;
+      vm.showProgressBar = true;
+      // vm.showProgressBar = !vm.hitID.startsWith("mturk");
 
       enum cairnTypes {
           none     ,
@@ -391,24 +393,27 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
       vm.countno = 0;
 
       vm.fetchResponse = () => {
-          var projectid = vm.data.id;
-          var taskname = vm.tasks[0].name;
-          console.log("taskname in fetching response" + taskname);
-          $http.get('/api/tasks/getreponsecount?projectID='+projectid+'&taskID='+taskname+'&option=0').then(function(data) {
-              console.log('got count yes'+data.data[0]['count']);
-              vm.countyes = data.data[0]['count'];
-              $http.get('/api/tasks/getreponsecount?projectID='+projectid+'&taskID='+taskname+'&option=1').then(function(data) {
-                  console.log('got count no'+data.data[0]['count']);
-                  vm.countno = data.data[0]['count'];
-              });
-          });
+          if (vm.cairnsInfoArray){
+            var projectid = vm.data.id;
+            var taskname = vm.tasks[0].name;
+            console.log("taskname in fetching response" + taskname);
+            $http.get('/api/tasks/getreponsecount?projectID='+projectid+'&taskID='+taskname+'&option=0').then(function(data) {
+                console.log('got count yes'+data.data[0]['count']);
+                vm.countyes = data.data[0]['count'];
+                $http.get('/api/tasks/getreponsecount?projectID='+projectid+'&taskID='+taskname+'&option=1').then(function(data) {
+                    console.log('got count no'+data.data[0]['count']);
+                    vm.countno = data.data[0]['count'];
+                });
+            });
+          }
+          
       }
 
       vm.handleGraphCairn = (option) => {
           let graphcairn = document.getElementById("cairn-sidebar-header");
           
           if (vm.startgraph == 0) {
-              vm.graphcairnbar = document.createElement("p");
+              vm.graphcairnbar = document.createElement("div");
               vm.graphcairnbar.setAttribute("class", "cairn-message");
               graphcairn?.insertAdjacentElement("afterend", vm.graphcairnbar);
               vm.startgraph = 1;
@@ -421,27 +426,36 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           let red_square   = "🟥";
           // let blue_square  = "🟦";
           let white_square = "⬜";
+          console.log(`count yes: ${vm.countyes}, count no: ${vm.countno}`)
           if(vm.countyes+vm.countno <= 5) {
               graphcairn!.innerText = "You were one of the first ones to vote on this image!";
               vm.graphcairnbar.innerText = "";
           }
           else {
               graphcairn!.innerText = "How others voted for this image!";
-              let ratio = Math.round(vm.countyes/(vm.countyes+vm.countno)*10);
+              let ratio = Math.round(vm.countyes/(vm.countyes+vm.countno)*100);
               if(vm.startgraph == 1) {
-                  vm.graphcairnbar.innerText = "";
-                  console.log("ratio " + ratio);
-                  let vote  = option;
-                  console.log("vote " + vote);
-                  for(let i = 0; i < 12; i++) {
-                      if (i - ratio == 1 && vote == 0) vm.graphcairnbar.innerText += white_square;
-                      else vm.graphcairnbar.innerText += i > ratio ? black_square : green_square;
-                  }
-                  vm.graphcairnbar.innerText += "\n";
-                  for(let i = 0; i < 12; i++) {
-                      if (i + ratio == 11 && vote == 1) vm.graphcairnbar.innerText += white_square;
-                      else vm.graphcairnbar.innerText += i > (10 - ratio) ? black_square : red_square;
-                  }
+                  // vm.graphcairnbar.innerText = "";
+                  // console.log("ratio " + ratio);
+                  // let vote  = option;
+                  // console.log("vote " + vote);
+                  // for(let i = 0; i < 12; i++) {
+                  //     if (i - ratio == 1 && vote == 0) vm.graphcairnbar.innerText += white_square;
+                  //     else vm.graphcairnbar.innerText += i > ratio ? black_square : green_square;
+                  // }
+                  // vm.graphcairnbar.innerText += "\n";
+                  // for(let i = 0; i < 12; i++) {
+                  //     if (i + ratio == 11 && vote == 1) vm.graphcairnbar.innerText += white_square;
+                  //     else vm.graphcairnbar.innerText += i > (10 - ratio) ? black_square : red_square;
+                  // }
+                  vm.graphcairnbar.innerHTML = "";
+                  // vm.graphcairnbar.innerHTML += '<div style="color: green">YES</div><div id="progress"><progress class="progressBar1" value="32" max="100"> 32% </progress></div><div style="color: red">NO</div>';
+                  vm.graphcairnbar.innerHTML += `<div style="min-height: 5em;"><div style="color: green; text-align: left">YES</div><div class="w3-border">
+                  <div id="myBar" class="w3-container w3-padding w3-green" style="width:${ratio}%">
+                        <div class="w3-center" id="demo">${ratio}%</div>
+                  </div>
+                </div></div><div style="float:right; color: red;margin-top: -15px">NO</div></div>`;
+                  $( ".progressBar1" ).val(ratio);
               }
           }
 
@@ -1422,7 +1436,7 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
                       
                       let it_annot = tutpath + item.image_name;
                       // Some images have drawings on them, arrows and the like. Use this image if it exists
-                      if (item.image_annotation != 0){
+                      if (item.image_annotation){
                           // sometimes image annotations already have the project code in them, sometimes they don't. This is a hacky way of seeing if we need to add the project code or not.
                           it_annot = item.image_annotation.includes('/') 
                               ? `${tutpath}${item.image_annotation}`
@@ -2011,6 +2025,6 @@ module.controller('taskController', ['$scope', '$location', '$http', 'userData',
           return 'c' + color;
       };
 
-      console.log("model information:");
-      console.log(vm);
+    //   console.log("model information:");
+    //   console.log(vm);
   }]);

@@ -2634,12 +2634,12 @@ module.controller('exampleController', ['$window', '$scope', '$state', '$statePa
                     }
                     var it_annot = tutpath + item.image_name;
                     //if an annotated image is available, we should show that after they pick the right answer. Otherwise, keep showing the same image
-                    if (item.image_annotation != 0){
+                    if (item.image_annotation){
                         it_annot = item.image_annotation.includes("/")
                             ? `../../images/Tutorials/${item.image_annotation}`
                             : `../../images/Tutorials/${vm.params.project}/${item.image_annotation}`;
                     } else {
-                        it_anot = 0
+                        it_annot = 0
                     }
 
                     var obj = {
@@ -3011,6 +3011,7 @@ module.controller('hubProjectController', ['$window','$scope','$location','$stat
         $scope.isMturk = false;
         $scope.hit_id = "kiosk";
         $scope.showVideo = false;
+        $scope.is_scistarter = false;
         
 
         $scope.show_start_button = false;
@@ -3111,6 +3112,10 @@ module.controller('hubProjectController', ['$window','$scope','$location','$stat
             $scope.video_url = $sce.trustAsResourceUrl($scope.hub_data.video_url)
             if ($scope.video_url){
                 $scope.showVideo = true;
+            }
+            $scope.scistarter_link = $scope.hub_data.scistarter_link
+            if ($scope.scistarter_link){
+                $scope.is_scistarter = true
             }
 
             //Get the creator name from the collaborators:

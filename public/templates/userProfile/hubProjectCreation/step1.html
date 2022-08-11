@@ -28,6 +28,17 @@
                 </span>
                 <textarea ng-model="hub.description"></textarea>
             </div>
+            <div>
+                <span>
+                    Short Description*
+                    <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
+                                          data-placement="right" style="margin-left: 10px;color: #9ACA3C;"
+                                          title="Make it short and sweet! In one or two sentences,
+                                           summarize the goal of the project."></i>
+
+                </span>
+                <textarea ng-model="hub.short_description"></textarea>
+            </div>
 
 
         </div>
@@ -69,6 +80,22 @@
         <div class="col-md-1"> <input type="checkbox" ng-model="has_external_signup"  checked="checked"></div>
         <div class="col-md-4" ng-show="has_external_signup">
             <input type="url" class="invite" placeholder="External form URL here..." ng-model="hub.external_sign_up">
+        </div>
+    </div>
+    <!--sci starter:-->
+    <div class="row">
+        <div class="col-md-2">
+            <span>SciStarter Project
+            <i cs-tooltip class="fa fa-question-circle" data-toggle="tooltip"
+               data-placement="right" style="margin-left:15px; color: #9ACA3C;"
+               title="Check if you wish users to report back to SciStarter.">
+            </i>
+            </span>
+        </div>
+
+        <div class="col-md-1"><input type="checkbox" ng-model="has_scistarter"  checked="checked"></div>
+        <div class="col-md-4" ng-show="has_scistarter">
+            <input type="url" class="invite" placeholder="SciStarter form URL here..." ng-model="hub.scistarter_link">
         </div>
     </div>
 </div>

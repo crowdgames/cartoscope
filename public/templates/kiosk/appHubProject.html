@@ -67,23 +67,29 @@
 
         </div>
 
-        <div ng-if="show_start_button" class="row" style="text-align: center;margin-bottom:20px;">
-            <a ng-click="showTerms()" style="cursor: pointer">
-                <img src="../../images/contribute_btn_on_started.png"
+        <div class="row" ng-if="show_start_button" style="text-align: center;margin-bottom:20px;cursor: pointer;">
+            <p>Contributing is free and anonymous.</p>
+            <!-- <a ng-click="showTerms()"> -->
+                <button type="button" class="btn btn-lg btn-success btnGetStarted" ng-click="showTerms()">Get Started</button>
+                <!-- <img src="../../images/contribute_btn_on_started.png"
                      onmouseover="this.src='../../images/contribute_btn_hover_started.png'"
                      onmouseleave="this.src='../../images/contribute_btn_on_started.png'"
-                     class="contribute"/>
-            </a>
-            <br>
-            <small>Contributing is free and anonymous.</small>
+                     class="contribute"/> -->
+            <!-- </a> -->
+            
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12 description" ng-if="is_scistarter">
+                <p style='font-size:150%'>Coming from <b>Scistarter</b>? Wait until after the survey at the end of the project for a credit form link!</p>
+              </div>
         </div>
         
+        
         <div class="row">
-            <div class="col-sm-12 description">
                 <p class="description " style="font-size: 14px; ">
                     This material is based upon work supported by the National Science Foundation under Grant No. 1816426. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.
             </p>
-            </div>
         </div>
 
     </div>
@@ -183,7 +189,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="assignProject()">Continue</button>
+                    <button type="button" class="btn btn-success btnTextBlack" data-dismiss="modal" ng-click="assignProject()">Continue</button>
                 </div>
             </div>
         </div>

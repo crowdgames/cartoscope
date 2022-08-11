@@ -114,6 +114,122 @@ router.get('/surveyExternal/:hit_id', function(req, res, next) {
 });
 
 
+//Get raw survey data from hub project in csv format
+router.get('/survey_hub/csv/:url_name',  [filters.requireLogin],function(req, res, next) {
+
+    hubProjectDB.getHubFromURL(req.params.url_name).then(function(hub_projects){
+        var hub_info = hub_projects[0]
+        var project_codes = hub_info.project_codes.split(',')
+        resultDB.getSurveyAnswersHub(project_codes).then(function(results) {
+    
+            var fields = Object.keys(JSON.parse(results[results.length-1].response));
+            fields.push('timestamp');
+            fields.push('project_id');
+            var csv_results = [];
+    
+            results.forEach(function(survey_response){
+                var csv_obj = {};
+                csv_obj.timestamp = survey_response.timestamp;
+                csv_obj.project_id = survey_response.project_id;
+                var resp_obj = JSON.parse(survey_response.response);
+                Object.keys(resp_obj).forEach(function(skey){
+                    if (fields.indexOf(skey) !== -1){
+                        if (resp_obj[skey].hasOwnProperty('answer')){
+                            csv_obj[skey] = resp_obj[skey].answer
+                        } else {
+                            csv_obj[skey] = resp_obj[skey]
+                        }
+                    }
+                });
+                csv_results.push(csv_obj)
+            });
+            var csv = json2csv({ data: csv_results, fields: fields });
+            //Send back CSV file:
+            res.attachment(req.params.url_name + '_hub_survey_results.csv');
+            res.status(200).send(csv);
+        }, function(err) {
+            console.log(err)
+            res.status(400).send('CSV survey results could not be generated');
+        });
+    }, function(err) {
+            console.log(err)
+            res.status(400).send('CSV survey results for hub could not be generated. Invalid url name');
+        }) 
+});
+
+//Get raw survey data from hub project in json format
+router.get('/survey_hub/:url_name', [filters.requireLogin], function(req, res, next) {
+
+    hubProjectDB.getHubFromURL(req.params.url_name).then(function(hub_projects){
+        var hub_info = hub_projects[0]
+        var project_codes = hub_info.project_codes.split(',')
+        resultDB.getSurveyAnswersHub(project_codes).then(function(results) {
+            var csv_results = [];
+            var fields = Object.keys(JSON.parse(results[results.length-1].response));
+            fields.push('timestamp');
+            fields.push('project_id');
+            results.forEach(function(survey_response){
+                var csv_obj = {};
+                csv_obj.timestamp = survey_response.timestamp;
+                csv_obj.project_id = survey_response.project_id;
+                var resp_obj = JSON.parse(survey_response.response);
+                Object.keys(resp_obj).forEach(function(skey){
+                    if (fields.indexOf(skey) !== -1){
+                        if (resp_obj[skey].hasOwnProperty('answer')){
+                            csv_obj[skey] = resp_obj[skey].answer
+                        } else {
+                            csv_obj[skey] = resp_obj[skey]
+                        }
+                    }
+                });
+                csv_results.push(csv_obj)
+            });
+            res.send(csv_results)
+        }, function(err) {
+            console.log(err)
+            res.status(400).send('survey results could not be generated');
+        });
+    }, function(err) {
+            console.log(err)
+            res.status(400).send('CSV survey results for hub could not be generated. Invalid url name');
+        }) 
+});
+
+//get information of visits based on a list of unique codes
+router.post('/fetchVisitStatsRaw', function(req, res, next) {
+
+    if (req.body.hasOwnProperty('project_codes') && req.body.hasOwnProperty('project_codes')){
+        var project_codes = req.body.project_codes.split(',');
+        var hit_id = req.body.hitIDs.split(',');
+        resultDB.fetchVisitStats(project_codes,hit_id).then(function(results) {
+            
+            res.send(results);
+        }, function(err) {
+            console.log(err);
+            res.status(400).send('Could not fetch visit stats for given project codes');
+        });
+    } else {
+        res.status(400).send('Missing project_codes (comma separated string of unique codes) and/or hitIDs (comma separated string of hit ids). Try again');
+    }
+})
+
+//get information of visits based on a list of unique codes
+router.post('/fetchVisitStatsSummary', function(req, res, next) {
+
+    if (req.body.hasOwnProperty('project_codes') && req.body.hasOwnProperty('project_codes')){
+        var project_codes = req.body.project_codes.split(',');
+        var hit_id = req.body.hitIDs.split(',');
+        resultDB.fetchVisitStatsSummary(project_codes,hit_id).then(function(results) {
+            res.send(results);
+        }, function(err) {
+            console.log(err);
+            res.status(400).send('Could not fetch visit stats for given project codes');
+        });
+    } else {
+        res.status(400).send('Missing project_codes (comma separated string of unique codes) and/or hitIDs (comma separated string of hit ids). Try again');
+    }
+})
+
 //Check Expert progress
 router.get('/checkExpertProgress/:hit_code', function(req, res, next) {
 
@@ -320,6 +436,17 @@ router.get('/ida_survey', (_, res) => {
 
     let ida_ids = [88, 89, 90];
     resultDB.getSurveyAnswersLandLoss(ida_ids).then(
+        results => res.send(results),
+        err => {
+            console.log(err);
+            res.status(400).send('raw HG results could not be retrieved');
+    });
+});
+
+// get survey data for a specific project
+router.get('/project_survey/:pid', (req, res) => {
+
+    resultDB.getSurveyAnswersLandLoss([req.params.pid]).then(
         results => res.send(results),
         err => {
             console.log(err);

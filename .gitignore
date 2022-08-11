@@ -19,7 +19,6 @@ Cartoscope.njsproj
 obj/Debug/Cartoscope.njsproj.CoreCompileInputs.cache
 obj/Debug/Cartoscope.njsproj.FileListAbsolute.txt
 obj/Debug/Cartoscope.njsprojAssemblyReference.cache
-package-lock.json
 .DS_Store
 *.zip
 

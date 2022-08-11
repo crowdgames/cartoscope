@@ -1708,7 +1708,7 @@ module.controller('surveyCUSTOMController', ['$scope', '$http', '$state', '$loca
             }
             */
 
-            var q_obj = { "answer" : item.answer || ulb , "type" : item.question_type};
+            var q_obj = { "answer" : item.answer || ulb , "type" : item.question_type, 'other_text': item.other_text};
 
             if ( ($scope.req_answers || item.required) && (item.answer == -1 || item.answer == "ULB") ) {
                 survey_ok = -1;
