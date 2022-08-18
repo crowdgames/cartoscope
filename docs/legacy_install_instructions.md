@@ -75,13 +75,23 @@ By default the server will redirect all routes to https. If you are developing o
 export CARTO_DEV='development'
 ```
 
-When deploying the server, ensure that `CARTO_DEV` is not set to 'development'. Lastly, you also need to handle [intermediate certificates](https://www.godaddy.com/help/what-is-an-intermediate-certificate-868) for ssl verification. If you do not run this step on the server, than all https requests from a non-browser based system will fail.
+#### HTTPS
+
+When deploying the server in a real production environment, ensure that `CARTO_DEV` is not set in your environment variables.
+
+If using a service like godaddy, you will need to handle [intermediate certificates](https://www.godaddy.com/help/what-is-an-intermediate-certificate-868) for ssl verification. If you do not run this step on the server, than all https requests from a non-browser based system will fail.
+
+Your service will give you a CA_BUNDLE. Fill out the environment variable `CARTO_CA_BUNDLE` like so:
 
 ```
 export CARTO_CA_BUNDLE='path/to/your/cartoscope.ca.:.crt'
 ```
 
 In this case, the formatting is important since there should be three values where `:` is. The code replaces `:` with numbers 1, 2, and 3. If you are coming into the project to set up a new ssl cert, GoDaddy will have one file with "bundle" in it. That file will contain three separate certificates which start with "-----BEGIN CERTIFICATE-----" and end with "-----END CERTIFICATE-----".
+
+If using a service like letsencrypt + certbot, there is no need for `CARTO_CA_BUNDLE`. Certbot will provide you with a `privkey.pem` file, whose path should be placed in `CARTO_SSL_KEY`, and a `fullchain.pem` file, whose path should be placed in `CARTO_SSL_CRT`.
+
+Note that these files are only readable by root, and it's a bad idea to run the webserver as root. To get around this problem, we suggest creating pre and post hooks with certbot (script files in letsencrypt/renewal-hooks/pre and letsencrypt/renewal-hooks/post). Your pre hook should stop the webserver, and your post hook should copy the files into a different folder, change their permissions, and restart the webserver.
 		
 10. #### Python related installations:
 		Make sure pip is installed and then intall PIL
