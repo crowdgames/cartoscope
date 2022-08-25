@@ -376,7 +376,7 @@ const options = {
     cert: fs.readFileSync(path.normalize(process.env.CARTO_SSL_CRT))
 };
 
-if (process.env.CARTO_DEV !== "development") {
+if (process.env.CARTO_DEV !== "development" && process.env.CARTO_CA_BUNDLE) {
   options.ca = [
     fs.readFileSync(path.normalize(process.env.CARTO_CA_BUNDLE).replace(':', '1')),
     fs.readFileSync(path.normalize(process.env.CARTO_CA_BUNDLE).replace(':', '2')),
