@@ -133,13 +133,15 @@ router.get('/survey_hub/csv/:url_name',  [filters.requireLogin],function(req, re
                 csv_obj.project_id = survey_response.project_id;
                 var resp_obj = JSON.parse(survey_response.response);
                 Object.keys(resp_obj).forEach(function(skey){
-                    if (fields.indexOf(skey) !== -1){
+                    if (fields.indexOf(skey) == -1){
+                        fields.push(skey)
+                    }
                         if (resp_obj[skey].hasOwnProperty('answer')){
                             csv_obj[skey] = resp_obj[skey].answer
                         } else {
                             csv_obj[skey] = resp_obj[skey]
                         }
-                    }
+                    
                 });
                 csv_results.push(csv_obj)
             });
@@ -174,13 +176,13 @@ router.get('/survey_hub/:url_name', [filters.requireLogin], function(req, res, n
                 csv_obj.project_id = survey_response.project_id;
                 var resp_obj = JSON.parse(survey_response.response);
                 Object.keys(resp_obj).forEach(function(skey){
-                    if (fields.indexOf(skey) !== -1){
+                    //if (fields.indexOf(skey) !== -1){
                         if (resp_obj[skey].hasOwnProperty('answer')){
                             csv_obj[skey] = resp_obj[skey].answer
                         } else {
                             csv_obj[skey] = resp_obj[skey]
                         }
-                    }
+                    //}
                 });
                 csv_results.push(csv_obj)
             });
