@@ -19,7 +19,7 @@
     "@types/jquery": "^3.5.3",
     "@types/matter-js": "^0.14.6",
     "@types/node-fetch": "^3.0.3",
-    "@xmldom/xmldom": "^0.7.5",
+    "@xmldom/xmldom": "^0.8.3",
     "archiver": "^3.0.0",
     "async": "^2.0.1",
     "axios": "^0.21.1",
