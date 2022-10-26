@@ -34,3 +34,29 @@ exports.requiredParamHandler = function(params) {
     }
   };
 };
+
+exports.requiredBodyParamsHandler = (bodyParams) => {
+  return (req, res, next) => {
+    for (let param in bodyParams) {
+      if (!param in req.body) {
+        res.status(400).send({'error': 'missing required param:' + param});
+        return;
+      }
+    }
+
+    next();
+  }
+}
+
+exports.requiredQueryParamsHandler = (queryParams) => {
+  return (req, res, next) => {
+    for (let param in queryParams) {
+      if (!param in req.query) {
+        res.status(400).send({'error': 'missing required param:' + param});
+        return;
+      }
+    }
+
+    next();
+  }
+}
